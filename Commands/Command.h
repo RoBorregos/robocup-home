@@ -13,8 +13,8 @@ public:
 	void followPerson();
 	void followPerson(string);
 	void stop();
-	void take();
-	void carryToLocation();
+	void take(string);
+	void carryToLocation(string);
 	void putDown();
 	//sets
 	void setDestination(string destination);
