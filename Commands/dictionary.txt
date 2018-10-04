@@ -2,8 +2,11 @@ take VO
 kitchen LO
 carry VO
 carrying VO
-bags OD
+bags KO
 help VA
 can VA
 could VA
 may VA
+apples KO
+soda KO
+go VG

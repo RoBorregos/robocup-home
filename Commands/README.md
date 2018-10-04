@@ -7,9 +7,10 @@
 | VG | Movement action, place required |
 | VGO | Movement action requires object |
 | VO | Action regarding an object, object required, place optional |
-| OD | Known Object |
+| KO | Known Object |
 | LO | Location |
 | CJ | Conjunction (and/or) |
+| AD | Adverb  (down,fast,upstairs,out)
 
 | Tag | Method and parameters |
 | ---- | ---------------------|   
