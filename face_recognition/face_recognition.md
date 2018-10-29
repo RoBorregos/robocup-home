@@ -61,7 +61,11 @@ This is a good option when planning to build a robot or a complex system that ha
 
 [Link to official documentation](https://media.readthedocs.org/pdf/face-recognition/latest/face-recognition.pdf)
 
+[API Docs](https://face-recognition.readthedocs.io/en/latest/face_recognition.html)
+
 - Based on [__dlib__](http://dlib.net/) which is a state-of-the-art model built using deep learning.
+
+- This library also provides a CLI tool. For more information on usage, check the __official documentation__.
 
 ## Face recognition with ROS People Object Detection Tensorflow
 
