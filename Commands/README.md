@@ -11,6 +11,7 @@
 | LO | Location |
 | CJ | Conjunction (and/or) |
 | AD | Adverb  (down,fast,upstairs,out)
+| PP | Personal Pronoun |
 
 | Tag | Method and parameters |
 | ---- | ---------------------|   

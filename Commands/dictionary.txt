@@ -10,3 +10,8 @@ may VA
 apples KO
 soda KO
 go VG
+me PP
+you PP
+her PP
+him PP
+and CJ
