@@ -13,6 +13,18 @@ unordered_map<string,string> tags;
 
 //Check if there is an 'and' joining 2 sentences based on the quantity of verbs
 bool checkAnd(unordered_map<string,string> sentenceTags,unordered_map<string,string> ::iterator end){
+	unordered_map<string,string>::iterator it;
+	int  mainVerbs=0;
+	for(it=sentenceTags.begin(); it!= end; it++){
+		string first  = it->first;
+		//If more than 1 main verb, 2 sentences
+		if(first=="VG" || first=="VGO" || first=="VS" ||first=="VO"){
+			mainVerbs++;
+		}
+		if(mainVerbs>1){
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -41,7 +53,8 @@ bool addToActions(Command &MainActions, unordered_map<string,string> sentenceTag
 	 }
 	 else if(sentenceTags.find("VO")!=end){
 		 if(sentenceTags.find("KO")!=end){
-			 //Here different possible actions (take,putDown,bring,lift)
+			 //Classify people as "Known objects", if no other KO in sentence
+			 //Here are different possible actions (take,putDown,bring,lift)
 			 if(sentenceTags.find("LO")!=end){
 				 //"take this somewhere" type of command
 				  cout<<"I have to "<<sentenceTags["VO"]<<" the "<<sentenceTags["KO"]<<"to "<<sentenceTags["LO"]<<endl;
@@ -95,12 +108,8 @@ string splitIntoSentences(string &newSentence,string sentence){
 	cout<<"Splits sentence in two"<<endl;
 	for(int i=0; i<sentence.length()-2; i++){
 		if(sentence[i]=='a'&&sentence[i+1]=='n'&&sentence[i+2]=='d'){
-			cout<<"Found and in position: "<<i<<i+1<<i+2<<endl;
 			int endSen = sentence.length()-(i+3);
-			cout<<"Second sentence"<<i+3<<"length: "<<endSen<<endl;
 			newSentence = sentence.substr(i+3,endSen);
-			cout<<newSentence<<endl;
-			cout<<"First sentence: "<<sentence.length()-endSen<<endl;
 			sentence = sentence.substr(0,sentence.length()-endSen);
 			return sentence;
 		}
@@ -159,7 +168,7 @@ int main(){
 	//Hacer el llamado al Alexa API
 	//Recibir el string
 	cout<<"Current sentence:  "<<endl;
-	string testSentence = "roBot, help. me caring. ,these and bags to THE KitChen";
+	string testSentence = "roBot, help. me take. ,these bags to THE KitChen";
 	testSentences.push_back("example and second");
 	testSentences.push_back(testSentence);
 
