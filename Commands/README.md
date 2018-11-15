@@ -12,6 +12,7 @@
 | CJ | Conjunction (and/or) |
 | AD | Adverb  (down,fast,upstairs,out)
 | PP | Personal Pronoun |
+| KP | Known Person |
 
 | Tag | Method and parameters |
 | ---- | ---------------------|   
