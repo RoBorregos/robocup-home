@@ -10,8 +10,9 @@ using namespace std;
 TO DO:
 
 multiple tags of the same type in a sentence (bring me the apple and the soda from the kitchen). DONE
-new command: save me, remember my face, my name is diego 
+new command: save me, remember my face DONE
 questions: who is here, is it diego here,   
+Feed the dictionary with more words 
 Command.h 
 
 */
@@ -55,9 +56,16 @@ bool addToActions(Command &MainActions, unordered_map<string,vector<string>> sen
  		return false;
  	}
 
+	//A special case for each type of verb
 	if(sentenceTags.find("VS")!=end){
 		 //HARDCODED ACTIONS :(
-		 return true;
+		 for(auto& it : sentenceTags["VS"]){
+			 if(it=="remember" || it=="save"){
+				 cout<<"I must save the face of the person talking to me"<<endl;
+				 //Ask for their name
+			 }
+
+		 }
 	 }
 	 else if(sentenceTags.find("VG")!=end){
 		 if(sentenceTags.find("LO")!=end){
@@ -105,6 +113,7 @@ bool addToActions(Command &MainActions, unordered_map<string,vector<string>> sen
 }
 
 //----------------------------------------------------------------------------
+
 void readDictionary(){
 	//Loads the data from dictionary.txt into the hashmap
 	ifstream dataFile("dictionary.txt");
@@ -149,6 +158,7 @@ string splitIntoSentences(string &newSentence,string sentence){
 		}
 	}
 }
+
 void parseSentence(vector<string> &sentences, Command &MainActions, int i){
 	string sentence = sentences[i];
 	cout<<"------------New sentence to be parsed-------------"<<endl;
@@ -167,7 +177,7 @@ void parseSentence(vector<string> &sentences, Command &MainActions, int i){
 			sentenceTags[code].push_back(word);
 		}
 		else{
-			cout<<"I don't know the following word"<<word<<endl;
+			sentenceTags["UW"].push_back(word);
 		}
 	}
 	if(debug){
@@ -215,6 +225,8 @@ int main(){
 
 	testSentences.push_back("Go to the KiTcHen");
 	testSentences.push_back("robot, take me to the KiTcHen with Diego and bring apples");
+	testSentences.push_back("Robot save my face");
+	testSentences.push_back("Robot remember my face");
 	for(int i=0; i<testSentences.size();i++){
 		cout<<testSentence[i];
 		parseSentence(testSentences, MainActions,i);

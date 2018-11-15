@@ -2,7 +2,7 @@
 
 | Tag | Meaning |
 | ------ | ------ |
-| VS | Simple action, no object place required |
+| VS | Simple action (Save person) |
 | AV  | Auxiliary verb, ignored if more than 2 verb in sentence|
 | VG | Movement action, place required |
 | VGO | Movement action requires object |
@@ -13,6 +13,7 @@
 | AD | Adverb  (down,fast,upstairs,out)
 | PP | Personal Pronoun |
 | KP | Known Person |
+| UW | Unknown Word |
 
 | Tag | Method and parameters |
 | ---- | ---------------------|   
