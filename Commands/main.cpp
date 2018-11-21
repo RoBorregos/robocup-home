@@ -11,7 +11,7 @@ TO DO:
 
 multiple tags of the same type in a sentence (bring me the apple and the soda from the kitchen). DONE
 new command: save me, remember my face DONE
-questions: who is here, is it diego here,   
+questions: who is here, is it diego here,   PARTIALLY DONE
 Feed the dictionary with more words 
 Command.h 
 
@@ -45,6 +45,26 @@ bool checkAnd(unordered_map<string,vector<string>> sentenceTags,unordered_map<st
 	return false;
 }
 
+string auxiliarName(unordered_map<string,vector<string>> sentenceTags, string verb){
+	for(auto it=sentenceTags["UW"].begin(); it!=sentenceTags["UW"].end(); it++){
+		if(*it=="name"){
+			cout<<"name is type of"<<endl;
+			if(sentenceTags["UW"].size()>=2){
+				return sentenceTags["UW"][1];
+			}
+			else{
+			cout<<"No name given"<<endl;
+			}
+		
+		}
+		else if(verb!="is"){
+			cout<<"im type of sentence"<<endl;
+			return sentenceTags["UW"][0];
+		}
+
+	}
+	return "";
+}
 
 //-----------------------------Switch con los verbos conocidos, brutalmente sencillo----------------
 bool addToActions(Command &MainActions, unordered_map<string,vector<string>> sentenceTags){
@@ -55,17 +75,48 @@ bool addToActions(Command &MainActions, unordered_map<string,vector<string>> sen
 		 cout<<"--Multiple sentences identified "<<endl;
  		return false;
  	}
-
+	//For questions
+	if(sentenceTags.find("QW")!=end){
+		for(auto& it : sentenceTags["QW"]){
+			if(it=="who"){
+				cout<<"Detect faces"<<endl;
+				return true;
+			}
+		}
+	}
 	//A special case for each type of verb
 	if(sentenceTags.find("VS")!=end){
 		 //HARDCODED ACTIONS :(
 		 for(auto& it : sentenceTags["VS"]){
+			 //Save faces
+			 string sName;
 			 if(it=="remember" || it=="save"){
-				 cout<<"I must save the face of the person talking to me"<<endl;
-				 //Ask for their name
-			 }
+				 cout<<"Please give me your name"<<endl;
+				 cin>>sName;
 
+			 }
+			 else if(it=="am" || it=="is" || it=="im"){
+				 cout<<"About to call auxiliarName"<<endl;
+				  sName = auxiliarName(sentenceTags,it);
+				
+			 }
+			if(sName.length()>0){
+				cout<<"I must save the face of the person talking to me"<<endl;
+				cout<<sName<<endl;
+				//llamar save face
+				return true;
+			}
+			 
+			//Detect faces
+			if(it=="detect"){
+				cout<<"Detect faces";
+				return true;
+			}
 		 }
+		 
+	 }
+	 else if(sentenceTags.find("VE")!=end){
+		 cout<<"ORB SLAM"<<endl;
 	 }
 	 else if(sentenceTags.find("VG")!=end){
 		 if(sentenceTags.find("LO")!=end){
@@ -219,16 +270,25 @@ int main(){
 	
 	//Recibir el string
 	cout<<"Current sentence:  "<<endl;
-	string testSentence = "roBot, help. me take. ,the apples and the soda";
+	//string testSentence = "roBot, help. me take. ,the apples and the soda";
 	//testSentences.push_back("example and second");
-	testSentences.push_back(testSentence);
+	//testSentences.push_back(testSentence);
 
-	testSentences.push_back("Go to the KiTcHen");
-	testSentences.push_back("robot, take me to the KiTcHen with Diego and bring apples");
-	testSentences.push_back("Robot save my face");
+	//testSentences.push_back("Go to the KiTcHen");
+	//testSentences.push_back("robot, take me to the KiTcHen with Diego and bring apples");
+	//testSentences.push_back("Robot save my face");
 	testSentences.push_back("Robot remember my face");
+	testSentences.push_back("Robot save my face");
+	testSentences.push_back("My name is Paul");
+	testSentences.push_back("Hello I'm Paul");
+	testSentences.push_back("Hello my name Paul");
+	testSentences.push_back("Who is here?");
+	testSentences.push_back("Detect who I am");
+	testSentences.push_back("Who am I?");
+	testSentences.push_back("Who is in this picture");
+	testSentences.push_back("Robot explore the room");
 	for(int i=0; i<testSentences.size();i++){
-		cout<<testSentence[i];
+		//cout<<testSentences[i]<<endl;
 		parseSentence(testSentences, MainActions,i);
 	}
 }

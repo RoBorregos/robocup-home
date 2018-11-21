@@ -14,6 +14,9 @@
 | PP | Personal Pronoun |
 | KP | Known Person |
 | UW | Unknown Word |
+| NI | Not important (robot,hi,etc) |
+| QW | Question Word (Who,What,Where,When)|
+| VE | Exploration verbs (Explore, Search, Map, Find)
 
 | Tag | Method and parameters |
 | ---- | ---------------------|   
