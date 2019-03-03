@@ -2,9 +2,9 @@
 #Folders to ignore
 
 ### ROS ###
-catkin_home/devel/
-catkin_home/logs/
-catkin_home/build/
-catkin_home/bin/
+/catkin_home/devel/
+/catkin_home/logs/
+/catkin_home/build/
+/catkin_home/bin/
 
 # End 
