@@ -17,9 +17,17 @@
     NA
 """
 
+# MSG USED
+"""
+    action_selector_msg
+        Header header
+        uint8 cmd_id
+        uint8 cmd_priority
+        uint8 critic_shutdown
+"""
 
 import rospy
-from std_msgs.msg import Byte
+from main_engine.msg import action_selector_cmd
 import random
 
 # Get a random comand id and random sleep seconds
@@ -27,22 +35,28 @@ SLEEP_MAX = 7
 SLEEP_MIN = 1
 CMD_MAX = 5
 CMD_MIN = 1
-def randomize_commands():
-    sleep_seconds = random.randint(SLEEP_MIN,SLEEP_MAX) # Hz
-    command_id = random.randint(CMD_MIN, CMD_MAX)
+def randomize_command():
+    msg = action_selector_cmd()
 
-    return sleep_seconds, command_id
+    msg.cmd_id = random.randint(CMD_MIN, CMD_MAX)
+    msg.cmd_priority = 0
+    msg.critic_shutdown = 0
+    
+    sleep_seconds = random.randint(SLEEP_MIN,SLEEP_MAX) # Hz
+
+    return sleep_seconds, msg
 
 def talker():
-    pub = rospy.Publisher('engine_commands', Byte, queue_size=10)
+    pub = rospy.Publisher('engine_commands', action_selector_cmd, queue_size=10)
     rospy.init_node('Commander', anonymous=False)
 
     while not rospy.is_shutdown():
-        sleep_seconds, command_id = randomize_commands()
-        id_msg_str = "Published to engine with cmd id: %d" % command_id
+        # Generate a random msg
+        sleep_seconds, msg = randomize_command()
+        id_msg_str = "Published to engine with cmd id: %d" % msg.cmd_id
         sleep_msg_str = "Sleeping %d seconds" % sleep_seconds
         # publish
-        pub.publish(command_id)
+        pub.publish(msg)
 
         # log
         rospy.loginfo(id_msg_str)

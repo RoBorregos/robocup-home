@@ -16,10 +16,19 @@
     engine_commands -> Byte
 """
 
+# MSG USED
+"""
+    action_selector_msg
+        Header header
+        uint8 cmd_id
+        uint8 cmd_priority
+        uint8 critic_shutdown
+"""
+
 import rospy
 from threading import Thread
 import time
-from std_msgs.msg import Byte
+from main_engine.msg import action_selector_cmd
 
 actionQueue  = []
 def actionQueueGUI():
@@ -32,9 +41,9 @@ def actionQueueGUI():
 		time.sleep(0.5)
 
 
-def process_id(data):
+def process_id(msg):
     # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-    actionQueue.append(data.data)
+    actionQueue.append(msg.cmd_id)
     
 def listener():
 
@@ -45,7 +54,7 @@ def listener():
     # run simultaneously.
     rospy.init_node('engine', anonymous=False)
 
-    rospy.Subscriber("engine_commands", Byte, process_id)
+    rospy.Subscriber("engine_commands", action_selector_cmd, process_id)
     
     # thread for viewing actionQueueGUI
     actionQueueThread = Thread( target=actionQueueGUI )
