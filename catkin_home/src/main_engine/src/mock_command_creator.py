@@ -27,7 +27,7 @@
 """
 
 import rospy
-from main_engine.msg import action_selector_cmd
+from intercom.msg import action_selector_cmd
 import random
 
 # Get a random comand id and random sleep seconds
@@ -35,12 +35,18 @@ SLEEP_MAX = 7
 SLEEP_MIN = 1
 CMD_MAX = 5
 CMD_MIN = 1
+
 def randomize_command():
     msg = action_selector_cmd()
 
     msg.cmd_id = random.randint(CMD_MIN, CMD_MAX)
     msg.cmd_priority = 0
-    msg.critic_shutdown = 0
+
+    # Add 1/15 posibility of critic shutdown
+    isCritic = (0,1)[random.randint(1, 10) == 2] # picking a random number match 2
+    if (isCritic == 1):
+        rospy.logfatal("Critic shutdown signal from Action Selector sent")
+    msg.critic_shutdown = isCritic
     
     sleep_seconds = random.randint(SLEEP_MIN,SLEEP_MAX) # Hz
 
