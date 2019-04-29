@@ -1,3 +1,5 @@
+Taken from repository [DeepSpeech](https://github.com/diegocardozo97/DeepSpeech) from the user [diegocardozo97](https://github.com/diegocardozo97) at the commit [458069081bfd774169372651744fc0eab4d349c9](https://github.com/diegocardozo97/DeepSpeech/commit/458069081bfd774169372651744fc0eab4d349c9).
+
 # Notes of this fork
 This fork is to have a working saved version of the original Repository. This at first means that will be have corrected the issues that the orignal has. Also, includes that it will have always uploaded at the downloadings the necessary to have the working version for English. 
 
