@@ -178,16 +178,19 @@ class AudioSegment(object):
             return cls(samples=samples, sample_rate=8000)
 
     @classmethod
-    def from_bytes(cls, bytes):
+    def from_bytes(cls, bytes, **soundfile_options):
         """Create audio segment from a byte string containing audio samples.
         
         :param bytes: Byte string containing audio samples.
         :type bytes: str
+        :param soundfile_options: Options for opening with soundfile library.
+        :type soundfile_options: **kwargs
         :return: Audio segment instance.
         :rtype: AudioSegment
         """
         samples, sample_rate = soundfile.read(
-            io.BytesIO(bytes), dtype='float32')
+            io.BytesIO(bytes), dtype='float32', 
+            **soundfile_options)
         return cls(samples, sample_rate)
 
     @classmethod

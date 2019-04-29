@@ -118,18 +118,21 @@ class DataGenerator(object):
         specgram = self._normalizer.apply(specgram)
         return specgram, transcript_part
 
-    def process_utterance_from_bytes(self, bytes, transcript):
+    def process_utterance_from_bytes(self, bytes, transcript, **soundfile_options):
         """Load, augment, featurize and normalize for speech data.
 
         :param audio_file: Bytes read from the file.
         :type audio_file: byte string.
         :param transcript: Transcription text.
         :type transcript: basestring
+        :param soundfile_options: Options for opening with soundfile library.
+        :type soundfile_options: **kwargs
         :return: Tuple of audio feature tensor and data of transcription part,
                  where transcription part could be token ids or text.
         :rtype: tuple of (2darray, list)
         """
-        speech_segment = SpeechSegment.from_bytes(bytes, transcript)
+        speech_segment = SpeechSegment.from_bytes(
+            bytes, transcript, **soundfile_options)
 
         self._augmentation_pipeline.transform_audio(speech_segment)
         specgram, transcript_part = self._speech_featurizer.featurize(
