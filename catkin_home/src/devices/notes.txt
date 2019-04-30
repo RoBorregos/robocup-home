@@ -1,0 +1,2 @@
+roslaunch audio_capture capture.launch
+rosrun devices hearP.py
