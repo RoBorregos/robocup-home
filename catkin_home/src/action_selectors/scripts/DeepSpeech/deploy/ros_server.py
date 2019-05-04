@@ -32,21 +32,22 @@ add_arg('cutoff_top_n',     int,    40,     "Cutoff number for pruning.")
 
 add_arg('use_gpu',          bool,   False,   "Use GPU or not.")
 
+# Note: The paths are relative to the DeepSpeech directory (../).
 add_arg('warmup_manifest',  str,
         'data/librispeech/manifest.test-clean',
         "Filepath of manifest to warm up.")
 add_arg('mean_std_path',    str,
-        'data/librispeech/mean_std.npz',
+        'models/baidu_en8k/mean_std.npz',
         "Filepath of normalizer's mean & std.")
 add_arg('vocab_path',       str,
-        'data/librispeech/eng_vocab.txt',
+        'models/baidu_en8k/eng_vocab.txt',
         "Filepath of vocabulary.")
 add_arg('model_path',       str,
-        './checkpoints/libri/params.latest.tar.gz',
+        'models/baidu_en8k/params.latest.tar.gz',
         "If None, the training starts from scratch, "
         "otherwise, it resumes from the pre-trained model.")
 add_arg('lang_model_path',  str,
-        'lm/data/common_crawl_00.prune01111.trie.klm',
+        'models/lm/lm.binary',
         "Filepath for language model.")
 add_arg('decoding_method',  str,
         'ctc_beam_search',
