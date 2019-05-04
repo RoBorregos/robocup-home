@@ -1,6 +1,8 @@
 """Server-end for the ASR ROS requests."""
 import time
 import random
+from os import path
+import sys
 import argparse
 import functools
 import paddle.v2 as paddle
@@ -150,3 +152,67 @@ class ASRServer:
 
             print("Response Time: %f, Transcript: %s" %
                 (finish_time - start_time, transcript))
+
+
+# Verify that the needed files are downloaded and ready to use.
+error_and_exit = False
+
+if not path.isfile(args.mean_std_path):
+    print("ERROR: The file for 'mean_std' seems to be missing.")
+    print("It should be in " + args.mean_std_path)
+
+    print("To download it go to " +
+        "https://github.com/diegocardozo97/DeepSpeech/releases " +
+        "and select the file called 'speech_model-baidu_en8k.zip', " +
+        "extract it and inside is the needed file.\n")
+
+    error_and_exit = True
+
+if not path.isfile(args.vocab_path):
+    print("ERROR: The file for 'vocabulary' seems to be missing.")
+    print("It should be in " + args.vocab_path)
+
+    print("To download it go to " +
+        "https://github.com/diegocardozo97/DeepSpeech/releases " +
+        "and select the file called 'speech_model-baidu_en8k.zip', " +
+        "extract it and inside is the needed file.\n")
+    
+    error_and_exit = True
+
+if not path.isfile(args.model_path):
+    print("ERROR: The file for 'speech model' seems to be missing.")
+    print("It should be in " + args.model_path)
+
+    print("To download it go to " +
+        "https://github.com/diegocardozo97/DeepSpeech/releases " +
+        "and select the file called 'speech_model-baidu_en8k.zip', " +
+        "extract it and inside is the needed file.\n")
+    
+    error_and_exit = True
+
+if not path.isfile(args.warmup_manifest):
+    print("ERROR: The file for 'warmup_manifest' seems to be missing.")
+    print("It should be in " + args.warmup_manifest)
+
+    print("To download it executes the python script " +
+        "DeepSpeech/data/librispeech/librispeech.py from that " +
+        "directory with the following arguments: " +
+        "--target_dir ./dataset " +
+        "--manifest_prefix manifest " +
+        "--full_download False \n")
+    
+    error_and_exit = True
+
+if not path.isfile(args.lang_model_path):
+    print("ERROR: The file for 'lang_model' seems to be missing.")
+    print("It should be in " + args.lang_model_path)
+
+    print("To download it go to " +
+        "https://github.com/diegocardozo97/DeepSpeech/releases " +
+        "and select the file called 'language_model-mozilla.zip', " +
+        "extract it and inside is the needed file.\n")
+    
+    error_and_exit = True
+
+if error_and_exit:
+    sys.exit()
