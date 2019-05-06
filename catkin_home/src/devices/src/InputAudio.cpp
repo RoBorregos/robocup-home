@@ -96,6 +96,143 @@ void rnnoise_process_new_input(uint16_t frame_values_short[NUMBER_FRAMES_RNNOISE
     static int iterations_without_voice = 0;
     static int num_with_voice_in_without_voice = 0;
 
+
+    
+    float prob_voice;
+    float frame_values_float[NUMBER_FRAMES_RNNOISE];
+
+    convertFromShortArrayToFloatArray(frame_values_short, FRAME_SIZE, frame_values_float);
+
+
+    if (already_in_voice == 2) {
+      prob_voice = rnnoise_process_frame(st, frame_values_float, frame_values_float);
+
+      // Store in the `recording` array in `short` type the new recorded.
+      convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
+      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(short));
+      recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
+
+
+      ++iterations_without_voice;
+
+      // Remove the last history of yes/no-voice record.
+      if (history[history_index] && num_with_voice_in_without_voice > 0) {
+        --num_with_voice_in_without_voice;
+      }
+      
+      if (prob_voice > MIN_PROB_IN_END) {
+        ++num_with_voice_in_without_voice;
+
+        history[history_index] = true;
+        history_index = (history_index + 1) % MAX_END_VOICE_MEM;
+
+        if (num_with_voice_in_without_voice >= NUM_TO_END_VOICE) {
+          // Reset the count because we detect voice.
+          iterations_without_voice = 0;
+
+          // NOTE: See if this should be or not.
+          // num_with_voice_in_without_voice = 0;
+        }
+      } else {
+        history[history_index] = false;
+        history_index = (history_index + 1) % MAX_END_VOICE_MEM;
+      }
+
+
+      if (iterations_without_voice >= MAX_ITERATIONS_WITHOUT_VOICE ||
+          recording_index == start_recording_index) {
+        // The voice never appear again or we reach the limit of frames
+        // recorded, then end the recording and save it in a file.
+
+        already_in_voice = 0;
+
+        // With this is enough to the next time and isnt necessary to
+        // reset the `history`.
+        num_with_voice = 0;
+
+
+        // publish_audio_without_voice(
+        //      recording, RECORDING_BUFFER_SIZE, start_recording_index, recording_index);
+
+
+        if (recording_index == start_recording_index) {
+          // TODO: Maybe knowing this, we can make something to prevent it.
+          printf("--leaving(limit of recording)--\n");
+        } else {
+          printf("--leaving--\n");
+        }
+      }
+
+    } else if (already_in_voice == 1) {
+      prob_voice = rnnoise_process_frame(st, frame_values_float, frame_values_float);
+
+      // Store in the `recording` array in `short` type the new recorded.
+      convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
+      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(short));
+      recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
+
+
+      sum_prob_almost_in_voice += prob_voice;
+
+      if (++iterations_almost_in_voice >= NUM_ITERATIONS_ALMOST_IN_VOICE) {
+        if (sum_prob_almost_in_voice / iterations_almost_in_voice >= MIN_PROB_IN_ALMOST) {
+          already_in_voice = 2;
+          iterations_without_voice = 0;
+
+          num_with_voice_in_without_voice = 0;
+
+          printf("--entering--\n");
+        } else {
+          already_in_voice = 0;
+
+          // With this is enough to the next time and isnt necessary to
+          // reset the `history`.
+          num_with_voice = 0;
+
+          printf("--leav--\n");
+        }
+      }
+
+    } else {
+      // NOTE: Here we can use this to speed up, but we lost the memory for
+      // the other parts of the nn.
+      // prob_voice = rnnoise_process_frame_only_voice_prob(st, x, x);
+      prob_voice = rnnoise_process_frame(st, frame_values_float, frame_values_float);
+
+      if (history[history_index] && num_with_voice > 0) {
+        --num_with_voice;
+      }
+      
+      if (prob_voice > MIN_PROB_IN_INIT) {
+        ++num_with_voice;
+
+        history[history_index] = true;
+        history_index = (history_index + 1) % MAX_INIT_MEM;
+
+        if (num_with_voice >= NUM_TO_INIT_VOICE) {
+          already_in_voice = 1;
+
+          start_recording_index = recording_index - PAST_RECORD_BUFFER_SIZE;
+          if (start_recording_index < 0) {
+            start_recording_index = RECORDING_BUFFER_SIZE + start_recording_index;
+          }
+
+          sum_prob_almost_in_voice = 0;
+          iterations_almost_in_voice = 0;
+
+          printf("--enter--\n");
+        }
+      } else {
+        history[history_index] = false;
+        history_index = (history_index + 1) % MAX_INIT_MEM;
+      }
+
+      // Save this to the recording array.
+      convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
+      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(short));
+      recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
+    }
+
 }
 
 void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
