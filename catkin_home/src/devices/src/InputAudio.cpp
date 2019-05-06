@@ -70,7 +70,10 @@ void RNNoiseWarmUp(DenoiseState *st) {
   fclose(f1);
 }
 
-void rnnoise_process_new_input(uint16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
+/**
+ * Note: The parameter `frame_values_short` will be modified.
+ */
+void RNNoiseProcessNewInput(uint16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
     static uint16_t recording[RECORDING_BUFFER_SIZE];
     // This index already includes the milliseconds of recording of the past.
     static long recording_index = 0;
@@ -246,7 +249,7 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
         (index_buffer_rnnoise + 1) % NUMBER_FRAMES_RNNOISE;
 
     if (index_buffer_rnnoise == 0) {
-        rnnoise_process_new_input(buffer_input_rnnoise);
+        RNNoiseProcessNewInput(buffer_input_rnnoise);
     }
 
 
