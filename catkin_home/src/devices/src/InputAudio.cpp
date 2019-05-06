@@ -82,5 +82,8 @@ int main(int argc, char **argv){
     ros::spin();
 
 
+    rnnoise_destroy(st);
+
+
     return 0;
 }
