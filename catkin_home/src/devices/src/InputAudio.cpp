@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstdlib>
 
 #include <iostream>
 
@@ -15,7 +16,33 @@ using namespace std;
 
 
 #define BUFFER_SIZE 256
-constexpr int NUMBER_FRAMES_RNNOISE = 480L;
+
+constexpr int NUMBER_FRAMES_RNNOISE = 480;
+constexpr long SAMPLE_RATE = 48000L;
+constexpr int MS_FRAME = FRAME_SIZE * 1000L / SAMPLE_RATE;
+
+constexpr int NUMBER_CHUNKS_PAST_RECORDS = 13L
+constexpr long PAST_RECORD_BUFFER_SIZE = NUMBER_CHUNKS_PAST_RECORDS * FRAME_SIZE;
+
+constexpr int SECONDS_ACTUAL_RECORDING = 10;
+constexpr long ACTUAL_RECORDING_BUFFER_SIZE = SECONDS_ACTUAL_RECORDING * SAMPLE_RATE;
+
+constexpr long RECORDING_BUFFER_SIZE = ACTUAL_RECORDING_BUFFER_SIZE + PAST_RECORD_BUFFER_SIZE;
+
+// Constants first part of algorithm.
+constexpr int MAX_INIT_MEM = 4;
+constexpr int NUM_TO_INIT_VOICE = 4;
+constexpr float MIN_PROB_IN_INIT = 0.85;
+
+// Constants second part of algorithm.
+constexpr int NUM_ITERATIONS_ALMOST_IN_VOICE = 300L / MS_FRAME;
+constexpr float MIN_PROB_IN_ALMOST = 0.85;
+
+// Third part of algorithm.
+constexpr int MAX_END_VOICE_MEM = 5;
+constexpr int MAX_ITERATIONS_WITHOUT_VOICE = 900L / MS_FRAME;
+constexpr int NUM_TO_END_VOICE = 4;
+constexpr float MIN_PROB_IN_END = 0.80;
 
 
 ros::Publisher publi;
@@ -43,7 +70,33 @@ void RNNoiseWarmUp(DenoiseState *st) {
   fclose(f1);
 }
 
-void rnnoise_process_new_input(uint16_t new_input[NUMBER_FRAMES_RNNOISE]) {}
+void rnnoise_process_new_input(uint16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
+    static uint16_t recording[RECORDING_BUFFER_SIZE];
+    // This index already includes the milliseconds of recording of the past.
+    static long recording_index = 0;
+    static long start_recording_index = 0;
+
+    
+    static bool history[MAX_INIT_MEM > MAX_END_VOICE_MEM ? MAX_INIT_MEM : MAX_END_VOICE_MEM];
+    //printf("elementsof(history)= %lu\n", sizeof(history) / sizeof(history[0]));
+    static int history_index = 0;
+    
+
+    // Options: 0=looking for voice, 1=confirming voice, 2=in voice.
+    static int already_in_voice = 0;
+
+    // Variables first part algorithm.
+    static int num_with_voice = 0;
+
+    // Variables second part algorithm.
+    static int iterations_almost_in_voice = 0;
+    static float sum_prob_almost_in_voice = 0;
+
+    // Variables third part algorithm.
+    static int iterations_without_voice = 0;
+    static int num_with_voice_in_without_voice = 0;
+
+}
 
 void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
     static uint16_t buffer_input_rnnoise[NUMBER_FRAMES_RNNOISE];
@@ -68,6 +121,11 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
 int main(int argc, char **argv){
     ros::init(argc,argv,"InputAudio");
     
+
+    cout << "NUM_ITERATIONS_ALMOST_IN_VOICE= " << NUM_ITERATIONS_ALMOST_IN_VOICE << endl;
+    cout << "MAX_ITERATIONS_WITHOUT_VOICE= " << MAX_ITERATIONS_WITHOUT_VOICE << endl;
+
+
     st = rnnoise_create();
     RNNoiseWarmUp(st);
     std::cout << "DenoiseState ready.\n";
