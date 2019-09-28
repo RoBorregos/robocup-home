@@ -1,0 +1,8 @@
+intents:
+- greet
+templates:
+  utter_greet:
+  - text: Hey!
+ 
+actions:
+- utter_greet
