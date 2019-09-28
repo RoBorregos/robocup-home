@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 import rospy
-import requests
+#import requests
 from action_selectors.msg import RawInput
 from intercom.msg import action_selector_cmd
 
 '''
 Voz: repetir de vuelta un comando de voz con el formato "Bring [OBJETO] from [LUGAR]."
 Punto Inicial: enmedio de la arena.
-Calificación Base: 5 si entiende el objeto, 5 si entiende el lugar.
-Reto Adicional: entender ambos el objeto y el lugar por medio de utilizar algún esquema de Interacción Humano-Robot donde el robot 
-tiene la iniciativa de la conversación; 2.5 puntos adicionales por la correcta comprensión de ambos.
+Calificacion Base: 5 si entiende el objeto, 5 si entiende el lugar.
+Reto Adicional: entender ambos el objeto y el lugar por medio de utilizar algun esquema de Interaccion Humano-Robot donde el robot 
+tiene la iniciativa de la conversacion; 2.5 puntos adicionales por la correcta comprension de ambos.
 
 El robot comienza en el punto inicial, donde recibe el comando por voz en el formato "Bring [OBJETO] frome [LUGAR]."
-Se puede utilizar otro esquema, pero no se darán puntos adicionales.
+Se puede utilizar otro esquema, pero no se daran puntos adicionales.
 El robot navega al lugar pedido.
 El robot agarra el objeto pedido.
 
@@ -23,6 +23,7 @@ def callRASA(text):
     cmd_priority = 0
     critic_shutdown = 0
     args = [""]
+    #make request to rasa server
     return cmd_id, cmd_priority, critic_shutdown, args
 
 
