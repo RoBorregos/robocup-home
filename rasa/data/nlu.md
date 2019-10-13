@@ -5,7 +5,19 @@
 - Bring the a [banana](object) from the [studio](place) robot
 - Go to the [bedroom](place) and bring me [coffee](object)
 - Bring me the [bottle](object) from the [kitchen](place)
-- Bring me the [pizza](object) from the [kitchen](place)
+- Bring me the [pizza](object) from the [basement](place)
+- Bring me the [soda](object) from the [kitchen](place)
+
+## intent:bye
+- bye
+- Bye
+- Goodbye
+- See you
+- Ok bye
+- Later bitch
+- See ya later alligator
+- Byebye
+- Bay
 
 ## intent:greet
 - Hey
@@ -29,3 +41,6 @@
 
 ## lookup:objects
   data/lookup_tables/objects.txt
+
+## lookup:places
+  data/lookup_tables/places.txt
