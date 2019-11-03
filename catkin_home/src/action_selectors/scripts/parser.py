@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import rospy
-#import requests
+import requests
 from action_selectors.msg import RawInput
 from intercom.msg import action_selector_cmd
+import os
+from time import sleep
 
 '''
 Voz: repetir de vuelta un comando de voz con el formato "Bring [OBJETO] from [LUGAR]."
@@ -18,12 +20,41 @@ El robot agarra el objeto pedido.
 
 
 '''
+debug_option = True
+
+def debug(text):
+    if(debug_option):
+        print(str(text))
+
+def say(text):
+    #Call servicios Speakers
+    print(text)
+    sleep(1)
+
+
 def callRASA(text):
     cmd_id = 0
     cmd_priority = 0
     critic_shutdown = 0
     args = [""]
     #make request to rasa server
+    command = text
+    # make request
+    # evaluate 
+    say("You just said:" + command)
+    data = {"sender": "home",
+            "message": command}
+    response = requests.post("http://localhost:5005/webhooks/rest/webhook", json=data)
+    nlu_response = requests.post("http://localhost:5005/model/parse", json={"text": data["message"]})
+    if(response.status_code == 200 and nlu_response.status_code ==200):   
+        if(len(response.json())>0):
+            for responseData in response.json():
+                debug("BOT SAYS: "  + responseData["text"])
+                nlu_info = nlu_response.json()
+                debug(nlu_info["intent"])
+                debug("Entities: " + str(nlu_info["entities"]))
+    else:
+        debug("Failed response")
     return cmd_id, cmd_priority, critic_shutdown, args
 
 

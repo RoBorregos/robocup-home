@@ -9,6 +9,7 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
     cout<<"I heard "<<endl;
     vector<uint8_t> test;
     test.push_back(1);
+   //Define otro mensaje que va a enviar
     audio_common_msgs::AudioData OutMsg;
     OutMsg.data = msg->data;
     publi.publish(OutMsg);
