@@ -28,3 +28,7 @@
 2019-11-02 19:06:15,814 [INFO ]  Entry Point [tensor2tensor.envs.tic_tac_toe_env:TicTacToeEnv] registered with id [T2TEnv-TicTacToeEnv-v0]
 2019-11-16 15:24:24,294 [INFO ]  Starting Rasa server on http://localhost:5005
 2019-11-16 15:24:33,977 [INFO ]  Entry Point [tensor2tensor.envs.tic_tac_toe_env:TicTacToeEnv] registered with id [T2TEnv-TicTacToeEnv-v0]
+2019-11-16 16:04:47,999 [INFO ]  Starting Rasa server on http://localhost:5005
+2019-11-16 16:04:51,007 [INFO ]  Entry Point [tensor2tensor.envs.tic_tac_toe_env:TicTacToeEnv] registered with id [T2TEnv-TicTacToeEnv-v0]
+2019-11-16 18:27:39,368 [INFO ]  Starting Rasa server on http://localhost:5005
+2019-11-16 18:27:42,438 [INFO ]  Entry Point [tensor2tensor.envs.tic_tac_toe_env:TicTacToeEnv] registered with id [T2TEnv-TicTacToeEnv-v0]

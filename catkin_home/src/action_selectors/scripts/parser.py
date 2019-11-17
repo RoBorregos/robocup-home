@@ -3,6 +3,7 @@ import rospy
 import requests
 from action_selectors.msg import RawInput
 from intercom.msg import action_selector_cmd
+from intercom.msg import response
 import os
 from time import sleep
 
@@ -32,28 +33,34 @@ def say(text):
     sleep(1)
 
 
-def callRASA(text):
+def callRASA(text, pub_resp):
+    global response
     cmd_id = 0
     cmd_priority = 0
     critic_shutdown = 0
     args = [""]
     #make request to rasa server
     command = text
-    # make request
+    # instantiate response msg object
+    response_to_publish = response()
     # evaluate 
     say("You just said:" + command)
     data = {"sender": "home",
             "message": command}
-    response = requests.post("http://localhost:5005/webhooks/rest/webhook", json=data)
+    responseHTTP = requests.post("http://localhost:5005/webhooks/rest/webhook", json=data)
     nlu_response = requests.post("http://localhost:5005/model/parse", json={"text": data["message"]})
-    if(response.status_code == 200 and nlu_response.status_code ==200):   
-        if(len(response.json())>0):
-            for responseData in response.json():
+    if(responseHTTP.status_code == 200 and nlu_response.status_code ==200):   
+        if(len(responseHTTP.json())>0):
+            for responseData in responseHTTP.json():
                 debug("BOT SAYS: "  + responseData["text"])
+                response_to_publish.text = responseData["text"]
+                pub_resp.publish(response_to_publish)
                 nlu_info = nlu_response.json()
                 debug(nlu_info["intent"])
                 debug("Entities: " + str(nlu_info["entities"]))
     else:
+        response_to_publish.text = "Cant connect to RASA server"
+        pub_resp.publish(response_to_publish)
         debug("Failed response")
     return cmd_id, cmd_priority, critic_shutdown, args
 
@@ -64,9 +71,11 @@ def callback(msg):
     #open list of actions
     #call parser
     #send message to engine 
+    pub_resp = rospy.Publisher('BotResponse', response, queue_size=10)
     pub = rospy.Publisher('action_selector_cmds', action_selector_cmd, queue_size=10)
+   
     #Here the parsing is done
-    cmd_id, cmd_priority, critic_shutdown, args = callRASA(msg.inputText)
+    cmd_id, cmd_priority, critic_shutdown, args = callRASA(msg.inputText, pub_resp)
 
 
 
@@ -78,6 +87,7 @@ def callback(msg):
     action_code.args = args
     rospy.loginfo(action_code)
     pub.publish(action_code)
+    
 
 def listener():
 
