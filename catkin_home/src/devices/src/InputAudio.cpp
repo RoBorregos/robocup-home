@@ -1,4 +1,6 @@
 /**
+ * NOTE: This file needs work to be fully compatible with `AudioData`.
+ *
  * TODO: Fix names to include `int16_t` instead of `short`.
  */
 #include <cstdio>
