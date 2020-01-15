@@ -1,3 +1,6 @@
+/**
+ * TODO: Fix names to include `int16_t` instead of `short`.
+ */
 #include <cstdio>
 #include <cstdlib>
 
@@ -58,8 +61,8 @@ void RNNoiseWarmUp(DenoiseState *st) {
   f1 = fopen("./warmup_street_20dB.raw", "r");
 
   while (true) {
-    short tmp[NUMBER_FRAMES_RNNOISE];
-    fread(tmp, sizeof(short), NUMBER_FRAMES_RNNOISE, f1);
+    int16_t tmp[NUMBER_FRAMES_RNNOISE];
+    fread(tmp, sizeof(int16_t), NUMBER_FRAMES_RNNOISE, f1);
     if (feof(f1)) break;
 
     convertFromShortArrayToFloatArray(tmp, NUMBER_FRAMES_RNNOISE, x);
@@ -112,7 +115,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 
       // Store in the `recording` array in `short` type the new recorded.
       convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
-      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(short));
+      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(int16_t));
       recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
 
 
@@ -171,7 +174,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 
       // Store in the `recording` array in `short` type the new recorded.
       convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
-      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(short));
+      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(int16_t));
       recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
 
 
@@ -232,7 +235,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 
       // Save this to the recording array.
       convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
-      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(short));
+      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(int16_t));
       recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
     }
 
