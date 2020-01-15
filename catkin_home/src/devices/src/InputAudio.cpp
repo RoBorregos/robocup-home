@@ -3,6 +3,7 @@
  */
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 #include <iostream>
 
@@ -24,7 +25,7 @@ constexpr int NUMBER_FRAMES_RNNOISE = 480;
 constexpr long SAMPLE_RATE = 48000L;
 constexpr int MS_IN_A_CHUNK = (NUMBER_FRAMES_RNNOISE * 1000L) / SAMPLE_RATE;
 
-constexpr int NUMBER_CHUNKS_PAST_RECORDS = 13L
+constexpr int NUMBER_CHUNKS_PAST_RECORDS = 13L;
 constexpr long PAST_RECORD_BUFFER_SIZE = NUMBER_CHUNKS_PAST_RECORDS * NUMBER_FRAMES_RNNOISE;
 
 constexpr int SECONDS_ACTUAL_RECORDING = 10;
