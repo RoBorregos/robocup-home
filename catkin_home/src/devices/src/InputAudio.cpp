@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include <iostream>
+#include <vector>
 
 #include "ros/ros.h"
 #include "audio_common_msgs/AudioData.h"
@@ -76,6 +77,40 @@ void RNNoiseWarmUp(DenoiseState *st) {
   }
   
   fclose(f1);
+}
+
+/*
+ * The `begin_index_element` is inclusive and the `end_index_element` is exclusive.
+ * `recording` is not modified.
+ */
+void PublishAudioWithoutNoise(int16_t recording[RECORDING_BUFFER_SIZE],
+  const long begin_index_element, const long end_index_element) {
+  vector<uint8_t> output_vector;
+
+  if (begin_index_element < end_index_element ) {
+    // The recording doesn't go circular.
+    output_vector.assign(
+      (uint8_t*)(recording + begin_index_element),
+      (uint8_t*)(recording + end_index_element));
+  } else {
+    // The recoding goes circular and we have to save it in two steps.
+    const long length_int8_elements = 
+      (RECORDING_BUFFER_SIZE - begin_index_element + end_index_element) 
+      * sizeof(int16_t);
+    output_vector.reserve(length_int8_elements);
+
+    output_vector.insert(output_vector.end(),
+      (uint8_t*)(recording + begin_index_element),
+      (uint8_t*)(recording + RECORDING_BUFFER_SIZE));
+    output_vector.insert(output_vector.end(), 
+      (uint8_t*)recording,
+      (uint8_t*)(recording + end_index_element));
+  }
+
+  audio_common_msgs::AudioData msg_audio;
+  msg_audio.data = output_vector;
+
+  publi.publish(msg_audio);
 }
 
 /**
@@ -156,15 +191,11 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
         // recorded, then end the recording and save it in a file.
 
         already_in_voice = 0;
-
         // With this is enough to the next time and isnt necessary to
         // reset the `history`.
         num_with_voice = 0;
 
-
-        // publish_audio_without_voice(
-        //      recording, RECORDING_BUFFER_SIZE, start_recording_index, recording_index);
-
+        PublishAudioWithoutNoise(recording, start_recording_index, recording_index);
 
         if (recording_index == start_recording_index) {
           // TODO: Maybe knowing this, we can make something to prevent it.
