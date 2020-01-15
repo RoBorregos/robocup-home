@@ -22,10 +22,10 @@ using namespace std;
 
 constexpr int NUMBER_FRAMES_RNNOISE = 480;
 constexpr long SAMPLE_RATE = 48000L;
-constexpr int MS_FRAME = FRAME_SIZE * 1000L / SAMPLE_RATE;
+constexpr int MS_IN_A_CHUNK = (NUMBER_FRAMES_RNNOISE * 1000L) / SAMPLE_RATE;
 
 constexpr int NUMBER_CHUNKS_PAST_RECORDS = 13L
-constexpr long PAST_RECORD_BUFFER_SIZE = NUMBER_CHUNKS_PAST_RECORDS * FRAME_SIZE;
+constexpr long PAST_RECORD_BUFFER_SIZE = NUMBER_CHUNKS_PAST_RECORDS * NUMBER_FRAMES_RNNOISE;
 
 constexpr int SECONDS_ACTUAL_RECORDING = 10;
 constexpr long ACTUAL_RECORDING_BUFFER_SIZE = SECONDS_ACTUAL_RECORDING * SAMPLE_RATE;
@@ -38,12 +38,12 @@ constexpr int NUM_TO_INIT_VOICE = 4;
 constexpr float MIN_PROB_IN_INIT = 0.85;
 
 // Constants second part of algorithm.
-constexpr int NUM_ITERATIONS_ALMOST_IN_VOICE = 300L / MS_FRAME;
+constexpr int NUM_ITERATIONS_ALMOST_IN_VOICE = 300L / MS_IN_A_CHUNK;
 constexpr float MIN_PROB_IN_ALMOST = 0.85;
 
 // Third part of algorithm.
 constexpr int MAX_END_VOICE_MEM = 5;
-constexpr int MAX_ITERATIONS_WITHOUT_VOICE = 900L / MS_FRAME;
+constexpr int MAX_ITERATIONS_WITHOUT_VOICE = 900L / MS_IN_A_CHUNK;
 constexpr int NUM_TO_END_VOICE = 4;
 constexpr float MIN_PROB_IN_END = 0.80;
 
@@ -107,16 +107,16 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
     float prob_voice;
     float frame_values_float[NUMBER_FRAMES_RNNOISE];
 
-    convertFromShortArrayToFloatArray(frame_values_short, FRAME_SIZE, frame_values_float);
+    convertFromShortArrayToFloatArray(frame_values_short, NUMBER_FRAMES_RNNOISE, frame_values_float);
 
 
     if (already_in_voice == 2) {
       prob_voice = rnnoise_process_frame(st, frame_values_float, frame_values_float);
 
       // Store in the `recording` array in `short` type the new recorded.
-      convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
-      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(int16_t));
-      recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
+      convertFromFloatArrayToShortArray(frame_values_float, NUMBER_FRAMES_RNNOISE, frame_values_short);
+      memcpy(&(recording[recording_index]), frame_values_short, NUMBER_FRAMES_RNNOISE * sizeof(int16_t));
+      recording_index = (recording_index + NUMBER_FRAMES_RNNOISE) % RECORDING_BUFFER_SIZE;
 
 
       ++iterations_without_voice;
@@ -173,9 +173,9 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
       prob_voice = rnnoise_process_frame(st, frame_values_float, frame_values_float);
 
       // Store in the `recording` array in `short` type the new recorded.
-      convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
-      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(int16_t));
-      recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
+      convertFromFloatArrayToShortArray(frame_values_float, NUMBER_FRAMES_RNNOISE, frame_values_short);
+      memcpy(&(recording[recording_index]), frame_values_short, NUMBER_FRAMES_RNNOISE * sizeof(int16_t));
+      recording_index = (recording_index + NUMBER_FRAMES_RNNOISE) % RECORDING_BUFFER_SIZE;
 
 
       sum_prob_almost_in_voice += prob_voice;
@@ -234,9 +234,9 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
       }
 
       // Save this to the recording array.
-      convertFromFloatArrayToShortArray(frame_values_float, FRAME_SIZE, frame_values_short);
-      memcpy(&(recording[recording_index]), frame_values_short, FRAME_SIZE * sizeof(int16_t));
-      recording_index = (recording_index + FRAME_SIZE) % RECORDING_BUFFER_SIZE;
+      convertFromFloatArrayToShortArray(frame_values_float, NUMBER_FRAMES_RNNOISE, frame_values_short);
+      memcpy(&(recording[recording_index]), frame_values_short, NUMBER_FRAMES_RNNOISE * sizeof(int16_t));
+      recording_index = (recording_index + NUMBER_FRAMES_RNNOISE) % RECORDING_BUFFER_SIZE;
     }
 
 }
