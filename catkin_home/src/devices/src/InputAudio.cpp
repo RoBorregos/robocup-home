@@ -48,6 +48,8 @@ constexpr int MAX_ITERATIONS_WITHOUT_VOICE = 900L / MS_IN_A_CHUNK;
 constexpr int NUM_TO_END_VOICE = 4;
 constexpr float MIN_PROB_IN_END = 0.80;
 
+constexpr int HISTORY_SIZE = MAX_INIT_MEM > MAX_END_VOICE_MEM ? MAX_INIT_MEM : MAX_END_VOICE_MEM;
+
 
 ros::Publisher publi;
 
@@ -84,7 +86,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
     static long start_recording_index = 0;
 
     
-    static bool history[MAX_INIT_MEM > MAX_END_VOICE_MEM ? MAX_INIT_MEM : MAX_END_VOICE_MEM];
+    static bool history[HISTORY_SIZE];
     //printf("elementsof(history)= %lu\n", sizeof(history) / sizeof(history[0]));
     static int history_index = 0;
     
