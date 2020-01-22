@@ -1,8 +1,9 @@
+# TODO: Review why we are using this old version of CMake.
 cmake_minimum_required(VERSION 2.8.3)
 project(devices)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -203,4 +204,7 @@ include_directories(
 
 add_executable(InputAudio src/InputAudio.cpp)
 target_link_libraries(InputAudio ${catkin_LIBRARIES})
+# TODO: These dependecies seem to be not needed, now they generate a warning
+# and, in later cmake versions, an error...
 add_dependencies(InputAudio audio_common_msgs message_generation)
+
