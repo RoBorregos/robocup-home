@@ -110,6 +110,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 # TODO: Remove `audio_capture` and include the dependencies of RNNoise.
+# https://answers.ros.org/question/261002/catkin_packagecatkin_depends-vs-find_packagecatkin-required-components/
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES devices
@@ -164,6 +165,7 @@ include_directories(
 # It is directly downloaded from https://github.com/xiph/rnnoise and built as its
 # README says. For this, linux is assumed, also that configure, make, and ar are 
 # installed.
+# https://mirkokiefer.com/cmake-by-example-f95eb47d45b1
 
 # TODO: Because we are using this to only download the file and uncompress it,
 # maybe try to use another simpler macro.
