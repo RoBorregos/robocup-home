@@ -1,6 +1,4 @@
 /**
- * NOTE: This file needs work to be fully compatible with `AudioData`.
- *
  * TODO: Fix names to include `int16_t` instead of `short`.
  */
 #include <cstdio>
@@ -114,9 +112,9 @@ void PublishAudioWithoutNoise(int16_t recording[RECORDING_BUFFER_SIZE],
 }
 
 /**
- * Note: The parameter `frame_values_short` will be modified.
+ * @param {const int16_t*} input_frames An array with `NUMBER_FRAMES_RNNOISE` elements.
  */
-void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
+void RNNoiseProcessNewInput(const int16_t* input_frames) {
     static int16_t recording[RECORDING_BUFFER_SIZE];
     // This index already includes the milliseconds of recording of the past.
     static long recording_index = 0;
@@ -145,9 +143,11 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 
     
     float prob_voice;
+    int16_t frame_values_short[NUMBER_FRAMES_RNNOISE];
     float frame_values_float[NUMBER_FRAMES_RNNOISE];
 
-    convertFromShortArrayToFloatArray(frame_values_short, NUMBER_FRAMES_RNNOISE, frame_values_float);
+    // Copy the input frames to a float array.
+    convertFromShortArrayToFloatArray(input_frames, NUMBER_FRAMES_RNNOISE, frame_values_float);
 
 
     if (already_in_voice == 2) {
@@ -278,22 +278,13 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 }
 
 void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
-    static int16_t buffer_input_rnnoise[NUMBER_FRAMES_RNNOISE];
-    static int index_buffer_rnnoise = 0;
-
-    // TODO: Fix this conversion.
-    buffer_input_rnnoise[index_buffer_rnnoise] = ((int16_t*)msg->data)[0];    
-
-    index_buffer_rnnoise = 
-        (index_buffer_rnnoise + 1) % NUMBER_FRAMES_RNNOISE;
-
-    if (index_buffer_rnnoise == 0) {
-        RNNoiseProcessNewInput(buffer_input_rnnoise);
-    }
-
-
-    ros::Rate loop_rate(10);
-    loop_rate.sleep();
+  // After checking the correct number of elements in the msg, cast in the easier
+  // way the uint8_t to int16_t array using the underlaying array of the vector.
+  if (msg->data.size() == NUMBER_FRAMES_RNNOISE * (sizeof(int16_t) / sizeof(uint8_t))) {
+    RNNoiseProcessNewInput((int16_t*)msg->data.data());
+  } else {
+    ROS_INFO("Error in the number of frames received: %zu.", msg->data.size());
+  }
 }
 
 
