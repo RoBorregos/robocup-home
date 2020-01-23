@@ -1,5 +1,4 @@
 <launch>
-<node pkg="audio_capture" type="audio_capture" name="audio_captureNode" />
 <node pkg="devices" type="hearP.py" name="Hear"/>
 <node pkg="devices" type="InputAudio" name="preFilterHear"/>
 </launch>

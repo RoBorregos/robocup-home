@@ -12,7 +12,6 @@ add_compile_options(-std=c++11)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  audio_capture
   roscpp
   rospy
   audio_common_msgs
@@ -109,12 +108,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-# TODO: Remove `audio_capture` and include the dependencies of RNNoise.
+# TODO: Include the dependencies of RNNoise.
 # https://answers.ros.org/question/261002/catkin_packagecatkin_depends-vs-find_packagecatkin-required-components/
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES devices
-   CATKIN_DEPENDS audio_capture roscpp rospy message_runtime audio_common_msgs
+   CATKIN_DEPENDS roscpp rospy message_runtime audio_common_msgs
 #  DEPENDS system_lib
 )
 
