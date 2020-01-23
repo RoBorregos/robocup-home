@@ -22,7 +22,7 @@ extern "C" {
 using namespace std;
 
 
-#define BUFFER_SIZE 256
+constexpr int ADVERTISE_BUFFER_SIZE = 10;
 
 constexpr int NUMBER_FRAMES_RNNOISE = 480;
 constexpr long SAMPLE_RATE = 48000L;
@@ -124,7 +124,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 
     
     static bool history[HISTORY_SIZE];
-    //printf("elementsof(history)= %lu\n", sizeof(history) / sizeof(history[0]));
+    //ROS_INFO("elementsof(history)= %lu\n", sizeof(history) / sizeof(history[0]));
     static int history_index = 0;
     
 
@@ -199,9 +199,9 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 
         if (recording_index == start_recording_index) {
           // TODO: Maybe knowing this, we can make something to prevent it.
-          printf("--leaving(limit of recording)--\n");
+          ROS_INFO("--leaving(limit of recording)--\n");
         } else {
-          printf("--leaving--\n");
+          ROS_INFO("--leaving--\n");
         }
       }
 
@@ -223,7 +223,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 
           num_with_voice_in_without_voice = 0;
 
-          printf("--entering--\n");
+          ROS_INFO("--entering--\n");
         } else {
           already_in_voice = 0;
 
@@ -231,7 +231,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
           // reset the `history`.
           num_with_voice = 0;
 
-          printf("--leav--\n");
+          ROS_INFO("--leav--\n");
         }
       }
 
@@ -262,7 +262,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
           sum_prob_almost_in_voice = 0;
           iterations_almost_in_voice = 0;
 
-          printf("--enter--\n");
+          ROS_INFO("--enter--\n");
         }
       } else {
         history[history_index] = false;
@@ -298,29 +298,29 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
 
 
 int main(int argc, char **argv){
-    ros::init(argc,argv,"InputAudio");
-    
+    ros::init(argc, argv, "InputAudio");
+    ros::NodeHandle n;
+
 
     cout << "NUM_ITERATIONS_ALMOST_IN_VOICE= " << NUM_ITERATIONS_ALMOST_IN_VOICE << endl;
     cout << "MAX_ITERATIONS_WITHOUT_VOICE= " << MAX_ITERATIONS_WITHOUT_VOICE << endl;
 
 
-    st = rnnoise_create();
-    RNNoiseWarmUp(st);
-    std::cout << "DenoiseState ready.\n";
+    st = rnnoise_create(nullptr);
+    // TODO: Fix the runtime dependencies to be able to read the file when run.
+    // RNNoiseWarmUp(st);
+    ROS_INFO("RNNoise ready.\n");
 
     
-    ros::NodeHandle n;
-    publi = n.advertise<audio_common_msgs::AudioData>("UsefulAudio", BUFFER_SIZE);
+    publi = n.advertise<audio_common_msgs::AudioData>("UsefulAudio", ADVERTISE_BUFFER_SIZE);
     
-    ros::Subscriber sub = n.subscribe("audio", 1000, onAudioCallback);
-    
+    ros::Subscriber sub = n.subscribe("rawAudioChunk", 5, onAudioCallback);
     
     ros::spin();
 
 
     rnnoise_destroy(st);
-
+    ROS_INFO("RNNoise destroyed, leaving...\n");
 
     return 0;
 }
