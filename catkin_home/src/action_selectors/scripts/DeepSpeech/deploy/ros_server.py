@@ -42,10 +42,10 @@ add_arg('mean_std_path',    str,
         'models/baidu_en8k/mean_std.npz',
         "Filepath of normalizer's mean & std.")
 add_arg('vocab_path',       str,
-        'models/baidu_en8k/eng_vocab.txt',
+        'models/baidu_en8k/vocab.txt',
         "Filepath of vocabulary.")
 add_arg('model_path',       str,
-        'models/baidu_en8k/params.latest.tar.gz',
+        'models/baidu_en8k/params.tar.gz',
         "If None, the training starts from scratch, "
         "otherwise, it resumes from the pre-trained model.")
 add_arg('lang_model_path',  str,
@@ -158,7 +158,7 @@ class ASRServer:
 error_and_exit = False
 
 if not path.isfile(args.mean_std_path):
-    print("ERROR: The file for 'mean_std' seems to be missing.")
+    print("ERROR[DeepSpeech]: The file for 'mean_std' seems to be missing.")
     print("It should be in " + args.mean_std_path)
 
     print("To download it go to " +
@@ -169,7 +169,7 @@ if not path.isfile(args.mean_std_path):
     error_and_exit = True
 
 if not path.isfile(args.vocab_path):
-    print("ERROR: The file for 'vocabulary' seems to be missing.")
+    print("ERROR[DeepSpeech]: The file for 'vocabulary' seems to be missing.")
     print("It should be in " + args.vocab_path)
 
     print("To download it go to " +
@@ -180,7 +180,7 @@ if not path.isfile(args.vocab_path):
     error_and_exit = True
 
 if not path.isfile(args.model_path):
-    print("ERROR: The file for 'speech model' seems to be missing.")
+    print("ERROR[DeepSpeech]: The file for 'speech model' seems to be missing.")
     print("It should be in " + args.model_path)
 
     print("To download it go to " +
@@ -191,20 +191,18 @@ if not path.isfile(args.model_path):
     error_and_exit = True
 
 if not path.isfile(args.warmup_manifest):
-    print("ERROR: The file for 'warmup_manifest' seems to be missing.")
+    print("ERROR[DeepSpeech]: The file for 'warmup_manifest' seems to be missing.")
     print("It should be in " + args.warmup_manifest)
 
     print("To download it executes the python script " +
-        "DeepSpeech/data/librispeech/librispeech.py from that " +
-        "directory with the following arguments: " +
-        "--target_dir ./dataset " +
-        "--manifest_prefix manifest " +
-        "--full_download False \n")
+        "DeepSpeech/data/librispeech/librispeech.py in the DeepSpeech folder in following way: " +
+        "python2 -m data.librispeech.librispeech --full_download False --manifest_prefix \"data/librispeech/manifest\" " +
+        "\n")
     
     error_and_exit = True
 
 if not path.isfile(args.lang_model_path):
-    print("ERROR: The file for 'lang_model' seems to be missing.")
+    print("ERROR[DeepSpeech]: The file for 'lang_model' seems to be missing.")
     print("It should be in " + args.lang_model_path)
 
     print("To download it go to " +
