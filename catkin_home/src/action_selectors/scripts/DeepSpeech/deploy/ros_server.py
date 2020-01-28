@@ -6,6 +6,8 @@ import sys
 import argparse
 import functools
 import paddle.v2 as paddle
+# TODO: Check if rospy should also be imported.
+import rospkg
 import _init_paths
 from data_utils.data import DataGenerator
 from model_utils.model import DeepSpeech2Model
@@ -34,22 +36,26 @@ add_arg('cutoff_top_n',     int,    40,     "Cutoff number for pruning.")
 
 add_arg('use_gpu',          bool,   False,   "Use GPU or not.")
 
-# Note: The paths are relative to the DeepSpeech directory (../).
+# https://stackoverflow.com/questions/3430372/how-do-i-get-the-full-path-of-the-current-files-directory
+# deepspeech_home_path = path.join(path.dirname(path.abspath(__file__)), "../")
+rp = rospkg.RosPack()
+# https://answers.ros.org/question/236116/how-do-i-access-files-in-same-directory-as-executable-python-catkin/
+deepspeech_home_path = path.join(rp.get_path("action_selectors"), "scripts", "DeepSpeech")
 add_arg('warmup_manifest',  str,
-        'data/librispeech/manifest.test-clean',
+        path.join(deepspeech_home_path, 'data/librispeech/manifest.test-clean'),
         "Filepath of manifest to warm up.")
 add_arg('mean_std_path',    str,
-        'models/baidu_en8k/mean_std.npz',
+        path.join(deepspeech_home_path, 'models/baidu_en8k/mean_std.npz'),
         "Filepath of normalizer's mean & std.")
 add_arg('vocab_path',       str,
-        'models/baidu_en8k/vocab.txt',
+        path.join(deepspeech_home_path, 'models/baidu_en8k/vocab.txt'),
         "Filepath of vocabulary.")
 add_arg('model_path',       str,
-        'models/baidu_en8k/params.tar.gz',
+        path.join(deepspeech_home_path, 'models/baidu_en8k/params.tar.gz'),
         "If None, the training starts from scratch, "
         "otherwise, it resumes from the pre-trained model.")
 add_arg('lang_model_path',  str,
-        'models/lm/lm.binary',
+        path.join(deepspeech_home_path, 'models/lm/lm.binary'),
         "Filepath for language model.")
 add_arg('decoding_method',  str,
         'ctc_beam_search',
