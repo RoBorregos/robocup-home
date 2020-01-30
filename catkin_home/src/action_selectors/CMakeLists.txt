@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  audio_common_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -50,8 +51,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
    FILES
-    RawInput.msg
- )
+   RawInput.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -71,6 +72,7 @@ add_message_files(
 generate_messages(
    DEPENDENCIES
    std_msgs
+   audio_common_msgs
    intercom
 )
 
@@ -106,7 +108,7 @@ generate_messages(
 catkin_package(
  # INCLUDE_DIRS include
   #LIBRARIES action_selectors
-  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs intercom
+  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs audio_common_msgs intercom
   #DEPENDS system_lib
 )
 
