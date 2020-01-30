@@ -2,7 +2,7 @@
 This script changes the image resolution of a bunch of images inside a given folder
 
 E.g. 
->>> python transform_image_resolution.py -d images/ -s 800 600
+>>> python transform_image_resolution.py -d ../images/ -s 800 600
 """
 
 from PIL import Image
