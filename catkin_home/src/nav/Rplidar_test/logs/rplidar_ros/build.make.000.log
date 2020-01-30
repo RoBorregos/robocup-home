@@ -1,0 +1,16 @@
+[35m[1mScanning dependencies of target rplidarNode[0m
+[35m[1mScanning dependencies of target rplidarNodeClient[0m
+[ 11%] [32mBuilding CXX object CMakeFiles/rplidarNodeClient.dir/src/client.cpp.o[0m
+[ 22%] [32mBuilding CXX object CMakeFiles/rplidarNode.dir/sdk/src/arch/linux/net_socket.cpp.o[0m
+[ 33%] [32mBuilding CXX object CMakeFiles/rplidarNode.dir/src/node.cpp.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/rplidarNode.dir/sdk/src/arch/linux/net_serial.cpp.o[0m
+[ 55%] [32mBuilding CXX object CMakeFiles/rplidarNode.dir/sdk/src/arch/linux/timer.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/rplidarNode.dir/sdk/src/hal/thread.cpp.o[0m
+[01m[K/home/pev/Documents/Rplidar_test/src/rplidar_ros/src/node.cpp:212:14:[m[K [01;35m[Kwarning: [m[Kinvalid suffix on literal; C++11 requires a space between literal and string macro [[01;35m[K-Wliteral-suffix[m[K]
+     ROS_INFO([01;35m[K"[m[KRPLIDAR running on ROS package rplidar_ros. SDK Version:"RPLIDAR_SDK_VERSION"");
+              [01;35m[K^[m[K
+[ 77%] [32mBuilding CXX object CMakeFiles/rplidarNode.dir/sdk/src/rplidar_driver.cpp.o[0m
+[100%] [32m[1mLinking CXX executable /home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/lib/rplidar_ros/rplidarNodeClient[0m
+[100%] [32m[1mLinking CXX executable /home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/lib/rplidar_ros/rplidarNode[0m
+[100%] Built target rplidarNodeClient
+[100%] Built target rplidarNode

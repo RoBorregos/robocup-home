@@ -1,0 +1,6 @@
+devel_space: /home/pev/Documents/Rplidar_test/devel
+install: false
+install_space: /home/pev/Documents/Rplidar_test/install
+profile: default
+source_space: /home/pev/Documents/Rplidar_test/src
+workspace: /home/pev/Documents/Rplidar_test
