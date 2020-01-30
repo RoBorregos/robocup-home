@@ -18,6 +18,10 @@ This repository contains the development of RoBorregos robotic's solution for Ro
 >#### Diego Alejandro Cardozo Campos
 >Creation flow for processing speech in real-time. A python node that captures the audio and publishes it to a topic. A C++ node takes the chunks of audio, checks for a voice, removes the noise and publishes it to a topic. Finally, another Python node that takes the voice audio, converts to text and publishes it.
 
+>#### José Alfonso Cisneros Morales
+>Created a program to efficiently obtain audio samples from diverse gender/age pronunciations for the dataset, focusing on the phrases and vocabulary of the competition, as well as training the Tensorflow Speech Model.
+>[Audio dataset obtainer](bit.ly/home-dataset)
+
 ### Natural language processing
 >#### Paul Enrique Vazquez Badillo
 >Building of command parsing unit using the RASA stack for python 3.5 as an external API outside the ROS project. The action-selectors package calls the API with the text to process. The response generated contains the user_intent, the entities identified in the text, and the appropriate response from the bot to the user.
