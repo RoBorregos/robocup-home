@@ -13,6 +13,9 @@ This repository contains the development of RoBorregos robotic's solution for Ro
 >#### Carlos Amín Méndez Cáceres
 >Solidwork design of the base and manufacturing of structures.
 
+>#### Aldo Jesus Samaniego Silva
+>CAD and mechanical structure manufacturing.
+
 
 ### Speech recognition
 >#### Diego Alejandro Cardozo Campos
@@ -20,6 +23,7 @@ This repository contains the development of RoBorregos robotic's solution for Ro
 
 >#### José Alfonso Cisneros Morales
 >Created a program to efficiently obtain audio samples from diverse gender/age pronunciations for the dataset, focusing on the phrases and vocabulary of the competition, as well as training the Tensorflow Speech Model.
+
 >[Audio dataset obtainer](bit.ly/home-dataset)
 
 ### Natural language processing
