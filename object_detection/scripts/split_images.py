@@ -4,6 +4,7 @@ This script splits the images into test/train folders given the image percentage
 E.g. 
 >>> python split_images.py -d ../images/complete_dataset -o ../images --train 80
 """
+
 import os
 import shutil
 
