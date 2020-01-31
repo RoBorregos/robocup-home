@@ -35,6 +35,9 @@ This repository contains the development of RoBorregos robotic's solution for Ro
 >#### Salvador Alexis Virgen Flores
 >Detection of objects using Tensorflow.
 
+>#### Salvador Alexis Virgen Flores
+>Detection of objects position in 3D that will the targets of the Robot Arm.
+
 ### Navigation
 
 >#### Clara Gutiérrez Jaime
