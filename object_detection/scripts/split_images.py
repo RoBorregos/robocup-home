@@ -2,7 +2,7 @@
 This script splits the images into test/train folders given the image percentage of each folder.
 
 E.g. 
->>> python transform_image_resolution.py -d ../images/ -s 800 600
+>>> python split_images.py -d ../images/complete_dataset -o ../images --train 80
 """
 import os
 import shutil
