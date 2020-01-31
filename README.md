@@ -18,13 +18,15 @@ This repository contains the development of RoBorregos robotic's solution for Ro
 
 
 ### Speech recognition
->#### Diego Alejandro Cardozo Campos
+>#### Diego Cardozo
 >Creation flow for processing speech in real-time. A python node that captures the audio and publishes it to a topic. A C++ node takes the chunks of audio, checks for a voice, removes the noise and publishes it to a topic. Finally, another Python node that takes the voice audio, converts to text and publishes it.
 
 >#### José Alfonso Cisneros Morales
 >Created a program to efficiently obtain audio samples from diverse gender/age pronunciations for the dataset, focusing on the phrases and vocabulary of the competition, as well as training the Tensorflow Speech Model.
 
->[Audio dataset obtainer](bit.ly/home-dataset)
+>[Audio dataset obtainer](https://bit.ly/home-dataset)
+
+For more information about the Speech part, check the [wiki](https://github.com/RoBorregos/Robocup-Home/wiki/Speech)!
 
 ### Natural language processing
 >#### Paul Enrique Vazquez Badillo
