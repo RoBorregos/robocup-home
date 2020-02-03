@@ -22,7 +22,9 @@ El robot agarra el objeto pedido.
 
 '''
 debug_option = True
-
+#Im sorry but i gues this is better than creating the publisher in each callback.
+pub = None
+pub_resp = None
 def debug(text):
     if(debug_option):
         print(str(text))
@@ -67,12 +69,12 @@ def callRASA(text, pub_resp):
 
 def callback(msg):
     rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.inputText)
-
+    global pub
+    global pub_resp
     #open list of actions
     #call parser
     #send message to engine 
-    pub_resp = rospy.Publisher('BotResponse', response, queue_size=10)
-    pub = rospy.Publisher('action_selector_cmds', action_selector_cmd, queue_size=10)
+    
    
     #Here the parsing is done
     cmd_id, cmd_priority, critic_shutdown, args = callRASA(msg.inputText, pub_resp)
@@ -89,19 +91,24 @@ def callback(msg):
     pub.publish(action_code)
     
 
-def listener():
+def main():
 
     # In ROS, nodes are uniquely named. If two nodes with the same
     # name are launched, the previous one is kicked off. The
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
+
+    global pub
+    global pub_resp
     rospy.init_node('parser', anonymous=True)
 
     rospy.Subscriber("RawInput", RawInput, callback)
+    pub_resp = rospy.Publisher('BotResponse', response, queue_size=10)
+    pub = rospy.Publisher('action_selector_cmds', action_selector_cmd, queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
 
 if __name__ == '__main__':
-    listener()
+    main()
