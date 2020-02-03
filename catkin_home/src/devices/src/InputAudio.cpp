@@ -278,6 +278,7 @@ void RNNoiseProcessNewInput(int16_t frame_values_short[NUMBER_FRAMES_RNNOISE]) {
 }
 
 void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
+
     static int16_t buffer_input_rnnoise[NUMBER_FRAMES_RNNOISE];
     static int index_buffer_rnnoise = 0;
 
@@ -290,7 +291,6 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
     if (index_buffer_rnnoise == 0) {
         RNNoiseProcessNewInput(buffer_input_rnnoise);
     }
-
 
     ros::Rate loop_rate(10);
     loop_rate.sleep();
