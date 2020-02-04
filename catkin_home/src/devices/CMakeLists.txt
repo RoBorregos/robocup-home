@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   audio_common_msgs
   message_generation
+  intercom
 )
 
 ## System dependencies are found with CMake's conventions
@@ -76,6 +77,7 @@ find_package(catkin REQUIRED COMPONENTS
  generate_messages(
    DEPENDENCIES
    audio_common_msgs
+   intercom
  )
 
 ################################################
@@ -112,7 +114,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES devices
-   CATKIN_DEPENDS roscpp rospy message_runtime audio_common_msgs
+   CATKIN_DEPENDS roscpp rospy message_runtime audio_common_msgs intercom
 #  DEPENDS system_lib
 )
 
