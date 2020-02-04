@@ -1,0 +1,19 @@
+item {
+  id: 1
+  name: 'jumex_botella'
+}
+
+item {
+  id: 2
+  name: 'jumex_cajita'
+}
+
+item {
+  id: 3
+  name: 'coca_cola'
+}
+
+item {
+  id: 4
+  name: 'fanta'
+}
