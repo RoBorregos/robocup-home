@@ -1,5 +1,4 @@
 """
-This code is used test the model on a single image using Google Colab notebooks.
 """
 
 import os
@@ -13,11 +12,11 @@ from utils import visualization_utils as vis_util
 
 from google.colab.patches import cv2_imshow
 
-# sys.path.append("..")
+sys.path.append("..")
 
 # Name of the directory containing the object detection module we're using
 MODEL_NAME = 'inference_graph'
-IMAGE_NAME = 'test_images/image9.jpeg'
+IMAGE_NAME = 'test_images/image8.jpg'
 
 # Grab path to current working directory
 CWD_PATH = os.getcwd()
@@ -72,6 +71,30 @@ image_expanded = np.expand_dims(image, axis=0)
     [detection_boxes, detection_scores, detection_classes, num_detections],
     feed_dict={image_tensor: image_expanded})
 
+height = image.shape[0]
+width = image.shape[1]
+
+# print('object: ', category_index.get(value)['name'])
+# print('score: ', scores[0,index])
+# print(f'coordinates: x({xmin} - {xmax}), y({ymin} - {ymax})')
+# print()
+
+objects = {}
+for index,value in enumerate(classes[0]):
+  if scores[0,index] > 0.6:
+    if category_index.get(value)['name'] in objects:
+      if objects[category_index.get(value)['name']]['score'] > scores[0,index]:
+        continue
+    objects[category_index.get(value)['name']] = {
+        'score': round(scores[0,index],5),
+        'ymin': round(boxes[0][index][0]*height,2),
+        'xmin': round(boxes[0][index][1]*width,2),
+        'ymax': round(boxes[0][index][2]*height,2),
+        'xmax': round(boxes[0][index][3]*width,2)
+    }
+
+print(objects)
+
 # Draw the results of the detection (aka 'visulaize the results')
 vis_util.visualize_boxes_and_labels_on_image_array(
     image,
@@ -81,7 +104,7 @@ vis_util.visualize_boxes_and_labels_on_image_array(
     category_index,
     use_normalized_coordinates=True,
     line_thickness=8,
-    min_score_thresh=0.60)
+    min_score_thresh=0.6)
 
 # Display the results image.
 cv2_imshow(image)
