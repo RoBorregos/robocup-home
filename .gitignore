@@ -19,5 +19,6 @@
 /rasa/venv/
 /object_detection/venv/
 *.DS_Store
+*.vscode
 
 # End 
