@@ -1,6 +1,6 @@
-<mxfile host="www.draw.io" modified="2020-02-10T19:25:56.464Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36" etag="ahM6cgmsQ5mukFN2YkUU" version="12.6.5" type="github">
+<mxfile host="www.draw.io" modified="2020-02-17T19:19:29.674Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36 Edg/80.0.361.54" etag="GAImq0Oid9EMNDzwGadk" version="12.7.0" type="github">
   <diagram id="94LBQQwzL-lMHzVEOpgl" name="Page-1">
-    <mxGraphModel dx="852" dy="394" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="1248" dy="702" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -113,6 +113,35 @@
         </mxCell>
         <mxCell id="MP0pOOuwlxTQmslvQRZY-23" value="&lt;u&gt;user_sentence&lt;/u&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;fontSize=8;" parent="1" vertex="1">
           <mxGeometry x="590" y="69" width="70" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-3" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="35" y="880" width="80" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-4" value="External Service" style="text;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="910" width="140" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-6" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="450" y="290" width="320" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-7" value="/main_engine" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="470" width="90" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;endArrow=none;endFill=0;" edge="1" parent="1" source="WmEWK4hZ4REN07djJZJH-9" target="WmEWK4hZ4REN07djJZJH-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-9" value="action_manager" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;" vertex="1" parent="1">
+          <mxGeometry x="485" y="310" width="105" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-11" value="&lt;u&gt;action_requested&lt;/u&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="575" y="190" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;startArrow=oval;startFill=1;" edge="1" parent="1" source="MP0pOOuwlxTQmslvQRZY-21" target="WmEWK4hZ4REN07djJZJH-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="525" y="270" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WmEWK4hZ4REN07djJZJH-12" value="ACTION" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="635" y="310" width="70" height="30" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>
