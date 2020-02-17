@@ -20,5 +20,6 @@
 /object_detection/venv/
 *.DS_Store
 *.pyc
+.vscode/
 
 # End 
