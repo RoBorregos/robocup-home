@@ -86,12 +86,14 @@ def get_objects():
     """
     This function creates a dict of the detected objects with its coordinates.
     """
+    MIN_SCORE_THRESH = 0.6
+
     height = image.shape[0]
     width = image.shape[1]
     objects = {}
 
     for index,value in enumerate(classes[0]):
-        if scores[0,index] > 0.6:
+        if scores[0,index] > MIN_SCORE_THRESH:
             if category_index.get(value)['name'] in objects:
                 # in case it detects more that one of each object, grabs the one with higher score
                 if objects[category_index.get(value)['name']]['score'] > scores[0,index]:
