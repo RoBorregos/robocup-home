@@ -1,3 +1,7 @@
+"""
+This code is used test the model on a single image using Google Colab notebooks.
+"""
+
 import os
 import cv2
 import numpy as np
