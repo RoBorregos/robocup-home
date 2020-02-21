@@ -104,7 +104,7 @@ def main():
     rospy.init_node('parser', anonymous=True)
 
     rospy.Subscriber("RawInput", RawInput, callback)
-    pub_resp = rospy.Publisher('BotResponse', response, queue_size=10)
+    pub_resp = rospy.Publisher('bot_response', response, queue_size=10)
     pub = rospy.Publisher('action_selector_cmds', action_selector_cmd, queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped
