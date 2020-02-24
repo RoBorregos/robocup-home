@@ -35,7 +35,7 @@ from utils import label_map_util
 from utils import visualization_utils as vis_util
 
 # this will change when testing on the Jetson
-from google.colab.patches import cv2_imshow
+# from google.colab.patches import cv2_imshow
 
 def run_model(image_directory):
     """
