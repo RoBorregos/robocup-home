@@ -24,18 +24,19 @@ output:
 """
 
 import os
+os.environ["CUDA_VISIBLE_DEVICES"]="-1" 
 import argparse
 import cv2
 import numpy as np
 import tensorflow as tf
 import sys
 import json
+from time import time
 
 from utils import label_map_util
 from utils import visualization_utils as vis_util
 
-# this will change when testing on the Jetson
-# from google.colab.patches import cv2_imshow
+#from google.colab.patches import cv2_imshow
 
 def run_model(image_directory):
     """
@@ -87,14 +88,12 @@ def get_objects():
     """
     This function creates a dict of the detected objects with its coordinates.
     """
-    MIN_SCORE_THRESH = 0.6
-
     height = image.shape[0]
     width = image.shape[1]
     objects = {}
 
     for index,value in enumerate(classes[0]):
-        if scores[0,index] > MIN_SCORE_THRESH:
+        if scores[0,index] > 0.6:
             if category_index.get(value)['name'] in objects:
                 # in case it detects more that one of each object, grabs the one with higher score
                 if objects[category_index.get(value)['name']]['score'] > scores[0,index]:
@@ -124,9 +123,12 @@ def display_image_results():
         min_score_thresh=0.6)
 
     # Display the results image.
-    cv2_imshow(image)
+    cv2.imshow('image_results', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
+    start_time = time()
     parser = argparse.ArgumentParser(description="Get objects and coordinates")
     parser.add_argument('-d', '--directory', type=str, required=True, help='Directory containing the image')
     parser.add_argument('-i', '--image_view', type=str, required=True, help='Display the image results (true/false)')
@@ -137,3 +139,6 @@ if __name__ == '__main__':
     
     if (args.image_view == 'true'):
         display_image_results()
+
+    end_time = time()
+    print('total execution time: ', end_time - start_time)
