@@ -3,7 +3,7 @@ This script test the trained model and performs object detection on a given imag
 in console a JSON with the objects detected and their info.
 
 E.g. 
->>> python get_objects_and_coordinates.py -d /home/roborregos/Documents/Robocup-Home/object_detection/test_images/image4.jpg -o /home/roborregos/Documents/ -i true
+>>> python get_objects_and_coordinates.py -i /home/roborregos/Documents/Robocup-Home/object_detection/test_images/image4.jpg -o /home/roborregos/Documents/ -v true
 
 output:
 {
@@ -25,18 +25,18 @@ output:
 """
 
 import os
+# Run tensorflow CPU instead of GPU (because the Jetson Nano runs out of memory when using GPU)
 os.environ["CUDA_VISIBLE_DEVICES"]="-1" 
+import sys
+import json
+
 import argparse
 import cv2
 import numpy as np
 import tensorflow as tf
-import sys
-import json
 
 from utils import label_map_util
 from utils import visualization_utils as vis_util
-
-#from google.colab.patches import cv2_imshow
 
 def run_model(image_directory):
     """
@@ -87,12 +87,14 @@ def get_objects():
     """
     This function creates a dict of the detected objects with its coordinates.
     """
+    MIN_SCORE_THRESH = 0.6
+
     height = image.shape[0]
     width = image.shape[1]
     objects = {}
 
     for index,value in enumerate(classes[0]):
-        if scores[0,index] > 0.6:
+        if scores[0,index] > MIN_SCORE_THRESH:
             if category_index.get(value)['name'] in objects:
                 # in case it detects more that one of each object, grabs the one with higher score
                 if objects[category_index.get(value)['name']]['score'] > scores[0,index]:
@@ -128,19 +130,17 @@ def display_image_results():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Get objects and coordinates")
-    parser.add_argument('-d', '--directory', type=str, required=True, help='Directory containing the image')
-    parser.add_argument('-o', '--output_directory', type=str, required=True, help='Output directory where the JSON containing the results will be posted')
-    parser.add_argument('-i', '--image_view', type=str, required=True, help='Display the image results (true/false)')
+    parser.add_argument('-i', '--input_directory', type=str, required=True, help='Input directory containing the image to analize')
+    parser.add_argument('-o', '--output_directory', type=str, required=True, help='Output directory to write the JSON results')
+    parser.add_argument('-v', '--image_view', type=str, required=True, help='Display the image results (true/false)')
     args = parser.parse_args()
 
-    run_model(args.directory)
+    run_model(args.input_directory)
     detected_objects = get_objects()
 
     # Write JSON results to a txt file
     with open(os.path.join(args.output_directory,'detected_objects.txt'),'w') as outfile:
         json.dump(detected_objects, outfile)
 
-    print(json.dumps(detected_objects, indent=4))
-    
     if (args.image_view == 'true'):
         display_image_results()
