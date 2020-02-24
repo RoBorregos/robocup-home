@@ -3,7 +3,8 @@ This script test the trained model and performs object detection on a given imag
 in console a JSON with the objects detected and their info.
 
 E.g. 
->>> python get_objects_and_coordinates.py -d test_images/image1.jpg -i false
+>>> python get_objects_and_coordinates.py -d /home/roborregos/Documents/Robocup-Home/object_detection/test_images/image4.jpg -o /home/roborregos/Documents/ -i true
+
 output:
 {
     "jumex_cajita": {
@@ -31,7 +32,6 @@ import numpy as np
 import tensorflow as tf
 import sys
 import json
-from time import time
 
 from utils import label_map_util
 from utils import visualization_utils as vis_util
@@ -45,11 +45,10 @@ def run_model(image_directory):
     global boxes, scores, classes, num, category_index, image
 
     MODEL_NAME = 'inference_graph'
-    IMAGE_NAME = image_directory
     CWD_PATH = os.getcwd()
     PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,'frozen_inference_graph.pb')
     PATH_TO_LABELS = os.path.join(CWD_PATH,'training','labelmap.pbtxt')
-    PATH_TO_IMAGE = os.path.join(CWD_PATH,IMAGE_NAME)
+    PATH_TO_IMAGE = image_directory
     NUM_CLASSES = 4
 
     # Load the label map.
@@ -128,17 +127,20 @@ def display_image_results():
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    start_time = time()
     parser = argparse.ArgumentParser(description="Get objects and coordinates")
     parser.add_argument('-d', '--directory', type=str, required=True, help='Directory containing the image')
+    parser.add_argument('-o', '--output_directory', type=str, required=True, help='Output directory where the JSON containing the results will be posted')
     parser.add_argument('-i', '--image_view', type=str, required=True, help='Display the image results (true/false)')
     args = parser.parse_args()
 
     run_model(args.directory)
-    print(json.dumps(get_objects(), indent=4))
+    detected_objects = get_objects()
+
+    # Write JSON results to a txt file
+    with open(os.path.join(args.output_directory,'detected_objects.txt'),'w') as outfile:
+        json.dump(detected_objects, outfile)
+
+    print(json.dumps(detected_objects, indent=4))
     
     if (args.image_view == 'true'):
         display_image_results()
-
-    end_time = time()
-    print('total execution time: ', end_time - start_time)
