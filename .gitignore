@@ -6,6 +6,8 @@
 /catkin_home/build/
 /catkin_home/bin/
 /catkin_home/install/
+/catkin_home/.catkin_tools/
+/catkin_home/.catkin_workspace
 
 ### DeepSpeech ###
 /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech/manifest.dev-clean
@@ -19,5 +21,7 @@
 /rasa/venv/
 /object_detection/venv/
 *.DS_Store
+*.pyc
+.vscode/
 
 # End 
