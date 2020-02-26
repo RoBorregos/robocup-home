@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   audio_common_msgs
+  intercom
 )
 
 ## System dependencies are found with CMake's conventions
