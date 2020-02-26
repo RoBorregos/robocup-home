@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.8.3)
 project(action_selectors)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++14)
+
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -124,6 +125,11 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
+include_directories(include src/speechsdk/include/cxx_api ${catkin_INCLUDE_DIRS})
+include_directories(include src/speechsdk/include/c_api ${catkin_INCLUDE_DIRS})
+link_directories(src/speechsdk/lib/x64)
+
+
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/action_selectors.cpp
@@ -137,7 +143,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/action_selectors_node.cpp)
+
+add_executable(azureSpeechText_node src/azureSpeechText.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -153,6 +160,8 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+target_link_libraries(azureSpeechText_node  ${catkin_LIBRARIES} Microsoft.CognitiveServices.Speech.core )
 
 #############
 ## Install ##

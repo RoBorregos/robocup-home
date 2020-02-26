@@ -23,5 +23,6 @@
 *.DS_Store
 *.pyc
 .vscode/
-
+.vscode
+GLOBAL.json
 # End 
