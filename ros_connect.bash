@@ -1,5 +1,6 @@
 #!/bin/bash
 echo "Be sure to call this script: source ./ros_connect {ROS_MASTER_IP} or source ./ros_connect {ROS_MASTER_IP} {ROS_TALKER_IP}"
+echo "more information: https://github.com/RoBorregos/Robocup-Home/wiki/Computers#running-ros-on-multiple-machines"
 echo $#
 if [ $# == 2 ]
 then 
