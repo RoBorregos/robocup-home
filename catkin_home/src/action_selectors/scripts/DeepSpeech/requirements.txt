@@ -1,0 +1,4 @@
+scipy
+resampy
+SoundFile
+python_speech_features

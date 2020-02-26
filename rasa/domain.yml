@@ -1,0 +1,48 @@
+%YAML 1.1
+---
+actions:
+- utter_bye
+- utter_command
+- utter_default
+- utter_greet
+- utter_understood
+- utter_you're_welcome
+entities:
+- object
+- place
+intents:
+- bring_something
+- thank:
+    triggers: utter_you're_welcome
+- greet
+- stop
+- bye
+slots:
+  object:
+    type: text
+  place:
+    type: text
+templates:
+  utter_bye:
+  - text: Goodbye
+  - text: Later!
+  utter_command:
+  - text: I need to bring {object} from the {place}
+  - text: I have to go to the {place} and bring {object}
+  - text: I must bring the {object} that is in the {place}
+  utter_default:
+  - text: Sorry, I didn't get that
+  - text: I didnt understand that, can you please rephrase
+  utter_greet:
+  - text: Hey!
+  - text: Hey, how can I help you?
+  utter_understood:
+  - text: Alright!
+  - text: Understood, I am on it.
+  - text: Roger that, boss.
+  - text: Command understood
+  - text: I'm on it
+  - text: Your wish is my command
+  utter_you're_welcome:
+  - text: You're welcome
+  - text: I'm glad im being useful
