@@ -68,6 +68,7 @@ class Main_Engine(object):
         print(msg.args)
 
     def decide_if_priority(self,new_action_id):
+        print("decide if priority")
 
 def listener():
 
