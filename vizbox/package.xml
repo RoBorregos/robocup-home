@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <name>vizbox</name>
+  <version>0.1.0</version>
+  <description>Visualisation server for RoboCup@Home</description>
+
+  <maintainer email="loy.vanbeek@gmail.com">Loy van Beek</maintainer>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>python-tornado</run_depend>
+  <run_depend>python-imaging</run_depend>
+
+  
+  <build_depend>rospy</build_depend>
+</package>

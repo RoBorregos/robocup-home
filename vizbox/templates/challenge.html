@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="static/stylesheets/style.css">
+        <script src="static/scripts/jquery-3.3.1.min.js"></script>
+        <link rel="stylesheet" href="static/stylesheets/bootstrap.min.css">
+        <script src="static/scripts/bootstrap.min.js"></script>
+        
+        <link rel="shortcut icon" href="static/favicon.ico">    
+
+    </head>
+    <body class="main">
+        
+        <div class="header">
+            <h1 id="title">{{title}}</h1>
+            <hr style="border-color: white;">
+        </div>
+
+        <div class="content center">
+            {{visualization}}
+            <br>
+            <img    id="visualization_img"
+                    src="https://www.w3schools.com/html/html5.gif">
+        </div>
+
+        <div class="sidebar">
+            <h2>Event</h2>
+            <ol id="storyline">
+                  {% for line in storyline %}
+                    {% block line %}
+                      <li>{{line}}</li>
+                    {% end %}
+                  {% end %}
+            </ol>
+        </div>
+
+        <div class="footer-button center">
+    			<div  class="btn-group-vertical" style="width:75%;">
+    			    <button type="button" id="btn1" class="btn btn-primary ">Next Step</button>
+    			    <button type="button" id="btn2" class="btn btn-danger ">Stop</button>
+      			</div>
+    		</div>
+
+    		<div class="footer-text">
+    			<ul id="subtitles">
+                        <!-- Dummies to test style -->
+                    <!-- <li class="robot_text subtitle-line">Robot : Ok, I will follow you</li>
+                    <li class="operator_text subtitle-line">Operator : Follow me</li> -->
+                   
+                </ul>
+    		</div>
+        <script src="static/scripts/script.js"></script>
+    </body>
+</html>
