@@ -6,18 +6,21 @@
 class Movement {
   public:
     
-    //BACK MOTORS
+    //BACK 
     Motor B_right;
     Motor B_left;
-    
-    //FRONT MOTORS
+    //FRONT 
     Motor F_right;
     Motor F_left;
     
     Movement(Motor A, Motor B, Motor C, Motor D);
     Movement();
     
+    //PWM
+    void pwm(int i);
+    
     //DIRECTIONS
+    void setDirection(int angle); 
     void _move0();
     void _move45();
     void _move90();
@@ -26,14 +29,16 @@ class Movement {
     void _move225();
     void _move270();
     void _move315();
+    
+    //ROTATE
     void _rotateL();
     void _rotateR();
+ 
+    //STOP
     void _stop();
     
 
 
-    void pwm(int i);
-    void stop1();
 
 };
 #endif
