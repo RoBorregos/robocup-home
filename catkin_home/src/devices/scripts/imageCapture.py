@@ -25,8 +25,7 @@ def main():
         # ROS image stuff
         if frame is not None:
             frame = np.uint8(frame)
-            print(frame)
-            image_message = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
+            image_message = bridge.cv2_to_imgmsg(frame, encoding="bgr8")
             pub.publish(image_message)
     cam.release()
 if __name__ == '__main__':
