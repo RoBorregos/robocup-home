@@ -15,6 +15,10 @@
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/vocab.txt
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm/lm.binary
 
+### BASE CONTROL ###
+base_control/test
+wrokspace.code-workspace
+
 ### Others ###
 /rasa/venv/
 /object_detection/venv/
