@@ -37,9 +37,7 @@ def say(text):
 
 def callRASA(text, pub_resp):
     global response
-    cmd_id = 0
-    cmd_priority = 0
-    critic_shutdown = 0
+    intent = ""
     args = [""]
     #make request to rasa server
     command = text
@@ -59,12 +57,14 @@ def callRASA(text, pub_resp):
                 pub_resp.publish(response_to_publish)
                 nlu_info = nlu_response.json()
                 debug(nlu_info["intent"])
+                intent = nlu_info["intent"]
+                args = nlu_info["entities"]
                 debug("Entities: " + str(nlu_info["entities"]))
     else:
         response_to_publish.text = "Cant connect to RASA server"
         pub_resp.publish(response_to_publish)
         debug("Failed response")
-    return cmd_id, cmd_priority, critic_shutdown, args
+    return intent, args
 
 
 def callback(msg):
@@ -77,18 +77,16 @@ def callback(msg):
     
    
     #Here the parsing is done
-    cmd_id, cmd_priority, critic_shutdown, args = callRASA(msg.inputText, pub_resp)
+    intent, args = callRASA(msg.inputText, pub_resp)
 
 
 
 
-    action_code = action_selector_cmd()
-    action_code.cmd_id = cmd_id
-    action_code.cmd_priority = cmd_priority
-    action_code.critic_shutdown = critic_shutdown
-    action_code.args = args
-    rospy.loginfo(action_code)
-    pub.publish(action_code)
+    action_request = action_selector_cmd()
+    action_request.intent = intent
+    action_request.args = args
+    rospy.loginfo(action_request)
+    pub.publish(action_request)
     
 
 def main():
@@ -105,7 +103,7 @@ def main():
 
     rospy.Subscriber("RawInput", RawInput, callback)
     pub_resp = rospy.Publisher('BotResponse', response, queue_size=10)
-    pub = rospy.Publisher('action_selector_cmds', action_selector_cmd, queue_size=10)
+    pub = rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

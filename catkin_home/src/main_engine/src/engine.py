@@ -5,9 +5,12 @@ from intercom.msg import action_selector_cmd
 import time
 from threading import Thread
 import rospy
+import csv
+import os
+from action_knight import ActionKnight
+
 """
-	This scrips simulates the reception of a cmd and asigns it
-	to a queue, called -actionQueue-.
+	TODO: Define description
 """
 
 # TOPICS PUBLISHED
@@ -17,50 +20,54 @@ import rospy
 
 # TOPICS READ
 """
-    engine_commands -> Byte
+    engine_commands -> String
 """
 
 # MSG USED
 """
-    action_selector_msg
-        Header header
-        uint8 cmd_id
-        uint8 cmd_priority
-        uint8 critic_shutdown
+    action_selector_msg -> 
+       Header header
+       string intent
+       string[] args
 """
-
 
 isActionQueueChanged = True
 actionQueue = []
 
+class Main_Engine(object):
+    def __init__(self,filename):
+        self.possible_actions = self.loadActions(filename)
+        print(self.possible_actions)
 
-def actionQueueGUI():
-    global   isActionQueueChanged
-    def printQueueStatus():
-        print "  === actionQueue ==="
-        print "\t+--^--+"
-        for x in xrange(len(actionQueue)):
-            print "\t| ", actionQueue[x], " |"
-        print "\t+-----+"
-        time.sleep(0.5)
+    def loadActions(self,filename):
+        '''
+        Returns a dictionary with the possible actions defined in the csv file
+        {
+            cmd_id:{cmd_category,cmd_priority,require_args}
+        }
+        '''
+        directory = os.path.dirname(os.path.realpath(__file__))
+        absolute_path_to_csv = os.path.join(directory,filename)
+        print("Opening possible actions: "+absolute_path_to_csv)
+        dictionary_possible_actions = dict()
+        with open(absolute_path_to_csv,'r') as action_file:
+            dict_reader = csv.DictReader(action_file)
+            for row in dict_reader:
+                cmd_id = row.get('cmd_id')
+                del row['cmd_id']
+                dictionary_possible_actions[cmd_id] = dict(row)
+        return dictionary_possible_actions
+
+    def shutdown_callback(self):
+        print("CRITICAL -------------Shutting down main_engine--------------")
     
-    # ROS loop
-    while (not rospy.is_shutdown()):
-        # if Action Queue Changed, print it
-        if (isActionQueueChanged):
-            printQueueStatus()
-            isActionQueueChanged = False
+    
+    def new_action_callback(self, msg):
+        print("A new action is triggered")
+        print(msg.intent)
+        print(msg.args)
 
-
-def process_id(msg):
-    global isActionQueueChanged
-    # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-    if (msg.critic_shutdown == 1):
-        rospy.logfatal("Critic shutdown signal from Action Selector received")
-
-    actionQueue.append(msg.cmd_id)
-    isActionQueueChanged = True
-
+    def decide_if_priority(self,new_action_id):
 
 def listener():
 
@@ -69,12 +76,12 @@ def listener():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
+    FILENAME_OF_CSV = 'possible_actions.csv'
+    main_engine = Main_Engine(FILENAME_OF_CSV)
+
     rospy.init_node('engine', anonymous=False)
-
-    rospy.Subscriber("engine_commands", action_selector_cmd, process_id)
-
-    # utility function for viewing actionQueueGUI
-    actionQueueGUI()
+    rospy.on_shutdown(main_engine.shutdown_callback)
+    rospy.Subscriber("action_requested", action_selector_cmd, main_engine.new_action_callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
