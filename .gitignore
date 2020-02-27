@@ -20,9 +20,11 @@
 ### Others ###
 /rasa/venv/
 /object_detection/venv/
+/object_detection/models/
 *.DS_Store
 *.pyc
 .vscode/
 .vscode
 GLOBAL.json
+
 # End 
