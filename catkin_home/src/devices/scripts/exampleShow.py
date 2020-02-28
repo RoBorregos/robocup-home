@@ -9,9 +9,10 @@ import cv2
 
 
 def callback(data):
+    print("yeet")
     bridge = CvBridge()
-    cv_image = bridge.imgmsg_to_cv2(data, desired_encoding="passthrough")
-    cv2.imshow("frames",cv_image)
+    cv_image = bridge.imgmsg_to_cv2(data, desired_encoding="bgr8")
+    cv2.imshow("image",cv_image)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         return
     print(cv_image)
@@ -25,7 +26,7 @@ def listener():
     # run simultaneously.
     rospy.init_node('exampleShow', anonymous=True)
 
-    rospy.Subscriber("frames", Image, callback)
+    rospy.Subscriber("image", Image, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     try:
