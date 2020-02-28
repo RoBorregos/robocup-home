@@ -1,6 +1,6 @@
 
 //PID
-#include "PID_v.h"
+#include "PID_v3.h"
 
 
 //BNO
@@ -47,6 +47,38 @@ void setup() {
 
 }
 
+
 void loop() {
+    moveAll.pwm(250);
     
+    int time = millis();
+    while(true)
+        if(millis()-time < 5000){
+            movePID(moveAll.F_left,moveAll.F_right);
+
+        }else{
+            moveAll._stop();
+        }
+}
+
+
+void movePID(Motor& a,Motor& b){
+    a.Forward();b.Forward();
+    a._IPID(a.ticks,b.ticks);
+    a._PID.Compute();
+    b._IPID(b.ticks,a.ticks);
+    b._PID.Compute();
+
+    a.changePWM(200+a._OPID());
+    b.changePWM(200+b._OPID());
+    
+    Serial.print("a:");
+    Serial.println(200+a._OPID());
+    Serial.print("b:");
+    Serial.println(200+b._OPID());
+
+    Serial.print("a - ticks :");
+    Serial.println(a.ticks);
+    Serial.print("b - ticks :");
+    Serial.println(b.ticks);
 }
