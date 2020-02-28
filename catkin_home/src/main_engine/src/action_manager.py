@@ -7,7 +7,9 @@ from threading import Thread
 import rospy
 import csv
 import os
+from Queue import Queue
 from action_knight import ActionKnight
+
 
 """
 	TODO: Define description
@@ -31,14 +33,12 @@ from action_knight import ActionKnight
        string[] args
 """
 
-isActionQueueChanged = True
-actionQueue = []
-
 class Main_Engine(object):
     def __init__(self,filename):
         self.possible_actions = self.loadActions(filename)
         print(self.possible_actions)
-
+        self.actionQueueChanged = False
+        self.actionQueue = Queue()
     def loadActions(self,filename):
         '''
         Returns a dictionary with the possible actions defined in the csv file
@@ -66,6 +66,16 @@ class Main_Engine(object):
         print("A new action is triggered")
         print(msg.intent)
         print(msg.args)
+        if(self.possible_actions.get(msg.intent)):
+            #registered action
+            if(self.decide_if_priority(msg.intent)):
+                #Run new action
+                print("Check for feedback of the user if needed")
+                #If same or lower priority ask the user what he wants to do
+            else:
+                print("New action has a lower priority than the one running")
+        else:
+            print("Unrecognized action: "+ msg.intent)
 
     def decide_if_priority(self,new_action_id):
         print("decide if priority")
@@ -80,7 +90,7 @@ def listener():
     FILENAME_OF_CSV = 'possible_actions.csv'
     main_engine = Main_Engine(FILENAME_OF_CSV)
 
-    rospy.init_node('engine', anonymous=False)
+    rospy.init_node('action_manager', anonymous=False)
     rospy.on_shutdown(main_engine.shutdown_callback)
     rospy.Subscriber("action_requested", action_selector_cmd, main_engine.new_action_callback)
 
