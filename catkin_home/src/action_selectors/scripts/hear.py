@@ -32,12 +32,8 @@ def callback_deepspeech(data):
 def callback_azure(data):
     rospy.loginfo("Received a voice audio, computing...")
     
-    #Parse to int
-    dataOrd=[(ord(i)) for i in data.data]
-    #GetSamples 2Bytes
-    Samples2B=SpeechApiUtils.get_samples_2B(dataOrd)
     #Change Sample Rate
-    resample=SpeechApiUtils.resample_ratecv(Samples2B,48000,16000)
+    resample=SpeechApiUtils.resample_ratecv(data.data,48000,16000)
     #getAllSamples
     allsamples=SpeechApiUtils.get_all_samples(resample[0])
     #Publish
