@@ -47,6 +47,7 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
     if (result->Reason == ResultReason::RecognizedSpeech)
     {
         ROS_INFO_STREAM("Recognized: " << result->Text);
+        //Publish messge
         action_selectors::RawInput msg;
         msg.isWoman = false;
         msg.inputText = result->Text;
