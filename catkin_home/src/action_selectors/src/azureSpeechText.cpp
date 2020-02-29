@@ -1,5 +1,5 @@
 /**
-**  Simple ROS Node
+**  SpeechAPI ROS Node
 **/
 #include <ros/ros.h>
 #include <iostream>
@@ -10,46 +10,24 @@
 #include <vector>
 #include "audio_common_msgs/AudioData.h"
 #include "action_selectors/RawInput.h"
-#include "json.hpp"
-
 
 using namespace std;
-using json = nlohmann::json;
 using namespace Microsoft::CognitiveServices::Speech;
 using namespace Microsoft::CognitiveServices::Speech::Audio;
 
 #include "AudioInputBytes.h"
+#include "SpeechAPIUtils.h"
+SpeechAPIUtils SpeechUtils;
 
 ros::Publisher publi;
 
-//Extract API from JSON
-string getAPI(){
-	ifstream in("GLOBAL.json");
-    json j2;
-	if(in.good()){
-    	in >> j2;
-	}
-    in.close();
-    return j2["AZURE_API_KEY"];
-}
-
-//Extract Region from JSON
-string getRegion(){
-	ifstream in("GLOBAL.json");
-    json j2;
-	if(in.good()){
-		in >> j2;
-	}
-    in.close();
-    return j2["AZURE_REGION"];
-}
 
 void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
     
     ROS_INFO_STREAM("AUDIO RECEIVED");
     
     // Creates an instance of a speech config with specified subscription key and service region.
-    auto config = SpeechConfig::FromSubscription(getAPI(), getRegion());
+    auto config = SpeechConfig::FromSubscription(SpeechUtils.getAPI(), SpeechUtils.getRegion());
 
     // Creates a speech recognizer using file as audio input.
     auto callback = make_shared<AudioInputBytes>(msg->data);
