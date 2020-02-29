@@ -20,7 +20,9 @@ def is_connected():
     try:
         # connect to the host -- tells us if the host is actually
         # reachable
-        socket.create_connection(("www.google.com", 80))
+        sock=socket.create_connection(("www.google.com", 80),1)
+        sock.shutdown(socket.SHUT_RDWR)
+        sock.close()
         return True
     except:
         pass
@@ -44,7 +46,7 @@ def resample_ratecv(data,samplerate=48000, resample_rate=16000):
     """Resamples the given PCM stream to resample_rate.
     """
     return audioop.ratecv(b"".join(data), 2, 1, samplerate, resample_rate, None)
-def getSamples2B(data):
+def get_samples_2B(data):
     """GetSamples 2Bytes
     """
     last=-1;
@@ -58,7 +60,7 @@ def getSamples2B(data):
 
     return my_list_16b
 
-def getAllSamples(data):
+def get_all_samples(data):
     allsamples=[]
     index=0
     while True:
@@ -81,11 +83,11 @@ def callback_azure(data):
     dataOrd=[(ord(i)) for i in data.data]
     
     #GetSamples 2Bytes
-    Samples2B=getSamples2B(dataOrd)
+    Samples2B=get_samples_2B(dataOrd)
     #Change Sample Rate
     resample=resample_ratecv(Samples2B,48000,16000)
     #getAllSamples
-    allsamples=getAllSamples(resample[0])
+    allsamples=get_all_samples(resample[0])
     #Publish
     publisher_16k.publish(allsamples)
     
