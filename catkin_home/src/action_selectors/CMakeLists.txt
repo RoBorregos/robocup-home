@@ -144,7 +144,7 @@ link_directories(src/speechsdk/lib/x64)
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 
-add_executable(azureSpeechText_node src/azureSpeechText.cpp)
+add_executable(AzureSpeechToText src/azureSpeechText.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -157,7 +157,7 @@ add_executable(azureSpeechText_node src/azureSpeechText.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 # Add the dependency of the generated message `RawInput.msg`.
-add_dependencies(azureSpeechText_node ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(AzureSpeechToText ${PROJECT_NAME}_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
@@ -165,7 +165,7 @@ add_dependencies(azureSpeechText_node ${PROJECT_NAME}_generate_messages_cpp)
 # )
 
 # Add the catkin libraries and the library that is at src/speechsdk/lib/x64/Microsoft.CognitiveServices.Speech.core.so
-target_link_libraries(azureSpeechText_node ${catkin_LIBRARIES} Microsoft.CognitiveServices.Speech.core)
+target_link_libraries(AzureSpeechToText ${catkin_LIBRARIES} Microsoft.CognitiveServices.Speech.core)
 
 #############
 ## Install ##

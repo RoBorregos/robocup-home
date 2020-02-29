@@ -75,7 +75,7 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
 int main(int argc, char* argv[]){
 
   // This must be called before anything else ROS-related
-  ros::init(argc, argv, "azureSpeechText_node");
+  ros::init(argc, argv, "AzureSpeechToText");
   
   ROS_INFO_STREAM("*Node initiated");
   
