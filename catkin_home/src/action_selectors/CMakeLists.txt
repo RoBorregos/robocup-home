@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(action_selectors)
 
+# Includes `ExternalProject_Add()`.
+include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++14)
 
@@ -125,9 +128,26 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-include_directories(include src/speechsdk/include/cxx_api ${catkin_INCLUDE_DIRS})
-include_directories(include src/speechsdk/include/c_api ${catkin_INCLUDE_DIRS})
-link_directories(src/speechsdk/lib/x64)
+# Declare the azure_speech_sdk_project target.
+# Download the Azure's Speech SDK, uncompress it, and include the headers and link the
+# library.
+# https://github.com/Azure-Samples/cognitive-services-speech-sdk/tree/master/quickstart/cpp/linux/from-microphone
+ExternalProject_Add(
+  azure_speech_sdk_project
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/azure_speech_sdk_project_dir
+  URL https://aka.ms/csspeech/linuxbinary
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+)
+include_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}/azure_speech_sdk_project_dir/src/azure_speech_sdk_project/include/cxx_api 
+  ${CMAKE_CURRENT_BINARY_DIR}/azure_speech_sdk_project_dir/src/azure_speech_sdk_project/include/c_api
+)
+# TODO: Add to check what architecture this is and automatically select the correct folder.
+link_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}/azure_speech_sdk_project_dir/src/azure_speech_sdk_project/lib/x64
+)
 
 
 ## Declare a C++ library
@@ -144,7 +164,21 @@ link_directories(src/speechsdk/lib/x64)
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 
+# Azure Speech To Text C++ Executable Target.
 add_executable(AzureSpeechToText src/azureSpeechText.cpp)
+add_dependencies(AzureSpeechToText 
+  # Add the dependency of the generated message `RawInput.msg`.
+  ${PROJECT_NAME}_generate_messages_cpp
+  # Mark that this should wait for the Azure SDK to download.
+  azure_speech_sdk_project
+)
+# Add the catkin libraries and the downloaded library that is at 
+# azure_speech_sdk_project/lib/x64/Microsoft.CognitiveServices.Speech.core.so
+target_link_libraries(AzureSpeechToText 
+  ${catkin_LIBRARIES} 
+  Microsoft.CognitiveServices.Speech.core
+)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -156,16 +190,11 @@ add_executable(AzureSpeechToText src/azureSpeechText.cpp)
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-# Add the dependency of the generated message `RawInput.msg`.
-add_dependencies(AzureSpeechToText ${PROJECT_NAME}_generate_messages_cpp)
-
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
 
-# Add the catkin libraries and the library that is at src/speechsdk/lib/x64/Microsoft.CognitiveServices.Speech.core.so
-target_link_libraries(AzureSpeechToText ${catkin_LIBRARIES} Microsoft.CognitiveServices.Speech.core)
 
 #############
 ## Install ##
