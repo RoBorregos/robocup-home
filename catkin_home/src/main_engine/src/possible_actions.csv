@@ -1,3 +1,3 @@
-cmd_id,cmd_category,cmd_priority,requires_args
-bring_something,1,5,True
-stop,0,999,False
+cmd_id,cmd_category,cmd_priority,requires_args,action_server_responsible
+bring_something,1,5,True,navigation
+stop,0,0,False,navigation
