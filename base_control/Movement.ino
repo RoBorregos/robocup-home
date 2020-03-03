@@ -1,8 +1,8 @@
 Movement::Movement() {
-  this->B_left  = Motor(1,38,37,8,0,0);
-  this->F_left  = Motor(2,34,33,4,3,49);
-  this->B_right = Motor(3,36,39,9,0,0);
-  this->F_right = Motor(4,32,35,5,2,48);
+  this->B_left  = Motor(1,46,47,9,19,15);
+  this->F_left  = Motor(2,44,45,4,3,22);
+  this->B_right = Motor(3,49,48,8,18,14);
+  this->F_right = Motor(4,52,53,5,2,23);
 }
 
 void Movement::pwm(int pwm) {
@@ -12,6 +12,21 @@ void Movement::pwm(int pwm) {
   this->F_left.changePWM(pwm);
 }
 
+void Movement::getDistance(Motor A){
+  double revolutions=A.ticks/PULSES_PER_REVOLUTION;
+  return (revolutions*WHEEL_DIAMETER*PI_C)/(TIME_VELOCITY_SAMPLE/1000);
+}
+
+void Movement::calcVelocity(){
+  if(millis()-this->VelocityTiming<TIME_VELOCITY_SAMPLE)
+    return;
+
+  this->VelocityTiming=millis();
+  this->B_right.velocity=getDistance(B_right);
+  this->F_right.velocity=getDistance(F_right);
+  this->B_left.velocity=getDistance(B_left);
+  this->F_left.velocity=getDistance(F_left);
+}
 
 void Movement::setDirection(int angle){
   

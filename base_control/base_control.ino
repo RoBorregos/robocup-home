@@ -1,6 +1,6 @@
 
 //PID
-#include "PID_v3.h"
+#include "PID_v.h"
 
 
 //BNO
@@ -9,15 +9,17 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+#define BNO055_SAMPLERATE_DELAY_MS (100)
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 int BNOSetPoint = 0;
 
-bool rampa = false;
-int orientationStatus();
 
 
 //Motor
+#define TIME_VELOCITY_SAMPLE 250 //millis
+#define PULSES_PER_REVOLUTION 4320
+#define WHEEL_DIAMETER 0.1 //meters
 #include "Motor.h"
 
 //Movement
@@ -27,6 +29,9 @@ Movement moveAll;
 //Utils
 #include "Utils.h"
 Utils util;
+
+
+#define PI_C 3.14159265358979323846
 
 
 void setup() {
@@ -44,41 +49,27 @@ void setup() {
     bno.getEvent(&event);
     BNOSetPoint = event.orientation.x;
 
+    //Initial Time
+    moveAll.VelocityTiming = millis();
 
 }
 
 
 void loop() {
-    moveAll.pwm(250);
     
-    int time = millis();
-    while(true)
-        if(millis()-time < 5000){
-            movePID(moveAll.F_left,moveAll.F_right);
-
-        }else{
-            moveAll._stop();
-        }
-}
-
-
-void movePID(Motor& a,Motor& b){
-    a.Forward();b.Forward();
-    a._IPID(a.ticks,b.ticks);
-    a._PID.Compute();
-    b._IPID(b.ticks,a.ticks);
-    b._PID.Compute();
-
-    a.changePWM(200+a._OPID());
-    b.changePWM(200+b._OPID());
+    Serial.println();
+    moveAll.pwm(255);
+    moveAll.F_left.Forward();
+    moveAll.F_right.Forward();
+    moveAll.B_left.Forward();
+    moveAll.B_right.Forward();
+    delay(2000);
+    moveAll.F_left.Backward();
+    moveAll.F_right.Backward();
+    moveAll.B_left.Backward();
+    moveAll.B_right.Backward();
+    delay(2000);
     
-    Serial.print("a:");
-    Serial.println(200+a._OPID());
-    Serial.print("b:");
-    Serial.println(200+b._OPID());
-
-    Serial.print("a - ticks :");
-    Serial.println(a.ticks);
-    Serial.print("b - ticks :");
-    Serial.println(b.ticks);
+    
+    moveAll.calcVelocity();
 }

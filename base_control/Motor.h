@@ -7,6 +7,7 @@ class Motor {
 
     byte pwm = 0;
     double ticks=0;
+    double velocity=0; // m/s
 
     //Pins
     byte d1 = 0;

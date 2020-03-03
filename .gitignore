@@ -17,11 +17,14 @@
 
 ### BASE CONTROL ###
 base_control/test
+base_control/serialplotter
 wrokspace.code-workspace
+
 
 ### Others ###
 /rasa/venv/
 /object_detection/venv/
+
 *.DS_Store
 *.vscode
 

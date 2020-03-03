@@ -23,9 +23,11 @@ Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID(0,0,0, K
 void Motor::_IPID(double actual,double target){
   _PID.SetInputs(actual, target);
 }
+
 double Motor::_OPID(){
   return _PID.GetOutput();
 }
+
 void Motor::defineOutput() {
   pinMode(this->d1, OUTPUT);
   pinMode(this->d2, OUTPUT);

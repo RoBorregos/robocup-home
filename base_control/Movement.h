@@ -18,6 +18,15 @@ class Movement {
     
     //PWM
     void pwm(int i);
+
+    //DISTANCE
+    void getDistance(Motor A);
+
+    //VELOCITY
+    int VelocityTiming=0;
+    void calcVelocity();
+
+    
     
     //DIRECTIONS
     void setDirection(int angle); 
