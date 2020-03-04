@@ -7,7 +7,9 @@ class Motor {
 
     byte pwm = 0;
     double ticks=0;
+    double lastticks=0;
     double velocity=0; // m/s
+    unsigned long VelocityTiming = 0;
 
     //Pins
     byte d1 = 0;
@@ -21,7 +23,7 @@ class Motor {
     byte state = 0;
 
     //PID
-    double Kp = 5.2, Ki = 0, Kd = 0;
+    double Kp = .2, Ki = .5, Kd = 0;
     PID _PID;
 
     Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2);

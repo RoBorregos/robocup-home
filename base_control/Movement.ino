@@ -12,20 +12,42 @@ void Movement::pwm(int pwm) {
   this->F_left.changePWM(pwm);
 }
 
-void Movement::getDistance(Motor A){
+double Movement::getVelocity(Motor A){
   double revolutions=A.ticks/PULSES_PER_REVOLUTION;
   return (revolutions*WHEEL_DIAMETER*PI_C)/(TIME_VELOCITY_SAMPLE/1000);
 }
-
-void Movement::calcVelocity(){
-  if(millis()-this->VelocityTiming<TIME_VELOCITY_SAMPLE)
+void Movement::calcVelocityaux(Motor &A){
+  if(millis()-A.VelocityTiming < TIME_VELOCITY_SAMPLE)
     return;
+  
+  A.velocity=getVelocity(A);
+  A.lastticks=A.ticks;  
+  A.ticks=0;
+  A.VelocityTiming=millis();
 
-  this->VelocityTiming=millis();
-  this->B_right.velocity=getDistance(B_right);
-  this->F_right.velocity=getDistance(F_right);
-  this->B_left.velocity=getDistance(B_left);
-  this->F_left.velocity=getDistance(F_left);
+}
+void Movement::calcVelocity(){
+  calcVelocityaux(this->B_right);
+  calcVelocityaux(this->F_right);
+  calcVelocityaux(this->B_left);
+  calcVelocityaux(this->F_left);
+}
+
+double Movement::getTargetTicks(){
+  double ticks = getTargetVelocity();
+  ticks=ticks * (TIME_VELOCITY_SAMPLE/1000);
+  ticks=ticks/(WHEEL_DIAMETER*PI_C);  
+  return ticks*PULSES_PER_REVOLUTION;
+}
+
+double Movement::getTargetVelocity(){
+  return sqrt(this->dX*this->dX+this->dY*this->dY);
+}
+double Movement::getTargetAngle(){
+  return atan(this->dY/this->dX);
+}
+double Movement::getOrientationA(){
+  return this->angle;
 }
 
 void Movement::setDirection(int angle){
@@ -59,7 +81,7 @@ void Movement::setDirection(int angle){
 }
 
 //DIRECTIONS 
-//REFERENCE 0° Right
+//REFERENCE 0° right
 
 void Movement::_move0() {
   this->F_left.Forward();

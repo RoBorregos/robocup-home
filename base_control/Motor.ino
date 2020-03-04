@@ -8,13 +8,13 @@ Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID(0,0,0, K
   this->p1 = p1;
   this->e1 = e1;
   this->e2 = e2;
-  this->state=3;
+  this->Stop();
   this->defineOutput();
   this->changePWM(0);
 
   //PID
   _PID.SetParams(0,0,0);
-  _PID.SetOutputLimits(-50, 50);
+  _PID.SetOutputLimits(0, 255-MINPWM);
   _PID.SetTunings(Kp, Ki, Kd);
   _PID.SetSampleTime(1);
   _PID.SetMode(AUTOMATIC);
@@ -76,17 +76,38 @@ void Motor::Stop() {
   analogWrite(this->p1, 0);
   digitalWrite(this->d1, 0);
   digitalWrite(this->d2, 0);
+  
+  if(this->state!=3){
+    this->lastticks=this->ticks;  
+    this->ticks=0;
+    this->VelocityTiming=millis();
+  }
+
   this->state=3;
 }
 void Motor::Forward() {
   analogWrite(this->p1, this->pwm);
   digitalWrite(this->d1, 1);
   digitalWrite(this->d2, 0);
+
+  if(this->state!=1){
+    this->lastticks=this->ticks;  
+    this->ticks=0;
+    this->VelocityTiming=millis();
+  }
+
   this->state=1;
 }
 void Motor::Backward() {
   analogWrite(this->p1, this->pwm);
   digitalWrite(this->d1, 0);
   digitalWrite(this->d2, 1);
+  
+  if(this->state!=2){
+    this->lastticks=this->ticks;  
+    this->ticks=0;
+    this->VelocityTiming=millis();
+  }
+  
   this->state=2;
 }

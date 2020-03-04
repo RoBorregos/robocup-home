@@ -20,13 +20,22 @@ class Movement {
     void pwm(int i);
 
     //DISTANCE
-    void getDistance(Motor A);
+    double getVelocity(Motor A);
 
     //VELOCITY
-    int VelocityTiming=0;
     void calcVelocity();
+    void calcVelocityaux(Motor &A);
 
-    
+    //INPUTS
+    //test .18m/s 0°
+    double dX=0.127;
+    double dY=0.127;
+    double angle=0;
+    double getTargetVelocity();
+    double getTargetTicks();
+    double getTargetAngle();
+    double getOrientationA();
+     
     
     //DIRECTIONS
     void setDirection(int angle); 
