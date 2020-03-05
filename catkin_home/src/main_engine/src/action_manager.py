@@ -9,7 +9,6 @@ import csv
 import os
 from Action import Action
 
-
 """
 	TODO: Define description
 """
@@ -31,6 +30,7 @@ from Action import Action
        string intent
        string[] args
 """
+CATEGORIES = 2
 
 
 class Main_Engine(object):
@@ -38,10 +38,9 @@ class Main_Engine(object):
         self.possible_actions = self.loadActions(filename)
         print(self.possible_actions)
         self.lastActionReceived = None
-        # A typical pattern for entries is a tuple in the form: (priority_number, data).
-        self.actionQueue = []
-        self.waitingForConfirmation = False
-
+        # TODO: Multidimensional for n categories defined
+        self.action_queue = [ [] for i in range(CATEGORIES) ]
+        
 
     def loadActions(self, filename):
         '''
@@ -66,68 +65,88 @@ class Main_Engine(object):
     def shutdown_callback(self):
         print("CRITICAL -------------Shutting down main_engine--------------")
 
+
+    def add_to_priority_queue(self,new_action,action_queueCategory):
+        for index, action in enumerate(action_queueCategory):
+            ##Priority to newer commands over old ones
+            if(action.priority>=new_action.priority):
+                action_queueCategory.insert(index,new_action)
+                return action_queueCategory
+        action_queueCategory.append(new_action)
+        return action_queueCategory
+
+
     '''
         Callback generated when a new message is received from the action selectors
     '''
-    def new_action_callback(self, msg):
+    def new_action_request_callback(self, msg):
         print("Action Queue:")
-        print(self.actionQueue)
-        print("A new action is triggered")
+        print(self.action_queue)
+        print("A new action is requested")
         print("intent:" + msg.intent)
         print("args: ")
         print(msg.args)
         if(self.possible_actions.get(msg.intent)):
             # registered action
             new_action = Action(msg.intent, self.possible_actions[msg.intent]['cmd_priority'],
-                                self.possible_actions[msg.intent]['action_server_responsible'], msg.args)
+                                self.possible_actions[msg.intent]['action_client_binded'], self.possible_actions[msg.intent]['cmd_category'], msg.args)
             self.lastActionReceived = new_action
+            print(new_action.category)           
+            ##Stop Action
+            if(new_action.id=="stop"):
+                self.stop_everything()
+                return
+            
+            action_queueOfCategory = self.action_queue[new_action.category]
+            # Check what to do
             if(self.decide_if_priority(new_action)):
                 # Run new action
-                
-                # trigger new action
                 self.trigger_new_action(new_action)
-            else:
-                # TODO: If same or lower priority ask the user what he wants to do
-                print("Check for feedback of the user if needed")
-                self.waitingForConfirmation = True
-                print("New action has a lower priority than the one running")
-                ##Notify the user
+            #Add it to the queue (doesn't matter if it was triggered or not)
+            self.action_queue[new_action.category] = self.add_to_priority_queue(new_action,action_queueOfCategory)
         else:
-            print("Unrecognized action: " + msg.intent)
-            ##Check if answer to confirmation?
-            if(self.waitingForConfirmation):
-                if(msg.intent=="yes" or msg.intent=="no"):
-                    self.waitingForConfirmation = False
-                    if(msg.intent=="yes"):
-                        print("The user confirmed he prefers the new action over the previous one")
-                        self.trigger_new_action(self.lastActionReceived)    
-                else:
-                    print("I still have a previous decision I must choose what to do?")
-                 ##Remind the user you still have a decision to make on a previous action
+            print("Action requested not found in action db")
+    
 
+    def printaction_queue(self):
+        for index,category in enumerate(self.action_queue):
+            print("*********************")
+            print("Category "+str(index))
+            for action in category:
+                action.print_self(endline=False)
+            print("*********************")
+ 
 
-    def trigger_new_action(self,new_action):
+    def stop_everything(self):
+        #Stop every action_server (as fast as possible!)
+        print("Stop requested")
+        
+            
+    def trigger_new_action(self, new_action):
         print("New Action Triggered! Congrats")
-        #Stop current Action!
-        if(len(self.actionQueue)> 0):
+        # Stop current Action!
+        if(len(self.action_queue[new_action.category]) > 0):
             print("Stopping previous action...")
-            current_action =  self.actionQueue[0]
-        #Call the corresponding action server with the request
-        #Add it at the front of the actionQueue
-        self.actionQueue.insert(0,new_action)
-
+            # Find the first ocurrence of the same category
+            current_action = self.action_queue[new_action.category][0]
+            # If previous action done (current_action.feedback == DONE|FAILED) remove from queue
+            current_action.stop()
+            # Else keep it in the queue
+        # Call the corresponding action server with the request
+        new_action.run()
 
     def decide_if_priority(self, new_action):
-        #current_action.cancel_goal()
-        if(len(self.actionQueue)==0):
+        # WARNING: NEW ACTIONS HAVE PRIORITY OVER OLD ONES
+        if(len(self.action_queue[new_action.category]) == 0):
             print("New action has a higher priority")
             return True
-        current_action = self.actionQueue[0]
-        if(new_action.priority > current_action.priority):
+        current_action = self.action_queue[new_action.category][0]
+        if(new_action.priority >= current_action.priority):
             print("New action has a higher priority")
             return True
         print("New action has a lower priority")
         return False
+
 
 def listener():
 
@@ -142,11 +161,14 @@ def listener():
     rospy.init_node('action_manager', anonymous=False)
     rospy.on_shutdown(main_engine.shutdown_callback)
     rospy.Subscriber("action_requested", action_selector_cmd,
-                     main_engine.new_action_callback)
-
+                     main_engine.new_action_request_callback)
+    rate = rospy.Rate(0.5) # 5hz
     # spin() simply keeps python from exiting until this node is stopped
     while not rospy.is_shutdown():
-        rospy.spin()
+        main_engine.printaction_queue()
+        print("Spin!")
+        rate.sleep()
+    rospy.spin()
 
 
 if __name__ == '__main__':
