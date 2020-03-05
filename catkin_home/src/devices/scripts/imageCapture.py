@@ -20,11 +20,14 @@ CAMERA = 0
 def main():
     # TODO: Change the name of the node and publisher depending what
     # camera this is reading.
+    node_name = "imageCapture"
+    rospy.init_node(node_name)
     pub = rospy.Publisher("frames", Image, queue_size=RATE)
-    rospy.init_node("imageCapture")
+    rospy.loginfo("*Node ImageCapturer: " + node_name + " started*")
 
     bridge = CvBridge()
     cam = cv2.VideoCapture(0)
+    rospy.loginfo("*Recording*")
 
     rater = rospy.Rate(RATE)
     while not rospy.is_shutdown():
@@ -35,9 +38,15 @@ def main():
             frame = np.uint8(frame)
             image_message = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
             pub.publish(image_message)
+            #rospy.loginfo("Frame published")
+        else:
+            #rospy.loginfo("Error: frame is None")
+            pass
 
         rater.sleep()
     cam.release()
+    
+    rospy.loginfo("*Node closed*")
 
 if __name__ == '__main__':
     try:
