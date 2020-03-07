@@ -1,8 +1,9 @@
 Movement::Movement() {
-  this->B_left  = Motor(1,46,47,9,19,15);
-  this->F_left  = Motor(2,44,45,4,3,22);
-  this->B_right = Motor(3,49,48,8,18,14);
-  this->F_right = Motor(4,52,53,5,2,23);
+                    //id,d1,d2,p1,e1,e2
+  this->B_left  = Motor(1,51,50,4,3,15);
+  this->F_left  = Motor(2,37,36,5,2,22);
+  this->B_right = Motor(3,53,52,6,19,14);
+  this->F_right = Motor(4,25,24,7,18,23);
 }
 
 void Movement::pwm(int pwm) {
@@ -10,6 +11,14 @@ void Movement::pwm(int pwm) {
   this->F_right.changePWM(pwm);
   this->B_left.changePWM(pwm);
   this->F_left.changePWM(pwm);
+}
+
+//PID
+void  Movement::constantSpeed(){
+  this->F_right.constantSpeed();
+  this->F_left.constantSpeed();
+  this->B_left.constantSpeed();
+  this->B_right.constantSpeed();
 }
 
 double Movement::getVelocity(Motor A){
@@ -37,7 +46,7 @@ double Movement::getTargetTicks(){
   double ticks = getTargetVelocity();
   ticks=ticks * (TIME_VELOCITY_SAMPLE/1000);
   ticks=ticks/(WHEEL_DIAMETER*PI_C);  
-  return ticks*PULSES_PER_REVOLUTION;
+  return ceil(ticks*PULSES_PER_REVOLUTION);
 }
 
 double Movement::getTargetVelocity(){
@@ -149,3 +158,5 @@ void Movement::_stop() {
   this->F_right.Stop();
   this->B_right.Stop();
 }
+
+

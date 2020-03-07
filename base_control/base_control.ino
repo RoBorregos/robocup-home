@@ -1,10 +1,10 @@
 //General
 #include<math.h>
 #define PI_C 3.14159265358979323846
-int time=0;
+unsigned long time=0;
 
 //PID
-#include "PID_v.h"
+#include "PID.h"
 
 
 //BNO
@@ -20,22 +20,35 @@ int BNOSetPoint = 0;
 
 
 //Motor
-#define TIME_VELOCITY_SAMPLE 500.0 //millis
+#define TIME_VELOCITY_SAMPLE 100.0 //millis
 #define PULSES_PER_REVOLUTION 4320.0
 #define WHEEL_DIAMETER 0.1 //meters
-#define MINPWM 60
+#define MINPWM 100
+#define MAXTICKS 286
+#define MINTICKS 190
+
 #include "Motor.h"
 
 //Movement
 #include "Movement.h"
 Movement moveAll;
 
+
+
+//PID TEST
+double pv_speed=0;
+double e_speed=0;
+double e_speed_sum=0;
+double e_speed_pre=0;
+double set_speed=0;
+double pwm_pulse=0;
+double kp=60;
+double ki=55;
+double kd=45;
+
 //Utils
 #include "Utils.h"
 Utils util;
-
-
-
 
 void setup() {
     
@@ -54,39 +67,21 @@ void setup() {
     
     time=millis();
     util.timeMessage=millis();
-
 }
 
 
 void loop() {
-    moveAll._move90();
     
-    movePID(moveAll.F_right);
-    movePID(moveAll.F_left);
-    movePID(moveAll.B_left);
-    movePID(moveAll.B_right);
-
-    moveAll.calcVelocity();
-    util.sendToPC_ticks();
+    moveAll.B_right.Forward();
+    moveAll.F_right.Forward();
+    moveAll.B_left.Forward();
+    moveAll.F_left.Forward();
+    
+    
+    moveAll.B_right.constantSpeed();
+    moveAll.F_right.constantSpeed();
+    moveAll.B_left.constantSpeed();
+    moveAll.F_left.constantSpeed();
+    
+    util.sendToPC_ticksT();
 }
-
-
-//PID 1.1
-void movePID(Motor& a,Motor& b){
-    a.Forward();b.Forward();
-    a._IPID(a.lastticks,b.lastticks);
-    a._PID.Compute();
-    b._IPID(b.lastticks,a.lastticks);
-    b._PID.Compute();
-
-    a.changePWM(200+a._OPID());
-    b.changePWM(200+b._OPID());
-}
-
-//PID 1.2
-void movePID(Motor& a){
-    a._IPID(a.lastticks,moveAll.getTargetTicks());
-    a._PID.Compute();
-    a.changePWM(MINPWM+a._OPID());
-}
-

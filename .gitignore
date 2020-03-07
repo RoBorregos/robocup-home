@@ -18,6 +18,7 @@
 ### BASE CONTROL ###
 base_control/test
 base_control/serialplotter
+base_control/testPID
 wrokspace.code-workspace
 
 

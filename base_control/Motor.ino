@@ -1,7 +1,6 @@
 Motor::Motor() {}
 
-
-Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID(0,0,0, Kp, Ki, Kd, DIRECT) {
+Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID(kp, ki, kd) {
   this->id = id;
   this->d1 = d1;
   this->d2 = d2;
@@ -13,20 +12,22 @@ Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID(0,0,0, K
   this->changePWM(0);
 
   //PID
-  _PID.SetParams(0,0,0);
-  _PID.SetOutputLimits(0, 255-MINPWM);
-  _PID.SetTunings(Kp, Ki, Kd);
-  _PID.SetSampleTime(1);
-  _PID.SetMode(AUTOMATIC);
+  _PID.setOutputLimits(0, 255);
+  _PID.setMaxErrorSum(4000);
+  _PID.setSampleTime(TIME_VELOCITY_SAMPLE);
 }
 
-void Motor::_IPID(double actual,double target){
-  _PID.SetInputs(actual, target);
+double Motor::getTargetSpeed(){
+  return (moveAll.getTargetTicks()/PULSES_PER_REVOLUTION)*10;
 }
 
-double Motor::_OPID(){
-  return _PID.GetOutput();
+
+void Motor::constantSpeed(){
+    
+    _PID.Compute(getTargetSpeed(),speedActual,pwm,ticks);
+    changePWM(pwm);
 }
+
 
 void Motor::defineOutput() {
   pinMode(this->d1, OUTPUT);
@@ -50,14 +51,16 @@ void Motor::defineOutput() {
     break;
   }
 }
+
 int Motor::getTicks() {
   return this->ticks;
 }
+
 void Motor::setTicks(int ticks) {
   this->ticks=ticks;
 }
 
-void Motor::changePWM(byte p){
+void Motor::changePWM(double p){
   this->pwm=p;
   switch(state){
     case 1:
@@ -78,9 +81,7 @@ void Motor::Stop() {
   digitalWrite(this->d2, 0);
   
   if(this->state!=3){
-    this->lastticks=this->ticks;  
-    this->ticks=0;
-    this->VelocityTiming=millis();
+    _PID.reset();
   }
 
   this->state=3;
@@ -91,9 +92,7 @@ void Motor::Forward() {
   digitalWrite(this->d2, 0);
 
   if(this->state!=1){
-    this->lastticks=this->ticks;  
-    this->ticks=0;
-    this->VelocityTiming=millis();
+    _PID.reset();
   }
 
   this->state=1;
@@ -104,9 +103,7 @@ void Motor::Backward() {
   digitalWrite(this->d2, 1);
   
   if(this->state!=2){
-    this->lastticks=this->ticks;  
-    this->ticks=0;
-    this->VelocityTiming=millis();
+    _PID.reset();
   }
   
   this->state=2;

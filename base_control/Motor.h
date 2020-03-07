@@ -5,7 +5,7 @@ class Motor {
   public:
     byte id=0;
 
-    byte pwm = 0;
+    double pwm = 0;
     double ticks=0;
     double lastticks=0;
     double velocity=0; // m/s
@@ -23,8 +23,13 @@ class Motor {
     byte state = 0;
 
     //PID
-    double Kp = .2, Ki = .5, Kd = 0;
     PID _PID;
+    double kp = 50;
+    double kd = 40;
+    double ki = 55;
+    double speedActual=0;
+    void constantSpeed();
+
 
     Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2);
     Motor();
@@ -32,10 +37,10 @@ class Motor {
     void Backward();
     void Stop();
     void defineOutput();
-    void changePWM(byte p);
+    void changePWM(double p);
     int getTicks();
     void setTicks(int ticks);
-    void _IPID(double actual,double target);
+    double getTargetSpeed();
     double _OPID();
     
 };
