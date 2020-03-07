@@ -51,14 +51,18 @@ void Utils::sendToPC_ticks(){
     this->timeMessage=millis();
 }
 
-void Utils::sendToPC(double* a,double* b,double* c,double* d){
+void Utils::sendToPC_ticksT(){
     if(millis()-this->timeMessage>35)
         return;
-
-    byte* byteData1 = (byte*)(&a);
-    byte* byteData2 = (byte*)(&b);
-    byte* byteData3 = (byte*)(&c);
-    byte* byteData4 = (byte*)(&d);
+        
+    double tmp=moveAll.B_right.getTargetSpeed();
+    double tmp1=moveAll.B_right.speedActual;
+    double tmp2=moveAll.F_right.getTargetSpeed();
+    double tmp3=moveAll.F_right.speedActual;
+    byte* byteData1 = (byte*)(&tmp1);
+    byte* byteData2 = (byte*)(&tmp);
+    byte* byteData3 = (byte*)(&tmp2);
+    byte* byteData4 = (byte*)(&tmp3);
     byte* byteData5 = (byte*)(-1);
     byte buf[20] = {byteData1[0], byteData1[1], byteData1[2], byteData1[3],
                     byteData2[0], byteData2[1], byteData2[2], byteData2[3],
