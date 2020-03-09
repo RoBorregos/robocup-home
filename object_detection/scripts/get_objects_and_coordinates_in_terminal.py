@@ -3,6 +3,8 @@ This script, done to interface with catkin_home/action_selectors/ObjectDetector.
 model and performs object detection on given images, then it prints a JSON with the objects detected and their info.
 The mark points are marked as ~#label#~
 
+Based on get_objects_and_coordinates.py.
+
 output:
 {
     "jumex_cajita": {
@@ -36,8 +38,10 @@ from utils import visualization_utils as vis_util
 
 
 MODEL_NAME = 'inference_graph'
+# TODO: Because this is going to be called by other script, maybe is better to use
+# __file__. https://stackoverflow.com/a/3430395
 CWD_PATH = os.getcwd()
-PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,'frozen_inference_graph.pb')
+PATH_TO_CKPT = os.path.join(CWD_PATH, 'models/research/object_detection', MODEL_NAME, 'frozen_inference_graph.pb')
 PATH_TO_LABELS = os.path.join(CWD_PATH,'training','labelmap.pbtxt')
 NUM_CLASSES = 4
 MIN_SCORE_THRESH = 0.6

@@ -124,9 +124,15 @@ def init_obj_det_process():
 def close_obj_det_process():
     rospy.loginfo("Closing process")
 
+    '''
+    This is not the best way because the script callback could be interrupted
+    while it is stuck in another reading.
     obj_det_process.stdin.write('~#exit#~\n'.encode('utf-8'))
     obj_det_process.stdin.flush()
     # TODO: With while process.poll != None, implement a timeout kill.
+    obj_det_process.wait()
+    '''
+    obj_det_process.kill()
     obj_det_process.wait()
 
 
