@@ -17,6 +17,7 @@ TODO: Try to implement try-except in several parts with the subprocess and
 implement timeouts when reading because something could go wrong with the
 script. Maybe using `asyncio`, `pexpect`, or others.
 '''
+import json
 import tempfile
 from os import path
 # TODO: Update to subprocess32
@@ -25,6 +26,7 @@ import subprocess
 import rospy
 import rospkg
 from sensor_msgs.msg import Image
+from action_selectors.msg import ObjectsDetected, ObjectDetected
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 
@@ -58,6 +60,7 @@ cv_bridge = None
 rater = None
 obj_det_process = None
 actual_msg_img = None
+publisher = None
 
 
 def callback_topic_img(msg):
@@ -67,6 +70,7 @@ def callback_topic_img(msg):
 
 def callback_timer_analyze_msg_image(_):
     rospy.loginfo("Analyzing")
+
     # Quickly save the image locally.
     msg_img = actual_msg_img
     if msg_img is None:
@@ -102,7 +106,23 @@ def callback_timer_analyze_msg_image(_):
                 break
         json_result = obj_det_process.stdout.readline().decode('utf-8')[:-1]
 
-        rospy.loginfo("RESULT=" + str(json_result))
+        rospy.loginfo("Results ready")
+
+    #rospy.loginfo("Json result=" + str(json_result))
+    detected_objects = json.loads(json_result)
+    objects = []
+    for object_name in detected_objects:
+        objects.append(
+            ObjectDetected(
+                name=obj,
+                score=detected_objects[object_name]['score'],
+                x_min=detected_objects[object_name]['xmin'],
+                y_min=detected_objects[object_name]['ymin'],
+                x_max=detected_objects[object_name]['xmax'],
+                y_max=detected_objects[object_name]['ymax'],
+            ),
+        )
+    publisher.publish(ObjectsDetected(objects_detected=objects))
 
 def init_obj_det_process():
     '''
@@ -151,7 +171,8 @@ def close_obj_det_process():
 
 def main():
     rospy.init_node("ObjectDetector")
-    #pub = rospy.Publisher("objects_detected", Image, queue_size=RATE)
+    global publisher
+    publisher = rospy.Publisher("objects_detected", ObjectsDetected, queue_size=RATE)
     rospy.loginfo("*Node ObjectDetector started*")
     
     global cv_bridge, rater, obj_det_process
