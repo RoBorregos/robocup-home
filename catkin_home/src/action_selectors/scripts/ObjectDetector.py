@@ -7,6 +7,12 @@ used to write and read to it.
 
 https://stackoverflow.com/a/33886970
 
+This is implemented having a callback that stores the data and another
+callback of a timer to actually do the computation, because anyway `rospy`
+always callbacks with the published topics, then to achieve the rate was the
+only way; also with the logic's delay in topic's callback the msgs were always
+super delayed.
+
 TODO: Try to implement try-except in several parts with the subprocess and
 implement timeouts when reading because something could go wrong with the
 script. Maybe using `asyncio`, `pexpect`, or others.
@@ -51,11 +57,22 @@ ENV_VARS_COMMAND = {
 cv_bridge = None
 rater = None
 obj_det_process = None
+actual_msg_img = None
 
 
-def callback_object_detection(msg):
-    rospy.loginfo("Image received")
-    cv_image = cv_bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
+def callback_topic_img(msg):
+    #rospy.loginfo("Image received")
+    global actual_msg_img
+    actual_msg_img = msg
+
+def callback_timer_analyze_msg_image(_):
+    rospy.loginfo("Analyzing")
+    # Quickly save the image locally.
+    msg_img = actual_msg_img
+    if msg_img is None:
+        return
+
+    cv_image = cv_bridge.imgmsg_to_cv2(msg_img, desired_encoding="passthrough")
 
     # Save and process the image with the objectdetection script.
     # TODO: Maybe is desired to actually save the file, then `mkstemp` could be used.
@@ -86,10 +103,6 @@ def callback_object_detection(msg):
         json_result = obj_det_process.stdout.readline().decode('utf-8')[:-1]
 
         rospy.loginfo("RESULT=" + str(json_result))
-
-    # Because there is not a spinOnce in python, lets sleep in the
-    # callback function to achieve that rate.
-    rater.sleep()
 
 def init_obj_det_process():
     '''
@@ -149,12 +162,16 @@ def main():
         rospy.loginfo("*ERROR: Process could not be opened, closing.*")
         exit()
 
+    seconds = int(1/RATE)
+    timer_analyze = rospy.Timer(rospy.Duration(seconds, int(1000000000*(1.0/RATE - seconds))), callback_timer_analyze_msg_image)
+    # `queue_size=1` to always get the last one.
+    rospy.Subscriber("frames", Image, callback_topic_img, queue_size=1)
     rospy.loginfo("*ObjectDetection module ready to callback*")
-    rospy.Subscriber("frames", Image, callback_object_detection, queue_size=RATE)
     rospy.spin()
 
     rospy.loginfo("*Received signal, finishing node*")
     close_obj_det_process()
+    timer_analyze.shutdown()
     rospy.loginfo("*Node finished*")
 
 if __name__ == '__main__':
