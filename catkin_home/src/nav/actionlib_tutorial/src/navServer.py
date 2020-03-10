@@ -6,6 +6,7 @@ import json
 
 import actionlib_tutorials.msg
 import actionlib_tutorial.msg
+from move_base_msgs.msg import MoveBaseActionGoal, MoveBaseGoal
 
 class navigationServer(object):
     # create messages that are used to publish feedback/result
@@ -68,20 +69,32 @@ class navigationServer(object):
         r.sleep()
 
         if isValid == True:
-            self._feedback.sequence.append(self.x)
-            self._feedback.sequence.append(self.y)
-            self._feedback.sequence.append(self.z)
-            self._feedback.sequence.append(self.qx)
-            self._feedback.sequence.append(self.qy)
-            self._feedback.sequence.append(self.qz)
-            self._feedback.sequence.append(self.qw)
+            client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+            client.wait_for_server()
 
+            target = MoveBaseGoal()
+            target.target_pose.header.frame_id = "map"
+            target.target_pose.header.stamp = rospy.Time.now()
 
-            self._result.sequence = self._feedback.sequence
+            target.target_pose.pose.position.x = self.x
+            target.target_pose.pose.position.y = self.y
+            target.target_pose.pose.position.z = self.z
+
+            target.target_pose.pose.orientation.x = self.qx
+            target.target_pose.pose.orientation.y = self.qy
+            target.target_pose.pose.orientation.z = self.qz
+            target.target_pose.pose.orientation.w = self.qw
+
+            client.send_goal(target)
+            client.wait_for_result()
+
+            result =  client.get_result
+
+            self._result = result
             rospy.loginfo('%s: Succeeded' % self._action_name)
             self._as.set_succeeded(self._result)
         else:
-            self._result.sequence = self._feedback.sequence
+            self._result = result
             rospy.loginfo('%s: Aborted' % self._action_name)
             self._as.set_succeeded(self._result)
 
