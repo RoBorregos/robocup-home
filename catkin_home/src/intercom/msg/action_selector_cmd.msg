@@ -1,3 +1,4 @@
 Header header
 string intent
-string[] args
+string action_client_binded
+string args
