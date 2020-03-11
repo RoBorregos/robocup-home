@@ -168,9 +168,15 @@ def close_obj_det_process():
     obj_det_process.kill()
     obj_det_process.wait()
 
+def callback_shutting_down():
+    # Because we 'are not able to' inmedietly terminate the node, let's only
+    # say that we received it and the node will directly die by itself.
+    rospy.loginfo("*Received signal, node will finish*")
+
 
 def main():
     rospy.init_node("ObjectDetector")
+    rospy.on_shutdown(callback_shutting_down)
     global publisher
     publisher = rospy.Publisher("objects_detected", ObjectsDetected, queue_size=RATE)
     rospy.loginfo("*Node ObjectDetector started*")
@@ -190,7 +196,7 @@ def main():
     rospy.loginfo("*ObjectDetection module ready to callback*")
     rospy.spin()
 
-    rospy.loginfo("*Received signal, finishing node*")
+    rospy.loginfo("*Finishing node*")
     close_obj_det_process()
     timer_analyze.shutdown()
     rospy.loginfo("*Node finished*")
