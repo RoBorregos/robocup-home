@@ -30,13 +30,13 @@ FLAGS = flags.FLAGS
 
 # TO-DO replace this with label map
 def class_text_to_int(row_label):
-    if row_label == 'jumex_botella':
+    if row_label == 'powerade':
         return 1
-    elif row_label == 'jumex_cajita':
+    elif row_label == 'chocolate':
         return 2
-    elif row_label == 'coca_cola':
+    elif row_label == 'dr_pepper':
         return 3
-    elif row_label == 'fanta':
+    elif row_label == 'danup':
         return 4
     else:
         None
