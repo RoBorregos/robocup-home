@@ -3,6 +3,7 @@ import rospy
 import requests
 from intercom.msg import action_selector_cmd
 from std_msgs.msg import String
+from vizbox.msg import Story
 import os
 import csv
 from time import sleep
@@ -24,11 +25,12 @@ El robot agarra el objeto pedido.
 
 
 class Parser(object):
-    def __init__(self, pub, pub_resp, filename):
+    def __init__(self, pub, pub_resp, pub_story, filename):
         self.debug_option = True
-        # Im sorry but i gues this is better than creating the publisher in each callback.
+        # Im sorry but i gues this is b etter than creating the publisher in each callback.
         self.pub = pub
         self.pub_resp = pub_resp
+        self.pub_story = pub_story
         self.possible_actions = self.loadActions(filename)
 
     def loadActions(self, filename):
@@ -97,6 +99,9 @@ class Parser(object):
     def publish_bring_something(self, intent, args):
         target_location = ""
         target_object = ""
+        story = Story()
+        story.title = "Bring Something"
+        story.storyline = []
         for entity in args:
             if(entity.get("entity") == 'object'):
                 target_object = entity.get("value")
@@ -112,9 +117,10 @@ class Parser(object):
             action_request.args= arg
             action_request.action_client_binded= self.possible_actions[action[0]]['action_client_binded']
             rospy.loginfo(action_request)
+            story.storyline.append(action_request.intent + " : " + action_request.args)
             self.pub.publish(action_request)
             print(self.possible_actions[intent])
-
+        self.pub_story.publish(story)
 
     def callback(self, msg):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.data)
@@ -158,7 +164,8 @@ def main():
 
     pub_resp= rospy.Publisher('robot_text', String, queue_size=10)
     pub= rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
-    parser= Parser(pub, pub_resp, "possible_actions.csv")
+    pub_story = rospy.Publisher("story", Story, queue_size=10)
+    parser= Parser(pub, pub_resp, pub_story, "possible_actions.csv")
     rospy.Subscriber("operator_text", String, parser.callback)
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

@@ -1,7 +1,7 @@
 import rospy
 import actionlib
 import time
-#from object_detection.msg import RecognizeObjectAction, RecognizeObjectGoal
+#from object_detection.msg import RecognizeObjectAction, RecognizeObjectGoal, RecognizeObjectFeedback
 # TODO: Import all the messages related to actions I guess ?
 '''
 All Goals, and Actions must be imported here from he corresponding packages
