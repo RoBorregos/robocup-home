@@ -47,7 +47,7 @@ class RosBackend(BackendBase):
 
         try:
             self.story_sub = rospy.Subscriber("story", Story, call_callbacks_in(self.on_story, lambda rosmsg: (rosmsg.title, rosmsg.storyline)), queue_size=100)
-        except NameError:
+        except NameError as  e:
             rospy.logerr("To dynamically define a Story, catkin_make this package")
 
         self.cmd_pub = rospy.Publisher("command", String, queue_size=1)

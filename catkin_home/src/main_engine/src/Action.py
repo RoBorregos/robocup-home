@@ -36,7 +36,7 @@ class Action(object):
         print(self.get_description())
 
     def get_description(self):
-        return self.id + "-"+ str(self.time_requested) + " : " + self.feedback[self.feedback_step] + " " + self.args
+        return self.id + "-"+ str(self.time_requested) +  "-" + self.args +  " : " + self.feedback[self.feedback_step]
 
     def stop(self):
         print("Stop Action")
@@ -44,6 +44,7 @@ class Action(object):
     def run(self):
         print("Run Action")
         self.specific_function[self.id]()
+        self.feedback_step+=1
 
     def run_action_client(self, ROS_action):
         print("Booting action client")
@@ -55,7 +56,7 @@ class Action(object):
 
     def bring_something(self):
         print("Setting goal,filling it and contacting action server of bring_something")
-        # action.run_action_client(BringSomethingAction)
+        # self.run_action_client(BringSomethingAction)
         #goal = BringSomethingGoal()
         #goal.target_location = "kitchen"
         #goal.target_object = "juguito"
@@ -63,7 +64,7 @@ class Action(object):
 
     def go_to(self):
         print("Setting goal,filling it and contacting action server of bring_something")
-        # action.run_action_client(GoToAction)
+        # self.run_action_client(GoToAction)
         #goal = GoToGoal()
         #goal.target_location = "kitchen"
         # action.send_goal(goal)

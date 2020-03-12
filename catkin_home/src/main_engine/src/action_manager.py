@@ -62,6 +62,8 @@ class Main_Engine(object):
         if(new_action.id=="stop"):
             self.stop_everything()
             return
+        if(len(self.action_queue)==0):
+            self.trigger_new_action(new_action)
         #Add it to the queue (doesn't matter if it was triggered or not)
         self.action_queue.append(new_action)
      

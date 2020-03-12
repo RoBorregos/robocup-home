@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from intercom.msg import response
+from std_msgs.msg import String
 import requests
 import pyttsx3
 from gtts import gTTS
@@ -58,7 +58,7 @@ def listener():
     # run simultaneously.
     rospy.init_node('say', anonymous=True)
 
-    rospy.Subscriber("BotResponse", response, callback)
+    rospy.Subscriber("robot_text", String, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

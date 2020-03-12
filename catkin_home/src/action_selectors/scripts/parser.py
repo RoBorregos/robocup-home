@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 import rospy
 import requests
-from action_selectors.msg import RawInput
 from intercom.msg import action_selector_cmd
-from intercom.msg import response
+from std_msgs.msg import String
 import os
 import csv
 from time import sleep
@@ -66,8 +65,9 @@ class Parser(object):
         args = [""]
         # make request to rasa server
         command = text
+        # Publish to Vizbox
         # instantiate response msg object
-        response_to_publish = response()
+        response_to_publish = String()
         # evaluate
         self.say("You just said:" + command)
         data = {"sender": "home",
@@ -80,7 +80,7 @@ class Parser(object):
             if(len(responseHTTP.json()) > 0):
                 for responseData in responseHTTP.json():
                     self.debug("BOT SAYS: " + responseData["text"])
-                    response_to_publish.text = responseData["text"]
+                    response_to_publish.data = responseData["text"]
                     self.pub_resp.publish(response_to_publish)
                     nlu_info = nlu_response.json()
                     if(nlu_info["intent"]["confidence"]>=0.60):
@@ -89,7 +89,7 @@ class Parser(object):
                         args = nlu_info["entities"]
                         self.debug("Entities: " + str(nlu_info["entities"]))
         else:
-            response_to_publish.text = "Cant connect to RASA server"
+            response_to_publish.data = "Cant connect to RASA server"
             self.pub_resp.publish(response_to_publish)
             self.debug("Failed response")
         return intent, args
@@ -117,9 +117,18 @@ class Parser(object):
 
 
     def callback(self, msg):
-        rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.inputText)
+        rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.data)
         # Here the parsing is done
-        intent, args= self.callRASA(msg.inputText)
+        try:
+            intent, args= self.callRASA(msg.data)
+            pass
+        except:
+            response_to_publish = String()
+            response_to_publish.data = "Cant connect to RASA server"
+            self.pub_resp.publish(response_to_publish)
+            self.debug("Failed response")
+            pass
+        
         if(self.possible_actions.get(intent)):
             if(intent == "bring_something"):
                 self.publish_bring_something(intent,args)
@@ -147,10 +156,10 @@ def main():
     rospy.init_node('parser', anonymous=True)
     FILENAME_OF_CSV= 'possible_actions.csv'
 
-    pub_resp= rospy.Publisher('BotResponse', response, queue_size=10)
+    pub_resp= rospy.Publisher('robot_text', String, queue_size=10)
     pub= rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
     parser= Parser(pub, pub_resp, "possible_actions.csv")
-    rospy.Subscriber("RawInput", RawInput, parser.callback)
+    rospy.Subscriber("operator_text", String, parser.callback)
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
 

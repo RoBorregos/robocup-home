@@ -106,6 +106,7 @@ class MessageForwarder(WebSocketHandler):
 
     def handle_image(self, image):
         print ("handle_image({})".format(len(image)))
+
         data = {"label": "image", "image": image}
         data = json.dumps(data)
 
