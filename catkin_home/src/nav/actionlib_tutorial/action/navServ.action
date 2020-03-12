@@ -3,7 +3,7 @@
 string order
 ---
 #result definition
-int32[] sequence
+bool result
 ---
 #feedback
-int32[] sequence
+geometry_msgs/PoseStamped pose

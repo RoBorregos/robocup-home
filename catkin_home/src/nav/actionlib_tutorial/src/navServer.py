@@ -6,7 +6,8 @@ import json
 
 import actionlib_tutorials.msg
 import actionlib_tutorial.msg
-from move_base_msgs.msg import MoveBaseActionGoal, MoveBaseGoal
+from geometry_msgs.msg import PoseStamped
+from move_base_msgs.msg import MoveBaseActionGoal, MoveBaseGoal, MoveBaseAction
 
 class navigationServer(object):
     # create messages that are used to publish feedback/result
@@ -55,9 +56,11 @@ class navigationServer(object):
         # helper variables
         r = rospy.Rate(1)
         success = True
+        g = rospy.Publisher('goal', MoveBaseGoal, queue_size=10)
         
         # start executing the action
-        self._feedback.sequence = []
+        self._feedback.pose = PoseStamped()
+        rospy.loginfo("Looking for the goal")
         isValid = self.searchGoal(goal)
 
         if self._as.is_preempt_requested():
@@ -67,13 +70,16 @@ class navigationServer(object):
             success = False
             
         r.sleep()
-
+        
         if isValid == True:
+            rospy.loginfo("Goal found!")
             client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
-            client.wait_for_server()
+            rospy.loginfo("Waiting for server response")
+            #client.wait_for_server()
+            #rospy.loginfo("Server found")
 
             target = MoveBaseGoal()
-            target.target_pose.header.frame_id = "map"
+            target.target_pose.header.frame_id = "goal"
             target.target_pose.header.stamp = rospy.Time.now()
 
             target.target_pose.pose.position.x = self.x
@@ -85,10 +91,16 @@ class navigationServer(object):
             target.target_pose.pose.orientation.z = self.qz
             target.target_pose.pose.orientation.w = self.qw
 
-            client.send_goal(target)
-            client.wait_for_result()
+            g.publish(target)
 
-            result =  client.get_result
+            rospy.loginfo("Sending Goal")
+            #client.send_goal(target)
+            #rospy.loginfo("Goal sent!")
+            #client.wait_for_result()
+            #rospy.loginfo("Waiting for result!")
+            #sate = actionlib.SimpleActionClient.get_state()
+            #rospy.loginfo("State: %s", str(sate))
+            #result =  client.get_result
 
             self._result = result
             rospy.loginfo('%s: Succeeded' % self._action_name)

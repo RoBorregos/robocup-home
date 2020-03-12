@@ -39,6 +39,7 @@ if __name__ == '__main__':
         # Initializes a rospy node so that the SimpleActionClient can
         # publish and subscribe over ROS.
         rospy.init_node('fibonacci_client_py')
+        
         result = navigationClient()
         print("Result:", ', '.join([str(n) for n in result.sequence]))
     except rospy.ROSInterruptException:
