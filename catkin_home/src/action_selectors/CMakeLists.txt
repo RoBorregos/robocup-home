@@ -57,6 +57,8 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
    FILES
    RawInput.msg
+   ObjectsDetected.msg
+   ObjectDetected.msg
 )
 
 ## Generate services in the 'srv' folder
