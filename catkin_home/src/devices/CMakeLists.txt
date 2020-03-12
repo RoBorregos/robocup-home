@@ -14,6 +14,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  roslib
   audio_common_msgs
   message_generation
   intercom
@@ -114,7 +115,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES devices
-   CATKIN_DEPENDS roscpp rospy message_runtime audio_common_msgs intercom
+   CATKIN_DEPENDS roscpp rospy roslib message_runtime audio_common_msgs intercom
 #  DEPENDS system_lib
 )
 

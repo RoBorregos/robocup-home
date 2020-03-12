@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ros/ros.h"
+#include "ros/package.h"
 #include "audio_common_msgs/AudioData.h"
 extern "C" {
 #include "rnnoise.h"
@@ -60,9 +61,10 @@ DenoiseState *st;
 void RNNoiseWarmUp(DenoiseState *st) {
   int i;
   float x[NUMBER_FRAMES_RNNOISE];
-  
+
   FILE *f1;
-  f1 = fopen("./warmup_street_20dB.raw", "r");
+  const string pkg_path = ros::package::getPath("devices");
+  f1 = fopen((pkg_path + "/data/rnnoise_warmup_street_20dB.raw").c_str(), "r");
 
   while (true) {
     int16_t tmp[NUMBER_FRAMES_RNNOISE];
@@ -291,18 +293,17 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
 int main(int argc, char **argv){
     ros::init(argc, argv, "InputAudio");
     ros::NodeHandle n;
-
+    ROS_INFO("*Node Started*");
 
     cout << "NUM_ITERATIONS_ALMOST_IN_VOICE= " << NUM_ITERATIONS_ALMOST_IN_VOICE << endl;
     cout << "MAX_ITERATIONS_WITHOUT_VOICE= " << MAX_ITERATIONS_WITHOUT_VOICE << endl;
 
 
     st = rnnoise_create(nullptr);
-    // TODO: Fix the runtime dependencies to be able to read the file when run.
-    // RNNoiseWarmUp(st);
-    ROS_INFO("RNNoise ready.\n");
+    RNNoiseWarmUp(st);
+    ROS_INFO("*RNNoise ready*");
 
-    
+
     publi = n.advertise<audio_common_msgs::AudioData>("UsefulAudio", ADVERTISE_BUFFER_SIZE);
     
     ros::Subscriber sub = n.subscribe("rawAudioChunk", 5, onAudioCallback);
@@ -311,7 +312,7 @@ int main(int argc, char **argv){
 
 
     rnnoise_destroy(st);
-    ROS_INFO("RNNoise destroyed, leaving...\n");
+    ROS_INFO("*RNNoise destroyed, leaving...*");
 
     return 0;
 }
