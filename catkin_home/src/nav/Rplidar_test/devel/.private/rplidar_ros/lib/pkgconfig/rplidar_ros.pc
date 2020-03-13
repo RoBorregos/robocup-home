@@ -1,8 +1,0 @@
-prefix=/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros
-
-Name: rplidar_ros
-Description: Description of rplidar_ros
-Version: 1.10.0
-Cflags: 
-Libs: -L/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/lib 
-Requires: 

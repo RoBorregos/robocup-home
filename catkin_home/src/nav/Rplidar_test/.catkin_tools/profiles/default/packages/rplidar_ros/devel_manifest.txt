@@ -1,7 +1,0 @@
-rplidar_ros
-/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/cmake.lock /home/pev/Documents/Rplidar_test/devel/./cmake.lock
-/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/lib/rplidar_ros/rplidarNodeClient /home/pev/Documents/Rplidar_test/devel/lib/rplidar_ros/rplidarNodeClient
-/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/lib/rplidar_ros/rplidarNode /home/pev/Documents/Rplidar_test/devel/lib/rplidar_ros/rplidarNode
-/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/lib/pkgconfig/rplidar_ros.pc /home/pev/Documents/Rplidar_test/devel/lib/pkgconfig/rplidar_ros.pc
-/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/share/rplidar_ros/cmake/rplidar_rosConfig-version.cmake /home/pev/Documents/Rplidar_test/devel/share/rplidar_ros/cmake/rplidar_rosConfig-version.cmake
-/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/share/rplidar_ros/cmake/rplidar_rosConfig.cmake /home/pev/Documents/Rplidar_test/devel/share/rplidar_ros/cmake/rplidar_rosConfig.cmake

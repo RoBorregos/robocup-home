@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="robot_description">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.166537387283527 -0.343295416941398 0.487663590094886"
+        rpy="0 0 0" />
+      <mass
+        value="9.93476204559626" />
+      <inertia
+        ixx="0.329743643350845"
+        ixy="0.000839316407568314"
+        ixz="-0.0024568733164321"
+        iyy="0.329832460799335"
+        iyz="-0.000262107838308245"
+        izz="0.0629069592496537" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="base_all">
+    <inertial>
+      <origin
+        xyz="-0.215504099062211 0.2030024572607 -0.163393102675867"
+        rpy="0 0 0" />
+      <mass
+        value="8.59909831646944" />
+      <inertia
+        ixx="0.0567829258373279"
+        ixy="0.00325405306622528"
+        ixz="-2.41437573414989E-07"
+        iyy="0.325676563294456"
+        iyz="1.01977090943127E-06"
+        izz="0.323393907355314" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/base_all.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/base_all.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="all"
+    type="fixed">
+    <origin
+      xyz="-0.34431 -0.51098 0.19563"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="base_all" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

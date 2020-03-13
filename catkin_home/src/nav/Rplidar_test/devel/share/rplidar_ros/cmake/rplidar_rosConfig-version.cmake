@@ -1,1 +1,0 @@
-/home/pev/Documents/Rplidar_test/devel/.private/rplidar_ros/share/rplidar_ros/cmake/rplidar_rosConfig-version.cmake
