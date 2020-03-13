@@ -201,9 +201,9 @@ void RNNoiseProcessNewInput(const int16_t* input_frames) {
 
         if (recording_index == start_recording_index) {
           // TODO: Maybe knowing this, we can make something to prevent it.
-          ROS_INFO("--leaving(limit of recording)--\n");
+          ROS_INFO("---left(limit of recording)---");
         } else {
-          ROS_INFO("--leaving--\n");
+          ROS_INFO("---left---");
         }
       }
 
@@ -225,7 +225,7 @@ void RNNoiseProcessNewInput(const int16_t* input_frames) {
 
           num_with_voice_in_without_voice = 0;
 
-          ROS_INFO("--entering--\n");
+          ROS_INFO("---entered---");
         } else {
           already_in_voice = 0;
 
@@ -233,7 +233,7 @@ void RNNoiseProcessNewInput(const int16_t* input_frames) {
           // reset the `history`.
           num_with_voice = 0;
 
-          ROS_INFO("--leav--\n");
+          ROS_INFO("leaving");
         }
       }
 
@@ -264,7 +264,7 @@ void RNNoiseProcessNewInput(const int16_t* input_frames) {
           sum_prob_almost_in_voice = 0;
           iterations_almost_in_voice = 0;
 
-          ROS_INFO("--enter--\n");
+          ROS_INFO("entering");
         }
       } else {
         history[history_index] = false;
