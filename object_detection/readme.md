@@ -126,4 +126,4 @@ IMAGE_NAME = 'test_images/IMG_0681.jpg'
 
 Run the shell, you should see the image with the objects detected:
 
-![test_image](https://github.com/RoBorregos/Robocup-Home/blob/object_detection/object_detection/images/readme_images/test_image.png)
+![test_model](https://github.com/RoBorregos/Robocup-Home/blob/object_detection/object_detection/images/readme_images/test_model.png)
