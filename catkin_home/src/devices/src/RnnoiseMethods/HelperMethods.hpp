@@ -1,7 +1,7 @@
 #ifndef RNNOISE_METHODS__HELPER_METHODS_HPP
 #define RNNOISE_METHODS__HELPER_METHODS_HPP
 
-
+namespace rnnoise_methods {
 void convertFromShortArrayToFloatArray(
   const int16_t *in_short_array, const long num_elements, float *out_float_array) {
   for (long i = 0; i < num_elements; ++i) {
@@ -15,6 +15,6 @@ void convertFromFloatArrayToShortArray(
     out_short_array[i] = in_float_array[i];
   }
 }
-
+} // namespace rnnoise_methods
 
 #endif
