@@ -6,6 +6,11 @@
 namespace rnnoise_methods {
 namespace detection_algorithms {
 namespace {
+constexpr int NUMBER_CHUNKS_PAST_RECORDS = 13L;
+constexpr long PAST_RECORD_BUFFER_SIZE = NUMBER_CHUNKS_PAST_RECORDS * NUMBER_FRAMES_RNNOISE;
+
+constexpr long RECORDING_BUFFER_SIZE = ACTUAL_RECORDING_BUFFER_SIZE + PAST_RECORD_BUFFER_SIZE;
+
 // Constants first part of algorithm.
 constexpr int MAX_INIT_MEM = 4;
 constexpr int NUM_TO_INIT_VOICE = 4;
@@ -99,6 +104,7 @@ void Algorithm3Steps1ProcessNewInput(const int16_t* input_frames,
     }
 
 
+    // TODO: Ensure that this check since `ACTUAL_RECORDING_BUFFER_SIZE`.
     if (iterations_without_voice >= MAX_ITERATIONS_WITHOUT_VOICE ||
         recording_index == start_recording_index) {
       // The voice never appear again or we reach the limit of frames
@@ -109,7 +115,8 @@ void Algorithm3Steps1ProcessNewInput(const int16_t* input_frames,
       // reset the `history`.
       num_with_voice = 0;
 
-      audio_publisher(recording, start_recording_index, recording_index);
+      audio_publisher(
+        recording, RECORDING_BUFFER_SIZE, start_recording_index, recording_index);
 
       if (recording_index == start_recording_index) {
         // TODO: Maybe knowing this, we can make something to prevent it.

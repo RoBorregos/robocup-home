@@ -67,8 +67,9 @@ float RNNoiseProcessFrames(const float in_frames[NUMBER_FRAMES_RNNOISE],
 /*
  * This is of type `AudioPublisher`.
  */
-void PublishAudioWithoutNoise(int16_t recording[RECORDING_BUFFER_SIZE],
-  const long begin_index_element, const long end_index_element) {
+void PublishAudioWithoutNoise(const int16_t* const recording, 
+  const long array_length, const long begin_index_element, 
+  const long end_index_element) {
   vector<uint8_t> output_vector;
 
   if (begin_index_element < end_index_element ) {
@@ -79,13 +80,13 @@ void PublishAudioWithoutNoise(int16_t recording[RECORDING_BUFFER_SIZE],
   } else {
     // The recoding goes circular and we have to save it in two steps.
     const long length_int8_elements = 
-      (RECORDING_BUFFER_SIZE - begin_index_element + end_index_element) 
+      (array_length - begin_index_element + end_index_element) 
       * sizeof(int16_t);
     output_vector.reserve(length_int8_elements);
 
     output_vector.insert(output_vector.end(),
       (uint8_t*)(recording + begin_index_element),
-      (uint8_t*)(recording + RECORDING_BUFFER_SIZE));
+      (uint8_t*)(recording + array_length));
     output_vector.insert(output_vector.end(), 
       (uint8_t*)recording,
       (uint8_t*)(recording + end_index_element));
