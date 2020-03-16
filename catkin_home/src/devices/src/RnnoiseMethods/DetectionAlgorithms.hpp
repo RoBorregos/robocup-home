@@ -28,7 +28,8 @@ using RnnoiseProcessor = float (*)(const float in_frames[NUMBER_FRAMES_RNNOISE],
  * @param {const int16_t*} input_frames An array with `NUMBER_FRAMES_RNNOISE` elements.
  */
 using RnnoiseNewInputProcessor = void(*)(const int16_t* input_frames, 
-  const RnnoiseProcessor rnnoise_process, const AudioPublisher audio_publisher);
+  const RnnoiseProcessor rnnoise_process, const AudioPublisher audio_publisher,
+  const bool publish_without_noise);
 
 } // namespace detection_algorithms
 } // namespace rnnoise_methods

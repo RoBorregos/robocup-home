@@ -27,6 +27,8 @@ using namespace rnnoise_methods::detection_algorithms;
 
 constexpr int ADVERTISE_BUFFER_SIZE = 10;
 
+constexpr bool PUBLISH_WITHOUT_NOISE = true;
+
 
 const RnnoiseNewInputProcessor rnnoise_process_new_input = Algorithm3Steps1ProcessNewInput;
 
@@ -67,7 +69,7 @@ float RNNoiseProcessFrames(const float in_frames[NUMBER_FRAMES_RNNOISE],
 /*
  * This is of type `AudioPublisher`.
  */
-void PublishAudioWithoutNoise(const int16_t* const recording, 
+void PublishAudio(const int16_t* const recording, 
   const long array_length, const long begin_index_element, 
   const long end_index_element) {
   vector<uint8_t> output_vector;
@@ -103,7 +105,7 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
   // way the uint8_t to int16_t array using the underlaying array of the vector.
   if (msg->data.size() == NUMBER_FRAMES_RNNOISE * (sizeof(int16_t) / sizeof(uint8_t))) {
     rnnoise_process_new_input((int16_t*)msg->data.data(), RNNoiseProcessFrames,
-      PublishAudioWithoutNoise);
+      PublishAudio, PUBLISH_WITHOUT_NOISE);
   } else {
     ROS_INFO("Error in the number of frames received: %zu.", msg->data.size());
   }

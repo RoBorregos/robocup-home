@@ -54,7 +54,8 @@ constexpr int HISTORY_SIZE = MAX_INIT_MEM > MAX_END_VOICE_MEM ? MAX_INIT_MEM : M
  * Of type `RnnoiseNewInputProcessor`.
  */
 void Algorithm3Steps1ProcessNewInput(const int16_t* input_frames, 
-  const RnnoiseProcessor rnnoise_process, const AudioPublisher audio_publisher) {
+  const RnnoiseProcessor rnnoise_process, const AudioPublisher audio_publisher,
+  const bool publish_without_noise) {
   static int16_t recording[RECORDING_BUFFER_SIZE];
   // This index already includes the milliseconds of recording of the past.
   static long next_recording_index = 0;
@@ -85,14 +86,17 @@ void Algorithm3Steps1ProcessNewInput(const int16_t* input_frames,
 
   // Copy the input frames to a float array.
   convertFromShortArrayToFloatArray(input_frames, NUMBER_FRAMES_RNNOISE, frame_values_float);
-
   prob_voice = rnnoise_process(frame_values_float, frame_values_float);
   //ROS_INFO("%f", prob_voice);
   //printf("%f\n", prob_voice);
 
   // Store in the `recording` array in `short` type the new recorded.
-  convertFromFloatArrayToShortArray(frame_values_float, NUMBER_FRAMES_RNNOISE, frame_values_short);
-  memcpy(&(recording[next_recording_index]), frame_values_short, NUMBER_FRAMES_RNNOISE * sizeof(int16_t));
+  if (publish_without_noise) {
+    convertFromFloatArrayToShortArray(frame_values_float, NUMBER_FRAMES_RNNOISE, frame_values_short);
+    memcpy(&(recording[next_recording_index]), frame_values_short, NUMBER_FRAMES_RNNOISE * sizeof(int16_t));
+  } else {
+    memcpy(&(recording[next_recording_index]), input_frames, NUMBER_FRAMES_RNNOISE * sizeof(int16_t));
+  }
   next_recording_index = (next_recording_index + NUMBER_FRAMES_RNNOISE) % RECORDING_BUFFER_SIZE;
 
   if (already_in_voice == 2) {
