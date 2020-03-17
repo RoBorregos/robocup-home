@@ -1,6 +1,8 @@
 #ifndef RNNOISE_METHODS__DETECTION_ALGORITHMS_HPP
 #define RNNOISE_METHODS__DETECTION_ALGORITHMS_HPP
 
+#include <cstdint>
+
 namespace rnnoise_methods {
 namespace detection_algorithms {
 constexpr int NUMBER_FRAMES_RNNOISE = 480;

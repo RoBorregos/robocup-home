@@ -2,6 +2,7 @@
  * TODO: Fix names to include `int16_t` instead of `short`.
  */
 #include <cstdio>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
