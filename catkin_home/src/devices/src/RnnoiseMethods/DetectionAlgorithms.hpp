@@ -16,6 +16,8 @@ constexpr long ACTUAL_RECORDING_BUFFER_SIZE = SECONDS_ACTUAL_RECORDING * SAMPLE_
 
 // TODO: Use this types in the declarations of functions to ensure the type correctness.
 /*
+ * The method should handle cases where is a circular array.
+ *
  * The `begin_index_element` is inclusive and the `end_index_element` is exclusive.
  * `recording` is not modified.
  */

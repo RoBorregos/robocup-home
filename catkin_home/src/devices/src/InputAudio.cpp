@@ -19,6 +19,7 @@ extern "C" {
 #include "RnnoiseMethods/HelperMethods.hpp"
 #include "RnnoiseMethods/DetectionAlgorithms.hpp"
 #include "RnnoiseMethods/Algorithm3Steps1.hpp"
+#include "RnnoiseMethods/AlgorithmAccTolerance1.hpp"
 
 
 using namespace std;
@@ -26,12 +27,13 @@ using namespace rnnoise_methods;
 using namespace rnnoise_methods::detection_algorithms;
 
 
+// TODO: Use flags to define these values.
 constexpr int ADVERTISE_BUFFER_SIZE = 10;
 
 constexpr bool PUBLISH_WITHOUT_NOISE = true;
 
-
 const RnnoiseNewInputProcessor rnnoise_process_new_input = Algorithm3Steps1ProcessNewInput;
+//const RnnoiseNewInputProcessor rnnoise_process_new_input = AlgorithmAccTolerance1ProcessNewInput;
 
 ros::Publisher publi;
 

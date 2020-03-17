@@ -266,6 +266,7 @@ add_executable(InputAudio
   src/InputAudio.cpp
   src/RnnoiseMethods/HelperMethods.cpp
   src/RnnoiseMethods/Algorithm3Steps1.cpp
+  src/RnnoiseMethods/AlgorithmAccTolerance1.cpp
 )
 target_link_libraries(InputAudio ${catkin_LIBRARIES} rnnoise_sl)
 # TODO: These dependecies seem to be not needed, now they generate a warning
