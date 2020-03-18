@@ -103,7 +103,7 @@ void AlgorithmAccTolerance1ProcessNewInput(const int16_t* input_frames,
     tolerance_iterations_left = MIN_TOLERANCE_ITERATIONS;
   }
 
-  printf("%ld  [%f]\n", tolerance_iterations_left, prob_voice);
+  //printf("%ld  [%f]\n", tolerance_iterations_left, prob_voice);
 }
 
 } // namespace detection_algorithms

@@ -18,6 +18,11 @@ def callback_deepspeech(data):
     
     unicode_text = asr_server.bytes_speech_to_text(data.data)
     text = unicode_text.encode('ascii', 'ignore')
+
+    if len(text) == 0 or text.isspace():
+       rospy.loginfo("Audio is empty")
+       return
+
     rospy.loginfo("Voice audio said: \"{0}\".".format(text))
 
     msg = RawInput()
@@ -26,8 +31,6 @@ def callback_deepspeech(data):
     msg.inputText = text
     publisher.publish(msg)
     rospy.loginfo("Published the msg.")
-
-
 
 def callback_azure(data):
     rospy.loginfo("Received a voice audio, computing...")

@@ -32,6 +32,10 @@ constexpr int ADVERTISE_BUFFER_SIZE = 10;
 
 constexpr bool PUBLISH_WITHOUT_NOISE = true;
 
+// TODO: Maybe move this const to DetectionAlgorithms.hpp
+constexpr long MIN_MILLIS_AUDIO_LENGTH = 750L;
+constexpr long MIN_FRAMES_AUDIO_LENGTH = (MIN_MILLIS_AUDIO_LENGTH / MS_IN_A_CHUNK) * NUMBER_FRAMES_RNNOISE;
+
 const RnnoiseNewInputProcessor rnnoise_process_new_input = Algorithm3Steps1ProcessNewInput;
 //const RnnoiseNewInputProcessor rnnoise_process_new_input = AlgorithmAccTolerance1ProcessNewInput;
 
@@ -79,16 +83,25 @@ void PublishAudio(const int16_t* const recording,
 
   if (begin_index_element < end_index_element ) {
     // The recording doesn't go circular.
+    if (end_index_element - begin_index_element < MIN_FRAMES_AUDIO_LENGTH) {
+      ROS_INFO("Recording length too small.");
+      return;
+    }
+
     output_vector.assign(
       (uint8_t*)(recording + begin_index_element),
       (uint8_t*)(recording + end_index_element));
   } else {
     // The recoding goes circular and we have to save it in two steps.
-    const long length_int8_elements = 
-      (array_length - begin_index_element + end_index_element) 
-      * sizeof(int16_t);
-    output_vector.reserve(length_int8_elements);
+    const long length_int16_elements = 
+      array_length - begin_index_element + end_index_element;
 
+    if (length_int16_elements < MIN_FRAMES_AUDIO_LENGTH) {
+      ROS_INFO("Recording length too small.");
+      return;
+    }
+
+    output_vector.reserve(length_int16_elements * sizeof(int16_t));
     output_vector.insert(output_vector.end(),
       (uint8_t*)(recording + begin_index_element),
       (uint8_t*)(recording + array_length));

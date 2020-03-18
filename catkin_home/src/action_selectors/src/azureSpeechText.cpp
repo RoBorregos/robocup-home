@@ -2,6 +2,7 @@
 **  SpeechAPI ROS Node
 **/
 #include <ros/ros.h>
+#include <cctype>
 #include <iostream>
 #include <speechapi_cxx.h>
 #include <fstream>
@@ -46,6 +47,11 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
     // Checks result.
     if (result->Reason == ResultReason::RecognizedSpeech)
     {
+        if (std::all_of(result->Text.begin(), result->Text.end(), ::isspace)) {
+            ROS_INFO("Text recognized is empty");
+            return;
+        }
+
         ROS_INFO_STREAM("Recognized: " << result->Text);
         //Publish messge
         action_selectors::RawInput msg;
