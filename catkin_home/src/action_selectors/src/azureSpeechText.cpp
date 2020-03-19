@@ -1,6 +1,9 @@
 /**
-**  SpeechAPI ROS Node
-**/
+ *  SpeechAPI ROS Node
+ *
+ * Note that when internet is kind of failing it can take almost
+ * 10 seconds to output error and abort request.
+ */
 #include <ros/ros.h>
 #include <cctype>
 #include <iostream>
