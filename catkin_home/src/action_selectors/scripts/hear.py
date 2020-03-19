@@ -5,6 +5,9 @@ This script creates the node `hear` that taking voice audio from topic
 
 For this, it checks everytime if there is internet connection to use
 offline stt or online Azure service.
+Note that azure (online) node can takes almost 10sec to say no internet.
+Also, because DeepSpeech (offline) uses a lot of RAM and cpu, then 
+disabling it can be desired.
 
 TODO: The connection checking doesn't mean a good one for the online service.
 Then, Azure's code takes like 10sec to say error and this node never 
@@ -12,6 +15,7 @@ knows when that happens. Maybe use a ROS service to get feedback.
 '''
 import rospy
 import scipy
+
 from audio_common_msgs.msg import AudioData
 from action_selectors.msg import RawInput
 # TODO: Analyze why inside the DeepSpeech dir, everything can be imported
@@ -22,7 +26,13 @@ from SpeechApiUtils import SpeechApiUtils
 
 
 # TODO: Get this values from flags.
-FORCE_USE_STT = ["none", "online", "offline"][0] 
+# 'online' doesn't even loads DeepSpeech to memory.
+# 'offline' always sends the request to Azure node without
+# even checking for internet.
+FORCE_USE_STT = ["none", "online", "offline"][0]
+
+# Num of process for searching in the LM scorer.
+NUM_PROCESSES_BEAM_SEARCH = 2
 
 
 publisher = None
@@ -81,7 +91,9 @@ def main():
     if FORCE_USE_STT != "online":
         rospy.loginfo("Starting DeepSpeech (ASRServer)")
         global asr_server
-        asr_server = ASRServer()
+        asr_server = ASRServer(
+            num_processes_beam_search=NUM_PROCESSES_BEAM_SEARCH,
+        )
         rospy.loginfo("ASRServer ready")
 
     global publisher, publisher_16k
