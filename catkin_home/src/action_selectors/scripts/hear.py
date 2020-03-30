@@ -26,9 +26,10 @@ from SpeechApiUtils import SpeechApiUtils
 
 
 # TODO: Get this values from flags.
-# 'online' doesn't even loads DeepSpeech to memory.
-# 'offline' always sends the request to Azure node without
+# 'online' doesn't even loads DeepSpeech to memory, it
+# always sends the request to Azure node without
 # even checking for internet.
+# 'offline' always uses DeepSpeech even with internet.
 FORCE_USE_STT = ["none", "online", "offline"][0]
 
 # Num of process for searching in the LM scorer.
