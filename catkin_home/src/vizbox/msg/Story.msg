@@ -1,2 +1,0 @@
-string title 
-string[] storyline
