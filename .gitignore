@@ -8,6 +8,8 @@
 /catkin_home/install/
 /catkin_home/.catkin_tools/
 /catkin_home/.catkin_workspace
+/catkin_home/src/ExternalPackages/
+/catkin_home/src/.rosinstall.bak
 
 ### DeepSpeech && Speech API ###
 /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech/manifest.dev-clean
