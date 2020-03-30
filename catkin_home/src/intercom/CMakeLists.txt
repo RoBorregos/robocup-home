@@ -51,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
     FILES
     action_selector_cmd.msg
+    response.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -104,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   #INCLUDE_DIRS include
-  LIBRARIES intercom
+  #LIBRARIES a_lib
   CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
   #DEPENDS system_lib
 )
