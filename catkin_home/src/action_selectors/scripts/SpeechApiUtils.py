@@ -6,14 +6,25 @@ import audioop
 class SpeechApiUtils(object):
     @staticmethod
     def is_connected():
+        '''
+        Try to connect the fastest possible to a stablished server to see if
+        there is internet connection. It connects to one of the Google's 
+        dns servers (port 53) (https://developers.google.com/speed/public-dns/docs/using),
+        this to avoid timeouts in DNS servers via a hostname. 
+        https://stackoverflow.com/a/33117579
+
+        TODO: Maybe try to do this to also ensure a enough good internet.
+        '''
         try:
             # connect to the host -- tells us if the host is actually
             # reachable
-            sock=socket.create_connection(("www.google.com", 80),1)
+            socket.setdefaulttimeout(0.80)
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect(("8.8.8.8", 53))
             sock.shutdown(socket.SHUT_RDWR)
             sock.close()
             return True
-        except:
+        except socket.error:
             pass
         return False
     
