@@ -1,5 +1,9 @@
 void handleEncoder(Motor &motor){
   motor.ticks++;
+  if(motor.actualState==forward)
+    motor.odomTicks++;
+  else
+    motor.odomTicks++;
 }
 void BLencoder(){
   handleEncoder(moveAll.B_left);

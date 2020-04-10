@@ -1,6 +1,6 @@
 Motor::Motor() {}
 
-Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID(kp, ki, kd) {
+Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID() {
   this->id = id;
   this->d1 = d1;
   this->d2 = d2;
@@ -12,20 +12,41 @@ Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID(kp, ki, 
   this->changePWM(0);
 
   //PID
+  _PID.setTunings(kp,ki,kd);
   _PID.setOutputLimits(0, 255);
   _PID.setMaxErrorSum(4000);
-  _PID.setSampleTime(TIME_VELOCITY_SAMPLE);
+  _PID.setSampleTime(MOTOR_TIME_VELOCITY_SAMPLE);
 }
 
-double Motor::getTargetSpeed(){
-  return (moveAll.getTargetTicks()/PULSES_PER_REVOLUTION)*10;
+double Motor::getTargetLinearRPM(){
+  return ((getTargetLinearTicks()/PULSES_PER_REVOLUTION)*10)+velocityAdjustment;
+}
+double Motor::getTargetAngularRPM(){
+  return ((getTargetAngularTicks()/PULSES_PER_REVOLUTION)*10)+velocityAdjustment;
 }
 
+double Motor::getTargetTicks(double velocity){
+  double ticks =velocity * (MOTOR_TIME_VELOCITY_SAMPLE/1000);
+  ticks=ticks/(WHEEL_DIAMETER*PI_C);  
+  return ceil(ticks*PULSES_PER_REVOLUTION);
+}
+double Motor::getTargetLinearTicks(){
+  return getTargetTicks(moveAll.getTargetLinearVelocity());
+}
+double Motor::getTargetAngularTicks(){
+  return getTargetTicks(moveAll.getTargetAngularVelocity());
+}
 
-void Motor::constantSpeed(){
-    
-    _PID.Compute(getTargetSpeed(),speedActual,pwm,ticks);
-    changePWM(pwm);
+void Motor::constantLinearSpeed(){
+  speedActual=(ticks/PULSES_PER_REVOLUTION)*10;
+  _PID.Compute(getTargetLinearRPM(),speedActual,pwm,ticks);
+  changePWM(pwm);
+}
+
+void Motor::constantAngularSpeed(){
+  speedActual=(ticks/PULSES_PER_REVOLUTION)*10;
+  _PID.Compute(getTargetAngularRPM(),speedActual,pwm,ticks);
+  changePWM(pwm);
 }
 
 
@@ -55,6 +76,9 @@ void Motor::defineOutput() {
 int Motor::getTicks() {
   return this->ticks;
 }
+int Motor::getOdomTicks() {
+  return this->odomTicks;
+}
 
 void Motor::setTicks(int ticks) {
   this->ticks=ticks;
@@ -62,14 +86,14 @@ void Motor::setTicks(int ticks) {
 
 void Motor::changePWM(double p){
   this->pwm=p;
-  switch(state){
-    case 1:
+  switch(actualState){
+    case forward:
       this->Forward();
     break;
-    case 2:
+    case backward:
       this->Backward();
     break;
-    case 3:
+    case stop:
       this->Stop();
     break;
   }
@@ -80,31 +104,31 @@ void Motor::Stop() {
   digitalWrite(this->d1, 0);
   digitalWrite(this->d2, 0);
   
-  if(this->state!=3){
+  if(this->actualState!=stop){
     _PID.reset();
   }
 
-  this->state=3;
+  this->actualState=stop;
 }
 void Motor::Forward() {
   analogWrite(this->p1, this->pwm);
   digitalWrite(this->d1, 1);
   digitalWrite(this->d2, 0);
 
-  if(this->state!=1){
+  if(this->actualState!=forward){
     _PID.reset();
   }
 
-  this->state=1;
+  this->actualState=forward;
 }
 void Motor::Backward() {
   analogWrite(this->p1, this->pwm);
   digitalWrite(this->d1, 0);
   digitalWrite(this->d2, 1);
   
-  if(this->state!=2){
+  if(this->actualState!=backward){
     _PID.reset();
   }
   
-  this->state=2;
+  this->actualState=backward;
 }

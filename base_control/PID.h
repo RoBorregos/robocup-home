@@ -9,8 +9,12 @@ class PID{
     PID();
     PID(const double kp ,const double ki,const double kd);
 
-
-    void Compute(double setpoint,double &input,double &output,double &resetV);
+    //Motor
+    void Compute(double setpoint,double &input,double &output,int &resetV);
+    
+    //BNO
+    void Compute(double setpoint,double input,double &output);
+    void Compute(double error,double &output,byte flag);
 
     
     void setTunings(const double kp, const double ki, const double kd);         	  
@@ -22,6 +26,8 @@ class PID{
     double getKp();
     double getKi();
     double getKd();
+
+    double getPre();
     
 
   private:

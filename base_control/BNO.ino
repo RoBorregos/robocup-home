@@ -1,44 +1,53 @@
 
-int anguloActual(){
-  int angulo = 0;
-  sensors_event_t event; 
-  bno.getEvent(&event);
-  angulo = int(event.orientation.x);
-  angulo -= BNOSetPoint;
-  if (angulo <0){
-    angulo +=  360;
+BNO::BNO(){
+  bno_ = Adafruit_BNO055();
+  
+  if (!bno_.begin()) {
+    while (1);
   }
   
-  return angulo;
+  bno_.setExtCrystalUse(true);
+  sensors_event_t event;
+  bno_.getEvent(&event);
+  BNOSetPoint = event.orientation.x;
+
 }
 
-int orientationStatus(){
-  imu::Vector<3> euler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
+int BNO::actualAngle(){
+  int angle = 0;
+  angle = getAngleX();
+  angle -= BNOSetPoint;
+  if (angle <0){
+    angle +=  360;
+  }
+  
+  return angle;
+}
 
-  /* Display the floating point data */
-  Serial.print("X: ");
-  Serial.print(euler.x());
-  Serial.print(" Y: ");
-  Serial.print(euler.y());
-  Serial.print(" Z: ");
-  Serial.print(euler.z());
-  Serial.print("\t\t");
+double BNO::getAngleX() {
+  sensors_event_t event;
+  bno_.getEvent(&event);
 
-  /* Display calibration status for each sensor. */
+  return event.orientation.x;
+}
+
+double BNO::getAngleY() {
+  sensors_event_t event;
+  bno_.getEvent(&event);
+
+  return event.orientation.y;
+}
+
+double BNO::getAngleZ() {
+  sensors_event_t event;
+  bno_.getEvent(&event);
+
+  return event.orientation.z;
+}
+
+uint8_t BNO::orientationStatus() {
   uint8_t system, gyro, accel, mag = 0;
-  bno.getCalibration(&system, &gyro, &accel, &mag);
-  Serial.print("CALIBRATION: Sys=");
-  Serial.print(system, DEC);
-  Serial.print(" Gyro=");
-  Serial.print(gyro, DEC);
-  Serial.print(" Accel=");
-  Serial.print(accel, DEC);
-  Serial.print(" Mag=");
-  Serial.println(mag, DEC);
-
-  delay(BNO055_SAMPLERATE_DELAY_MS);
+  bno_.getCalibration(&system, &gyro, &accel, &mag);
 
   return mag;
 }
-
-

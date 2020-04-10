@@ -13,14 +13,15 @@ int Utils::AngleToDirection(int angle){
     return 0;
 }
 
+
 void Utils::sendToPC_velocity(){
     if(millis()-this->timeMessage>35)
         return;
 
-    byte* byteData1 = (byte*)(&moveAll.B_left.velocity);
-    byte* byteData2 = (byte*)(&moveAll.F_left.velocity);
-    byte* byteData3 = (byte*)(&moveAll.F_right.velocity);
-    byte* byteData4 = (byte*)(&moveAll.B_right.velocity);
+    byte* byteData1 = (byte*)(&moveAll.B_left.speedActual);
+    byte* byteData2 = (byte*)(&moveAll.F_left.speedActual);
+    byte* byteData3 = (byte*)(&moveAll.F_right.speedActual);
+    byte* byteData4 = (byte*)(&moveAll.B_right.speedActual);
     byte* byteData5 = (byte*)(-1);
     byte buf[20] = {byteData1[0], byteData1[1], byteData1[2], byteData1[3],
                     byteData2[0], byteData2[1], byteData2[2], byteData2[3],
@@ -55,9 +56,9 @@ void Utils::sendToPC_ticksT(){
     if(millis()-this->timeMessage>35)
         return;
         
-    double tmp=moveAll.B_right.getTargetSpeed();
+    double tmp=moveAll.B_right.getTargetLinearRPM();
     double tmp1=moveAll.B_right.speedActual;
-    double tmp2=moveAll.F_right.getTargetSpeed();
+    double tmp2=moveAll.F_right.getTargetLinearRPM();
     double tmp3=moveAll.F_right.speedActual;
     byte* byteData1 = (byte*)(&tmp1);
     byte* byteData2 = (byte*)(&tmp);
