@@ -17,6 +17,7 @@ void setup(){
     
     Movement initRobot(&bno);
     robot=&initRobot;
+    robot->initEncoders();
 
     Odometry odom(robot);
     Plot plot(robot);

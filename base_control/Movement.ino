@@ -20,10 +20,18 @@ Movement::Movement(BNO *bno) {
 
 //PWM
 void Movement::pwm(int pwm) {
-  this->B_right.changePWM(pwm);
-  this->F_right.changePWM(pwm);
-  this->B_left.changePWM(pwm);
-  this->F_left.changePWM(pwm);
+  B_left.changePWM(pwm);
+  F_left.changePWM(pwm);
+  B_right.changePWM(pwm);
+  F_right.changePWM(pwm);
+}
+
+//Encoders
+void Movement::initEncoders(){
+  B_left.initEncoders();
+  F_left.initEncoders();
+  B_right.initEncoders();
+  F_right.initEncoders();
 }
 
 //VELOCITY

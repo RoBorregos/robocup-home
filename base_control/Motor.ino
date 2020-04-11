@@ -18,6 +18,24 @@ Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID() {
   _PID.setSampleTime(MOTOR_TIME_VELOCITY_SAMPLE);
 }
 
+//Encoders
+void Motor::initEncoders(){
+  switch (this->id){
+    case 1:
+      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::BLencoder, RISING);
+    break;
+    case 2:
+      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::FLencoder, RISING);
+    break;
+    case 3:
+      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::BRencoder, RISING);
+    break;
+    case 4:
+      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::FRencoder, RISING);
+    break;
+  }
+}
+
 double Motor::getTargetRPM(double velocity){
   return ((getTargetTicks(velocity)/PULSES_PER_REVOLUTION)*10)+velocityAdjustment;
 }
@@ -38,21 +56,6 @@ void Motor::defineOutput() {
   pinMode(this->p1, OUTPUT);
   pinMode(this->e1, INPUT);
   pinMode(this->e2, INPUT);
-  
-  switch (this->id){
-    case 1:
-      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::BLencoder, RISING);
-    break;
-    case 2:
-      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::FLencoder, RISING);
-    break;
-    case 3:
-      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::BRencoder, RISING);
-    break;
-    case 4:
-      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::FRencoder, RISING);
-    break;
-  }
 }
 
 int Motor::getTicks() {

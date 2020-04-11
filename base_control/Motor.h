@@ -32,6 +32,8 @@ class Motor {
     byte e1 = 0;
     byte e2 = 0;
     
+    //Encoders
+    void initEncoders();
 
     //STATE
     motorState actualState;

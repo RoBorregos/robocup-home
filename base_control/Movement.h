@@ -21,6 +21,9 @@ class Movement {
     Motor F_left;
     
     Movement(BNO * bno);
+
+    //Encoders
+    void initEncoders();
     
     //PWM
     void pwm(int i);
