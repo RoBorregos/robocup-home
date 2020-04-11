@@ -1,4 +1,5 @@
-Odometry::Odometry() : vel_sub("cmd_vel",&Odometry::vel_callback,this), enc_pub("encoders", &enc_msg) {
+Odometry::Odometry(Movement *moveAll) : vel_sub("cmd_vel",&Odometry::vel_callback,this), enc_pub("encoders", &enc_msg) {
+    moveAll_=moveAll;
     //Node Handle
     nh.initNode();
     nh.subscribe(vel_sub);
@@ -29,21 +30,21 @@ void Odometry::vel_callback(const geometry_msgs::Twist& cmdvel) {
 }
 void Odometry::cmd_vel(double linearx,double lineary, double angularz){
     if(angularz > linearx && angularz > lineary){
-        moveAll.dteta=angularz;
-        moveAll.pidAngularMovement();
+        moveAll_->dteta=angularz;
+        moveAll_->pidAngularMovement();
     }else{
-        moveAll.dX=linearx;
-        moveAll.dY=lineary;
-        moveAll.pidLinearMovement();
+        moveAll_->dX=linearx;
+        moveAll_->dY=lineary;
+        moveAll_->pidLinearMovement();
     }
 }
 
 void Odometry::getEncoderCounts(){
 	int newEncoderCounts[4];
-	newEncoderCounts[0] = moveAll.F_left.getOdomTicks();
-	newEncoderCounts[1] = moveAll.F_right.getOdomTicks();
-	newEncoderCounts[2] = moveAll.B_left.getOdomTicks();
-	newEncoderCounts[3] = moveAll.B_right.getOdomTicks();
+	newEncoderCounts[0] = moveAll_->F_left.getOdomTicks();
+	newEncoderCounts[1] = moveAll_->F_right.getOdomTicks();
+	newEncoderCounts[2] = moveAll_->B_left.getOdomTicks();
+	newEncoderCounts[3] = moveAll_->B_right.getOdomTicks();
 	
 	// find deltas
 	int deltaEncoderCounts[4];
@@ -82,5 +83,17 @@ void Odometry::publish(){
         else {
             odom_timer = odom_timer + ODOM_PERIOD;
         }
+    }
+}
+
+void Odometry::run(){
+    while(1){
+        
+        if((millis() - watchdog_timer) > WATCHDOG_PERIOD) {
+            moveAll_->_stop();
+            watchdog_timer = millis();
+        }
+        publish();
+        nh.spinOnce();
     }
 }

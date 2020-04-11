@@ -26,15 +26,17 @@
 
 class Odometry{
     public:
-        Odometry();
+        Odometry(Movement *moveAll);
         void vel_callback(const geometry_msgs::Twist& cmdvel);
         void cmd_vel(double linearx,double lineary, double angularz);
         void getEncoderCounts();
         void publish();
+        void run();
         unsigned long odom_timer = 0;
         unsigned long watchdog_timer = 0;
         ros::NodeHandle  nh;
     private:
+        Movement *moveAll_;
         int lastEncoderCounts[4];
         std_msgs::Float32MultiArray enc_msg;
         ros::Publisher enc_pub;

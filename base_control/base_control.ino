@@ -1,45 +1,28 @@
-//General
-#include "Namespaces.h"
-#include <math.h>
-#define PI_C 3.14159265358979323846
-
-//PID
 #include "PID.h"
-
-//BNO
 #include "BNO.h"
-BNO bno_;
-
-//Motor
 #include "Motor.h"
-
-//Movement
 #include "Movement.h"
-Movement moveAll;
-
-//ROS Odometry
+#include "Encoder.h"
 #include "Odometry.h"
-Odometry odom;
+#include "Plot.h"
+#include <math.h>
 
-//Utils
-#include "Utils.h"
-Utils util;
-
+Movement *robot=NULL;
 
 void setup(){
-    //Initialize Serial
     Serial.begin(9600);
     while (!Serial) delay(1);
 
+    BNO bno;
     
-    util.timeMessage = millis();
+    Movement initRobot(&bno);
+    robot=&initRobot;
+
+    Odometry odom(robot);
+    Plot plot(robot);
+
+    odom.run();
 }
 
 void loop(){   
-    if((millis() - odom.watchdog_timer) > WATCHDOG_PERIOD) {
-        moveAll._stop();
-        odom.watchdog_timer = millis();
-    }
-    odom.publish();
-    odom.nh.spinOnce();
 }

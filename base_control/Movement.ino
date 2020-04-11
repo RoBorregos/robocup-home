@@ -1,4 +1,5 @@
-Movement::Movement() {
+Movement::Movement(BNO *bno) {
+  bno_=bno;
                     //id,d1,d2,p1,e1,e2
   this->B_left  = Motor(1,15,14,11,2,37);
   this->F_left  = Motor(2,37,36,5,2,22);
@@ -38,7 +39,7 @@ double Movement::getTargetAngle(){
 
 //DIRECTIONS
 direction Movement::whereToGo(double &actualAngle){
-    double actualA = bno_.actualAngle();
+    double actualA = bno_->actualAngle();
     actualAngle = actualA;
     double diffAngle = int(abs(actualA - targetAngle)) % 360; 
     actualAngle = diffAngle > 180 ? 360 - diffAngle : diffAngle;
@@ -52,7 +53,7 @@ direction Movement::whereToGo(double &actualAngle){
     return right;
 }
 direction Movement::whereToGo(double &actualAngle,double _targetAngle){
-    double actualA = bno_.actualAngle();
+    double actualA = bno_->actualAngle();
     actualAngle = actualA;
     double diffAngle = int(abs(actualA - _targetAngle)) % 360; 
     actualAngle = diffAngle > 180 ? 360 - diffAngle : diffAngle;
@@ -167,40 +168,40 @@ void Movement::_stop() {
 
 //PID
 void Movement::constantLinearSpeed(){
-  this->F_right.constantLinearSpeed();
-  this->F_left.constantLinearSpeed();
-  this->B_left.constantLinearSpeed();
-  this->B_right.constantLinearSpeed();
+  this->F_right.constantSpeed(getTargetLinearVelocity());
+  this->F_left.constantSpeed(getTargetLinearVelocity());
+  this->B_left.constantSpeed(getTargetLinearVelocity());
+  this->B_right.constantSpeed(getTargetLinearVelocity());
 }
 void Movement::constantAngularSpeed(){
-  this->F_right.constantAngularSpeed();
-  this->F_left.constantAngularSpeed();
-  this->B_left.constantAngularSpeed();
-  this->B_right.constantAngularSpeed();
+  this->F_right.constantSpeed(getTargetAngularVelocity());
+  this->F_left.constantSpeed(getTargetAngularVelocity());
+  this->B_left.constantSpeed(getTargetAngularVelocity());
+  this->B_right.constantSpeed(getTargetAngularVelocity());
 }
 void Movement::doVelocityAdjustment(int adjustment){
-  moveAll.B_left.velocityAdjustment =(moveAll.B_left.actualState ==forward )?adjustment*-1:adjustment;
-  moveAll.F_left.velocityAdjustment =(moveAll.F_left.actualState ==forward )?adjustment*-1:adjustment;
-  moveAll.B_right.velocityAdjustment=(moveAll.B_right.actualState==backward)?adjustment*-1:adjustment;
-  moveAll.F_right.velocityAdjustment=(moveAll.F_right.actualState==backward)?adjustment*-1:adjustment;
+  this->B_left.velocityAdjustment =(this->B_left.actualState ==forward )?adjustment*-1:adjustment;
+  this->F_left.velocityAdjustment =(this->F_left.actualState ==forward )?adjustment*-1:adjustment;
+  this->B_right.velocityAdjustment=(this->B_right.actualState==backward)?adjustment*-1:adjustment;
+  this->F_right.velocityAdjustment=(this->F_right.actualState==backward)?adjustment*-1:adjustment;
 }
 void Movement::pidLinearMovement(){
-    int angle=util.AngleToDirection(moveAll.getTargetAngle());
-    moveAll.setDirection(angle);
-    moveAll.constantLinearSpeed();
+    int angle=AngleToDirection(this->getTargetAngle());
+    this->setDirection(angle);
+    this->constantLinearSpeed();
 
     double angleError = 0;
     direction whereA = whereToGo(angleError);
     _PIDStraight.Compute(angleError, straightOutput,0);
-    moveAll.doVelocityAdjustment(straightOutput);
+    this->doVelocityAdjustment(straightOutput);
 }
 void Movement::pidAngularMovement(){
     if(this->dteta<0){
-        moveAll._rotateR();
+        this->_rotateR();
     }else{
-        moveAll._rotateL();
+        this->_rotateL();
     }
-    moveAll.constantAngularSpeed();
+    this->constantAngularSpeed();
 }
 bool Movement::pidRotate(double _targetAngle){
     double output = 0;
@@ -209,7 +210,7 @@ bool Movement::pidRotate(double _targetAngle){
     Serial.println(angleError);
     if(abs(angleError)<=1 && abs(_PIDRotation.getPre())<=1 && angleError*_PIDRotation.getPre()>=0){
         
-        moveAll._stop();
+        this->_stop();
         return true;
     }
 
@@ -217,17 +218,29 @@ bool Movement::pidRotate(double _targetAngle){
     output = abs(output)-0.075;
     
     if(whereA==left){
-        moveAll._rotateR();
+        this->_rotateR();
     }else{
-        moveAll._rotateL();
+        this->_rotateL();
     }
 
-    moveAll.B_left.velocityAdjustment=output;
-    moveAll.F_left.velocityAdjustment=output;
-    moveAll.B_right.velocityAdjustment=output;
-    moveAll.F_right.velocityAdjustment=output;
-    moveAll.constantAngularSpeed();
+    this->B_left.velocityAdjustment=output;
+    this->F_left.velocityAdjustment=output;
+    this->B_right.velocityAdjustment=output;
+    this->F_right.velocityAdjustment=output;
+    this->constantAngularSpeed();
    
     return false;
 }
 
+//Utils
+int Movement::AngleToDirection(int angle){
+    int diff=1000;
+    for(int i=0;i<=8;i++){
+        if(diff > abs(angle-i*45) ){
+            diff=abs(angle-i*45);
+        }else{
+            return (i-1)*45;
+        }
+    }
+    return 0;
+}

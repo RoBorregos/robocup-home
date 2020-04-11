@@ -18,37 +18,19 @@ Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID() {
   _PID.setSampleTime(MOTOR_TIME_VELOCITY_SAMPLE);
 }
 
-double Motor::getTargetLinearRPM(){
-  return ((getTargetLinearTicks()/PULSES_PER_REVOLUTION)*10)+velocityAdjustment;
+double Motor::getTargetRPM(double velocity){
+  return ((getTargetTicks(velocity)/PULSES_PER_REVOLUTION)*10)+velocityAdjustment;
 }
-double Motor::getTargetAngularRPM(){
-  return ((getTargetAngularTicks()/PULSES_PER_REVOLUTION)*10)+velocityAdjustment;
-}
-
 double Motor::getTargetTicks(double velocity){
   double ticks =velocity * (MOTOR_TIME_VELOCITY_SAMPLE/1000);
-  ticks=ticks/(WHEEL_DIAMETER*PI_C);  
+  ticks=ticks/(WHEEL_DIAMETER*M_PI);  
   return ceil(ticks*PULSES_PER_REVOLUTION);
 }
-double Motor::getTargetLinearTicks(){
-  return getTargetTicks(moveAll.getTargetLinearVelocity());
-}
-double Motor::getTargetAngularTicks(){
-  return getTargetTicks(moveAll.getTargetAngularVelocity());
-}
 
-void Motor::constantLinearSpeed(){
-  speedActual=(ticks/PULSES_PER_REVOLUTION)*10;
-  _PID.Compute(getTargetLinearRPM(),speedActual,pwm,ticks);
+void Motor::constantSpeed(double velocity){
+  _PID.Compute(getTargetRPM(velocity),speedActual,pwm,ticks,PULSES_PER_REVOLUTION);
   changePWM(pwm);
 }
-
-void Motor::constantAngularSpeed(){
-  speedActual=(ticks/PULSES_PER_REVOLUTION)*10;
-  _PID.Compute(getTargetAngularRPM(),speedActual,pwm,ticks);
-  changePWM(pwm);
-}
-
 
 void Motor::defineOutput() {
   pinMode(this->d1, OUTPUT);
@@ -59,16 +41,16 @@ void Motor::defineOutput() {
   
   switch (this->id){
     case 1:
-      attachInterrupt(digitalPinToInterrupt(this->e1), BLencoder, RISING);
+      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::BLencoder, RISING);
     break;
     case 2:
-      attachInterrupt(digitalPinToInterrupt(this->e1), FLencoder, RISING);
+      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::FLencoder, RISING);
     break;
     case 3:
-      attachInterrupt(digitalPinToInterrupt(this->e1), BRencoder, RISING);
+      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::BRencoder, RISING);
     break;
     case 4:
-      attachInterrupt(digitalPinToInterrupt(this->e1), FRencoder, RISING);
+      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::FRencoder, RISING);
     break;
   }
 }

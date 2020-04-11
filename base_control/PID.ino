@@ -9,12 +9,15 @@ PID::PID(const double kp, const double ki, const double kd){
 }
 
 
-void PID::Compute(double setpoint,double &input,double &output,int &resetV){
+void PID::Compute(double setpoint,double &input,double &output,int &resetV, int pulses_per_rev){
   if(millis()-time < sampleTime)
       return;
 
-  resetV=0;
-  
+  if(resetV){
+    input=(resetV/pulses_per_rev)*10;
+    resetV=0;
+  }
+
   double error = setpoint - input;
   output = error*kp + errorSum*ki + (error - errorPre)*kd;
   

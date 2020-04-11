@@ -20,8 +20,7 @@ class Movement {
     Motor F_right;
     Motor F_left;
     
-    Movement(Motor A, Motor B, Motor C, Motor D);
-    Movement();
+    Movement(BNO * bno);
     
     //PWM
     void pwm(int i);
@@ -67,5 +66,10 @@ class Movement {
     void pidAngularMovement();
     bool pidRotate(double _targetAngle);
 
+    //Utils
+    int AngleToDirection(int angle);
+    
+  private:
+    BNO *bno_;
 };
 #endif

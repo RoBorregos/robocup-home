@@ -31,6 +31,7 @@ class Motor {
 
     byte e1 = 0;
     byte e2 = 0;
+    
 
     //STATE
     motorState actualState;
@@ -42,10 +43,7 @@ class Motor {
     double ki = 55;
     double speedActual=0;
     double getTargetTicks(double velocity);
-    double getTargetLinearTicks();
-    double getTargetAngularTicks();
-    void constantLinearSpeed();
-    void constantAngularSpeed();
+    void constantSpeed(double velocity);
 
 
 
@@ -59,8 +57,7 @@ class Motor {
     int getTicks();
     int getOdomTicks();
     void setTicks(int ticks);
-    double getTargetLinearRPM();
-    double getTargetAngularRPM();
+    double getTargetRPM(double velocity);
     double _OPID();
     
 };

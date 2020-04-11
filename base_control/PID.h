@@ -10,8 +10,8 @@ class PID{
     PID(const double kp ,const double ki,const double kd);
 
     //Motor
-    void Compute(double setpoint,double &input,double &output,int &resetV);
-    
+    void Compute(double setpoint,double &input,double &output,int &resetV, int pulses_per_rev);
+
     //BNO
     void Compute(double setpoint,double input,double &output);
     void Compute(double error,double &output,byte flag);

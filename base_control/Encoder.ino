@@ -1,19 +1,19 @@
-void handleEncoder(Motor &motor){
+void Encoder::handleEncoder(Motor &motor){
   motor.ticks++;
   if(motor.actualState==forward)
     motor.odomTicks++;
   else
     motor.odomTicks++;
 }
-void BLencoder(){
-  handleEncoder(moveAll.B_left);
+void Encoder::BLencoder(){
+  handleEncoder(robot->B_left);
 }
-void BRencoder(){
-  handleEncoder(moveAll.B_right);
+void Encoder::BRencoder(){
+  handleEncoder(robot->B_right);
 }
-void FLencoder(){
-  handleEncoder(moveAll.F_left);
+void Encoder::FLencoder(){
+  handleEncoder(robot->F_left);
 }
-void FRencoder(){
-  handleEncoder(moveAll.F_right);
+void Encoder::FRencoder(){
+  handleEncoder(robot->F_right);
 }
