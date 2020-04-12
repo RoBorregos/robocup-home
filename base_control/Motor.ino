@@ -1,6 +1,6 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Motor::Motor() {}
-Motor::Motor(const uint8_t id, const uint8_t digital_one, const uint8_t digital_two, const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two) : pid_() {
+Motor::Motor(const uint8_t id, const uint8_t digital_one, const uint8_t digital_two, const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two) : pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidMotorTimeSample) {
   id_ = id;
   digital_one_ = digital_one;
   digital_two_ = digital_two;
@@ -12,11 +12,6 @@ Motor::Motor(const uint8_t id, const uint8_t digital_one, const uint8_t digital_
   defineOutput();
   changePwm(LOW);
 
-  //PID
-  pid_.setTunings(kP, kI, kD);
-  pid_.setOutputLimits(kPidMinOutputLimit, kPidMaxOutputLimit);
-  pid_.setMaxErrorSum(kPidMaxErrorSum);
-  pid_.setSampleTime(kPidMotorTimeSample);
 }
 
 
@@ -105,7 +100,7 @@ void Motor::changePwm(const uint8_t pwm){
 }
 void Motor::constantSpeed(const double velocity){
   double tmp_pwm = pwm_;
-  pid_.compute(getTargetRpm(velocity), current_speed_, tmp_pwm, pid_ticks_, kPulsesPerRevolution);
+  pid_.compute(getTargetRpm(velocity), current_speed_, tmp_pwm, pid_ticks_, kPulsesPerRevolution,kPidCountTimeSamplesInOneSecond);
   changePwm(tmp_pwm);
 }
 

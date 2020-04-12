@@ -45,8 +45,17 @@ class Movement {
     double getTargetAngularVelocity();
     //Stop robot.
     void stop();
+    
+    //////////////////////////////////PID//////////////////////////////////////
+    void pidLinearMovement();
+    ///Robot moves angular with pid.
+    void pidAngularMovement();
+    ///Robot rotate to a custom targetAngle whit pid.
+    bool pidRotate(const double target_angle);
 
-
+    
+  private:
+  
     //////////////////////////////////DIRECTIONS//////////////////////////////////////
     ///This function tells where is the target Angle of the class, left or right.
     direction whereToGo(double &actual_angle);
@@ -76,8 +85,8 @@ class Movement {
     void rotateLeft();
     ///Put motors rotating right.
     void rotateRight();
- 
-    
+
+
     //////////////////////////////////PID//////////////////////////////////////
     ///Set motors to respect linear velocity. 
     void constantLinearSpeed();
@@ -85,14 +94,7 @@ class Movement {
     void constantAngularSpeed();
     ///Fix robot inclination while is moving.
     void velocityAdjustment(const int adjustment);
-    ///Robot moves linear with pid.
-    void pidLinearMovement();
-    ///Robot moves angular with pid.
-    void pidAngularMovement();
-    ///Robot rotate to a custom targetAngle whit pid.
-    bool pidRotate(const double target_angle);
-    
-  private:
+
     //Pins
     static const uint8_t kIdBackLeftMotor = 1;
     static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {15, 14};

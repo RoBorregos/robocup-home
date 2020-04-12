@@ -1,5 +1,5 @@
 //////////////////////////////////Constructor//////////////////////////////////////
-Movement::Movement(BNO *bno) {
+Movement::Movement(BNO *bno) : pid_straight_(kPPidStraight, kIPidStraight, kDPidStraight, kOutputMinLimitPidStraight, kOutputMaxLimitPidStraight, kPidMaxErrorSum, kPidMovementTimeSample), pid_rotation_(kPPidRotation, kIPidRotation, kDPidRotation, kOutputMinLimitPidRotation, kOutputMaxLimitPidRotation, kPidMaxErrorSum, kPidMovementTimeSample) {
   bno_=bno;
   
   back_left_motor_  = Motor(kIdBackLeftMotor, kDigitalPinsBackLeftMotor[0], kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
@@ -7,16 +7,6 @@ Movement::Movement(BNO *bno) {
   back_right_motor_ = Motor(kIdBackRightMotor, kDigitalPinsBackRightMotor[0], kDigitalPinsBackRightMotor[1], kAnalogPinBackRightMotor, kEncoderPinsBackRightMotor[0], kEncoderPinsBackRightMotor[1]);
   front_right_motor_= Motor(kIdFrontRightMotor, kDigitalPinsFrontRightMotor[0], kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, kEncoderPinsFrontRightMotor[0], kEncoderPinsFrontRightMotor[1]);
 
-  //PID
-  pid_straight_.setTunings(kPPidStraight, kIPidStraight, kDPidStraight);
-  pid_straight_.setOutputLimits(kOutputMinLimitPidStraight, kOutputMaxLimitPidStraight);
-  pid_straight_.setMaxErrorSum(kPidMaxErrorSum);
-  pid_straight_.setSampleTime(kPidMovementTimeSample);
-
-  pid_rotation_.setTunings(kPPidRotation, kIPidRotation, kDPidRotation);
-  pid_rotation_.setOutputLimits(kOutputMinLimitPidRotation, kOutputMaxLimitPidRotation);
-  pid_rotation_.setMaxErrorSum(kPidMaxErrorSum);
-  pid_rotation_.setSampleTime(kPidMovementTimeSample);
 }
 
 //////////////////////////////////Encoders//////////////////////////////////////

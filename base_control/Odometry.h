@@ -17,6 +17,12 @@ class Odometry{
         //////////////////////////////////Constructor//////////////////////////////////////
         Odometry(Movement *move_all);
         
+        
+        //////////////////////////////////Run//////////////////////////////////////
+        ///This is the main function calls publish and verify it is still receiving velocity commands.
+        void run();
+
+    private:
         //////////////////////////////////Velocity Suscriber//////////////////////////////////////
         ///Receives velocity commands.
         void velocityCallback(const geometry_msgs::Twist& cmdvel);
@@ -29,11 +35,6 @@ class Odometry{
         ///Publish encoder message.
         void publish();
         
-        //////////////////////////////////Run//////////////////////////////////////
-        ///This is the main function calls publish and verify it is still receiving velocity commands.
-        void run();
-
-    private:
         Movement *move_all_;
         static const uint8_t kCountMotors = 4;
 
@@ -59,6 +60,7 @@ class Odometry{
         //Timers
         unsigned long odom_timer_ = 0;
         unsigned long watchdog_timer_ = 0;
+
         
 };
 

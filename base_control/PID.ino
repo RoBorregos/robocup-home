@@ -4,23 +4,28 @@ PID::PID(){
   time_ = millis();
 }
 
-PID::PID(const double kp, const double ki, const double kd){
+PID::PID(const double kp, const double ki, const double kd, const double out_min, const double out_max, const double max_error_sum, const long sample_time){
   time_ = millis();
   setTunings(kp, ki, kd);
+  setOutputLimits(out_min, out_max);
+  setMaxErrorSum(max_error_sum);
+  setSampleTime(sample_time);
 }
 
 //////////////////////////////////Compute//////////////////////////////////////
-void PID::compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev){
+void PID::compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev,const int count_time_samples_in_one_second){
   if(millis()-time_ < sample_time_){
       return;
   }
 
-  if(reset_variable){
-    input = (reset_variable/pulses_per_rev)*10;
+  if(reset_variable>0){
+    input = (reset_variable/pulses_per_rev)*count_time_samples_in_one_second;
     reset_variable = 0;
+  }else{
+    return;
   }
 
-  double error = setpoint - input;
+  const double error = setpoint - input;
   output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
   
   error_pre_= error;
@@ -39,7 +44,7 @@ void PID::compute(const double setpoint, const double input, double &output){
       return;
   }
 
-  double error = setpoint - input;
+  const double error = setpoint - input;
   output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
   
   error_pre_ = error;

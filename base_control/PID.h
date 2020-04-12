@@ -8,15 +8,15 @@ class PID{
   
     //////////////////////////////////Constructor//////////////////////////////////////
     PID();
-    PID(const double kp, const double ki, const double kd);
-
+    PID(const double kp, const double ki, const double kd, const double out_min, const double out_max, const double max_error_sum, const long sample_time);
+    
     //////////////////////////////////Compute//////////////////////////////////////
     ///This function computes an output accoriding to the error and PID constants.
     void compute(const double error, double &output, const byte flag);
     ///This function computes an output accoriding to the error calculated internally and PID constants.
     void compute(const double setpoint, const double input, double &output);
     ///This function computes an output accoriding to the error calculated internally and PID constants,  also it resets a variable (used with ticks).
-    void compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev);
+    void compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev,const int count_time_samples_in_one_second);
     
     //////////////////////////////////Set Methods//////////////////////////////////////
     //This function set kp_, ki_, kd_ variables
