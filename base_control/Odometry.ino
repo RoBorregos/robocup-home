@@ -1,5 +1,5 @@
 //////////////////////////////////Constructor//////////////////////////////////////
-Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Odometry::velocityCallback,this), encoder_publisher_("encoders", &encoder_msg_){
+Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Odometry::velocityCallback, this),  encoder_publisher_("encoders", &encoder_msg_){
     move_all_ = move_all;
     //Node Handle
     nh_.initNode();
@@ -27,14 +27,14 @@ Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Od
 //////////////////////////////////Velocity Suscriber//////////////////////////////////////
 void Odometry::velocityCallback(const geometry_msgs::Twist& cmd_velocity) {
     cmdVelocity(
-        min(cmd_velocity.linear.x, kLinearXMaxVelocity),
-        min(cmd_velocity.linear.y, kLinearYMaxVelocity),
+        min(cmd_velocity.linear.x, kLinearXMaxVelocity), 
+        min(cmd_velocity.linear.y, kLinearYMaxVelocity), 
         min(cmd_velocity.angular.z, kAngularZMaxVelocity)
     );
     watchdog_timer_ = millis();
 }
 
-void Odometry::cmdVelocity(const double linear_x,const double linear_y, const double angular_z){
+void Odometry::cmdVelocity(const double linear_x, const double linear_y, const double angular_z){
     if(angular_z > linear_x && angular_z > linear_y){
         move_all_->setDeltaAngular(angular_z);
         move_all_->pidAngularMovement();

@@ -48,10 +48,10 @@ class Movement {
 
 
     //////////////////////////////////DIRECTIONS//////////////////////////////////////
-    ///This function tells where is the target Angle of the class,left or right.
+    ///This function tells where is the target Angle of the class, left or right.
     direction whereToGo(double &actual_angle);
-    ///This function tells where is a custom target Angle,left or right.
-    direction whereToGo(double &actual_angle,const double target_angle);
+    ///This function tells where is a custom target Angle, left or right.
+    direction whereToGo(double &actual_angle, const double target_angle);
     //This function change any angle to a direction angle. 
     int angleToDirection(const int angle);
     ///This function sets a direction according to an angle.
@@ -95,24 +95,24 @@ class Movement {
   private:
     //Pins
     static const uint8_t kIdBackLeftMotor = 1;
-    static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {15,14};
+    static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {15, 14};
     static const uint8_t kAnalogPinBackLeftMotor = 11;
-    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2,37};
+    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2, 37};
 
     static const uint8_t kIdFrontLeftMotor = 2;
-    static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {37,36};
+    static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {37, 36};
     static const uint8_t kAnalogPinFrontLeftMotor = 5;
-    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {2,22};
+    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {2, 22};
 
     static const uint8_t kIdBackRightMotor = 3;
-    static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {45,43};
+    static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {45, 43};
     static const uint8_t kAnalogPinBackRightMotor = 6;
-    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {19,14};
+    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {19, 14};
 
     static const uint8_t kIdFrontRightMotor = 4;
-    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {25,24};
+    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {25, 24};
     static const uint8_t kAnalogPinFrontRightMotor = 7;
-    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {18,23};
+    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {18, 23};
 
     ///Bno
     BNO *bno_;

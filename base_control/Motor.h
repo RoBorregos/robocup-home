@@ -3,8 +3,8 @@
 #define Motor_h
 
 enum motorState{
-    Forward,
-    Backward,
+    Forward, 
+    Backward, 
     Stop
 };
 
@@ -12,7 +12,7 @@ class Motor {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
     Motor();
-    Motor(const uint8_t id,const uint8_t digital_one,const uint8_t digital_two,const uint8_t analog_one,const uint8_t encoder_one,const uint8_t encoder_two);
+    Motor(const uint8_t id, const uint8_t digital_one, const uint8_t digital_two, const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two);
     
     
     //////////////////////////////////Initialization//////////////////////////////////////
@@ -43,9 +43,9 @@ class Motor {
 
 
     //////////////////////////////////Set Methods//////////////////////////////////////
-    //Set the count of ticks of the encoders,the count used in Pid.
+    //Set the count of ticks of the encoders, the count used in Pid.
     void setPidTicks(const int pid_ticks);
-    //Set the count of ticks of the encoders,the count used in Odometry.
+    //Set the count of ticks of the encoders, the count used in Odometry.
     void setOdomTicks(const int odom_ticks);
     //Set an adjustment to the velocity.
     void setVelocityAdjustment(const double velocity_adjustment);    

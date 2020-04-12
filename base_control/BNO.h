@@ -1,4 +1,4 @@
-///This class has the declaration,initialization and usage function of the BNO.
+///This class has the declaration, initialization and usage function of the BNO.
 #ifndef BNO_h
 #define BNO_h
 

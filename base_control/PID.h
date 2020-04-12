@@ -8,19 +8,19 @@ class PID{
   
     //////////////////////////////////Constructor//////////////////////////////////////
     PID();
-    PID(const double kp ,const double ki,const double kd);
+    PID(const double kp, const double ki, const double kd);
 
     //////////////////////////////////Compute//////////////////////////////////////
     ///This function computes an output accoriding to the error and PID constants.
-    void compute(const double error,double &output,const byte flag);
+    void compute(const double error, double &output, const byte flag);
     ///This function computes an output accoriding to the error calculated internally and PID constants.
-    void compute(const double setpoint,const double input,double &output);
-    ///This function computes an output accoriding to the error calculated internally and PID constants, also it resets a variable (used with ticks).
-    void compute(const double setpoint,double &input,double &output,int &reset_variable,const int pulses_per_rev);
+    void compute(const double setpoint, const double input, double &output);
+    ///This function computes an output accoriding to the error calculated internally and PID constants,  also it resets a variable (used with ticks).
+    void compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev);
     
     //////////////////////////////////Set Methods//////////////////////////////////////
-    //This function set kp_,ki_,kd_ variables
-    void setTunings(const double kp, const double ki, const double kd);         	  
+    //This function set kp_, ki_, kd_ variables
+    void setTunings(const double kp,  const double ki,  const double kd);         	  
     //This function set sample_time_ variable
     void setSampleTime(const unsigned long sample_time);			
     //This function set max_error_sum_ variable

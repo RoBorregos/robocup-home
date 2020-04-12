@@ -21,7 +21,7 @@ class Odometry{
         ///Receives velocity commands.
         void velocityCallback(const geometry_msgs::Twist& cmdvel);
         ///Process velocity commands.
-        void cmdVelocity(const double linearx,const double lineary, const double angularz);
+        void cmdVelocity(const double linearx, const double lineary,  const double angularz);
         
         //////////////////////////////////Encoders Publisher//////////////////////////////////////
         ///Process encoder and return message.
@@ -41,7 +41,7 @@ class Odometry{
         ros::NodeHandle  nh_;
         
         //Suscriber
-        ros::Subscriber<geometry_msgs::Twist,Odometry> velocity_subscriber_;
+        ros::Subscriber<geometry_msgs::Twist, Odometry> velocity_subscriber_;
         static constexpr double kLinearXMaxVelocity = 1.1;
         static constexpr double kLinearYMaxVelocity = 1.3;
         static constexpr double kAngularZMaxVelocity = 2.8;

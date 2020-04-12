@@ -2,19 +2,19 @@
 Movement::Movement(BNO *bno) {
   bno_=bno;
   
-  back_left_motor_  = Motor(kIdBackLeftMotor,kDigitalPinsBackLeftMotor[0],kDigitalPinsBackLeftMotor[1],kAnalogPinBackLeftMotor,kEncoderPinsBackLeftMotor[0],kEncoderPinsBackLeftMotor[1]);
-  front_left_motor_ = Motor(kIdFrontLeftMotor,kDigitalPinsFrontLeftMotor[0],kDigitalPinsFrontLeftMotor[1],kAnalogPinFrontLeftMotor,kEncoderPinsFrontLeftMotor[0],kEncoderPinsFrontLeftMotor[1]);
-  back_right_motor_ = Motor(kIdBackRightMotor,kDigitalPinsBackRightMotor[0],kDigitalPinsBackRightMotor[1],kAnalogPinBackRightMotor,kEncoderPinsBackRightMotor[0],kEncoderPinsBackRightMotor[1]);
-  front_right_motor_= Motor(kIdFrontRightMotor,kDigitalPinsFrontRightMotor[0],kDigitalPinsFrontRightMotor[1],kAnalogPinFrontRightMotor,kEncoderPinsFrontRightMotor[0],kEncoderPinsFrontRightMotor[1]);
+  back_left_motor_  = Motor(kIdBackLeftMotor, kDigitalPinsBackLeftMotor[0], kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
+  front_left_motor_ = Motor(kIdFrontLeftMotor, kDigitalPinsFrontLeftMotor[0], kDigitalPinsFrontLeftMotor[1], kAnalogPinFrontLeftMotor, kEncoderPinsFrontLeftMotor[0], kEncoderPinsFrontLeftMotor[1]);
+  back_right_motor_ = Motor(kIdBackRightMotor, kDigitalPinsBackRightMotor[0], kDigitalPinsBackRightMotor[1], kAnalogPinBackRightMotor, kEncoderPinsBackRightMotor[0], kEncoderPinsBackRightMotor[1]);
+  front_right_motor_= Motor(kIdFrontRightMotor, kDigitalPinsFrontRightMotor[0], kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, kEncoderPinsFrontRightMotor[0], kEncoderPinsFrontRightMotor[1]);
 
   //PID
-  pid_straight_.setTunings(kPPidStraight,kIPidStraight,kDPidStraight);
-  pid_straight_.setOutputLimits(kOutputMinLimitPidStraight,kOutputMaxLimitPidStraight);
+  pid_straight_.setTunings(kPPidStraight, kIPidStraight, kDPidStraight);
+  pid_straight_.setOutputLimits(kOutputMinLimitPidStraight, kOutputMaxLimitPidStraight);
   pid_straight_.setMaxErrorSum(kPidMaxErrorSum);
   pid_straight_.setSampleTime(kPidMovementTimeSample);
 
-  pid_rotation_.setTunings(kPPidRotation,kIPidRotation,kDPidRotation);
-  pid_rotation_.setOutputLimits(kOutputMinLimitPidRotation,kOutputMaxLimitPidRotation);
+  pid_rotation_.setTunings(kPPidRotation, kIPidRotation, kDPidRotation);
+  pid_rotation_.setOutputLimits(kOutputMinLimitPidRotation, kOutputMaxLimitPidRotation);
   pid_rotation_.setMaxErrorSum(kPidMaxErrorSum);
   pid_rotation_.setSampleTime(kPidMovementTimeSample);
 }
@@ -64,9 +64,9 @@ void Movement::stop(){
 
 //////////////////////////////////DIRECTIONS//////////////////////////////////////
 direction Movement::whereToGo(double &actual_angle){
-    return whereToGo(actual_angle,target_angle_);
+    return whereToGo(actual_angle, target_angle_);
 }
-direction Movement::whereToGo(double &actual_angle,const double target_angle){
+direction Movement::whereToGo(double &actual_angle, const double target_angle){
     double actual_a = bno_->getActualAngle();
     actual_angle = actual_a;
     double diff_angle = int(abs(actual_a - target_angle)) % kMaxAngle; 
@@ -207,7 +207,7 @@ void Movement::pidLinearMovement(){
 
     double angle_error = 0;
     direction where = whereToGo(angle_error);
-    pid_straight_.compute(angle_error, straight_output_,0);
+    pid_straight_.compute(angle_error,  straight_output_, 0);
     velocityAdjustment(straight_output_);
 }
 void Movement::pidAngularMovement(){
@@ -221,13 +221,13 @@ void Movement::pidAngularMovement(){
 bool Movement::pidRotate(const double target_angle){
     double output = 0;
     double angle_error = 0;
-    direction where = whereToGo(angle_error,target_angle);
+    direction where = whereToGo(angle_error, target_angle);
     if(abs(angle_error)<=kPidRotationTolerance && abs(pid_rotation_.getPre())<=kPidRotationTolerance && angle_error*pid_rotation_.getPre()>=0){
         stop();
         return true;
     }
 
-    pid_rotation_.compute(angle_error, output,1);
+    pid_rotation_.compute(angle_error,  output, 1);
     output = abs(output)+kOutputAdjustment;
     
     if(where == left){
