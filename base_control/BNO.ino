@@ -1,6 +1,6 @@
 
 //////////////////////////////////Constructor//////////////////////////////////////
-BNO::BNO(){
+BNO::BNO() {
   bno_ = Adafruit_BNO055(55);
   
   if (!bno_.begin()) {
@@ -23,11 +23,11 @@ uint8_t BNO::orientationStatus() {
 }
 
 //////////////////////////////////Get Functions//////////////////////////////////////
-int BNO::getActualAngle(){
+int BNO::getActualAngle() {
   int angle = 0;
   angle = getAngleX();
   angle -= BNOSetPoint;
-  if (angle <0){
+  if (angle <0) {
     angle +=  360;
   }
   return angle;
