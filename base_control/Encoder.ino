@@ -1,11 +1,11 @@
 //////////////////////////////////Main Function//////////////////////////////////////
 void Encoder::handleEncoder(Motor &motor){
-  motor.setPidTicks(motor.getPidTicks()+1);
-  if(motor.getActualState()==Forward) {
-    motor.setOdomTicks(motor.getOdomTicks()+1);
+  motor.setPidTicks(motor.getPidTicks() + 1);
+  if(motor.getActualState() == Forward) {
+    motor.setOdomTicks(motor.getOdomTicks() + 1);
   }
   else {
-    motor.setOdomTicks(motor.getOdomTicks()-1);
+    motor.setOdomTicks(motor.getOdomTicks() - 1);
   }
 }
 

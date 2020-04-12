@@ -1,6 +1,6 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Odometry::velocityCallback,this), encoder_publisher_("encoders", &encoder_msg_){
-    move_all_=move_all;
+    move_all_ = move_all;
     //Node Handle
     nh_.initNode();
     nh_.subscribe(velocity_subscriber_);

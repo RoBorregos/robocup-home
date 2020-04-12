@@ -35,26 +35,26 @@ class Odometry{
 
     private:
         Movement *move_all_;
-        static const uint8_t kCountMotors=4;
+        static const uint8_t kCountMotors = 4;
 
         //Node
         ros::NodeHandle  nh_;
         
         //Suscriber
         ros::Subscriber<geometry_msgs::Twist,Odometry> velocity_subscriber_;
-        static constexpr double kLinearXMaxVelocity=1.1;
-        static constexpr double kLinearYMaxVelocity=1.3;
-        static constexpr double kAngularZMaxVelocity=2.8;
-        static const uint16_t kWatchdogPeriod=500;
+        static constexpr double kLinearXMaxVelocity = 1.1;
+        static constexpr double kLinearYMaxVelocity = 1.3;
+        static constexpr double kAngularZMaxVelocity = 2.8;
+        static const uint16_t kWatchdogPeriod = 500;
         
         //Publisher
         ros::Publisher encoder_publisher_;
         std_msgs::Float32MultiArray encoder_msg_;
         int last_encoder_counts_[kCountMotors];
-        static const uint8_t kOdomPeriod=50;
-        static constexpr uint16_t kIntMax=65535;
-        static constexpr uint16_t kCountReset=250;
-        static constexpr uint16_t kCountOverflow=16374;        
+        static const uint8_t kOdomPeriod = 50;
+        static constexpr uint16_t kIntMax = 65535;
+        static constexpr uint16_t kCountReset = 250;
+        static constexpr uint16_t kCountOverflow = 16374;        
 
         //Timers
         unsigned long odom_timer_ = 0;

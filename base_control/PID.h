@@ -33,12 +33,12 @@ class PID{
   
   private:
     
-    double kp_=0;
-    double ki_=0;
-    double kd_=0;
+    double kp_ = 0;
+    double ki_ = 0;
+    double kd_ = 0;
 
-    double error_sum_=0;
-    double error_pre_=0;
+    double error_sum_ = 0;
+    double error_pre_ = 0;
    
     double max_error_sum_;
 	  double out_min_, out_max_;

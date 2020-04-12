@@ -7,7 +7,7 @@
 #include "Plot.h"
 #include <math.h>
 
-Movement *robot=NULL;
+Movement *robot = NULL;
 
 void setup(){
     Serial.begin(9600);
@@ -16,7 +16,7 @@ void setup(){
     BNO bno;
     
     Movement initRobot(&bno);
-    robot=&initRobot;
+    robot = &initRobot;
     robot->initEncoders();
 
     Odometry odom(robot);
