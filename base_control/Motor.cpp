@@ -1,3 +1,11 @@
+#include <stdint.h>
+#include <math.h>
+#include <Arduino.h>
+
+#include "PID.h"
+#include "Encoder.h"
+#include "Motor.h"
+
 //////////////////////////////////Constructor//////////////////////////////////////
 Motor::Motor() {}
 Motor::Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
