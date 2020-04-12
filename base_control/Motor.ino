@@ -95,7 +95,8 @@ void Motor::stop() {
 
 //////////////////////////////////Velocity//////////////////////////////////////
 double Motor::getTargetRpm(const double velocity) {
-  return ( (getTargetTicks(velocity) / kPulsesPerRevolution) * kPidCountTimeSamplesInOneSecond) + velocity_adjustment_;
+  return ( (getTargetTicks(velocity) / kPulsesPerRevolution) * kPidCountTimeSamplesInOneSecond)
+         + velocity_adjustment_;
 }
 
 double Motor::getTargetTicks(const double velocity) {
@@ -121,7 +122,10 @@ void Motor::changePwm(const uint8_t pwm) {
 
 void Motor::constantSpeed(const double velocity) {
   double tmp_pwm = pwm_;
-  pid_.compute(getTargetRpm(velocity), current_speed_, tmp_pwm, pid_ticks_, kPulsesPerRevolution,kPidCountTimeSamplesInOneSecond);
+  pid_.compute(
+    getTargetRpm(velocity), current_speed_, tmp_pwm, pid_ticks_, 
+    kPulsesPerRevolution,kPidCountTimeSamplesInOneSecond
+  );
   changePwm(tmp_pwm);
 }
 

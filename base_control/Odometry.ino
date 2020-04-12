@@ -1,5 +1,9 @@
 //////////////////////////////////Constructor//////////////////////////////////////
-Odometry::Odometry(Movement *move_all) : velocity_subscriber_("/base_control/cmd/velocity",&Odometry::velocityCallback, this),  front_encoder_publisher_("/base_control/front/encoders", &front_encoders_msg_), back_encoder_publisher_("/base_control/back/encoders", &back_encoders_msg_) {
+Odometry::Odometry(Movement *move_all) : 
+velocity_subscriber_("/base_control/cmd/velocity",&Odometry::velocityCallback, this),
+front_encoder_publisher_("/base_control/front/encoders", &front_encoders_msg_), 
+back_encoder_publisher_("/base_control/back/encoders", &back_encoders_msg_) {
+
     move_all_ = move_all;
     //Node Handle
     nh_.initNode();
@@ -63,12 +67,16 @@ void Odometry::getEncoderCounts() {
 	int delta_encoder_counts[kCountMotors];
 	for(int i = 0; i < kCountMotors; ++i) {
 		// check for overflow
-		if(abs(last_encoder_counts_[i]) > kCountOverflow && abs(new_encoder_counts[i]) > kCountOverflow && sign(last_encoder_counts_[i]) != sign(new_encoder_counts[i])) {
+		if(abs(last_encoder_counts_[i]) > kCountOverflow && 
+           abs(new_encoder_counts[i]) > kCountOverflow && 
+           sign(last_encoder_counts_[i]) != sign(new_encoder_counts[i])) {
+
 			if(sign(last_encoder_counts_[i]) > 0) {
 				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] + kIntMax;
             } else {
 				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] - kIntMax;
             }
+
 		} else {
             delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i];
         } 

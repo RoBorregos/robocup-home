@@ -1,12 +1,24 @@
 //////////////////////////////////Constructor//////////////////////////////////////
-Movement::Movement(BNO *bno) : pid_straight_(kPPidStraight, kIPidStraight, kDPidStraight, kOutputMinLimitPidStraight, kOutputMaxLimitPidStraight, kPidMaxErrorSum, kPidMovementTimeSample), pid_rotation_(kPPidRotation, kIPidRotation, kDPidRotation, kOutputMinLimitPidRotation, kOutputMaxLimitPidRotation, kPidMaxErrorSum, kPidMovementTimeSample) {
+Movement::Movement(BNO *bno) : 
+pid_straight_(kPPidStraight, kIPidStraight, kDPidStraight, kOutputMinLimitPidStraight, 
+kOutputMaxLimitPidStraight, kPidMaxErrorSum, kPidMovementTimeSample), 
+pid_rotation_(kPPidRotation, kIPidRotation, kDPidRotation, kOutputMinLimitPidRotation, 
+kOutputMaxLimitPidRotation, kPidMaxErrorSum, kPidMovementTimeSample) {
+  
   bno_ = bno;
   
-  back_left_motor_ = Motor(kIdBackLeftMotor, kDigitalPinsBackLeftMotor[0], kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
-  front_left_motor_ = Motor(kIdFrontLeftMotor, kDigitalPinsFrontLeftMotor[0], kDigitalPinsFrontLeftMotor[1], kAnalogPinFrontLeftMotor, kEncoderPinsFrontLeftMotor[0], kEncoderPinsFrontLeftMotor[1]);
-  back_right_motor_ = Motor(kIdBackRightMotor, kDigitalPinsBackRightMotor[0], kDigitalPinsBackRightMotor[1], kAnalogPinBackRightMotor, kEncoderPinsBackRightMotor[0], kEncoderPinsBackRightMotor[1]);
-  front_right_motor_ = Motor(kIdFrontRightMotor, kDigitalPinsFrontRightMotor[0], kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, kEncoderPinsFrontRightMotor[0], kEncoderPinsFrontRightMotor[1]);
-
+  back_left_motor_ = Motor(kIdBackLeftMotor, kDigitalPinsBackLeftMotor[0], 
+                          kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, 
+                          kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
+  front_left_motor_ = Motor(kIdFrontLeftMotor, kDigitalPinsFrontLeftMotor[0], 
+                            kDigitalPinsFrontLeftMotor[1], kAnalogPinFrontLeftMotor, 
+                            kEncoderPinsFrontLeftMotor[0], kEncoderPinsFrontLeftMotor[1]);
+  back_right_motor_ = Motor(kIdBackRightMotor, kDigitalPinsBackRightMotor[0], 
+                            kDigitalPinsBackRightMotor[1], kAnalogPinBackRightMotor, 
+                            kEncoderPinsBackRightMotor[0], kEncoderPinsBackRightMotor[1]);
+  front_right_motor_ = Motor(kIdFrontRightMotor, kDigitalPinsFrontRightMotor[0], 
+                            kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, 
+                            kEncoderPinsFrontRightMotor[0], kEncoderPinsFrontRightMotor[1]);
 }
 
 //////////////////////////////////Encoders//////////////////////////////////////
@@ -228,10 +240,18 @@ void Movement::constantAngularSpeed() {
 }
 
 void Movement::velocityAdjustment(const int adjustment) {
-  back_left_motor_.setVelocityAdjustment((back_left_motor_.getCurrentState() == MotorState::Forward )?adjustment * -1:adjustment);
-  front_left_motor_.setVelocityAdjustment((front_left_motor_.getCurrentState() == MotorState::Forward )?adjustment * -1:adjustment);
-  back_right_motor_.setVelocityAdjustment((back_right_motor_.getCurrentState() == MotorState::Backward)?adjustment * -1:adjustment);
-  front_right_motor_.setVelocityAdjustment((front_right_motor_.getCurrentState() == MotorState::Backward)?adjustment * -1:adjustment);
+  back_left_motor_.setVelocityAdjustment(
+    (back_left_motor_.getCurrentState() == MotorState::Forward) ? adjustment * -1 : adjustment
+  );
+  front_left_motor_.setVelocityAdjustment(
+    (front_left_motor_.getCurrentState() == MotorState::Forward) ? adjustment * -1 : adjustment
+  );
+  back_right_motor_.setVelocityAdjustment(
+    (back_right_motor_.getCurrentState() == MotorState::Backward) ? adjustment * -1 : adjustment
+  );
+  front_right_motor_.setVelocityAdjustment(
+    (front_right_motor_.getCurrentState() == MotorState::Backward) ? adjustment * -1 : adjustment
+  );
 }
 
 void Movement::pidLinearMovement() {
@@ -258,7 +278,10 @@ bool Movement::pidRotate(const double target_angle) {
     double angle_error = 0;
     Direction where = whereToGo(angle_error, target_angle);
     
-    if(abs(angle_error) <= kPidRotationTolerance && abs(pid_rotation_.getPre()) <= kPidRotationTolerance && angle_error * pid_rotation_.getPre() >= 0) {
+    if(abs(angle_error) <= kPidRotationTolerance && 
+       abs(pid_rotation_.getPre()) <= kPidRotationTolerance && 
+       angle_error * pid_rotation_.getPre() >= 0) {
+       
         stop();
         return true;
     }
