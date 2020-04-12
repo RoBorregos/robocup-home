@@ -5,7 +5,7 @@ Plot::Plot(Movement *moveAll) {
 }
 
 //////////////////////////////////Plot Functions//////////////////////////////////////
-void Plot::PlotMotorSpeed(){
+void Plot::PlotMotorSpeed() {
     PlotData(
         moveAll_->back_left_motor_.getCurrentSpeed(),
         moveAll_->front_left_motor_.getCurrentSpeed(),
@@ -14,7 +14,7 @@ void Plot::PlotMotorSpeed(){
     );
 }
 
-void Plot::PlotMotorTicks(){
+void Plot::PlotMotorTicks() {
     PlotData(
         moveAll_->back_left_motor_.getLastTicks(),
         moveAll_->front_left_motor_.getLastTicks(),
@@ -23,7 +23,7 @@ void Plot::PlotMotorTicks(){
     );
 }
 
-void Plot::PlotTargetandCurrent(){
+void Plot::PlotTargetandCurrent() {
     PlotData(
         moveAll_->back_right_motor_.getTargetRpm(moveAll_->getTargetLinearVelocity()),
         moveAll_->back_right_motor_.getCurrentSpeed(),
@@ -32,7 +32,7 @@ void Plot::PlotTargetandCurrent(){
     );
 }
 
-void Plot::PlotData(const double data1, const double data2, const double data3, const double data4){
+void Plot::PlotData(const double data1, const double data2, const double data3, const double data4) {
      if(millis()-time_msg_>35) {
         return;
     }

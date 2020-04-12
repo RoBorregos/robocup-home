@@ -1,5 +1,5 @@
 //////////////////////////////////Constructor//////////////////////////////////////
-Odometry::Odometry(Movement *move_all) : velocity_subscriber_("/base_control/cmd/velocity",&Odometry::velocityCallback, this),  front_encoder_publisher_("/base_control/front/encoders", &front_encoders_msg_), back_encoder_publisher_("/base_control/back/encoders", &back_encoders_msg_){
+Odometry::Odometry(Movement *move_all) : velocity_subscriber_("/base_control/cmd/velocity",&Odometry::velocityCallback, this),  front_encoder_publisher_("/base_control/front/encoders", &front_encoders_msg_), back_encoder_publisher_("/base_control/back/encoders", &back_encoders_msg_) {
     move_all_ = move_all;
     //Node Handle
     nh_.initNode();
@@ -7,7 +7,7 @@ Odometry::Odometry(Movement *move_all) : velocity_subscriber_("/base_control/cmd
     nh_.advertise(front_encoder_publisher_);
     nh_.advertise(back_encoder_publisher_);
     
-    while(!nh_.connected()){
+    while(!nh_.connected()) {
         nh_.spinOnce();
     }
 
@@ -25,7 +25,7 @@ Odometry::Odometry(Movement *move_all) : velocity_subscriber_("/base_control/cmd
     back_encoders_msg_.encoders.left_wheel = 0;
     back_encoders_msg_.encoders.right_wheel = 0;
 
-    for(int i = 0; i < kCountMotors; ++i){
+    for(int i = 0; i < kCountMotors; ++i) {
 		last_encoder_counts_[i] = 0;
     }
 }
@@ -40,11 +40,11 @@ void Odometry::velocityCallback(const geometry_msgs::Twist& cmd_velocity) {
     watchdog_timer_ = millis();
 }
 
-void Odometry::cmdVelocity(const double linear_x, const double linear_y, const double angular_z){
-    if(angular_z > linear_x && angular_z > linear_y){
+void Odometry::cmdVelocity(const double linear_x, const double linear_y, const double angular_z) {
+    if(angular_z > linear_x && angular_z > linear_y) {
         move_all_->setDeltaAngular(angular_z);
         move_all_->pidAngularMovement();
-    }else{
+    } else {
         move_all_->setDeltaX(linear_x);
         move_all_->setDeltaY(linear_y);
         move_all_->pidLinearMovement();
@@ -52,7 +52,7 @@ void Odometry::cmdVelocity(const double linear_x, const double linear_y, const d
 }
 
 //////////////////////////////////Encoders Publisher//////////////////////////////////////
-void Odometry::getEncoderCounts(){
+void Odometry::getEncoderCounts() {
 	int new_encoder_counts[kCountMotors];
 	new_encoder_counts[0] = move_all_->front_left_motor_.getOdomTicks();
 	new_encoder_counts[1] = move_all_->front_right_motor_.getOdomTicks();
@@ -64,16 +64,18 @@ void Odometry::getEncoderCounts(){
 	for(int i = 0; i < kCountMotors; ++i) {
 		// check for overflow
 		if(abs(last_encoder_counts_[i]) > kCountOverflow && abs(new_encoder_counts[i]) > kCountOverflow && sign(last_encoder_counts_[i]) != sign(new_encoder_counts[i])) {
-			if(sign(last_encoder_counts_[i]) > 0){
+			if(sign(last_encoder_counts_[i]) > 0) {
 				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] + kIntMax;
-            } else{
+            } else {
 				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] - kIntMax;
             }
-		} else{
+		} else {
             delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i];
         } 
 		
-		if(abs(delta_encoder_counts[i]) > kCountReset) delta_encoder_counts[i] = 0;
+		if(abs(delta_encoder_counts[i]) > kCountReset) {
+            delta_encoder_counts[i] = 0;
+        } 
 		
 		last_encoder_counts_[i] = new_encoder_counts[i];
 	}
@@ -83,12 +85,12 @@ void Odometry::getEncoderCounts(){
     back_encoders_msg_.encoders.right_wheel = delta_encoder_counts[3];
 }
 
-void Odometry::publish(){
+void Odometry::publish() {
     if((millis() - odom_timer_) > kOdomPeriod) {
         getEncoderCounts();
         unsigned long currentTime = millis();
-        front_encoders_msg_.encoders.time_delta = (float)(currentTime - odom_timer_) / 1000;
-        back_encoders_msg_.encoders.time_delta = (float)(currentTime - odom_timer_) / 1000;
+        front_encoders_msg_.encoders.time_delta = static_cast<float>(currentTime - odom_timer_) / 1000;
+        back_encoders_msg_.encoders.time_delta = static_cast<float>(currentTime - odom_timer_) / 1000;
         
         
         // publish data
@@ -104,7 +106,7 @@ void Odometry::publish(){
 }
 
 //////////////////////////////////Run//////////////////////////////////////
-void Odometry::run(){
+void Odometry::run() {
     while(1) { 
         if((millis() - watchdog_timer_) > kWatchdogPeriod) {
             move_all_->stop();

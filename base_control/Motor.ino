@@ -27,8 +27,8 @@ void Motor::defineOutput() {
   pinMode(encoder_two_, INPUT);
 }
 
-void Motor::initEncoders(){
-  switch (id_){
+void Motor::initEncoders() {
+  switch (id_) {
     case kIdBackLeftMotor:
       attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::backLeftEncoder, RISING);
     break;
@@ -46,7 +46,7 @@ void Motor::initEncoders(){
 
 //////////////////////////////////Motor State//////////////////////////////////////
 void Motor::forward() {
-  if(current_state_ == MotorState::Forward){
+  if(current_state_ == MotorState::Forward) {
     return;
   }
 
@@ -54,7 +54,7 @@ void Motor::forward() {
   digitalWrite(digital_one_, HIGH);
   digitalWrite(digital_two_, LOW);
 
-  if(current_state_ != MotorState::Forward){
+  if(current_state_ != MotorState::Forward) {
     pid_.reset();
   }
 
@@ -62,7 +62,7 @@ void Motor::forward() {
 }
 
 void Motor::backward() {
-  if(current_state_ == MotorState::Backward){
+  if(current_state_ == MotorState::Backward) {
     return;
   }
 
@@ -70,7 +70,7 @@ void Motor::backward() {
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, HIGH);
   
-  if(current_state_ != MotorState::Backward){
+  if(current_state_ != MotorState::Backward) {
     pid_.reset();
   }
   
@@ -78,7 +78,7 @@ void Motor::backward() {
 }
 
 void Motor::stop() {
-  if(current_state_ == MotorState::Stop){
+  if(current_state_ == MotorState::Stop) {
     return;
   }
 
@@ -86,7 +86,7 @@ void Motor::stop() {
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, LOW);
   
-  if(current_state_ != MotorState::Stop){
+  if(current_state_ != MotorState::Stop) {
     pid_.reset();
   }
 
@@ -94,19 +94,19 @@ void Motor::stop() {
 }
 
 //////////////////////////////////Velocity//////////////////////////////////////
-double Motor::getTargetRpm(const double velocity){
+double Motor::getTargetRpm(const double velocity) {
   return ( (getTargetTicks(velocity) / kPulsesPerRevolution) * kPidCountTimeSamplesInOneSecond) + velocity_adjustment_;
 }
 
-double Motor::getTargetTicks(const double velocity){
+double Motor::getTargetTicks(const double velocity) {
   double ticks = velocity * (kPidMotorTimeSample / kOneSecondInMillis);
   ticks = ticks / (kWheelDiameter * M_PI);  
   return ceil(ticks * kPulsesPerRevolution);
 }
 
-void Motor::changePwm(const uint8_t pwm){
+void Motor::changePwm(const uint8_t pwm) {
   pwm_ = pwm;
-  switch(current_state_){
+  switch(current_state_) {
     case MotorState::Forward:
       forward();
     break;
@@ -119,7 +119,7 @@ void Motor::changePwm(const uint8_t pwm){
   }
 }
 
-void Motor::constantSpeed(const double velocity){
+void Motor::constantSpeed(const double velocity) {
   double tmp_pwm = pwm_;
   pid_.compute(getTargetRpm(velocity), current_speed_, tmp_pwm, pid_ticks_, kPulsesPerRevolution,kPidCountTimeSamplesInOneSecond);
   changePwm(tmp_pwm);
@@ -134,7 +134,7 @@ void Motor::setOdomTicks(const int odom_ticks) {
   odom_ticks_ = odom_ticks;
 }
 
-void Motor::setVelocityAdjustment(const double velocity_adjustment){
+void Motor::setVelocityAdjustment(const double velocity_adjustment) {
   velocity_adjustment_ = velocity_adjustment;
 }
 
@@ -147,14 +147,14 @@ int Motor::getOdomTicks() {
   return odom_ticks_;
 }
 
-double Motor::getLastTicks(){
+double Motor::getLastTicks() {
   return last_ticks_;
 }
 
-double Motor::getCurrentSpeed(){
+double Motor::getCurrentSpeed() {
   return current_speed_;
 }
 
-MotorState Motor::getCurrentState(){
+MotorState Motor::getCurrentState() {
   return current_state_;
 }

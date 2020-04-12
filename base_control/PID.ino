@@ -1,10 +1,10 @@
 
 //////////////////////////////////Constructor//////////////////////////////////////
-PID::PID(){
+PID::PID() {
   time_ = millis();
 }
 
-PID::PID(const double kp, const double ki, const double kd, const double out_min, const double out_max, const double max_error_sum, const long sample_time){
+PID::PID(const double kp, const double ki, const double kd, const double out_min, const double out_max, const double max_error_sum, const long sample_time) {
   time_ = millis();
   setTunings(kp, ki, kd);
   setOutputLimits(out_min, out_max);
@@ -13,15 +13,15 @@ PID::PID(const double kp, const double ki, const double kd, const double out_min
 }
 
 //////////////////////////////////Compute//////////////////////////////////////
-void PID::compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev,const int count_time_samples_in_one_second){
-  if(millis()-time_ < sample_time_){
+void PID::compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev,const int count_time_samples_in_one_second) {
+  if(millis()-time_ < sample_time_) {
       return;
   }
 
-  if(reset_variable>0){
+  if(reset_variable>0) {
     input = (reset_variable / pulses_per_rev) * count_time_samples_in_one_second;
     reset_variable = 0;
-  }else{
+  } else {
     return;
   }
 
@@ -39,8 +39,8 @@ void PID::compute(const double setpoint, double &input, double &output, int &res
   
 }
 
-void PID::compute(const double setpoint, const double input, double &output){
-  if(millis()-time_ < sample_time_){
+void PID::compute(const double setpoint, const double input, double &output) {
+  if(millis()-time_ < sample_time_) {
       return;
   }
 
@@ -58,17 +58,17 @@ void PID::compute(const double setpoint, const double input, double &output){
   
 }
 
-void PID::compute(const double error, double &output, const byte flag){
-  if(millis()-time_ < sample_time_){
+void PID::compute(const double error, double &output, const byte flag) {
+  if(millis()-time_ < sample_time_) {
       return;
   }
 
-  if(error_pre_ * error <= 0){
+  if(error_pre_ * error <= 0) {
     error_pre_ = 0;
     error_sum_ = 0;
   }
-  if(flag == 0){
-    if(abs(error) <= 2){
+  if(flag == 0) {
+    if(abs(error) <= 2) {
       error_pre_ = 0;
       error_sum_ = 0;
     }
@@ -87,43 +87,43 @@ void PID::compute(const double error, double &output, const byte flag){
 }
 
 //////////////////////////////////Set Methods//////////////////////////////////////
-void PID::setTunings(const double kp,  const double ki , const double kd){
+void PID::setTunings(const double kp,  const double ki , const double kd) {
   kp_ = kp;
   ki_ = ki;
   kd_ = kd;
 }     	 
 
-void PID::setSampleTime(const unsigned long sample_time){
+void PID::setSampleTime(const unsigned long sample_time) {
   sample_time_ = sample_time;
 }				
 
-void PID::setMaxErrorSum(const double max_error_sum){
+void PID::setMaxErrorSum(const double max_error_sum) {
   max_error_sum_ = max_error_sum;
 }
 
-void PID::setOutputLimits(const double out_min, const double out_max){
+void PID::setOutputLimits(const double out_min, const double out_max) {
   out_min_ = out_min;
   out_max_ = out_max;
 }
 
-void PID::reset(){
+void PID::reset() {
   error_sum_ = 0;
   error_pre_ = 0;
 }
 
 //////////////////////////////////Get Methods//////////////////////////////////////
-double PID::getKp(){
+double PID::getKp() {
   return kp_;
 }
 
-double PID::getKi(){
+double PID::getKi() {
   return ki_;
 }
 
-double PID::getKd(){
+double PID::getKd() {
   return kd_;
 }
 
-double PID::getPre(){
+double PID::getPre() {
   return error_pre_;
 }

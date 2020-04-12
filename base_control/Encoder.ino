@@ -1,5 +1,5 @@
 //////////////////////////////////Main Function//////////////////////////////////////
-void Encoder::handleEncoder(Motor &motor){
+void Encoder::handleEncoder(Motor &motor) {
   motor.setPidTicks(motor.getPidTicks() + 1);
   if(motor.getCurrentState() == MotorState::Forward) {
     motor.setOdomTicks(motor.getOdomTicks() + 1);
@@ -10,18 +10,18 @@ void Encoder::handleEncoder(Motor &motor){
 }
 
 //////////////////////////////////Motor Functions//////////////////////////////////////
-void Encoder::backLeftEncoder(){
+void Encoder::backLeftEncoder() {
   handleEncoder(robot->back_left_motor_);
 }
 
-void Encoder::backRightEncoder(){
+void Encoder::backRightEncoder() {
   handleEncoder(robot->back_right_motor_);
 }
 
-void Encoder::frontLeftEncoder(){
+void Encoder::frontLeftEncoder() {
   handleEncoder(robot->front_left_motor_);
 }
 
-void Encoder::frontRightEncoder(){
+void Encoder::frontRightEncoder() {
   handleEncoder(robot->front_right_motor_);
 }

@@ -9,9 +9,9 @@
 
 Movement *robot = nullptr;
 
-void setup(){
+void setup() {
     Serial.begin(9600);
-    while (!Serial){
+    while (!Serial) {
         delay(1);
     } 
     Serial.println("Serial Initialization completed.");
@@ -34,5 +34,5 @@ void setup(){
     odom.run();
 }
 
-void loop(){   
+void loop() {   
 }
