@@ -19,20 +19,20 @@ void PID::compute(const double setpoint, double &input, double &output, int &res
   }
 
   if(reset_variable>0){
-    input = (reset_variable/pulses_per_rev)*count_time_samples_in_one_second;
+    input = (reset_variable / pulses_per_rev) * count_time_samples_in_one_second;
     reset_variable = 0;
   }else{
     return;
   }
 
   const double error = setpoint - input;
-  output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
+  output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
   
   error_pre_= error;
   error_sum_+= error;
   
 
-  error_sum_ = max(max_error_sum_*-1, min(max_error_sum_, error_sum_));
+  error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
   output = max(out_min_, min(out_max_, output));
   
   time_ = millis();
@@ -45,13 +45,13 @@ void PID::compute(const double setpoint, const double input, double &output){
   }
 
   const double error = setpoint - input;
-  output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
+  output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
   
   error_pre_ = error;
   error_sum_ += error;
   
 
-  error_sum_ = max(max_error_sum_*-1, min(max_error_sum_, error_sum_));
+  error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
   output = max(out_min_, min(out_max_, output));
   
   time_ = millis();
@@ -63,7 +63,7 @@ void PID::compute(const double error, double &output, const byte flag){
       return;
   }
 
-  if(error_pre_*error <= 0){
+  if(error_pre_ * error <= 0){
     error_pre_ = 0;
     error_sum_ = 0;
   }
@@ -74,12 +74,12 @@ void PID::compute(const double error, double &output, const byte flag){
     }
   }
   
-  output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
+  output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
   error_pre_ = error;
   error_sum_ += error;
   
   
-  error_sum_ = max(max_error_sum_*-1, min(max_error_sum_, error_sum_));
+  error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
   output = max(out_min_, min(out_max_, output));
   
   time_ = millis();

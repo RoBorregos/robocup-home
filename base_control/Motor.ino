@@ -83,13 +83,13 @@ void Motor::stop() {
 
 //////////////////////////////////Velocity//////////////////////////////////////
 double Motor::getTargetRpm(const double velocity){
-  return ((getTargetTicks(velocity)/kPulsesPerRevolution)*kPidCountTimeSamplesInOneSecond)+velocity_adjustment_;
+  return ( (getTargetTicks(velocity) / kPulsesPerRevolution) * kPidCountTimeSamplesInOneSecond) + velocity_adjustment_;
 }
 
 double Motor::getTargetTicks(const double velocity){
-  double ticks = velocity * (kPidMotorTimeSample/kOneSecondInMillis);
-  ticks = ticks/(kWheelDiameter*M_PI);  
-  return ceil(ticks*kPulsesPerRevolution);
+  double ticks = velocity * (kPidMotorTimeSample / kOneSecondInMillis);
+  ticks = ticks / (kWheelDiameter * M_PI);  
+  return ceil(ticks * kPulsesPerRevolution);
 }
 
 void Motor::changePwm(const uint8_t pwm){

@@ -47,7 +47,7 @@ double Movement::getTargetAngle(){
 }
 
 double Movement::getTargetLinearVelocity(){
-  return sqrt(delta_x_*delta_x_+delta_y_*delta_y_);
+  return sqrt(delta_x_ * delta_x_ + delta_y_ * delta_y_);
 }
 
 double Movement::getTargetAngularVelocity(){
@@ -72,7 +72,7 @@ Direction Movement::whereToGo(double &current_angle, const double target_angle){
     double diff_angle = int(abs(current_a - target_angle)) % kMaxAngle; 
     current_angle = diff_angle > kIntermediateAngle ? kMaxAngle - diff_angle : diff_angle;
 
-    int sign = (current_a - target_angle >= kMinAngle && current_a - target_angle <= kIntermediateAngle) || (current_a - target_angle <= kIntermediateAngle*-1 && current_a - target_angle >= kMaxAngle*-1) ? 1 : -1; 
+    int sign = (current_a - target_angle >= kMinAngle && current_a - target_angle <= kIntermediateAngle) || (current_a - target_angle <= kIntermediateAngle * -1 && current_a - target_angle >= kMaxAngle * -1) ? 1 : -1; 
     current_angle *= sign;
 
     if(sign != 1){
@@ -84,10 +84,10 @@ Direction Movement::whereToGo(double &current_angle, const double target_angle){
 int Movement::angleToDirection(const int angle){
     int diff = kIntMax;
     for(int i = 0;i<=kCountDirections;++i){
-        if(diff > abs(angle-i*kDirectionSeparationAngle) ){
-            diff = abs(angle-i*kDirectionSeparationAngle);
+        if(diff > abs(angle - i * kDirectionSeparationAngle) ){
+            diff = abs(angle - i * kDirectionSeparationAngle);
         }else{
-            return (i-1)*kDirectionSeparationAngle;
+            return (i - 1) * kDirectionSeparationAngle;
         }
     }
     return 0;
@@ -208,10 +208,10 @@ void Movement::constantAngularSpeed(){
 }
 
 void Movement::velocityAdjustment(const int adjustment){
-  back_left_motor_.setVelocityAdjustment((back_left_motor_.getCurrentState() == MotorState::Forward )?adjustment*-1:adjustment);
-  front_left_motor_.setVelocityAdjustment((front_left_motor_.getCurrentState() == MotorState::Forward )?adjustment*-1:adjustment);
-  back_right_motor_.setVelocityAdjustment((back_right_motor_.getCurrentState() == MotorState::Backward)?adjustment*-1:adjustment);
-  front_right_motor_.setVelocityAdjustment((front_right_motor_.getCurrentState() == MotorState::Backward)?adjustment*-1:adjustment);
+  back_left_motor_.setVelocityAdjustment((back_left_motor_.getCurrentState() == MotorState::Forward )?adjustment * -1:adjustment);
+  front_left_motor_.setVelocityAdjustment((front_left_motor_.getCurrentState() == MotorState::Forward )?adjustment * -1:adjustment);
+  back_right_motor_.setVelocityAdjustment((back_right_motor_.getCurrentState() == MotorState::Backward)?adjustment * -1:adjustment);
+  front_right_motor_.setVelocityAdjustment((front_right_motor_.getCurrentState() == MotorState::Backward)?adjustment * -1:adjustment);
 }
 
 void Movement::pidLinearMovement(){
