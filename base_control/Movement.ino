@@ -53,10 +53,10 @@ void Movement::stop(){
 }
 
 //////////////////////////////////DIRECTIONS//////////////////////////////////////
-direction Movement::whereToGo(double &current_angle){
+Direction Movement::whereToGo(double &current_angle){
     return whereToGo(current_angle, target_angle_);
 }
-direction Movement::whereToGo(double &current_angle, const double target_angle){
+Direction Movement::whereToGo(double &current_angle, const double target_angle){
     double current_a = bno_->getCurrentAngle();
     current_angle = current_a;
     double diff_angle = int(abs(current_a - target_angle)) % kMaxAngle; 
@@ -66,9 +66,9 @@ direction Movement::whereToGo(double &current_angle, const double target_angle){
     current_angle *= sign;
 
     if(sign != 1){
-        return left;
+        return Direction::left;
     }
-    return right;
+    return Direction::right;
 }
 int Movement::angleToDirection(const int angle){
     int diff = kIntMax;
@@ -196,7 +196,7 @@ void Movement::pidLinearMovement(){
     constantLinearSpeed();
 
     double angle_error = 0;
-    direction where = whereToGo(angle_error);
+    Direction where = whereToGo(angle_error);
     pid_straight_.compute(angle_error,  straight_output_, 0);
     velocityAdjustment(straight_output_);
 }
@@ -211,7 +211,7 @@ void Movement::pidAngularMovement(){
 bool Movement::pidRotate(const double target_angle){
     double output = 0;
     double angle_error = 0;
-    direction where = whereToGo(angle_error, target_angle);
+    Direction where = whereToGo(angle_error, target_angle);
     if(abs(angle_error)<=kPidRotationTolerance && abs(pid_rotation_.getPre())<=kPidRotationTolerance && angle_error*pid_rotation_.getPre()>=0){
         stop();
         return true;
@@ -220,7 +220,7 @@ bool Movement::pidRotate(const double target_angle){
     pid_rotation_.compute(angle_error,  output, 1);
     output = abs(output)+kOutputAdjustment;
     
-    if(where == left){
+    if(where == Direction::left){
         rotateRight();
     }else{
         rotateLeft();

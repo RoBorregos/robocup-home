@@ -2,9 +2,9 @@
 #ifndef Movement_h
 #define Movement_h
 
-enum direction{
-    left,
-    right
+enum class Direction{
+    left = 1,
+    right = 2 
 };
 
 class Movement {
@@ -59,9 +59,9 @@ class Movement {
   
     //////////////////////////////////DIRECTIONS//////////////////////////////////////
     // This function tells where is the target Angle of the class, left or right.
-    direction whereToGo(double &current_angle);
+    Direction whereToGo(double &current_angle);
     // This function tells where is a custom target Angle, left or right.
-    direction whereToGo(double &current_angle, const double target_angle);
+    Direction whereToGo(double &current_angle, const double target_angle);
     // This function change any angle to a direction angle. 
     int angleToDirection(const int angle);
     // This function sets a direction according to an angle.
