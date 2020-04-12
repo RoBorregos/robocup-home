@@ -8,8 +8,7 @@
 #include <geometry_msgs/Twist.h>
 #include <base_control/StampedEncoders.h>
 #include <base_control/Encoders.h>
-#include <std_msgs/Float32MultiArray.h>
-#include <std_msgs/UInt32.h>
+
 #define sign(a) (min(1, max(-1, a)))
 
 class Odometry{
@@ -49,8 +48,10 @@ class Odometry{
         static const uint16_t kWatchdogPeriod = 500;
         
         //Publisher
-        ros::Publisher encoder_publisher_;
-        std_msgs::Float32MultiArray encoder_msg_;
+        ros::Publisher front_encoder_publisher_;
+        ros::Publisher back_encoder_publisher_;
+        base_control::StampedEncoders front_encoders_msg_;
+        base_control::StampedEncoders back_encoders_msg_;
         int last_encoder_counts_[kCountMotors];
         static const uint8_t kOdomPeriod = 50;
         static constexpr uint16_t kIntMax = 65535;

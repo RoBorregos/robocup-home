@@ -1,10 +1,11 @@
 //////////////////////////////////Constructor//////////////////////////////////////
-Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Odometry::velocityCallback, this),  encoder_publisher_("encoders", &encoder_msg_){
+Odometry::Odometry(Movement *move_all) : velocity_subscriber_("/base_control/cmd/velocity",&Odometry::velocityCallback, this),  front_encoder_publisher_("/base_control/front/encoders", &front_encoders_msg_), back_encoder_publisher_("/base_control/back/encoders", &back_encoders_msg_){
     move_all_ = move_all;
     //Node Handle
     nh_.initNode();
     nh_.subscribe(velocity_subscriber_);
-    nh_.advertise(encoder_publisher_);
+    nh_.advertise(front_encoder_publisher_);
+    nh_.advertise(back_encoder_publisher_);
     
     while(!nh_.connected()){
         nh_.spinOnce();
@@ -16,8 +17,13 @@ Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Od
     watchdog_timer_ = millis();
     
     //Message Init
-    encoder_msg_.data = (float *)malloc(sizeof(float)*kCountMotors);
-    encoder_msg_.data_length = kCountMotors;
+    front_encoders_msg_.encoders.time_delta = 0;
+    back_encoders_msg_.encoders.time_delta = 0;
+    
+    front_encoders_msg_.encoders.left_wheel = 0;
+    front_encoders_msg_.encoders.right_wheel = 0;
+    back_encoders_msg_.encoders.left_wheel = 0;
+    back_encoders_msg_.encoders.right_wheel = 0;
 
     for(int i = 0; i < kCountMotors; ++i){
 		last_encoder_counts_[i] = 0;
@@ -71,21 +77,23 @@ void Odometry::getEncoderCounts(){
 		
 		last_encoder_counts_[i] = new_encoder_counts[i];
 	}
-
-	encoder_msg_.data[0] = (delta_encoder_counts[0] + delta_encoder_counts[1] + delta_encoder_counts[2] + delta_encoder_counts[3]) / kCountMotors;
-	encoder_msg_.data[1] = (0 - delta_encoder_counts[0] + delta_encoder_counts[1] + delta_encoder_counts[2] - delta_encoder_counts[3]) / kCountMotors;
-	encoder_msg_.data[2] = (0 - delta_encoder_counts[0] + delta_encoder_counts[1] - delta_encoder_counts[2] + delta_encoder_counts[3]) / kCountMotors;
-
+    front_encoders_msg_.encoders.left_wheel = delta_encoder_counts[0];
+    front_encoders_msg_.encoders.right_wheel = delta_encoder_counts[1];
+    back_encoders_msg_.encoders.left_wheel = delta_encoder_counts[2];
+    back_encoders_msg_.encoders.right_wheel = delta_encoder_counts[3];
 }
 
 void Odometry::publish(){
     if((millis() - odom_timer_) > kOdomPeriod) {
         getEncoderCounts();
         unsigned long currentTime = millis();
-        encoder_msg_.data[3] = (float)(currentTime - odom_timer_) / 1000;
+        front_encoders_msg_.encoders.time_delta = (float)(currentTime - odom_timer_) / 1000;
+        back_encoders_msg_.encoders.time_delta = (float)(currentTime - odom_timer_) / 1000;
+        
         
         // publish data
-        encoder_publisher_.publish(&encoder_msg_);
+        front_encoder_publisher_.publish(&front_encoders_msg_);
+        back_encoder_publisher_.publish(&back_encoders_msg_);
         if((currentTime - kOdomPeriod) > (odom_timer_ + kOdomPeriod)) {
             odom_timer_ = currentTime;
         }

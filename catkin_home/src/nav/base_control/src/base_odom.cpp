@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   ros::NodeHandle n;
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("/base_control/odom", 60);
   ros::Subscriber fr_enc = n.subscribe("/base_control/front/encoders", 100, feCallBack);
-  ros::Subscriber rr_enc = n.subscribe("/base_control/rear/encoders", 100, reCallBack);
+  ros::Subscriber rr_enc = n.subscribe("/base_control/back/encoders", 100, reCallBack);
   tf::TransformBroadcaster odom_broadcaster;
   
   //initialize displacement variables
