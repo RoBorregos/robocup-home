@@ -26,12 +26,14 @@ class Odometry{
         //////////////////////////////////Velocity Suscriber//////////////////////////////////////
         // Receives velocity commands.
         void velocityCallback(const geometry_msgs::Twist& cmdvel);
+        
         // Process velocity commands.
         void cmdVelocity(const double linearx, const double lineary,  const double angularz);
         
         //////////////////////////////////Encoders Publisher//////////////////////////////////////
         // Process encoder and return message.
         void getEncoderCounts();
+        
         // Publish encoder message.
         void publish();
         

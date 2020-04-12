@@ -23,10 +23,13 @@ class BNO {
     //////////////////////////////////Get Functions//////////////////////////////////////
     // Returns the angle in X axis considering bno_set_point_ and it is in a range of 0-360.
     int getCurrentAngle();
+    
     // Returns the angle in X axis.
     double getAngleX();
+    
     // Returns the angle in Y axis.
     double getAngleY();
+    
     // Returns the angle in Z axis.
     double getAngleZ();
 

@@ -19,6 +19,7 @@ class Motor {
     //////////////////////////////////Initialization//////////////////////////////////////
     // Declare motor pins as output.
     void defineOutput();
+    
     // Declare encoder pins as input and include attachInterrupt.
     void initEncoders();
     
@@ -26,8 +27,10 @@ class Motor {
     //////////////////////////////////Motor State//////////////////////////////////////
     // Change motor state to forward.
     void forward();
+    
     // Change motor state to backward.
     void backward();
+    
     // Change motor state to stop.
     void stop();
 
@@ -35,10 +38,13 @@ class Motor {
     //////////////////////////////////Velocity//////////////////////////////////////
     // Calculate target Rpm according to a velocity.
     double getTargetRpm(const double velocity);
+    
     // Calculate target Ticks according to a velocity.
     double getTargetTicks(const double velocity);
+    
     // Change Pwm value of a motor.
     void changePwm(const uint8_t pwm);
+    
     // Compute Pid controller and update pwm. 
     void constantSpeed(const double velocity);
 
@@ -46,8 +52,10 @@ class Motor {
     //////////////////////////////////Set Methods//////////////////////////////////////
     // Set the count of ticks of the encoders, the count used in Pid.
     void setPidTicks(const int pid_ticks);
+    
     // Set the count of ticks of the encoders, the count used in Odometry.
     void setOdomTicks(const int odom_ticks);
+    
     // Set an adjustment to the velocity.
     void setVelocityAdjustment(const double velocity_adjustment);    
 
@@ -55,12 +63,16 @@ class Motor {
     //////////////////////////////////Get Methods//////////////////////////////////////
     // Return the count of ticks of the encoders, the count used in Pid.
     int getPidTicks();
+    
     // Return the count of ticks of the encoders, the count used in Odometry.
     int getOdomTicks();
+    
     // Return the last count of ticks of the encoders, before it was reset in Pid process.
     double getLastTicks();
+    
     // Return the current speed of the motor in meteres per second.
     double getCurrentSpeed();
+    
     // Return the current state of the motor.
     MotorState getCurrentState();
 

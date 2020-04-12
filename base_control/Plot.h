@@ -12,8 +12,10 @@ class Plot {
     //////////////////////////////////Plot Functions//////////////////////////////////////
     // This function print the current speed of the four motors.
     void PlotMotorSpeed();
+    
     // This function print the current ticks of the four motors.
     void PlotMotorTicks();
+    
     // This function print the current and the target speed.
     void PlotTargetandCurrent();
     

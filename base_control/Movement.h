@@ -33,24 +33,32 @@ class Movement {
     //////////////////////////////////VELOCITY//////////////////////////////////////
     // Change deltaX value.
     void setDeltaX(const double delta_x);
+    
     // Change deltaY value.
     void setDeltaY(const double delta_y);
+    
     // Change deltaAngular value.
     void setDeltaAngular(const double delta_angular);
+    
     // Return target linear angle.
     double getTargetAngle();
+    
     // Return target linear velocity.
     double getTargetLinearVelocity();
+    
     // Return target anuglar velocity.
     double getTargetAngularVelocity();
+    
     // Stop robot.
     void stop();
     
     //////////////////////////////////PID//////////////////////////////////////
     // Robot moves linear with pid.
     void pidLinearMovement();
+    
     // Robot moves angular with pid.
     void pidAngularMovement();
+    
     // Robot rotate to a custom targetAngle whit pid.
     bool pidRotate(const double target_angle);
 
@@ -60,30 +68,43 @@ class Movement {
     //////////////////////////////////DIRECTIONS//////////////////////////////////////
     // This function tells where is the target Angle of the class, left or right.
     Direction whereToGo(double &current_angle);
+    
     // This function tells where is a custom target Angle, left or right.
     Direction whereToGo(double &current_angle, const double target_angle);
+    
     // This function change any angle to a direction angle. 
     int angleToDirection(const int angle);
+    
     // This function sets a direction according to an angle.
     void setDirection(const int angle); 
+    
     // Put motors in 0° direction.
     void move0();
+    
     // Put motors in 45° direction.
     void move45();
+    
     // Put motors in 90° direction.
     void move90();
+    
     // Put motors in 135° direction.
     void move135();
+    
     // Put motors in 180° direction.
     void move180();
+    
     // Put motors in 225° direction.
     void move225();
+    
     // Put motors in 270° direction.
     void move270();
+    
     // Put motors in 315° direction.
     void move315();
+    
     // Put motors rotating left.
     void rotateLeft();
+    
     // Put motors rotating right.
     void rotateRight();
 
@@ -91,8 +112,10 @@ class Movement {
     //////////////////////////////////PID//////////////////////////////////////
     // Set motors to respect linear velocity. 
     void constantLinearSpeed();
+    
     // Set motors to respect angular velocity. 
     void constantAngularSpeed();
+    
     // Fix robot inclination while is moving.
     void velocityAdjustment(const int adjustment);
 
