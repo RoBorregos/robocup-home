@@ -9,10 +9,10 @@ void Plot::PlotMotorSpeed(){
     if(millis()-time_msg_>35){
         return;
     }
-    int back_left_motor_actual_speed = moveAll_->back_left_motor_.getSpeedActual();
-    int front_left_motor_actual_speed = moveAll_->front_left_motor_.getSpeedActual();
-    int front_right_motor_actual_speed = moveAll_->front_right_motor_.getSpeedActual();
-    int back_right_motor_actual_speed = moveAll_->back_right_motor_.getSpeedActual();
+    int back_left_motor_actual_speed = moveAll_->back_left_motor_.getCurrentSpeed();
+    int front_left_motor_actual_speed = moveAll_->front_left_motor_.getCurrentSpeed();
+    int front_right_motor_actual_speed = moveAll_->front_right_motor_.getCurrentSpeed();
+    int back_right_motor_actual_speed = moveAll_->back_right_motor_.getCurrentSpeed();
     byte* byteData1 = (byte*)(&back_left_motor_actual_speed);
     byte* byteData2 = (byte*)(&front_left_motor_actual_speed);
     byte* byteData3 = (byte*)(&front_right_motor_actual_speed);
@@ -56,9 +56,9 @@ void Plot::PlotTargetandActual(){
         return;
     }
     double tmp = moveAll_->back_right_motor_.getTargetRpm(moveAll_->getTargetLinearVelocity());
-    double tmp1 = moveAll_->back_right_motor_.getSpeedActual();
+    double tmp1 = moveAll_->back_right_motor_.getCurrentSpeed();
     double tmp2 = moveAll_->front_right_motor_.getTargetRpm(moveAll_->getTargetLinearVelocity());
-    double tmp3 = moveAll_->front_right_motor_.getSpeedActual();
+    double tmp3 = moveAll_->front_right_motor_.getCurrentSpeed();
     byte* byteData1 = (byte*)(&tmp1);
     byte* byteData2 = (byte*)(&tmp);
     byte* byteData3 = (byte*)(&tmp2);

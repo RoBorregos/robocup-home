@@ -130,7 +130,7 @@ int Motor::getOdomTicks() {
 double Motor::getLastTicks(){
   return last_ticks_;
 }
-double Motor::getSpeedActual(){
+double Motor::getCurrentSpeed(){
   return current_speed_;
 }
 motorState Motor::getActualState(){

@@ -1,6 +1,6 @@
 ///This class has all the functions related to the ROS connection. It receives the velocity commands and publish the encoders ticks for Odometry.
-#ifndef Odometry
-#define Odometry
+#ifndef Odometry_h
+#define Odometry_h
 
 #include <ros.h>
 #include <geometry_msgs/Quaternion.h>

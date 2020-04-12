@@ -1,5 +1,5 @@
-#ifndef Encoder
-#define Encoder
+#ifndef Encoder_h
+#define Encoder_h
 ///This namespace contains the handler functions of the Encoders.
 namespace Encoder{
     //////////////////////////////////Main Function//////////////////////////////////////

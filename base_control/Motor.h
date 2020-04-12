@@ -1,6 +1,6 @@
 //This class has all the functions related to one Motor.
-#ifndef Motor
-#define Motor
+#ifndef Motor_h
+#define Motor_h
 
 enum motorState{
     Forward,
@@ -11,8 +11,8 @@ enum motorState{
 class Motor {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
-    Motor(const uint8_t id,const uint8_t digital_one,const uint8_t digital_two,const uint8_t analog_one,const uint8_t encoder_one,const uint8_t encoder_two);
     Motor();
+    Motor(const uint8_t id,const uint8_t digital_one,const uint8_t digital_two,const uint8_t analog_one,const uint8_t encoder_one,const uint8_t encoder_two);
     
     
     //////////////////////////////////Initialization//////////////////////////////////////
@@ -43,16 +43,24 @@ class Motor {
 
 
     //////////////////////////////////Set Methods//////////////////////////////////////
-    void setPidTicks(const int ticks);
+    //Set the count of ticks of the encoders,the count used in Pid.
+    void setPidTicks(const int pid_ticks);
+    //Set the count of ticks of the encoders,the count used in Odometry.
     void setOdomTicks(const int odom_ticks);
+    //Set an adjustment to the velocity.
     void setVelocityAdjustment(const double velocity_adjustment);    
 
 
     //////////////////////////////////Get Methods//////////////////////////////////////
+    //Return the count of ticks of the encoders, the count used in Pid.
     int getPidTicks();
+    //Return the count of ticks of the encoders, the count used in Odometry.
     int getOdomTicks();
+    //Return the last count of ticks of the encoders, before it was reset in Pid process.
     double getLastTicks();
-    double getSpeedActual();
+    //Return the current speed of the motor in meteres per second.
+    double getCurrentSpeed();
+    //Return the actual state of the motor.
     motorState getActualState();
 
   private:

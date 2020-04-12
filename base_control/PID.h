@@ -1,6 +1,6 @@
 //This class is a proportional–integral–derivative controller used to control different systems of the robot. 
-#ifndef PID
-#define PID
+#ifndef PID_h
+#define PID_h
 
 class PID{
 
@@ -19,16 +19,24 @@ class PID{
     void compute(const double setpoint,double &input,double &output,int &reset_variable,const int pulses_per_rev);
     
     //////////////////////////////////Set Methods//////////////////////////////////////
+    //This function set kp_,ki_,kd_ variables
     void setTunings(const double kp, const double ki, const double kd);         	  
+    //This function set sample_time_ variable
     void setSampleTime(const unsigned long sample_time);			
+    //This function set max_error_sum_ variable
     void setMaxErrorSum(const double max_error_sum);
+    //This function set out_min_ and out_max_ variables
     void setOutputLimits(const double out_min, const double out_max);
     void reset();
     
     //////////////////////////////////Get Methods//////////////////////////////////////
+    //Return kp_ variable 
     double getKp();
+    //Return ki_ variable
     double getKi();
+    //Return kd_ variable
     double getKd();
+    //Return las error variable
     double getPre();
   
   private:
