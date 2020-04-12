@@ -21,7 +21,11 @@ class Plot {
     
     
   private:
+    // Prints data send in parameters.
+    void PlotData(const double data1, const double data2, const double data3, const double data4);
+
     Movement *moveAll_;
+
     unsigned long time_msg_;
 
 
