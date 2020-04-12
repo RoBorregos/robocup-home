@@ -72,6 +72,9 @@ class Movement {
     // This function tells where is a custom target Angle, left or right.
     Direction whereToGo(double &current_angle, const double target_angle);
     
+    // Convert radians to degrees.
+    double radiansToDegrees(const double radians);
+
     // This function change any angle to a direction angle. 
     int angleToDirection(const int angle);
     

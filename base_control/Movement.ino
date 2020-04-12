@@ -43,7 +43,18 @@ void Movement::setDeltaAngular(const double delta_angular){
 }
 
 double Movement::getTargetAngle(){
-  return atan(delta_y_/delta_x_);
+  if(delta_x_ == 0) {
+    if(delta_y_ > 0) {
+      return 90;
+    } else {
+      return 270;
+    }
+  }
+  return radiansToDegrees(atan2(delta_y_, delta_x_));
+}
+
+double Movement::radiansToDegrees(const double radians){
+  return radians * 180 / M_PI;
 }
 
 double Movement::getTargetLinearVelocity(){
