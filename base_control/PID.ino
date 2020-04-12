@@ -10,7 +10,7 @@ PID::PID(const double kp, const double ki, const double kd){
 }
 
 //////////////////////////////////Compute//////////////////////////////////////
-void PID::compute(double setpoint,double &input,double &output,int &reset_variable, int pulses_per_rev){
+void PID::compute(const double setpoint,double &input,double &output,int &reset_variable,const int pulses_per_rev){
   if(millis()-time_ < sample_time_)
       return;
 
@@ -33,7 +33,7 @@ void PID::compute(double setpoint,double &input,double &output,int &reset_variab
   
 }
 
-void PID::compute(double setpoint,double input,double &output){
+void PID::compute(const double setpoint,const double input,double &output){
   if(millis()-time_ < sample_time_)
       return;
 
@@ -52,7 +52,7 @@ void PID::compute(double setpoint,double input,double &output){
   
 }
 
-void PID::compute(double error,double &output,byte flag){
+void PID::compute(const double error,double &output,const byte flag){
   if(millis()-time_ < sample_time_)
       return;
 

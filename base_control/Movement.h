@@ -28,16 +28,16 @@ class Movement {
 
     //////////////////////////////////PWM//////////////////////////////////////
     ///Set same pwm to all motors.
-    void changePwm(int pwm);
+    void changePwm(const uint8_t pwm);
 
 
     //////////////////////////////////VELOCITY//////////////////////////////////////
     ///Change deltaX value.
-    void setDeltaX(double delta_x);
+    void setDeltaX(const double delta_x);
     ///Change deltaY value.
-    void setDeltaY(double delta_y);
+    void setDeltaY(const double delta_y);
     ///Change deltaAngular value.
-    void setDeltaAngular(double delta_angular);
+    void setDeltaAngular(const double delta_angular);
     ///Return target linear angle.
     double getTargetAngle();
     ///Return target linear velocity.
@@ -52,11 +52,11 @@ class Movement {
     ///This function tells where is the target Angle of the class,left or right.
     direction whereToGo(double &actual_angle);
     ///This function tells where is a custom target Angle,left or right.
-    direction whereToGo(double &actual_angle,double target_angle);
+    direction whereToGo(double &actual_angle,const double target_angle);
     //This function change any angle to a direction angle. 
-    int angleToDirection(int angle);
+    int angleToDirection(const int angle);
     ///This function sets a direction according to an angle.
-    void setDirection(int angle); 
+    void setDirection(const int angle); 
     ///Put motors in 0° direction.
     void move0();
     ///Put motors in 45° direction.
@@ -85,13 +85,13 @@ class Movement {
     ///Set motors to respect angular velocity. 
     void constantAngularSpeed();
     ///Fix robot inclination while is moving.
-    void velocityAdjustment(int adjustment);
+    void velocityAdjustment(const int adjustment);
     ///Robot moves linear with pid.
     void pidLinearMovement();
     ///Robot moves angular with pid.
     void pidAngularMovement();
     ///Robot rotate to a custom targetAngle whit pid.
-    bool pidRotate(double target_angle);
+    bool pidRotate(const double target_angle);
     
   private:
     //Pins

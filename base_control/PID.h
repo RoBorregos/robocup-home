@@ -12,11 +12,11 @@ class PID{
 
     //////////////////////////////////Compute//////////////////////////////////////
     ///This function computes an output accoriding to the error and PID constants.
-    void compute(double error,double &output,byte flag);
+    void compute(const double error,double &output,const byte flag);
     ///This function computes an output accoriding to the error calculated internally and PID constants.
-    void compute(double setpoint,double input,double &output);
+    void compute(const double setpoint,const double input,double &output);
     ///This function computes an output accoriding to the error calculated internally and PID constants, also it resets a variable (used with ticks).
-    void compute(double setpoint,double &input,double &output,int &reset_variable, int pulses_per_rev);
+    void compute(const double setpoint,double &input,double &output,int &reset_variable,const int pulses_per_rev);
     
     //////////////////////////////////Set Methods//////////////////////////////////////
     void setTunings(const double kp, const double ki, const double kd);         	  

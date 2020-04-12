@@ -32,7 +32,7 @@ void Odometry::velocityCallback(const geometry_msgs::Twist& cmd_velocity) {
     watchdog_timer_ = millis();
 }
 
-void Odometry::cmdVelocity(double linear_x,double linear_y, double angular_z){
+void Odometry::cmdVelocity(const double linear_x,const double linear_y, const double angular_z){
     if(angular_z > linear_x && angular_z > linear_y){
         move_all_->setDeltaAngular(angular_z);
         move_all_->pidAngularMovement();

@@ -21,7 +21,7 @@ class Odometry{
         ///Receives velocity commands.
         void velocityCallback(const geometry_msgs::Twist& cmdvel);
         ///Process velocity commands.
-        void cmdVelocity(double linearx,double lineary, double angularz);
+        void cmdVelocity(const double linearx,const double lineary, const double angularz);
         
         //////////////////////////////////Encoders Publisher//////////////////////////////////////
         ///Process encoder and return message.

@@ -1,6 +1,6 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Motor::Motor() {}
-Motor::Motor(uint8_t id,uint8_t digital_one,uint8_t digital_two,uint8_t analog_one,uint8_t encoder_one,uint8_t encoder_two) : pid_() {
+Motor::Motor(const uint8_t id,const uint8_t digital_one,const uint8_t digital_two,const uint8_t analog_one,const uint8_t encoder_one,const uint8_t encoder_two) : pid_() {
   id_ = id;
   digital_one_=digital_one;
   digital_two_=digital_two;
@@ -81,15 +81,15 @@ void Motor::stop() {
 }
 
 //////////////////////////////////Velocity//////////////////////////////////////
-double Motor::getTargetRpm(double velocity){
+double Motor::getTargetRpm(const double velocity){
   return ((getTargetTicks(velocity)/kPulsesPerRevolution)*kPidCountTimeSamplesInOneSecond)+velocity_adjustment_;
 }
-double Motor::getTargetTicks(double velocity){
+double Motor::getTargetTicks(const double velocity){
   double ticks =velocity * (kPidMotorTimeSample/kOneSecondInMillis);
   ticks=ticks/(kWheelDiameter*M_PI);  
   return ceil(ticks*kPulsesPerRevolution);
 }
-void Motor::changePwm(double pwm){
+void Motor::changePwm(const uint8_t pwm){
   pwm_=pwm;
   switch(actual_state_){
     case Forward:
@@ -103,20 +103,20 @@ void Motor::changePwm(double pwm){
     break;
   }
 }
-void Motor::constantSpeed(double velocity){
+void Motor::constantSpeed(const double velocity){
   double tmp_pwm=pwm_;
   pid_.compute(getTargetRpm(velocity),speed_actual_,tmp_pwm,pid_ticks_,kPulsesPerRevolution);
   changePwm(tmp_pwm);
 }
 
 //////////////////////////////////Set Methods//////////////////////////////////////
-void Motor::setPidTicks(int pid_ticks) {
+void Motor::setPidTicks(const int pid_ticks) {
   pid_ticks_=pid_ticks;
 }
-void Motor::setOdomTicks(int odom_ticks) {
+void Motor::setOdomTicks(const int odom_ticks) {
   odom_ticks_=odom_ticks;
 }
-void Motor::setVelocityAdjustment(double velocity_adjustment){
+void Motor::setVelocityAdjustment(const double velocity_adjustment){
   velocity_adjustment_=velocity_adjustment;
 }
 

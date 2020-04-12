@@ -11,7 +11,7 @@ enum motorState{
 class Motor {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
-    Motor(uint8_t id,uint8_t digital_one,uint8_t digital_two,uint8_t analog_one,uint8_t encoder_one,uint8_t encoder_two);
+    Motor(const uint8_t id,const uint8_t digital_one,const uint8_t digital_two,const uint8_t analog_one,const uint8_t encoder_one,const uint8_t encoder_two);
     Motor();
     
     
@@ -33,19 +33,19 @@ class Motor {
 
     //////////////////////////////////Velocity//////////////////////////////////////
     ///Calculate target Rpm according to a velocity.
-    double getTargetRpm(double velocity);
+    double getTargetRpm(const double velocity);
     ///Calculate target Ticks according to a velocity.
-    double getTargetTicks(double velocity);
+    double getTargetTicks(const double velocity);
     ///Change Pwm value of a motor.
-    void changePwm(double pwm);
+    void changePwm(const uint8_t pwm);
     ///Compute Pid controller and update pwm. 
-    void constantSpeed(double velocity);
+    void constantSpeed(const double velocity);
 
 
     //////////////////////////////////Set Methods//////////////////////////////////////
-    void setPidTicks(int ticks);
-    void setOdomTicks(int odom_ticks);
-    void setVelocityAdjustment(double velocity_adjustment);    
+    void setPidTicks(const int ticks);
+    void setOdomTicks(const int odom_ticks);
+    void setVelocityAdjustment(const double velocity_adjustment);    
 
 
     //////////////////////////////////Get Methods//////////////////////////////////////
