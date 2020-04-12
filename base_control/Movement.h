@@ -1,6 +1,6 @@
 //This class has all the functions related to Movement.
-#ifndef MovementClass
-#define MovementClass
+#ifndef Movement
+#define Movement
 
 enum direction{
     left,

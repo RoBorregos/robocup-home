@@ -1,6 +1,6 @@
 ///This class prints data by serial communication in order to be displayed in graphs using a python application. This helps in order to see the PID controller development.
-#ifndef Plot_h
-#define Plot_h
+#ifndef Plot
+#define Plot
 
 class Plot {
   public:

@@ -1,6 +1,6 @@
 //This class has all the functions related to one Motor.
-#ifndef MotorClass
-#define MotorClass
+#ifndef Motor
+#define Motor
 
 enum motorState{
     Forward,

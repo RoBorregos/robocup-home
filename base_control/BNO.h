@@ -1,6 +1,6 @@
 ///This class has the declaration,initialization and usage function of the BNO.
-#ifndef BNO_H
-#define BNO_H
+#ifndef BNO
+#define BNO
 
 #include <Wire.h>
 #include <Adafruit_Sensor.h>

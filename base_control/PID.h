@@ -1,6 +1,6 @@
 //This class is a proportional–integral–derivative controller used to control different systems of the robot. 
-#ifndef PID_h
-#define PID_h
+#ifndef PID
+#define PID
 
 class PID{
 

@@ -1,3 +1,5 @@
+#ifndef Encoder
+#define Encoder
 ///This namespace contains the handler functions of the Encoders.
 namespace Encoder{
     //////////////////////////////////Main Function//////////////////////////////////////
@@ -15,3 +17,4 @@ namespace Encoder{
     ///Call main function for front right motor.
     void frontRightEncoder();
 };
+#endif
