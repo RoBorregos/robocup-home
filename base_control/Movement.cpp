@@ -114,7 +114,7 @@ Direction Movement::whereToGo(double &current_angle, const double target_angle) 
       sign = -1;
     }
     
-    diff_angle = static_cast<int>((diff_angle) % kMaxAngle; 
+    diff_angle = static_cast<int>(diff_angle) % kMaxAngle; 
     current_angle = sign * ((diff_angle > kInterAngle) ? kMaxAngle - diff_angle : diff_angle);
 
     if(sign != 1) {
