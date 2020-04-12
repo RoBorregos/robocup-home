@@ -59,7 +59,7 @@ class Movement {
     // Robot moves angular with pid.
     void pidAngularMovement();
     
-    // Robot rotate to a custom targetAngle whit pid.
+    // Robot rotate to a custom targetAngle with pid. Returns true when its done otherwise returns false.
     bool pidRotate(const double target_angle);
 
     
@@ -75,7 +75,7 @@ class Movement {
     // Convert radians to degrees.
     double radiansToDegrees(const double radians);
 
-    // This function change any angle to a direction angle. 
+    // This function change any angle to the closer mechanum direction angle. 
     int angleToDirection(const int angle);
     
     // This function sets a direction according to an angle.

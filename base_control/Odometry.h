@@ -10,7 +10,7 @@
 #include <base_control/StampedEncoders.h>
 #include <base_control/Encoders.h>
 
-#define sign(a) (min(1, max(-1, a)))
+inline int sign(int a) { return min(1, max(-1, a)); };
 
 class Odometry{
     public:

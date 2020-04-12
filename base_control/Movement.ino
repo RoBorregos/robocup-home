@@ -43,11 +43,20 @@ void Movement::setDeltaAngular(const double delta_angular){
 }
 
 double Movement::getTargetAngle(){
+  //If delta_x_ = 0 it means the angle is either in 90 or 270 degrees, depending on delta_y sign.
   if(delta_x_ == 0) {
     if(delta_y_ > 0) {
       return 90;
     } else {
       return 270;
+    }
+  }
+  //If delta_y_ = 0 it means the angle is either in 0 or 180 degrees, depending on delta_x sign.
+  if(delta_y_ == 0) {
+    if(delta_x_ > 0) {
+      return 0;
+    } else {
+      return 180;
     }
   }
   return radiansToDegrees(atan2(delta_y_, delta_x_));
@@ -226,8 +235,7 @@ void Movement::velocityAdjustment(const int adjustment){
 }
 
 void Movement::pidLinearMovement(){
-    int angle = angleToDirection(getTargetAngle());
-    setDirection(angle);
+    setDirection(angleToDirection(getTargetAngle()));
     constantLinearSpeed();
 
     double angle_error = 0;
@@ -249,6 +257,7 @@ bool Movement::pidRotate(const double target_angle){
     double output = 0;
     double angle_error = 0;
     Direction where = whereToGo(angle_error, target_angle);
+    
     if(abs(angle_error) <= kPidRotationTolerance && abs(pid_rotation_.getPre()) <= kPidRotationTolerance && angle_error * pid_rotation_.getPre() >= 0){
         stop();
         return true;
