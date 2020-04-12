@@ -105,7 +105,7 @@ void Motor::changePwm(const uint8_t pwm){
 }
 void Motor::constantSpeed(const double velocity){
   double tmp_pwm = pwm_;
-  pid_.compute(getTargetRpm(velocity),speed_actual_,tmp_pwm,pid_ticks_,kPulsesPerRevolution);
+  pid_.compute(getTargetRpm(velocity),current_speed_,tmp_pwm,pid_ticks_,kPulsesPerRevolution);
   changePwm(tmp_pwm);
 }
 
@@ -131,7 +131,7 @@ double Motor::getLastTicks(){
   return last_ticks_;
 }
 double Motor::getSpeedActual(){
-  return speed_actual_;
+  return current_speed_;
 }
 motorState Motor::getActualState(){
   return actual_state_;

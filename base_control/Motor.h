@@ -79,7 +79,7 @@ class Motor {
     int pid_ticks_ = 0;
     int odom_ticks_ = 0;
     double last_ticks_ = 0;
-    double speed_actual_ = 0;
+    double current_speed_ = 0;
     double velocity_adjustment_ = 0;
     
     //PID.
