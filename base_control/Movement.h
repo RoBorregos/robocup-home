@@ -180,7 +180,7 @@ class Movement {
     // Constants.
     static constexpr uint16_t kIntMax = 65535;
     static constexpr uint16_t kMinAngle = 0;
-    static constexpr uint16_t kIntermediateAngle = 180;
+    static constexpr uint16_t kInterAngle = 180;
     static constexpr uint16_t kMaxAngle = 360;
     static constexpr uint16_t kDirectionSeparationAngle = 45;
     static constexpr uint16_t kCountDirections = kMaxAngle/kDirectionSeparationAngle;

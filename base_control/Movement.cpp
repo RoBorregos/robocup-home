@@ -103,11 +103,19 @@ Direction Movement::whereToGo(double &current_angle) {
 Direction Movement::whereToGo(double &current_angle, const double target_angle) {
     double current_a = bno_->getCurrentAngle();
     current_angle = current_a;
-    double diff_angle = int(abs(current_a - target_angle)) % kMaxAngle; 
-    current_angle = diff_angle > kIntermediateAngle ? kMaxAngle - diff_angle : diff_angle;
+    double diff_angle = current_a - target_angle; 
 
-    int sign = (current_a - target_angle >= kMinAngle && current_a - target_angle <= kIntermediateAngle) || (current_a - target_angle <= kIntermediateAngle * -1 && current_a - target_angle >= kMaxAngle * -1) ? 1 : -1; 
-    current_angle *= sign;
+    int sign=0;
+    
+    if(diff_angle >= kMinAngle && diff_angle <= kInterAngle || 
+      (diff_angle <= kInterAngle * -1 && diff_angle >= kMaxAngle * -1)) {
+      sign =  1; 
+    } else {
+      sign = -1;
+    }
+    
+    diff_angle = static_cast<int>((diff_angle) % kMaxAngle; 
+    current_angle = sign * ((diff_angle > kInterAngle) ? kMaxAngle - diff_angle : diff_angle);
 
     if(sign != 1) {
         return Direction::left;
