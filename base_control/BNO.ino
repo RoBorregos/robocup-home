@@ -10,7 +10,7 @@ BNO::BNO() {
   bno_.setExtCrystalUse(true);
   sensors_event_t event;
   bno_.getEvent(&event);
-  BNOSetPoint = event.orientation.x;
+  bno_set_point_ = event.orientation.x;
 
 }
 
@@ -26,7 +26,7 @@ uint8_t BNO::orientationStatus() {
 int BNO::getActualAngle() {
   int angle = 0;
   angle = getAngleX();
-  angle -= BNOSetPoint;
+  angle -= bno_set_point_;
   if (angle <0) {
     angle +=  360;
   }

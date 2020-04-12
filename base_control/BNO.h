@@ -21,14 +21,18 @@ class BNO {
 
 
     //////////////////////////////////Get Functions//////////////////////////////////////
+    //Returns the angle considering bno_set_point_ and in a range of 0-360
     int getActualAngle();
+    //Returns the angle in X axis 
     double getAngleX();
+    //Returns the angle in Y axis
     double getAngleY();
+    //Returns the angle in Z axis
     double getAngleZ();
 
     
   private:
     Adafruit_BNO055 bno_;
-    int BNOSetPoint = 0;
+    int bno_set_point_ = 0;
 };
 #endif
