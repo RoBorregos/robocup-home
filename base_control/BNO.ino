@@ -23,7 +23,7 @@ uint8_t BNO::orientationStatus() {
 }
 
 //////////////////////////////////Get Functions//////////////////////////////////////
-int BNO::getActualAngle() {
+int BNO::getCurrentAngle() {
   int angle = 0;
   angle = getAngleX();
   angle -= bno_set_point_;

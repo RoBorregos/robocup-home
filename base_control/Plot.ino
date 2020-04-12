@@ -9,14 +9,14 @@ void Plot::PlotMotorSpeed(){
     if(millis()-time_msg_>35){
         return;
     }
-    int back_left_motor_actual_speed = moveAll_->back_left_motor_.getCurrentSpeed();
-    int front_left_motor_actual_speed = moveAll_->front_left_motor_.getCurrentSpeed();
-    int front_right_motor_actual_speed = moveAll_->front_right_motor_.getCurrentSpeed();
-    int back_right_motor_actual_speed = moveAll_->back_right_motor_.getCurrentSpeed();
-    byte* byteData1 = (byte*)(&back_left_motor_actual_speed);
-    byte* byteData2 = (byte*)(&front_left_motor_actual_speed);
-    byte* byteData3 = (byte*)(&front_right_motor_actual_speed);
-    byte* byteData4 = (byte*)(&back_right_motor_actual_speed);
+    int back_left_motor_current_speed = moveAll_->back_left_motor_.getCurrentSpeed();
+    int front_left_motor_current_speed = moveAll_->front_left_motor_.getCurrentSpeed();
+    int front_right_motor_current_speed = moveAll_->front_right_motor_.getCurrentSpeed();
+    int back_right_motor_current_speed = moveAll_->back_right_motor_.getCurrentSpeed();
+    byte* byteData1 = (byte*)(&back_left_motor_current_speed);
+    byte* byteData2 = (byte*)(&front_left_motor_current_speed);
+    byte* byteData3 = (byte*)(&front_right_motor_current_speed);
+    byte* byteData4 = (byte*)(&back_right_motor_current_speed);
     byte* byteData5 = (byte*)(-1);
     byte buf[20] = {byteData1[0], byteData1[1], byteData1[2], byteData1[3],
                     byteData2[0], byteData2[1], byteData2[2], byteData2[3],
@@ -51,7 +51,7 @@ void Plot::PlotMotorTicks(){
     time_msg_=millis();
 }
 
-void Plot::PlotTargetandActual(){
+void Plot::PlotTargetandCurrent(){
     if(millis()-time_msg_>35){
         return;
     }

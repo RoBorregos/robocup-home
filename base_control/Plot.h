@@ -10,12 +10,12 @@ class Plot {
     Plot(Movement *moveAll);
     
     //////////////////////////////////Plot Functions//////////////////////////////////////
-    // This function print the actual speed of the four motors.
+    // This function print the current speed of the four motors.
     void PlotMotorSpeed();
-    // This function print the actual ticks of the four motors.
+    // This function print the current ticks of the four motors.
     void PlotMotorTicks();
-    // This function print the actual and the target speed.
-    void PlotTargetandActual();
+    // This function print the current and the target speed.
+    void PlotTargetandCurrent();
     
     
   private:

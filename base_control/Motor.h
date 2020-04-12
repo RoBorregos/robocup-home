@@ -60,12 +60,12 @@ class Motor {
     double getLastTicks();
     // Return the current speed of the motor in meteres per second.
     double getCurrentSpeed();
-    // Return the actual state of the motor.
-    motorState getActualState();
+    // Return the current state of the motor.
+    motorState getCurrentState();
 
   private:
     uint8_t id_ = 0;
-    motorState actual_state_;
+    motorState current_state_;
     
     // Motor Characteristics.
     static const uint16_t kPulsesPerRevolution = 4320;
