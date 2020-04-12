@@ -14,6 +14,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  roslib
   audio_common_msgs
   message_generation
   intercom
@@ -114,7 +115,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES devices
-   CATKIN_DEPENDS roscpp rospy message_runtime audio_common_msgs intercom
+   CATKIN_DEPENDS roscpp rospy roslib message_runtime audio_common_msgs intercom
 #  DEPENDS system_lib
 )
 
@@ -126,6 +127,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 # include
+  src
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -260,7 +262,12 @@ include_directories(
 
 # Declare the `InputAudio` target.
 # TODO: Maybe move this to the "Building" section will be better.
-add_executable(InputAudio src/InputAudio.cpp)
+add_executable(InputAudio
+  src/InputAudio.cpp
+  src/RnnoiseMethods/HelperMethods.cpp
+  src/RnnoiseMethods/Algorithm3Steps1.cpp
+  src/RnnoiseMethods/AlgorithmAccTolerance1.cpp
+)
 target_link_libraries(InputAudio ${catkin_LIBRARIES} rnnoise_sl)
 # TODO: These dependecies seem to be not needed, now they generate a warning
 # and, in later cmake versions, an error...

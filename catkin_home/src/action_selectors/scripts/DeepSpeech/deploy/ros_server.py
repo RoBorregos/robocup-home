@@ -66,7 +66,8 @@ args = parser.parse_args()
 
 
 class ASRServer:
-    def __init__(self):
+    def __init__(self, num_processes_beam_search=1):
+        self.num_processes_beam_search = num_processes_beam_search
         print_arguments(args)
 
         paddle.init(use_gpu=args.use_gpu, trainer_count=1)
@@ -107,7 +108,7 @@ class ASRServer:
                 cutoff_prob=args.cutoff_prob,
                 cutoff_top_n=args.cutoff_top_n,
                 vocab_list=self.vocab_list,
-                num_processes=1)
+                num_processes=self.num_processes_beam_search)
 
         return result_transcript[0]
 
