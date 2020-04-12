@@ -46,6 +46,10 @@ void Motor::initEncoders(){
 
 //////////////////////////////////Motor State//////////////////////////////////////
 void Motor::forward() {
+  if(current_state_ == MotorState::Forward){
+    return;
+  }
+
   analogWrite(analog_one_, pwm_);
   digitalWrite(digital_one_, HIGH);
   digitalWrite(digital_two_, LOW);
@@ -58,6 +62,10 @@ void Motor::forward() {
 }
 
 void Motor::backward() {
+  if(current_state_ == MotorState::Backward){
+    return;
+  }
+
   analogWrite(analog_one_, pwm_);
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, HIGH);
@@ -70,6 +78,10 @@ void Motor::backward() {
 }
 
 void Motor::stop() {
+  if(current_state_ == MotorState::Stop){
+    return;
+  }
+
   analogWrite(analog_one_, LOW);
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, LOW);
