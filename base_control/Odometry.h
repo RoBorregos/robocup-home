@@ -1,3 +1,4 @@
+///This class has all the functions related to the ROS connection. It receives the velocity commands and publish the encoders ticks for Odometry.
 #ifndef Odometry_h
 #define Odometry_h
 
@@ -9,38 +10,55 @@
 #include <base_control/Encoders.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/UInt32.h>
-
-
-#define ODOM_PERIOD 50 // 20 Hz
-#define WATCHDOG_PERIOD 500 // 2 Hz
-#define LINEAR_X_MAX_VEL 1.1 // m/s
-#define LINEAR_Y_MAX_VEL 1.3 // m/s
-#define ANGULAR_Z_MAX_VEL 2.8 // rad/s
-#define DEADZONE 5 // in bytes around 128
-
-#define INT_MAX 65535
-#define COUNT_RESET 250
-#define COUNT_OVERFLOW 16374
 #define sign(a) (min(1, max(-1, a)))
-
 
 class Odometry{
     public:
-        Odometry(Movement *moveAll);
-        void vel_callback(const geometry_msgs::Twist& cmdvel);
-        void cmd_vel(double linearx,double lineary, double angularz);
+        //////////////////////////////////Constructor//////////////////////////////////////
+        Odometry(Movement *move_all);
+        
+        //////////////////////////////////Velocity Suscriber//////////////////////////////////////
+        ///Receives velocity commands.
+        void velocityCallback(const geometry_msgs::Twist& cmdvel);
+        ///Process velocity commands.
+        void cmdVelocity(double linearx,double lineary, double angularz);
+        
+        //////////////////////////////////Encoders Publisher//////////////////////////////////////
+        ///Process encoder and return message.
         void getEncoderCounts();
+        ///Publish encoder message.
         void publish();
+        
+        //////////////////////////////////Run//////////////////////////////////////
+        ///This is the main function calls publish and verify it is still receiving velocity commands.
         void run();
-        unsigned long odom_timer = 0;
-        unsigned long watchdog_timer = 0;
-        ros::NodeHandle  nh;
+
     private:
-        Movement *moveAll_;
-        int lastEncoderCounts[4];
-        std_msgs::Float32MultiArray enc_msg;
-        ros::Publisher enc_pub;
-        ros::Subscriber<geometry_msgs::Twist,Odometry> vel_sub;
+        Movement *move_all_;
+        static const uint8_t kCountMotors=4;
+
+        //Node
+        ros::NodeHandle  nh_;
+        
+        //Suscriber
+        ros::Subscriber<geometry_msgs::Twist,Odometry> velocity_subscriber_;
+        static constexpr double kLinearXMaxVelocity=1.1;
+        static constexpr double kLinearYMaxVelocity=1.3;
+        static constexpr double kAngularZMaxVelocity=2.8;
+        static const uint16_t kWatchdogPeriod=500;
+        
+        //Publisher
+        ros::Publisher encoder_publisher_;
+        std_msgs::Float32MultiArray encoder_msg_;
+        int last_encoder_counts_[kCountMotors];
+        static const uint8_t kOdomPeriod=50;
+        static constexpr uint16_t kIntMax=65535;
+        static constexpr uint16_t kCountReset=250;
+        static constexpr uint16_t kCountOverflow=16374;        
+
+        //Timers
+        unsigned long odom_timer_ = 0;
+        unsigned long watchdog_timer_ = 0;
         
 };
 

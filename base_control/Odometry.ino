@@ -1,99 +1,103 @@
-Odometry::Odometry(Movement *moveAll) : vel_sub("cmd_vel",&Odometry::vel_callback,this), enc_pub("encoders", &enc_msg) {
-    moveAll_=moveAll;
+//////////////////////////////////Constructor//////////////////////////////////////
+Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Odometry::velocityCallback,this), encoder_publisher_("encoders", &encoder_msg_){
+    move_all_=move_all;
     //Node Handle
-    nh.initNode();
-    nh.subscribe(vel_sub);
-    nh.advertise(enc_pub);
+    nh_.initNode();
+    nh_.subscribe(velocity_subscriber_);
+    nh_.advertise(encoder_publisher_);
     
-    while(!nh.connected()) 
-        nh.spinOnce();
+    while(!nh_.connected()) 
+        nh_.spinOnce();
     
     //Timers
-    odom_timer = millis();
-    watchdog_timer = millis();
+    odom_timer_ = millis();
+    watchdog_timer_ = millis();
     
     //Message Init
-    enc_msg.data = (float *)malloc(sizeof(float)*4);
-    enc_msg.data_length = 4;
+    encoder_msg_.data = (float *)malloc(sizeof(float)*kCountMotors);
+    encoder_msg_.data_length = kCountMotors;
 
-    for(int i = 0; i < 4; i++)
-		this->lastEncoderCounts[i] = 0;
+    for(int i = 0; i < kCountMotors; i++)
+		last_encoder_counts_[i] = 0;
 }
 
-void Odometry::vel_callback(const geometry_msgs::Twist& cmdvel) {
-    cmd_vel(
-        min(cmdvel.linear.x, LINEAR_X_MAX_VEL),
-        min(cmdvel.linear.y, LINEAR_Y_MAX_VEL),
-        min(cmdvel.angular.z, ANGULAR_Z_MAX_VEL)
+//////////////////////////////////Velocity Suscriber//////////////////////////////////////
+void Odometry::velocityCallback(const geometry_msgs::Twist& cmd_velocity) {
+    cmdVelocity(
+        min(cmd_velocity.linear.x, kLinearXMaxVelocity),
+        min(cmd_velocity.linear.y, kLinearYMaxVelocity),
+        min(cmd_velocity.angular.z, kAngularZMaxVelocity)
     );
-    watchdog_timer = millis();
+    watchdog_timer_ = millis();
 }
-void Odometry::cmd_vel(double linearx,double lineary, double angularz){
-    if(angularz > linearx && angularz > lineary){
-        moveAll_->dteta=angularz;
-        moveAll_->pidAngularMovement();
+
+void Odometry::cmdVelocity(double linear_x,double linear_y, double angular_z){
+    if(angular_z > linear_x && angular_z > linear_y){
+        move_all_->setDeltaAngular(angular_z);
+        move_all_->pidAngularMovement();
     }else{
-        moveAll_->dX=linearx;
-        moveAll_->dY=lineary;
-        moveAll_->pidLinearMovement();
+        move_all_->setDeltaX(linear_x);
+        move_all_->setDeltaY(linear_y);
+        move_all_->pidLinearMovement();
     }
 }
 
+//////////////////////////////////Encoders Publisher//////////////////////////////////////
 void Odometry::getEncoderCounts(){
-	int newEncoderCounts[4];
-	newEncoderCounts[0] = moveAll_->F_left.getOdomTicks();
-	newEncoderCounts[1] = moveAll_->F_right.getOdomTicks();
-	newEncoderCounts[2] = moveAll_->B_left.getOdomTicks();
-	newEncoderCounts[3] = moveAll_->B_right.getOdomTicks();
+	int new_encoder_counts[kCountMotors];
+	new_encoder_counts[0] = move_all_->front_left_.getOdomTicks();
+	new_encoder_counts[1] = move_all_->front_right_.getOdomTicks();
+	new_encoder_counts[2] = move_all_->back_left_.getOdomTicks();
+	new_encoder_counts[3] = move_all_->back_right_.getOdomTicks();
 	
 	// find deltas
-	int deltaEncoderCounts[4];
-	for(int i = 0; i < 4; i++) {
+	int delta_encoder_counts[kCountMotors];
+	for(int i = 0; i < kCountMotors; i++) {
 		// check for overflow
-		if(abs(this->lastEncoderCounts[i]) > COUNT_OVERFLOW && abs(newEncoderCounts[i]) > COUNT_OVERFLOW && sign(this->lastEncoderCounts[i]) != sign(newEncoderCounts[i])) {
-			if(sign(this->lastEncoderCounts[i]) > 0)
-				deltaEncoderCounts[i] = newEncoderCounts[i] - this->lastEncoderCounts[i] + INT_MAX;
+		if(abs(last_encoder_counts_[i]) > kCountOverflow && abs(new_encoder_counts[i]) > kCountOverflow && sign(last_encoder_counts_[i]) != sign(new_encoder_counts[i])) {
+			if(sign(last_encoder_counts_[i]) > 0)
+				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] + kIntMax;
 			else
-				deltaEncoderCounts[i] = newEncoderCounts[i] - this->lastEncoderCounts[i] - INT_MAX;
+				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] - kIntMax;
 		}
-		else deltaEncoderCounts[i] = newEncoderCounts[i] - this->lastEncoderCounts[i];
+		else delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i];
 		
-		if(abs(deltaEncoderCounts[i]) > COUNT_RESET) deltaEncoderCounts[i] = 0;
+		if(abs(delta_encoder_counts[i]) > kCountReset) delta_encoder_counts[i] = 0;
 		
-		this->lastEncoderCounts[i] = newEncoderCounts[i];
+		last_encoder_counts_[i] = new_encoder_counts[i];
 	}
 
-	enc_msg.data[0] = (deltaEncoderCounts[0] + deltaEncoderCounts[1] + deltaEncoderCounts[2] + deltaEncoderCounts[3]) / 4;
-	enc_msg.data[1] = (0 - deltaEncoderCounts[0] + deltaEncoderCounts[1] + deltaEncoderCounts[2] - deltaEncoderCounts[3]) / 4;
-	enc_msg.data[2] = (0 - deltaEncoderCounts[0] + deltaEncoderCounts[1] - deltaEncoderCounts[2] + deltaEncoderCounts[3]) / 4;
+	encoder_msg_.data[0] = (delta_encoder_counts[0] + delta_encoder_counts[1] + delta_encoder_counts[2] + delta_encoder_counts[3]) / kCountMotors;
+	encoder_msg_.data[1] = (0 - delta_encoder_counts[0] + delta_encoder_counts[1] + delta_encoder_counts[2] - delta_encoder_counts[3]) / kCountMotors;
+	encoder_msg_.data[2] = (0 - delta_encoder_counts[0] + delta_encoder_counts[1] - delta_encoder_counts[2] + delta_encoder_counts[3]) / kCountMotors;
 
 }
 
 void Odometry::publish(){
-    if((millis() - odom_timer) > ODOM_PERIOD) {
+    if((millis() - odom_timer_) > kOdomPeriod) {
         getEncoderCounts();
         unsigned long currentTime = millis();
-        enc_msg.data[3] = (float)(currentTime - odom_timer) / 1000;
+        encoder_msg_.data[3] = (float)(currentTime - odom_timer_) / 1000;
         
         // publish data
-        enc_pub.publish(&enc_msg);
-        if((currentTime - ODOM_PERIOD) > (odom_timer + ODOM_PERIOD)) {
-            odom_timer = currentTime;
+        encoder_publisher_.publish(&encoder_msg_);
+        if((currentTime - kOdomPeriod) > (odom_timer_ + kOdomPeriod)) {
+            odom_timer_ = currentTime;
         }
         else {
-            odom_timer = odom_timer + ODOM_PERIOD;
+            odom_timer_ = odom_timer_ + kOdomPeriod;
         }
     }
 }
 
+//////////////////////////////////Run//////////////////////////////////////
 void Odometry::run(){
-    while(1){
-        
-        if((millis() - watchdog_timer) > WATCHDOG_PERIOD) {
-            moveAll_->_stop();
-            watchdog_timer = millis();
+    while(1){ 
+        if((millis() - watchdog_timer_) > kWatchdogPeriod) {
+            move_all_->stop();
+            watchdog_timer_ = millis();
         }
         publish();
-        nh.spinOnce();
+        nh_.spinOnce();
     }
 }

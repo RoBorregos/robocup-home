@@ -1,6 +1,7 @@
 
+//////////////////////////////////Constructor//////////////////////////////////////
 BNO::BNO(){
-  bno_ = Adafruit_BNO055();
+  bno_ = Adafruit_BNO055(55);
   
   if (!bno_.begin()) {
     while (1);
@@ -13,14 +14,22 @@ BNO::BNO(){
 
 }
 
-int BNO::actualAngle(){
+//////////////////////////////////Calibration//////////////////////////////////////
+uint8_t BNO::orientationStatus() {
+  uint8_t system, gyro, accel, mag = 0;
+  bno_.getCalibration(&system, &gyro, &accel, &mag);
+
+  return mag;
+}
+
+//////////////////////////////////Get Functions//////////////////////////////////////
+int BNO::getActualAngle(){
   int angle = 0;
   angle = getAngleX();
   angle -= BNOSetPoint;
   if (angle <0){
     angle +=  360;
   }
-  
   return angle;
 }
 
@@ -43,11 +52,4 @@ double BNO::getAngleZ() {
   bno_.getEvent(&event);
 
   return event.orientation.z;
-}
-
-uint8_t BNO::orientationStatus() {
-  uint8_t system, gyro, accel, mag = 0;
-  bno_.getCalibration(&system, &gyro, &accel, &mag);
-
-  return mag;
 }

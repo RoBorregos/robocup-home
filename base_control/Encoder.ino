@@ -1,19 +1,22 @@
+//////////////////////////////////Main Function//////////////////////////////////////
 void Encoder::handleEncoder(Motor &motor){
-  motor.ticks++;
-  if(motor.actualState==forward)
-    motor.odomTicks++;
+  motor.setPidTicks(motor.getPidTicks()+1);
+  if(motor.getActualState()==Forward)
+    motor.setOdomTicks(motor.getOdomTicks()+1);
   else
-    motor.odomTicks++;
+    motor.setOdomTicks(motor.getOdomTicks()-1);
 }
-void Encoder::BLencoder(){
-  handleEncoder(robot->B_left);
+
+//////////////////////////////////Motor Functions//////////////////////////////////////
+void Encoder::backLeftEncoder(){
+  handleEncoder(robot->back_left_);
 }
-void Encoder::BRencoder(){
-  handleEncoder(robot->B_right);
+void Encoder::backRightEncoder(){
+  handleEncoder(robot->back_right_);
 }
-void Encoder::FLencoder(){
-  handleEncoder(robot->F_left);
+void Encoder::frontLeftEncoder(){
+  handleEncoder(robot->front_left_);
 }
-void Encoder::FRencoder(){
-  handleEncoder(robot->F_right);
+void Encoder::frontRightEncoder(){
+  handleEncoder(robot->front_right_);
 }

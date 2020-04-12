@@ -1,111 +1,123 @@
 
+//////////////////////////////////Constructor//////////////////////////////////////
 PID::PID(){
-  time=millis();
+  time_=millis();
 }
 
 PID::PID(const double kp, const double ki, const double kd){
-  time=millis();
-  this->setTunings(kp,ki,kd);
+  time_=millis();
+  setTunings(kp,ki,kd);
 }
 
-
-void PID::Compute(double setpoint,double &input,double &output,int &resetV, int pulses_per_rev){
-  if(millis()-time < sampleTime)
+//////////////////////////////////Compute//////////////////////////////////////
+void PID::compute(double setpoint,double &input,double &output,int &reset_variable, int pulses_per_rev){
+  if(millis()-time_ < sample_time_)
       return;
 
-  if(resetV){
-    input=(resetV/pulses_per_rev)*10;
-    resetV=0;
+  if(reset_variable){
+    input=(reset_variable/pulses_per_rev)*10;
+    reset_variable=0;
   }
 
   double error = setpoint - input;
-  output = error*kp + errorSum*ki + (error - errorPre)*kd;
+  output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
   
-  errorPre = error;
-  errorSum += error;
+  error_pre_= error;
+  error_sum_+= error;
   
 
-  errorSum=max(maxErrorSum*-1,min(maxErrorSum,errorSum));
-  output=max(outMin,min(outMax,output));
+  error_sum_=max(max_error_sum_*-1,min(max_error_sum_,error_sum_));
+  output=max(out_min_,min(out_max_,output));
   
-  time=millis();
+  time_=millis();
   
 }
 
-void PID::Compute(double setpoint,double input,double &output){
-  if(millis()-time < sampleTime)
+void PID::compute(double setpoint,double input,double &output){
+  if(millis()-time_ < sample_time_)
       return;
 
 
   double error = setpoint - input;
-  output = error*kp + errorSum*ki + (error - errorPre)*kd;
+  output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
   
-  errorPre = error;
-  errorSum += error;
+  error_pre_= error;
+  error_sum_+= error;
   
 
-  errorSum=max(maxErrorSum*-1,min(maxErrorSum,errorSum));
-  output=max(outMin,min(outMax,output));
+  error_sum_=max(max_error_sum_*-1,min(max_error_sum_,error_sum_));
+  output=max(out_min_,min(out_max_,output));
   
-  time=millis();
+  time_=millis();
   
 }
-void PID::Compute(double error,double &output,byte flag){
-  if(millis()-time < sampleTime)
+
+void PID::compute(double error,double &output,byte flag){
+  if(millis()-time_ < sample_time_)
       return;
 
   
 
-  if(errorPre*error<=0){
-    errorPre=0;
-    errorSum=0;
+  if(error_pre_*error<=0){
+    error_pre_=0;
+    error_sum_=0;
   }
   if(flag==0)
   if(abs(error)<=2){
-    errorPre=0;
-    errorSum=0;
+    error_pre_=0;
+    error_sum_=0;
   }
   
-  output = error*kp + errorSum*ki + (error - errorPre)*kd;
-  errorPre = error;
-  errorSum += error;
+  output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
+  error_pre_ = error;
+  error_sum_ += error;
   
   
-  errorSum=max(maxErrorSum*-1,min(maxErrorSum,errorSum));
-  output=max(outMin,min(outMax,output));
+  error_sum_=max(max_error_sum_*-1,min(max_error_sum_,error_sum_));
+  output=max(out_min_,min(out_max_,output));
   
-  time=millis();
+  time_=millis();
 
 }
+
+//////////////////////////////////Set Methods//////////////////////////////////////
 void PID::setTunings(const double kp, const double ki ,const double kd){
-  this->kp=kp;
-  this->ki=ki;
-  this->kd=kd;
-}     	  
-void PID::setSampleTime(const unsigned long sampleTime){
-  this->sampleTime=sampleTime;
-}					  
-void PID::setMaxErrorSum(const double maxErrorSum){
-  this->maxErrorSum=maxErrorSum;
-}					  
-void PID::setOutputLimits(const double outMin,const double outMax){
-  this->outMin=outMin;
-  this->outMax=outMax;
-}
-void PID::reset(){
-  errorSum = 0;
-  errorPre = 0;
-}
-double PID::getKp(){
-  return kp;
-}
-double PID::getKi(){
-  return ki;
-}
-double PID::getKd(){
-  return kd;
-}
-double PID::getPre(){
-  return errorPre;
+  kp_=kp;
+  ki_=ki;
+  kd_=kd;
+}     	 
+
+void PID::setSampleTime(const unsigned long sample_time){
+  sample_time_=sample_time;
+}				
+
+void PID::setMaxErrorSum(const double max_error_sum){
+  max_error_sum_=max_error_sum;
 }
 
+void PID::setOutputLimits(const double out_min,const double out_max){
+  out_min_=out_min;
+  out_max_=out_max;
+}
+
+void PID::reset(){
+  error_sum_= 0;
+  error_pre_= 0;
+}
+
+//////////////////////////////////Get Methods//////////////////////////////////////
+double PID::getKp(){
+  return kp_;
+}
+
+double PID::getKi(){
+  return ki_;
+}
+
+double PID::getKd(){
+  return kd_;
+}
+
+double PID::getPre(){
+  return error_pre_;
+}

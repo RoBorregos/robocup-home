@@ -1,254 +1,246 @@
+//////////////////////////////////Constructor//////////////////////////////////////
 Movement::Movement(BNO *bno) {
   bno_=bno;
-                    //id,d1,d2,p1,e1,e2
-  this->B_left  = Motor(1,15,14,11,2,37);
-  this->F_left  = Motor(2,37,36,5,2,22);
-  this->B_right = Motor(3,45,43,6,19,14);
-  this->F_right = Motor(4,25,24,7,18,23);
+  
+  back_left_  = Motor(kIdBackLeftMotor,kDigitalPinsBackLeftMotor[0],kDigitalPinsBackLeftMotor[1],kAnalogPinBackLeftMotor,kEncoderPinsBackLeftMotor[0],kEncoderPinsBackLeftMotor[1]);
+  front_left_ = Motor(kIdFrontLeftMotor,kDigitalPinsFrontLeftMotor[0],kDigitalPinsFrontLeftMotor[1],kAnalogPinFrontLeftMotor,kEncoderPinsFrontLeftMotor[0],kEncoderPinsFrontLeftMotor[1]);
+  back_right_ = Motor(kIdBackRightMotor,kDigitalPinsBackRightMotor[0],kDigitalPinsBackRightMotor[1],kAnalogPinBackRightMotor,kEncoderPinsBackRightMotor[0],kEncoderPinsBackRightMotor[1]);
+  front_right_= Motor(kIdFrontRightMotor,kDigitalPinsFrontRightMotor[0],kDigitalPinsFrontRightMotor[1],kAnalogPinFrontRightMotor,kEncoderPinsFrontRightMotor[0],kEncoderPinsFrontRightMotor[1]);
 
   //PID
-  _PIDStraight.setTunings(0.0008, 0.00015, 0.0002);
-  _PIDStraight.setOutputLimits(-0.175, 0.175);
-  _PIDStraight.setMaxErrorSum(3000);
-  _PIDStraight.setSampleTime(MOVEMENT_TIME_VELOCITY_SAMPLE);
+  pid_straight_.setTunings(kPPidStraight,kIPidStraight,kDPidStraight);
+  pid_straight_.setOutputLimits(kOutputMinLimitPidStraight,kOutputMaxLimitPidStraight);
+  pid_straight_.setMaxErrorSum(kPidMaxErrorSum);
+  pid_straight_.setSampleTime(kPidMovementTimeSample);
 
-  _PIDRotation.setTunings(0.00050, 0.00110, 0.00080);
-  _PIDRotation.setOutputLimits(-0.18, 0.18);
-  _PIDRotation.setMaxErrorSum(3000);
-  _PIDRotation.setSampleTime(MOVEMENT_TIME_VELOCITY_SAMPLE);
+  pid_rotation_.setTunings(kPPidRotation,kIPidRotation,kDPidRotation);
+  pid_rotation_.setOutputLimits(kOutputMinLimitPidRotation,kOutputMaxLimitPidRotation);
+  pid_rotation_.setMaxErrorSum(kPidMaxErrorSum);
+  pid_rotation_.setSampleTime(kPidMovementTimeSample);
 }
 
-//PWM
-void Movement::pwm(int pwm) {
-  B_left.changePWM(pwm);
-  F_left.changePWM(pwm);
-  B_right.changePWM(pwm);
-  F_right.changePWM(pwm);
-}
-
-//Encoders
+//////////////////////////////////Encoders//////////////////////////////////////
 void Movement::initEncoders(){
-  B_left.initEncoders();
-  F_left.initEncoders();
-  B_right.initEncoders();
-  F_right.initEncoders();
+  back_left_.initEncoders();
+  front_left_.initEncoders();
+  back_right_.initEncoders();
+  front_right_.initEncoders();
 }
 
-//VELOCITY
-double Movement::getTargetLinearVelocity(){
-  return sqrt(this->dX*this->dX+this->dY*this->dY);
+//////////////////////////////////PWM//////////////////////////////////////
+void Movement::changePwm(int pwm) {
+  back_left_.changePwm(pwm);
+  front_left_.changePwm(pwm);
+  back_right_.changePwm(pwm);
+  front_right_.changePwm(pwm);
 }
-double Movement::getTargetAngularVelocity(){
-  return this->dteta;
+
+
+//////////////////////////////////VELOCITY//////////////////////////////////////
+void Movement::setDeltaX(double delta_x){
+  delta_x_=delta_x;
+}
+void Movement::setDeltaY(double delta_y){
+  delta_y_=delta_y;
+}
+void Movement::setDeltaAngular(double delta_angular){
+  delta_angular_=delta_angular;
 }
 double Movement::getTargetAngle(){
-  return atan(this->dY/this->dX);
+  return atan(delta_y_/delta_x_);
+}
+double Movement::getTargetLinearVelocity(){
+  return sqrt(delta_x_*delta_x_+delta_y_*delta_y_);
+}
+double Movement::getTargetAngularVelocity(){
+  return delta_angular_;
+}
+void Movement::stop(){
+  front_left_.stop();
+  back_left_.stop();
+  front_right_.stop();
+  back_right_.stop();
 }
 
-//DIRECTIONS
-direction Movement::whereToGo(double &actualAngle){
-    double actualA = bno_->actualAngle();
-    actualAngle = actualA;
-    double diffAngle = int(abs(actualA - targetAngle)) % 360; 
-    actualAngle = diffAngle > 180 ? 360 - diffAngle : diffAngle;
+//////////////////////////////////DIRECTIONS//////////////////////////////////////
+direction Movement::whereToGo(double &actual_angle){
+    return whereToGo(actual_angle,target_angle_);
+}
+direction Movement::whereToGo(double &actual_angle,double target_angle){
+    double actual_a = bno_->getActualAngle();
+    actual_angle = actual_a;
+    double diff_angle = int(abs(actual_a - target_angle)) % kMaxAngle; 
+    actual_angle = diff_angle > kIntermediateAngle ? kMaxAngle - diff_angle : diff_angle;
 
-    int sign = (actualA - targetAngle >= 0 && actualA - targetAngle <= 180) || (actualA - targetAngle <=-180 && actualA - targetAngle >= -360) ? 1 : -1; 
-    actualAngle*=sign;
+    int sign = (actual_a - target_angle >= kMinAngle && actual_a - target_angle <= kIntermediateAngle) || (actual_a - target_angle <= kIntermediateAngle*-1 && actual_a - target_angle >= kMaxAngle*-1) ? 1 : -1; 
+    actual_angle*=sign;
 
     if(sign!=1){
         return left;
     }
     return right;
 }
-direction Movement::whereToGo(double &actualAngle,double _targetAngle){
-    double actualA = bno_->actualAngle();
-    actualAngle = actualA;
-    double diffAngle = int(abs(actualA - _targetAngle)) % 360; 
-    actualAngle = diffAngle > 180 ? 360 - diffAngle : diffAngle;
-
-    int sign = (actualA - _targetAngle >= 0 && actualA - _targetAngle <= 180) || (actualA - _targetAngle <=-180 && actualA - _targetAngle >= -360) ? 1 : -1; 
-    actualAngle*=sign;
-
-    if(sign!=1){
-        return left;
-    }
-    return right;
-}
-void Movement::setDirection(int angle){
-  
-  switch(angle){
-    case 0:
-      this->_move0();
-    break;
-    case 45:
-      this->_move45();
-    break;
-    case 90:
-      this->_move90();
-    break;
-    case 135:
-      this->_move135();
-    break;
-    case 180:
-      this->_move180();
-    break;
-    case 225:
-      this->_move225();
-    break;
-    case 270:
-      this->_move270();
-    break;
-    case 315:
-      this->_move315();
-    break;
-  }
-}
-void Movement::_move0() {
-  this->F_left.Forward();
-  this->B_left.Backward();
-  this->F_right.Backward();
-  this->B_right.Forward();
-}
-void Movement::_move45() {
-  this->F_left.Forward();
-  this->B_left.Stop();
-  this->F_right.Stop();
-  this->B_right.Forward();
-}
-void Movement::_move90() {
-  this->F_left.Forward();
-  this->B_left.Forward();
-  this->F_right.Forward();
-  this->B_right.Forward();
-}
-void Movement::_move135() {
-  this->F_left.Stop();
-  this->B_left.Forward();
-  this->F_right.Forward();
-  this->B_right.Stop();
-}
-void Movement::_move180() {
-  this->F_left.Backward();
-  this->B_left.Forward();
-  this->F_right.Forward();
-  this->B_right.Backward();
-}
-void Movement::_move225() {
-  this->F_left.Backward();
-  this->B_left.Stop();
-  this->F_right.Stop();
-  this->B_right.Backward();
-}
-void Movement::_move270() {
-  this->F_left.Backward();
-  this->B_left.Backward();
-  this->F_right.Backward();
-  this->B_right.Backward();
-}
-void Movement::_move315() {
-  this->F_left.Stop();
-  this->B_left.Backward();
-  this->F_right.Backward();
-  this->B_right.Stop();
-}
-
-//ROTATE
-void Movement::_rotateL() {
-  this->F_left.Backward();
-  this->B_left.Backward();
-  this->F_right.Forward();
-  this->B_right.Forward();
-  
-}
-void Movement::_rotateR() {
-  this->F_left.Forward();
-  this->B_left.Forward();
-  this->F_right.Backward();
-  this->B_right.Backward();
-}
-//STOP
-void Movement::_stop() {
-  this->F_left.Stop();
-  this->B_left.Stop();
-  this->F_right.Stop();
-  this->B_right.Stop();
-}
-
-//PID
-void Movement::constantLinearSpeed(){
-  this->F_right.constantSpeed(getTargetLinearVelocity());
-  this->F_left.constantSpeed(getTargetLinearVelocity());
-  this->B_left.constantSpeed(getTargetLinearVelocity());
-  this->B_right.constantSpeed(getTargetLinearVelocity());
-}
-void Movement::constantAngularSpeed(){
-  this->F_right.constantSpeed(getTargetAngularVelocity());
-  this->F_left.constantSpeed(getTargetAngularVelocity());
-  this->B_left.constantSpeed(getTargetAngularVelocity());
-  this->B_right.constantSpeed(getTargetAngularVelocity());
-}
-void Movement::doVelocityAdjustment(int adjustment){
-  this->B_left.velocityAdjustment =(this->B_left.actualState ==forward )?adjustment*-1:adjustment;
-  this->F_left.velocityAdjustment =(this->F_left.actualState ==forward )?adjustment*-1:adjustment;
-  this->B_right.velocityAdjustment=(this->B_right.actualState==backward)?adjustment*-1:adjustment;
-  this->F_right.velocityAdjustment=(this->F_right.actualState==backward)?adjustment*-1:adjustment;
-}
-void Movement::pidLinearMovement(){
-    int angle=AngleToDirection(this->getTargetAngle());
-    this->setDirection(angle);
-    this->constantLinearSpeed();
-
-    double angleError = 0;
-    direction whereA = whereToGo(angleError);
-    _PIDStraight.Compute(angleError, straightOutput,0);
-    this->doVelocityAdjustment(straightOutput);
-}
-void Movement::pidAngularMovement(){
-    if(this->dteta<0){
-        this->_rotateR();
-    }else{
-        this->_rotateL();
-    }
-    this->constantAngularSpeed();
-}
-bool Movement::pidRotate(double _targetAngle){
-    double output = 0;
-    double angleError = 0;
-    direction whereA = whereToGo(angleError,_targetAngle);
-    Serial.println(angleError);
-    if(abs(angleError)<=1 && abs(_PIDRotation.getPre())<=1 && angleError*_PIDRotation.getPre()>=0){
-        
-        this->_stop();
-        return true;
-    }
-
-    _PIDRotation.Compute(angleError, output,1);
-    output = abs(output)-0.075;
-    
-    if(whereA==left){
-        this->_rotateR();
-    }else{
-        this->_rotateL();
-    }
-
-    this->B_left.velocityAdjustment=output;
-    this->F_left.velocityAdjustment=output;
-    this->B_right.velocityAdjustment=output;
-    this->F_right.velocityAdjustment=output;
-    this->constantAngularSpeed();
-   
-    return false;
-}
-
-//Utils
-int Movement::AngleToDirection(int angle){
-    int diff=1000;
-    for(int i=0;i<=8;i++){
-        if(diff > abs(angle-i*45) ){
-            diff=abs(angle-i*45);
+int Movement::angleToDirection(int angle){
+    int diff=kIntMax;
+    for(int i=0;i<=kCountDirections;i++){
+        if(diff > abs(angle-i*kDirectionSeparationAngle) ){
+            diff=abs(angle-i*kDirectionSeparationAngle);
         }else{
-            return (i-1)*45;
+            return (i-1)*kDirectionSeparationAngle;
         }
     }
     return 0;
+}
+void Movement::setDirection(int angle){
+  switch(angle){
+    case 0:
+      move0();
+    break;
+    case 45:
+      move45();
+    break;
+    case 90:
+      move90();
+    break;
+    case 135:
+      move135();
+    break;
+    case 180:
+      move180();
+    break;
+    case 225:
+      move225();
+    break;
+    case 270:
+      move270();
+    break;
+    case 315:
+      move315();
+    break;
+  }
+}
+void Movement::move0() {
+  front_left_.forward();
+  back_left_.backward();
+  front_right_.backward();
+  back_right_.forward();
+}
+void Movement::move45() {
+  front_left_.forward();
+  back_left_.stop();
+  front_right_.stop();
+  back_right_.forward();
+}
+void Movement::move90() {
+  front_left_.forward();
+  back_left_.forward();
+  front_right_.forward();
+  back_right_.forward();
+}
+void Movement::move135() {
+  front_left_.stop();
+  back_left_.forward();
+  front_right_.forward();
+  back_right_.stop();
+}
+void Movement::move180() {
+  front_left_.backward();
+  back_left_.forward();
+  front_right_.forward();
+  back_right_.backward();
+}
+void Movement::move225() {
+  front_left_.backward();
+  back_left_.stop();
+  front_right_.stop();
+  back_right_.backward();
+}
+void Movement::move270() {
+  front_left_.backward();
+  back_left_.backward();
+  front_right_.backward();
+  back_right_.backward();
+}
+void Movement::move315() {
+  front_left_.stop();
+  back_left_.backward();
+  front_right_.backward();
+  back_right_.stop();
+}
+void Movement::rotateLeft() {
+  front_left_.backward();
+  back_left_.backward();
+  front_right_.forward();
+  back_right_.forward();
+  
+}
+void Movement::rotateRight() {
+  front_left_.forward();
+  back_left_.forward();
+  front_right_.backward();
+  back_right_.backward();
+}
+
+//////////////////////////////////PID//////////////////////////////////////
+void Movement::constantLinearSpeed(){
+  front_right_.constantSpeed(getTargetLinearVelocity());
+  front_left_.constantSpeed(getTargetLinearVelocity());
+  back_left_.constantSpeed(getTargetLinearVelocity());
+  back_right_.constantSpeed(getTargetLinearVelocity());
+}
+void Movement::constantAngularSpeed(){
+  front_right_.constantSpeed(getTargetAngularVelocity());
+  front_left_.constantSpeed(getTargetAngularVelocity());
+  back_left_.constantSpeed(getTargetAngularVelocity());
+  back_right_.constantSpeed(getTargetAngularVelocity());
+}
+void Movement::velocityAdjustment(int adjustment){
+  back_left_.setVelocityAdjustment((back_left_.getActualState() ==Forward )?adjustment*-1:adjustment);
+  front_left_.setVelocityAdjustment((front_left_.getActualState() ==Forward )?adjustment*-1:adjustment);
+  back_right_.setVelocityAdjustment((back_right_.getActualState()==Backward)?adjustment*-1:adjustment);
+  front_right_.setVelocityAdjustment((front_right_.getActualState()==Backward)?adjustment*-1:adjustment);
+}
+void Movement::pidLinearMovement(){
+    int angle=angleToDirection(getTargetAngle());
+    setDirection(angle);
+    constantLinearSpeed();
+
+    double angle_error = 0;
+    direction where = whereToGo(angle_error);
+    pid_straight_.compute(angle_error, straight_output_,0);
+    velocityAdjustment(straight_output_);
+}
+void Movement::pidAngularMovement(){
+    if(delta_angular_<0){
+        rotateRight();
+    }else{
+        rotateLeft();
+    }
+    constantAngularSpeed();
+}
+bool Movement::pidRotate(double target_angle){
+    double output = 0;
+    double angle_error = 0;
+    direction where = whereToGo(angle_error,target_angle);
+    if(abs(angle_error)<=kPidRotationTolerance && abs(pid_rotation_.getPre())<=kPidRotationTolerance && angle_error*pid_rotation_.getPre()>=0){
+        stop();
+        return true;
+    }
+
+    pid_rotation_.compute(angle_error, output,1);
+    output = abs(output)+kOutputAdjustment;
+    
+    if(where==left){
+        rotateRight();
+    }else{
+        rotateLeft();
+    }
+
+    back_left_.setVelocityAdjustment(output);
+    front_left_.setVelocityAdjustment(output);
+    back_right_.setVelocityAdjustment(output);
+    front_right_.setVelocityAdjustment(output);
+    constantAngularSpeed();
+   
+    return false;
 }

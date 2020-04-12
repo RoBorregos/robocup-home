@@ -1,119 +1,138 @@
+//////////////////////////////////Constructor//////////////////////////////////////
 Motor::Motor() {}
+Motor::Motor(uint8_t id,uint8_t digital_one,uint8_t digital_two,uint8_t analog_one,uint8_t encoder_one,uint8_t encoder_two) : pid_() {
+  id_ = id;
+  digital_one_=digital_one;
+  digital_two_=digital_two;
+  analog_one_=analog_one;
+  encoder_one_=encoder_one;
+  encoder_two_=encoder_two;
 
-Motor::Motor(byte id,byte d1, byte d2, byte p1, byte e1,byte e2) : _PID() {
-  this->id = id;
-  this->d1 = d1;
-  this->d2 = d2;
-  this->p1 = p1;
-  this->e1 = e1;
-  this->e2 = e2;
-  this->Stop();
-  this->defineOutput();
-  this->changePWM(0);
+  stop();
+  defineOutput();
+  changePwm(LOW);
 
   //PID
-  _PID.setTunings(kp,ki,kd);
-  _PID.setOutputLimits(0, 255);
-  _PID.setMaxErrorSum(4000);
-  _PID.setSampleTime(MOTOR_TIME_VELOCITY_SAMPLE);
+  pid_.setTunings(kP,kI,kD);
+  pid_.setOutputLimits(kPidMinOutputLimit,kPidMaxOutputLimit);
+  pid_.setMaxErrorSum(kPidMaxErrorSum);
+  pid_.setSampleTime(kPidMotorTimeSample);
 }
 
-//Encoders
+
+//////////////////////////////////Initialization//////////////////////////////////////
+void Motor::defineOutput() {
+  pinMode(digital_one_, OUTPUT);
+  pinMode(digital_two_, OUTPUT);
+  pinMode(analog_one_, OUTPUT);
+  pinMode(encoder_one_, INPUT);
+  pinMode(encoder_two_, INPUT);
+}
 void Motor::initEncoders(){
-  switch (this->id){
-    case 1:
-      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::BLencoder, RISING);
+  switch (id_){
+    case kIdBackLeftMotor:
+      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::backLeftEncoder, RISING);
     break;
-    case 2:
-      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::FLencoder, RISING);
+    case kIdFrontLeftMotor:
+      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::frontLeftEncoder, RISING);
     break;
-    case 3:
-      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::BRencoder, RISING);
+    case kIdBackRightMotor:
+      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::backRightEncoder, RISING);
     break;
-    case 4:
-      attachInterrupt(digitalPinToInterrupt(this->e1), Encoder::FRencoder, RISING);
+    case kIdFrontRightMotor:
+      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::frontRightEncoder, RISING);
     break;
   }
 }
 
-double Motor::getTargetRPM(double velocity){
-  return ((getTargetTicks(velocity)/PULSES_PER_REVOLUTION)*10)+velocityAdjustment;
+//////////////////////////////////Motor State//////////////////////////////////////
+void Motor::forward() {
+  analogWrite(analog_one_,pwm_);
+  digitalWrite(digital_one_, HIGH);
+  digitalWrite(digital_two_, LOW);
+
+  if(actual_state_!=Forward){
+    pid_.reset();
+  }
+
+  actual_state_=Forward;
+}
+void Motor::backward() {
+  analogWrite(analog_one_,pwm_);
+  digitalWrite(digital_one_, LOW);
+  digitalWrite(digital_two_, HIGH);
+  
+  if(actual_state_!=Backward){
+    pid_.reset();
+  }
+  
+  actual_state_=Backward;
+}
+void Motor::stop() {
+  analogWrite(analog_one_, LOW);
+  digitalWrite(digital_one_, LOW);
+  digitalWrite(digital_two_, LOW);
+  
+  if(actual_state_!=Stop){
+    pid_.reset();
+  }
+
+  actual_state_=Stop;
+}
+
+//////////////////////////////////Velocity//////////////////////////////////////
+double Motor::getTargetRpm(double velocity){
+  return ((getTargetTicks(velocity)/kPulsesPerRevolution)*kPidCountTimeSamplesInOneSecond)+velocity_adjustment_;
 }
 double Motor::getTargetTicks(double velocity){
-  double ticks =velocity * (MOTOR_TIME_VELOCITY_SAMPLE/1000);
-  ticks=ticks/(WHEEL_DIAMETER*M_PI);  
-  return ceil(ticks*PULSES_PER_REVOLUTION);
+  double ticks =velocity * (kPidMotorTimeSample/kOneSecondInMillis);
+  ticks=ticks/(kWheelDiameter*M_PI);  
+  return ceil(ticks*kPulsesPerRevolution);
 }
-
+void Motor::changePwm(double pwm){
+  pwm_=pwm;
+  switch(actual_state_){
+    case Forward:
+      forward();
+    break;
+    case Backward:
+      backward();
+    break;
+    case Stop:
+      stop();
+    break;
+  }
+}
 void Motor::constantSpeed(double velocity){
-  _PID.Compute(getTargetRPM(velocity),speedActual,pwm,ticks,PULSES_PER_REVOLUTION);
-  changePWM(pwm);
+  double tmp_pwm=pwm_;
+  pid_.compute(getTargetRpm(velocity),speed_actual_,tmp_pwm,pid_ticks_,kPulsesPerRevolution);
+  changePwm(tmp_pwm);
 }
 
-void Motor::defineOutput() {
-  pinMode(this->d1, OUTPUT);
-  pinMode(this->d2, OUTPUT);
-  pinMode(this->p1, OUTPUT);
-  pinMode(this->e1, INPUT);
-  pinMode(this->e2, INPUT);
+//////////////////////////////////Set Methods//////////////////////////////////////
+void Motor::setPidTicks(int pid_ticks) {
+  pid_ticks_=pid_ticks;
+}
+void Motor::setOdomTicks(int odom_ticks) {
+  odom_ticks_=odom_ticks;
+}
+void Motor::setVelocityAdjustment(double velocity_adjustment){
+  velocity_adjustment_=velocity_adjustment;
 }
 
-int Motor::getTicks() {
-  return this->ticks;
+//////////////////////////////////Get Methods//////////////////////////////////////
+int Motor::getPidTicks() {
+  return pid_ticks_;
 }
 int Motor::getOdomTicks() {
-  return this->odomTicks;
+  return odom_ticks_;
 }
-
-void Motor::setTicks(int ticks) {
-  this->ticks=ticks;
+double Motor::getLastTicks(){
+  return last_ticks_;
 }
-
-void Motor::changePWM(double p){
-  this->pwm=p;
-  switch(actualState){
-    case forward:
-      this->Forward();
-    break;
-    case backward:
-      this->Backward();
-    break;
-    case stop:
-      this->Stop();
-    break;
-  }
+double Motor::getSpeedActual(){
+  return speed_actual_;
 }
-
-void Motor::Stop() {
-  analogWrite(this->p1, 0);
-  digitalWrite(this->d1, 0);
-  digitalWrite(this->d2, 0);
-  
-  if(this->actualState!=stop){
-    _PID.reset();
-  }
-
-  this->actualState=stop;
-}
-void Motor::Forward() {
-  analogWrite(this->p1, this->pwm);
-  digitalWrite(this->d1, 1);
-  digitalWrite(this->d2, 0);
-
-  if(this->actualState!=forward){
-    _PID.reset();
-  }
-
-  this->actualState=forward;
-}
-void Motor::Backward() {
-  analogWrite(this->p1, this->pwm);
-  digitalWrite(this->d1, 0);
-  digitalWrite(this->d2, 1);
-  
-  if(this->actualState!=backward){
-    _PID.reset();
-  }
-  
-  this->actualState=backward;
+motorState Motor::getActualState(){
+  return actual_state_;
 }

@@ -1,3 +1,4 @@
+//This class is a proportional–integral–derivative controller used to control different systems of the robot. 
 #ifndef PID_h
 #define PID_h
 
@@ -5,45 +6,45 @@ class PID{
 
   public:
   
-
+    //////////////////////////////////Constructor//////////////////////////////////////
     PID();
     PID(const double kp ,const double ki,const double kd);
 
-    //Motor
-    void Compute(double setpoint,double &input,double &output,int &resetV, int pulses_per_rev);
-
-    //BNO
-    void Compute(double setpoint,double input,double &output);
-    void Compute(double error,double &output,byte flag);
-
+    //////////////////////////////////Compute//////////////////////////////////////
+    ///This function computes an output accoriding to the error and PID constants.
+    void compute(double error,double &output,byte flag);
+    ///This function computes an output accoriding to the error calculated internally and PID constants.
+    void compute(double setpoint,double input,double &output);
+    ///This function computes an output accoriding to the error calculated internally and PID constants, also it resets a variable (used with ticks).
+    void compute(double setpoint,double &input,double &output,int &reset_variable, int pulses_per_rev);
     
+    //////////////////////////////////Set Methods//////////////////////////////////////
     void setTunings(const double kp, const double ki, const double kd);         	  
-    void setSampleTime(const unsigned long sampleTime);			
-    void setMaxErrorSum(const double maxErrorSum);
-    void setOutputLimits(const double outMin, const double outMax);
+    void setSampleTime(const unsigned long sample_time);			
+    void setMaxErrorSum(const double max_error_sum);
+    void setOutputLimits(const double out_min, const double out_max);
     void reset();
     
+    //////////////////////////////////Get Methods//////////////////////////////////////
     double getKp();
     double getKi();
     double getKd();
-
     double getPre();
-    
-
+  
   private:
-	
-    double kp=0;
-    double ki=0;
-    double kd=0;
-
-    double errorSum=0;
-    double errorPre=0;
-   
-    double maxErrorSum;
-	  double outMin, outMax;
     
-    unsigned long sampleTime;
-    unsigned long time;
+    double kp_=0;
+    double ki_=0;
+    double kd_=0;
+
+    double error_sum_=0;
+    double error_pre_=0;
+   
+    double max_error_sum_;
+	  double out_min_, out_max_;
+    
+    unsigned long sample_time_;
+    unsigned long time_;
 
 };
 #endif

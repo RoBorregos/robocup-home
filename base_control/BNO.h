@@ -1,3 +1,4 @@
+//This class has the declaration,initialization and usage function of the BNO.
 #ifndef BNO_H
 #define BNO_H
 
@@ -5,25 +6,29 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-#define BNO055_SAMPLERATE_DELAY_MS (100)
-Adafruit_BNO055 bno = Adafruit_BNO055(55);
-int BNOSetPoint = 0;
+
 
 class BNO {
 
   public:
+    //////////////////////////////////Constructor//////////////////////////////////////
     BNO();
 
-    int actualAngle();
+
+    //////////////////////////////////Calibration//////////////////////////////////////
+    //Function that return a value between '0' (uncalibrated data) and '3' (fully calibrated).
+    uint8_t orientationStatus();
+
+
+    //////////////////////////////////Get Functions//////////////////////////////////////
+    int getActualAngle();
     double getAngleX();
     double getAngleY();
     double getAngleZ();
+
     
-    void BNOCalibration();
-
-    uint8_t orientationStatus();
-
-    private:
-      Adafruit_BNO055 bno_;
+  private:
+    Adafruit_BNO055 bno_;
+    int BNOSetPoint = 0;
 };
 #endif
