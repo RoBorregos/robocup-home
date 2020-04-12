@@ -2,6 +2,8 @@
 #ifndef Movement_h
 #define Movement_h
 
+#include "MotorId.h"
+
 enum class Direction{
     left = 1,
     right = 2 
@@ -123,24 +125,20 @@ class Movement {
     void velocityAdjustment(const int adjustment);
 
     // Pins,
-    static const uint8_t kIdBackLeftMotor = 1;
     static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {15, 14};
-    static const uint8_t kAnalogPinBackLeftMotor = 11;
+    static constexpr uint8_t kAnalogPinBackLeftMotor = 11;
     static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2, 37};
 
-    static const uint8_t kIdFrontLeftMotor = 2;
     static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {37, 36};
-    static const uint8_t kAnalogPinFrontLeftMotor = 5;
+    static constexpr uint8_t kAnalogPinFrontLeftMotor = 5;
     static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {2, 22};
 
-    static const uint8_t kIdBackRightMotor = 3;
     static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {45, 43};
-    static const uint8_t kAnalogPinBackRightMotor = 6;
+    static constexpr uint8_t kAnalogPinBackRightMotor = 6;
     static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {19, 14};
 
-    static const uint8_t kIdFrontRightMotor = 4;
     static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {25, 24};
-    static const uint8_t kAnalogPinFrontRightMotor = 7;
+    static constexpr uint8_t kAnalogPinFrontRightMotor = 7;
     static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {18, 23};
 
     // Bno.
@@ -151,8 +149,8 @@ class Movement {
     double straight_output_ = 0;
     PID pid_straight_;
     PID pid_rotation_;
-    static const uint8_t kPidMovementTimeSample = 100;
-    static const uint16_t kPidMaxErrorSum = 3000;
+    static constexpr uint8_t kPidMovementTimeSample = 100;
+    static constexpr uint16_t kPidMaxErrorSum = 3000;
     static constexpr double kOutputMinLimitPidStraight = -0.175;
     static constexpr double kOutputMaxLimitPidStraight = 0.175;
     static constexpr double kPPidStraight = 0.0008;
@@ -172,12 +170,12 @@ class Movement {
     double delta_angular_ = 0;
 
     // Constants.
-    static const uint16_t kIntMax = 65535;
-    static const uint16_t kMinAngle = 0;
-    static const uint16_t kIntermediateAngle = 180;
-    static const uint16_t kMaxAngle = 360;
-    static const uint16_t kDirectionSeparationAngle = 45;
-    static const uint16_t kCountDirections = kMaxAngle/kDirectionSeparationAngle;
+    static constexpr uint16_t kIntMax = 65535;
+    static constexpr uint16_t kMinAngle = 0;
+    static constexpr uint16_t kIntermediateAngle = 180;
+    static constexpr uint16_t kMaxAngle = 360;
+    static constexpr uint16_t kDirectionSeparationAngle = 45;
+    static constexpr uint16_t kCountDirections = kMaxAngle/kDirectionSeparationAngle;
         
 };
 #endif

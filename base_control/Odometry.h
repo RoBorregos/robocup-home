@@ -38,7 +38,7 @@ class Odometry{
         void publish();
         
         Movement *move_all_;
-        static const uint8_t kCountMotors = 4;
+        static constexpr uint8_t kCountMotors = 4;
 
         // Node.
         ros::NodeHandle  nh_;
@@ -48,7 +48,7 @@ class Odometry{
         static constexpr double kLinearXMaxVelocity = 1.1;
         static constexpr double kLinearYMaxVelocity = 1.3;
         static constexpr double kAngularZMaxVelocity = 2.8;
-        static const uint16_t kWatchdogPeriod = 500;
+        static constexpr uint16_t kWatchdogPeriod = 500;
         
         // Publisher.
         ros::Publisher front_encoder_publisher_;
@@ -56,7 +56,7 @@ class Odometry{
         base_control::StampedEncoders front_encoders_msg_;
         base_control::StampedEncoders back_encoders_msg_;
         int last_encoder_counts_[kCountMotors];
-        static const uint8_t kOdomPeriod = 50;
+        static constexpr uint8_t kOdomPeriod = 50;
         static constexpr uint16_t kIntMax = 65535;
         static constexpr uint16_t kCountReset = 250;
         static constexpr uint16_t kCountOverflow = 16374;        

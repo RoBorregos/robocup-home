@@ -1,6 +1,6 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Motor::Motor() {}
-Motor::Motor(const uint8_t id, const uint8_t digital_one, const uint8_t digital_two, 
+Motor::Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
 const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two) : 
 pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidMotorTimeSample) {
 
@@ -29,16 +29,16 @@ void Motor::defineOutput() {
 
 void Motor::initEncoders() {
   switch (id_) {
-    case kIdBackLeftMotor:
+    case MotorId::BackLeft:
       attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::backLeftEncoder, RISING);
     break;
-    case kIdFrontLeftMotor:
+    case MotorId::FrontLeft:
       attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::frontLeftEncoder, RISING);
     break;
-    case kIdBackRightMotor:
+    case MotorId::BackRight:
       attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::backRightEncoder, RISING);
     break;
-    case kIdFrontRightMotor:
+    case MotorId::FrontRight:
       attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::frontRightEncoder, RISING);
     break;
   }

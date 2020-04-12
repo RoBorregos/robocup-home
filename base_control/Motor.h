@@ -2,6 +2,9 @@
 #ifndef Motor_h
 #define Motor_h
 
+#include "MotorId.h"
+
+
 enum class MotorState {
     Forward = 1, 
     Backward = 2, 
@@ -12,7 +15,7 @@ class Motor {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
     Motor();
-    Motor(const uint8_t id, const uint8_t digital_one, const uint8_t digital_two, 
+    Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
     const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two);
     
     
@@ -77,16 +80,16 @@ class Motor {
     MotorState getCurrentState();
 
   private:
-    uint8_t id_ = 0;
+    MotorId id_;
     MotorState current_state_;
     
     // Motor Characteristics.
-    static const uint16_t kPulsesPerRevolution = 4320;
+    static constexpr uint16_t kPulsesPerRevolution = 4320;
     static constexpr double kWheelDiameter = 0.1;
     
     // Robot Movement Limits.
-    static const uint16_t kMaxTicks = 286;
-    static const uint16_t kMinTicks = 190;
+    static constexpr uint16_t kMaxTicks = 286;
+    static constexpr uint16_t kMinTicks = 190;
     
     // Pins.
     uint8_t digital_one_;
@@ -105,21 +108,16 @@ class Motor {
     
     // PID.
     PID pid_;
-    static const uint8_t kPidMinOutputLimit = 0;
-    static const uint8_t kPidMaxOutputLimit = 255;
-    static const uint16_t kPidMaxErrorSum = 4000;
-    static const uint8_t kPidMotorTimeSample = 100;
-    static const uint16_t kOneSecondInMillis = 1000;
-    static const uint16_t kPidCountTimeSamplesInOneSecond = kOneSecondInMillis/kPidMotorTimeSample;
+    static constexpr uint8_t kPidMinOutputLimit = 0;
+    static constexpr uint8_t kPidMaxOutputLimit = 255;
+    static constexpr uint16_t kPidMaxErrorSum = 4000;
+    static constexpr uint8_t kPidMotorTimeSample = 100;
+    static constexpr uint16_t kOneSecondInMillis = 1000;
+    static constexpr uint16_t kPidCountTimeSamplesInOneSecond = kOneSecondInMillis/kPidMotorTimeSample;
     static constexpr double kP = 45;
     static constexpr double kI = 55;
     static constexpr double kD = 40;
-
-    // Constants.
-    static const uint8_t kIdBackLeftMotor = 1;
-    static const uint8_t kIdFrontLeftMotor = 2;
-    static const uint8_t kIdBackRightMotor = 3;
-    static const uint8_t kIdFrontRightMotor = 4;
+    
 
 };
 

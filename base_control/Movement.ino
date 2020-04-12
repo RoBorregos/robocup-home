@@ -7,16 +7,16 @@ kOutputMaxLimitPidRotation, kPidMaxErrorSum, kPidMovementTimeSample) {
   
   bno_ = bno;
   
-  back_left_motor_ = Motor(kIdBackLeftMotor, kDigitalPinsBackLeftMotor[0], 
+  back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[0], 
                           kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, 
                           kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
-  front_left_motor_ = Motor(kIdFrontLeftMotor, kDigitalPinsFrontLeftMotor[0], 
+  front_left_motor_ = Motor(MotorId::FrontLeft, kDigitalPinsFrontLeftMotor[0], 
                             kDigitalPinsFrontLeftMotor[1], kAnalogPinFrontLeftMotor, 
                             kEncoderPinsFrontLeftMotor[0], kEncoderPinsFrontLeftMotor[1]);
-  back_right_motor_ = Motor(kIdBackRightMotor, kDigitalPinsBackRightMotor[0], 
+  back_right_motor_ = Motor(MotorId::BackRight, kDigitalPinsBackRightMotor[0], 
                             kDigitalPinsBackRightMotor[1], kAnalogPinBackRightMotor, 
                             kEncoderPinsBackRightMotor[0], kEncoderPinsBackRightMotor[1]);
-  front_right_motor_ = Motor(kIdFrontRightMotor, kDigitalPinsFrontRightMotor[0], 
+  front_right_motor_ = Motor(MotorId::FrontRight, kDigitalPinsFrontRightMotor[0], 
                             kDigitalPinsFrontRightMotor[1], kAnalogPinFrontRightMotor, 
                             kEncoderPinsFrontRightMotor[0], kEncoderPinsFrontRightMotor[1]);
 }
