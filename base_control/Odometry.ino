@@ -6,8 +6,10 @@ Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Od
     nh_.subscribe(velocity_subscriber_);
     nh_.advertise(encoder_publisher_);
     
-    while(!nh_.connected()) 
+    while(!nh_.connected()){
         nh_.spinOnce();
+    }
+
     
     //Timers
     odom_timer_ = millis();
@@ -56,12 +58,14 @@ void Odometry::getEncoderCounts(){
 	for(int i = 0; i < kCountMotors; ++i) {
 		// check for overflow
 		if(abs(last_encoder_counts_[i]) > kCountOverflow && abs(new_encoder_counts[i]) > kCountOverflow && sign(last_encoder_counts_[i]) != sign(new_encoder_counts[i])) {
-			if(sign(last_encoder_counts_[i]) > 0)
+			if(sign(last_encoder_counts_[i]) > 0){
 				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] + kIntMax;
-			else
+            } else{
 				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] - kIntMax;
-		}
-		else delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i];
+            }
+		} else{
+            delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i];
+        } 
 		
 		if(abs(delta_encoder_counts[i]) > kCountReset) delta_encoder_counts[i] = 0;
 		
@@ -93,7 +97,7 @@ void Odometry::publish(){
 
 //////////////////////////////////Run//////////////////////////////////////
 void Odometry::run(){
-    while(1){ 
+    while(1) { 
         if((millis() - watchdog_timer_) > kWatchdogPeriod) {
             move_all_->stop();
             watchdog_timer_ = millis();

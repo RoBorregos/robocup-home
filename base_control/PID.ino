@@ -11,8 +11,9 @@ PID::PID(const double kp, const double ki, const double kd){
 
 //////////////////////////////////Compute//////////////////////////////////////
 void PID::compute(const double setpoint,double &input,double &output,int &reset_variable,const int pulses_per_rev){
-  if(millis()-time_ < sample_time_)
+  if(millis()-time_ < sample_time_){
       return;
+  }
 
   if(reset_variable){
     input=(reset_variable/pulses_per_rev)*10;
@@ -34,9 +35,9 @@ void PID::compute(const double setpoint,double &input,double &output,int &reset_
 }
 
 void PID::compute(const double setpoint,const double input,double &output){
-  if(millis()-time_ < sample_time_)
+  if(millis()-time_ < sample_time_){
       return;
-
+  }
 
   double error = setpoint - input;
   output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;
@@ -53,19 +54,19 @@ void PID::compute(const double setpoint,const double input,double &output){
 }
 
 void PID::compute(const double error,double &output,const byte flag){
-  if(millis()-time_ < sample_time_)
+  if(millis()-time_ < sample_time_){
       return;
-
-  
+  }
 
   if(error_pre_*error<=0){
     error_pre_=0;
     error_sum_=0;
   }
-  if(flag==0)
-  if(abs(error)<=2){
-    error_pre_=0;
-    error_sum_=0;
+  if(flag==0){
+    if(abs(error)<=2){
+      error_pre_=0;
+      error_sum_=0;
+    }
   }
   
   output = error*kp_ + error_sum_*ki_ + (error - error_pre_)*kd_;

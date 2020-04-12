@@ -6,8 +6,9 @@ Plot::Plot(Movement *moveAll){
 
 //////////////////////////////////Plot Functions//////////////////////////////////////
 void Plot::PlotMotorSpeed(){
-    if(millis()-time_msg_>35)
+    if(millis()-time_msg_>35){
         return;
+    }
     int back_left_motor_actual_speed=moveAll_->back_left_motor_.getSpeedActual();
     int front_left_motor_actual_speed=moveAll_->front_left_motor_.getSpeedActual();
     int front_right_motor_actual_speed=moveAll_->front_right_motor_.getSpeedActual();
@@ -28,8 +29,9 @@ void Plot::PlotMotorSpeed(){
 }
 
 void Plot::PlotMotorTicks(){
-    if(millis()-time_msg_>35)
+    if(millis()-time_msg_>35){
         return;
+    }
     int back_left_motor_last_ticks=moveAll_->back_left_motor_.getLastTicks();
     int front_left_motor_last_ticks=moveAll_->front_left_motor_.getLastTicks();
     int front_right_motor_last_ticks=moveAll_->front_right_motor_.getLastTicks();
@@ -50,9 +52,9 @@ void Plot::PlotMotorTicks(){
 }
 
 void Plot::PlotTargetandActual(){
-    if(millis()-time_msg_>35)
+    if(millis()-time_msg_>35){
         return;
-        
+    }
     double tmp=moveAll_->back_right_motor_.getTargetRpm(moveAll_->getTargetLinearVelocity());
     double tmp1=moveAll_->back_right_motor_.getSpeedActual();
     double tmp2=moveAll_->front_right_motor_.getTargetRpm(moveAll_->getTargetLinearVelocity());
