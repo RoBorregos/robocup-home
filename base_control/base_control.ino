@@ -7,7 +7,7 @@
 #include "Plot.h"
 #include <math.h>
 
-Movement *robot = NULL;
+Movement *robot = nullptr;
 
 void setup(){
     Serial.begin(9600);

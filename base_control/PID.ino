@@ -28,8 +28,8 @@ void PID::compute(const double setpoint, double &input, double &output, int &res
   const double error = setpoint - input;
   output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
   
-  error_pre_= error;
-  error_sum_+= error;
+  error_pre_ = error;
+  error_sum_ += error;
   
 
   error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
