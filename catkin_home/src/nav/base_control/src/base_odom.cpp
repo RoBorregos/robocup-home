@@ -13,7 +13,7 @@ int wheel2_new = 0;
 int wheel3_new = 0;
 int wheel4_new = 0;
 double dt_front = 0.000001;
-double dt_rear = 0.000001;
+double dt_back = 0.000001;
 
 //initialize constants
 const double wheel_radius = 0.125;
@@ -31,13 +31,13 @@ void feCallBack(const base_control::StampedEncoders::ConstPtr& msg)
   dt_front = msg->encoders.time_delta;
 }
 
-//function to save rear encoder data to global variables
+//function to save back encoder data to global variables
 void reCallBack(const base_control::StampedEncoders::ConstPtr& msg)
 {
-  ROS_INFO_STREAM("INFO RECEIVED \n *Rear Encoders");
+  ROS_INFO_STREAM("INFO RECEIVED \n *back Encoders");
   wheel3_new = msg->encoders.left_wheel;
   wheel4_new = msg->encoders.right_wheel;
-  dt_rear = msg->encoders.time_delta;
+  dt_back = msg->encoders.time_delta;
 }
 
 int main(int argc, char** argv)
@@ -69,8 +69,8 @@ int main(int argc, char** argv)
   {
     current_time = ros::Time::now(); //saves the current system time
     
-    //calculates the average time between encoder counts for the front and rear encoders
-    double avg_dt = (dt_front + dt_rear)/2.0; 
+    //calculates the average time between encoder counts for the front and back encoders
+    double avg_dt = (dt_front + dt_back)/2.0; 
 
     //skips the rest of the loop if for some reason no time has passed between encoder counts
     if(avg_dt == 0)
@@ -80,8 +80,8 @@ int main(int argc, char** argv)
 
     //compute the velocities of each wheel
     double v_w1 = (wheel1_new * dist_per_tick)/dt_front;
-    double v_w2 = (wheel2_new * dist_per_tick)/dt_rear;
-    double v_w3 = (wheel3_new * dist_per_tick)/dt_rear;
+    double v_w2 = (wheel2_new * dist_per_tick)/dt_back;
+    double v_w3 = (wheel3_new * dist_per_tick)/dt_back;
     double v_w4 = (wheel4_new * dist_per_tick)/dt_front;
 
     //compute the overall velocity of the robot
