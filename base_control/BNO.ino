@@ -24,15 +24,14 @@ uint8_t BNO::orientationStatus() {
 
 //////////////////////////////////Get Functions//////////////////////////////////////
 int BNO::getCurrentAngle() {
-  int angle = 0;
-  angle = getAngleX();
-  angle -= bno_set_point_;
-  if (angle <0) {
+  int angle = getAngleX() - bno_set_point_;
+  if (angle < 0) {
     angle +=  360;
   }
   return angle;
 }
 
+// TODO(Josecisneros001): Check how getEvent could be optimized.
 double BNO::getAngleX() {
   sensors_event_t event;
   bno_.getEvent(&event);

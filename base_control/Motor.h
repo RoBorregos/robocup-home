@@ -12,7 +12,8 @@ class Motor {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
     Motor();
-    Motor(const uint8_t id, const uint8_t digital_one, const uint8_t digital_two, const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two);
+    Motor(const uint8_t id, const uint8_t digital_one, const uint8_t digital_two, 
+    const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two);
     
     
     //////////////////////////////////Initialization//////////////////////////////////////

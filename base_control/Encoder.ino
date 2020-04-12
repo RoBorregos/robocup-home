@@ -13,12 +13,15 @@ void Encoder::handleEncoder(Motor &motor){
 void Encoder::backLeftEncoder(){
   handleEncoder(robot->back_left_motor_);
 }
+
 void Encoder::backRightEncoder(){
   handleEncoder(robot->back_right_motor_);
 }
+
 void Encoder::frontLeftEncoder(){
   handleEncoder(robot->front_left_motor_);
 }
+
 void Encoder::frontRightEncoder(){
   handleEncoder(robot->front_right_motor_);
 }

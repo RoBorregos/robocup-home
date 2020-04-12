@@ -14,15 +14,22 @@ void setup(){
     while (!Serial){
         delay(1);
     } 
+    Serial.println("Serial Initialization completed.");
 
     BNO bno;
-    
+    Serial.println("Bno Initialization completed.");
+
     Movement initRobot(&bno);
     robot = &initRobot;
     robot->initEncoders();
+    Serial.println("Movement Initialization completed.");
 
     Odometry odom(robot);
+    Serial.println("Odometry Initialization completed.");
+
     Plot plot(robot);
+    Serial.println("Plot Initialization completed.");
+
 
     odom.run();
 }
