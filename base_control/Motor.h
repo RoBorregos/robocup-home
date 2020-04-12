@@ -2,10 +2,10 @@
 #ifndef Motor_h
 #define Motor_h
 
-enum motorState{
-    Forward, 
-    Backward, 
-    Stop
+enum class MotorState {
+    Forward = 1, 
+    Backward = 2, 
+    Stop = 3
 };
 
 class Motor {
@@ -61,11 +61,11 @@ class Motor {
     // Return the current speed of the motor in meteres per second.
     double getCurrentSpeed();
     // Return the current state of the motor.
-    motorState getCurrentState();
+    MotorState getCurrentState();
 
   private:
     uint8_t id_ = 0;
-    motorState current_state_;
+    MotorState current_state_;
     
     // Motor Characteristics.
     static const uint16_t kPulsesPerRevolution = 4320;

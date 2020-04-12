@@ -185,10 +185,10 @@ void Movement::constantAngularSpeed(){
   back_right_motor_.constantSpeed(getTargetAngularVelocity());
 }
 void Movement::velocityAdjustment(const int adjustment){
-  back_left_motor_.setVelocityAdjustment((back_left_motor_.getCurrentState() == Forward )?adjustment*-1:adjustment);
-  front_left_motor_.setVelocityAdjustment((front_left_motor_.getCurrentState() == Forward )?adjustment*-1:adjustment);
-  back_right_motor_.setVelocityAdjustment((back_right_motor_.getCurrentState() == Backward)?adjustment*-1:adjustment);
-  front_right_motor_.setVelocityAdjustment((front_right_motor_.getCurrentState() == Backward)?adjustment*-1:adjustment);
+  back_left_motor_.setVelocityAdjustment((back_left_motor_.getCurrentState() == MotorState::Forward )?adjustment*-1:adjustment);
+  front_left_motor_.setVelocityAdjustment((front_left_motor_.getCurrentState() == MotorState::Forward )?adjustment*-1:adjustment);
+  back_right_motor_.setVelocityAdjustment((back_right_motor_.getCurrentState() == MotorState::Backward)?adjustment*-1:adjustment);
+  front_right_motor_.setVelocityAdjustment((front_right_motor_.getCurrentState() == MotorState::Backward)?adjustment*-1:adjustment);
 }
 void Movement::pidLinearMovement(){
     int angle = angleToDirection(getTargetAngle());

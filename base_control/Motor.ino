@@ -46,33 +46,33 @@ void Motor::forward() {
   digitalWrite(digital_one_, HIGH);
   digitalWrite(digital_two_, LOW);
 
-  if(current_state_ != Forward){
+  if(current_state_ != MotorState::Forward){
     pid_.reset();
   }
 
-  current_state_ = Forward;
+  current_state_ = MotorState::Forward;
 }
 void Motor::backward() {
   analogWrite(analog_one_, pwm_);
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, HIGH);
   
-  if(current_state_ != Backward){
+  if(current_state_ != MotorState::Backward){
     pid_.reset();
   }
   
-  current_state_ = Backward;
+  current_state_ = MotorState::Backward;
 }
 void Motor::stop() {
   analogWrite(analog_one_, LOW);
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, LOW);
   
-  if(current_state_ != Stop){
+  if(current_state_ != MotorState::Stop){
     pid_.reset();
   }
 
-  current_state_ = Stop;
+  current_state_ = MotorState::Stop;
 }
 
 //////////////////////////////////Velocity//////////////////////////////////////
@@ -87,13 +87,13 @@ double Motor::getTargetTicks(const double velocity){
 void Motor::changePwm(const uint8_t pwm){
   pwm_ = pwm;
   switch(current_state_){
-    case Forward:
+    case MotorState::Forward:
       forward();
     break;
-    case Backward:
+    case MotorState::Backward:
       backward();
     break;
-    case Stop:
+    case MotorState::Stop:
       stop();
     break;
   }
@@ -128,6 +128,6 @@ double Motor::getLastTicks(){
 double Motor::getCurrentSpeed(){
   return current_speed_;
 }
-motorState Motor::getCurrentState(){
+MotorState Motor::getCurrentState(){
   return current_state_;
 }
