@@ -105,7 +105,7 @@ Direction Movement::whereToGo(double &current_angle, const double target_angle) 
     current_angle = current_a;
     double diff_angle = current_a - target_angle; 
 
-    int sign=0;
+    int sign = 0;
     
     if(diff_angle >= kMinAngle && diff_angle <= kInterAngle || 
       (diff_angle <= kInterAngle * -1 && diff_angle >= kMaxAngle * -1)) {
