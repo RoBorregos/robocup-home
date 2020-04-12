@@ -2,8 +2,12 @@
 #ifndef Motor_h
 #define Motor_h
 
-#include "MotorId.h"
+#include <stdint.h>
+#include <math.h>
+#include <Arduino.h>
 
+#include "MotorId.h"
+#include "PID.h"
 
 enum class MotorState {
     Forward = 1, 

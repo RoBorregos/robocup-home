@@ -1,3 +1,5 @@
+#include "Movement.h"
+
 //////////////////////////////////Constructor//////////////////////////////////////
 Movement::Movement(BNO *bno) : 
 pid_straight_(kPPidStraight, kIPidStraight, kDPidStraight, kOutputMinLimitPidStraight, 

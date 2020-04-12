@@ -1,6 +1,13 @@
 // This namespace contains the handler functions of the Encoders.
 #ifndef Encoder_h
 #define Encoder_h
+
+#include <stdint.h>
+#include <math.h>
+#include <Arduino.h>
+
+#include "Motor.h"
+
 namespace Encoder{
     //////////////////////////////////Main Function//////////////////////////////////////
     // Count ticks for specific motor.

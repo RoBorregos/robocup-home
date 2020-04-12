@@ -4,6 +4,14 @@
 
 #include "MotorId.h"
 
+#include <stdint.h>
+#include <math.h>
+#include <Arduino.h>
+
+#include "BNO.h"
+#include "PID.h"
+#include "Motor.h"
+
 enum class Direction{
     left = 1,
     right = 2 

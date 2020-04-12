@@ -1,8 +1,3 @@
-#include <stdint.h>
-#include <math.h>
-#include <Arduino.h>
-
-#include "PID.h"
 #include "Encoder.h"
 #include "Motor.h"
 

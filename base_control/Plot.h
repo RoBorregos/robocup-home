@@ -3,6 +3,10 @@
 #ifndef Plot_h
 #define Plot_h
 
+#include <Arduino.h>
+#include "Movement.h"
+
+
 class Plot {
   public:
 

@@ -1,3 +1,5 @@
+#include "Odometry.h"
+
 //////////////////////////////////Constructor//////////////////////////////////////
 Odometry::Odometry(Movement *move_all) : 
 velocity_subscriber_("/base_control/cmd/velocity",&Odometry::velocityCallback, this),

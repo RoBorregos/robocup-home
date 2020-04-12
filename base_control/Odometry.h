@@ -10,6 +10,13 @@
 #include <base_control/StampedEncoders.h>
 #include <base_control/Encoders.h>
 
+#include <stdint.h>
+#include <math.h>
+#include <Arduino.h>
+
+#include "BNO.h"
+#include "Movement.h"
+
 inline int sign(int a) { return min(1, max(-1, a)); };
 
 class Odometry{
