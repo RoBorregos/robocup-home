@@ -1,3 +1,4 @@
+#include "Encoder.h"
 //////////////////////////////////Main Function//////////////////////////////////////
 void Encoder::handleEncoder(Motor &motor) {
   motor.setPidTicks(motor.getPidTicks() + 1);
