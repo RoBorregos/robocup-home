@@ -15,10 +15,10 @@ class Movement {
 
 
     //////////////////////////////////Motors//////////////////////////////////////
-    Motor back_right_;
-    Motor back_left_;
-    Motor front_right_;
-    Motor front_left_;
+    Motor back_right_motor_;
+    Motor back_left_motor_;
+    Motor front_right_motor_;
+    Motor front_left_motor_;
 
 
     //////////////////////////////////Encoders//////////////////////////////////////

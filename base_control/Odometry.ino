@@ -17,8 +17,9 @@ Odometry::Odometry(Movement *move_all) : velocity_subscriber_("cmd/velocity",&Od
     encoder_msg_.data = (float *)malloc(sizeof(float)*kCountMotors);
     encoder_msg_.data_length = kCountMotors;
 
-    for(int i = 0; i < kCountMotors; i++)
+    for(int i = 0; i < kCountMotors; ++i){
 		last_encoder_counts_[i] = 0;
+    }
 }
 
 //////////////////////////////////Velocity Suscriber//////////////////////////////////////
@@ -45,14 +46,14 @@ void Odometry::cmdVelocity(double linear_x,double linear_y, double angular_z){
 //////////////////////////////////Encoders Publisher//////////////////////////////////////
 void Odometry::getEncoderCounts(){
 	int new_encoder_counts[kCountMotors];
-	new_encoder_counts[0] = move_all_->front_left_.getOdomTicks();
-	new_encoder_counts[1] = move_all_->front_right_.getOdomTicks();
-	new_encoder_counts[2] = move_all_->back_left_.getOdomTicks();
-	new_encoder_counts[3] = move_all_->back_right_.getOdomTicks();
+	new_encoder_counts[0] = move_all_->front_left_motor_.getOdomTicks();
+	new_encoder_counts[1] = move_all_->front_right_motor_.getOdomTicks();
+	new_encoder_counts[2] = move_all_->back_left_motor_.getOdomTicks();
+	new_encoder_counts[3] = move_all_->back_right_motor_.getOdomTicks();
 	
 	// find deltas
 	int delta_encoder_counts[kCountMotors];
-	for(int i = 0; i < kCountMotors; i++) {
+	for(int i = 0; i < kCountMotors; ++i) {
 		// check for overflow
 		if(abs(last_encoder_counts_[i]) > kCountOverflow && abs(new_encoder_counts[i]) > kCountOverflow && sign(last_encoder_counts_[i]) != sign(new_encoder_counts[i])) {
 			if(sign(last_encoder_counts_[i]) > 0)

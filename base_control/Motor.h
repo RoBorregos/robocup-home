@@ -94,7 +94,7 @@ class Motor {
     static constexpr double kI = 55;
     static constexpr double kD = 40;
 
-    //Constants
+    //Constants.
     static const uint8_t kIdBackLeftMotor=1;
     static const uint8_t kIdFrontLeftMotor=2;
     static const uint8_t kIdBackRightMotor=3;
