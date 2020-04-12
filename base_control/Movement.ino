@@ -1,6 +1,6 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Movement::Movement(BNO *bno) : pid_straight_(kPPidStraight, kIPidStraight, kDPidStraight, kOutputMinLimitPidStraight, kOutputMaxLimitPidStraight, kPidMaxErrorSum, kPidMovementTimeSample), pid_rotation_(kPPidRotation, kIPidRotation, kDPidRotation, kOutputMinLimitPidRotation, kOutputMaxLimitPidRotation, kPidMaxErrorSum, kPidMovementTimeSample) {
-  bno_=bno;
+  bno_ = bno;
   
   back_left_motor_ = Motor(kIdBackLeftMotor, kDigitalPinsBackLeftMotor[0], kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
   front_left_motor_ = Motor(kIdFrontLeftMotor, kDigitalPinsFrontLeftMotor[0], kDigitalPinsFrontLeftMotor[1], kAnalogPinFrontLeftMotor, kEncoderPinsFrontLeftMotor[0], kEncoderPinsFrontLeftMotor[1]);
