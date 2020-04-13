@@ -10,11 +10,11 @@ from geometry_msgs.msg import PoseStamped
 from move_base_msgs.msg import MoveBaseActionGoal, MoveBaseGoal, MoveBaseAction
 
 class navigationServer(object):
-    # create messages that are used to publish feedback/result
-   # _feedback = actionlib_tutorials.msg.FibonacciFeedback()
-   # _result = actionlib_tutorials.msg.FibonacciResult()
+    # Create messages that are used to publish feedback/result
     _feedback = actionlib_tutorial.msg.navServFeedback()
     _result = actionlib_tutorial.msg.navServResult()
+
+    # Initialize posestamped variables
     x=0
     y=0
     z=0
@@ -26,17 +26,20 @@ class navigationServer(object):
 
     def __init__(self, name):
         self._action_name = name
+        # Initialize Navigation Action Server
         self._as = actionlib.SimpleActionServer(self._action_name, actionlib_tutorial.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
 
     def searchGoal(self, goal):
-       
+
+       # Load data
         i=""
-        with open('src/actionlib_tutorial/src/locations.json') as x:
+        with open('src/actionlib_tutorial/src/mock_locations.json') as x:
             goals = json.load(x)
 
         for pos in goals:
-            if(pos == goal.order):
+            # goal.order -> the location sent by the main_engine (specify the type on nav_action/navServ.action)
+            if(pos == goal.order): 
                 i  = goals[pos]["location"]
 
        
@@ -53,16 +56,18 @@ class navigationServer(object):
         return True
       
     def execute_cb(self, goal):
-        # helper variables
+        # Helper variables
         r = rospy.Rate(1)
         success = True
-        g = rospy.Publisher('goal', MoveBaseGoal, queue_size=10)
+        g = rospy.Publisher('move_base_simple/goal', MoveBaseGoal, queue_size=10)
         
-        # start executing the action
-        self._feedback.pose = PoseStamped()
+        # Start executing the action
+        self._feedback.status = True
         rospy.loginfo("Looking for the goal")
-        isValid = self.searchGoal(goal)
-
+        if(type(goal) == str):
+            isValid = self.searchGoal(goal)
+        #else:
+            #go to object action
         if self._as.is_preempt_requested():
 
             rospy.loginfo('%s: Preempted' % self._action_name)
@@ -71,21 +76,28 @@ class navigationServer(object):
             
         r.sleep()
         
+        # Valid if the given location is in the known locations.
         if isValid == True:
             rospy.loginfo("Goal found!")
-            client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+
+            # Look if the move_base node is up
+            move_base_client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
             rospy.loginfo("Waiting for server response")
-            #client.wait_for_server()
+
+            #move_base_client.wait_for_server()
             #rospy.loginfo("Server found")
 
+            # Creating the goal message (PoseStamped)
             target = MoveBaseGoal()
             target.target_pose.header.frame_id = "goal"
             target.target_pose.header.stamp = rospy.Time.now()
 
+            # xyz positions
             target.target_pose.pose.position.x = self.x
             target.target_pose.pose.position.y = self.y
             target.target_pose.pose.position.z = self.z
-
+            
+            # Quaternion positions
             target.target_pose.pose.orientation.x = self.qx
             target.target_pose.pose.orientation.y = self.qy
             target.target_pose.pose.orientation.z = self.qz
@@ -93,21 +105,25 @@ class navigationServer(object):
 
             g.publish(target)
 
-            rospy.loginfo("Sending Goal")
-            #client.send_goal(target)
+            rospy.loginfo("Sending Goal to move base node")
+            #move_base_client.send_goal(target)
             #rospy.loginfo("Goal sent!")
             #client.wait_for_result()
-            #rospy.loginfo("Waiting for result!")
-            #sate = actionlib.SimpleActionClient.get_state()
-            #rospy.loginfo("State: %s", str(sate))
-            #result =  client.get_result
+            #move_base_result = move_base_client.get_result() 
+            while (move_base_result.result != 3):
+                if move_base_result.result == 1:
+                    self._as.publish_feedback(self._feedback)
+                else:
+                     self._result = False
+                     self._as.publish_feedback(False)
+                     self._as.set_succeeded(self._result)    
 
-            self._result = result
+            self._result = success
             rospy.loginfo('%s: Succeeded' % self._action_name)
             self._as.set_succeeded(self._result)
         else:
-            self._result = result
-            rospy.loginfo('%s: Aborted' % self._action_name)
+            self._result = success
+            rospy.loginfo('%s: Aborted. Location not found' % self._action_name)
             self._as.set_succeeded(self._result)
 
 

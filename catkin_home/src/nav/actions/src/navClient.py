@@ -6,15 +6,14 @@ import rospy
 # Brings in the SimpleActionClient
 import actionlib
 
-# Brings in the messages used by the fibonacci action, including the
+# Brings in the messages used by the navigation action, including the
 # goal message and the result message.
 import actionlib_tutorials.msg
 import actionlib_tutorial.msg
 
 def navigationClient():
     # Creates the SimpleActionClient, passing the type of the action
-    # (FibonacciAction) to the constructor.
-    #client = actionlib.SimpleActionClient('fibonacci', actionlib_tutorials.msg.FibonacciAction)
+    # (NavigationAction) to the constructor.
     client = actionlib.SimpleActionClient('navServer', actionlib_tutorial.msg.navServAction)
 
     # Waits until the action server has started up and started
@@ -22,7 +21,6 @@ def navigationClient():
     client.wait_for_server()
 
     # Creates a goal to send to the action server.
-    #goal = actionlib_tutorials.msg.FibonacciGoal(order=21)
     goal = actionlib_tutorial.msg.navServGoal(order = "kitchen")
 
     # Sends the goal to the action server.
@@ -32,13 +30,13 @@ def navigationClient():
     client.wait_for_result()
 
     # Prints out the result of executing the action
-    return client.get_result()  # A FibonacciResult
+    return client.get_result()  # The Navigation status result
 
 if __name__ == '__main__':
     try:
         # Initializes a rospy node so that the SimpleActionClient can
         # publish and subscribe over ROS.
-        rospy.init_node('fibonacci_client_py')
+        rospy.init_node('nav_client_py')
         
         result = navigationClient()
         print("Result:", ', '.join([str(n) for n in result.sequence]))
