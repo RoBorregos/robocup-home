@@ -109,7 +109,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES actionlib_tutorial
-   CATKIN_DEPENDS actionlib actionlib_msgs move_base_msgs geometry_msgs message_generation roscpp rospy std_msgs message_runtime
+   CATKIN_DEPENDS actionlib actionlib_msgs move_base_msgs geometry_msgs roscpp rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
