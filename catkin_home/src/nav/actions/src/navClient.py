@@ -8,7 +8,6 @@ import actionlib
 
 # Brings in the messages used by the navigation action, including the
 # goal message and the result message.
-import actionlib_tutorials.msg
 import actionlib_tutorial.msg
 
 def navigationClient():

@@ -4,7 +4,6 @@ import rospy
 import actionlib
 import json
 
-import actionlib_tutorials.msg
 import actionlib_tutorial.msg
 from geometry_msgs.msg import PoseStamped
 from move_base_msgs.msg import MoveBaseActionGoal, MoveBaseGoal, MoveBaseAction
@@ -74,7 +73,6 @@ class navigationServer(object):
             self._as.set_preempted()
             success = False
             
-        r.sleep()
         
         # Valid if the given location is in the known locations.
         if isValid == True:
