@@ -8,19 +8,19 @@ import actionlib
 
 # Brings in the messages used by the navigation action, including the
 # goal message and the result message.
-import actionlib_tutorial.msg
+import actionlib.msg
 
 def navigationClient():
     # Creates the SimpleActionClient, passing the type of the action
     # (NavigationAction) to the constructor.
-    client = actionlib.SimpleActionClient('navServer', actionlib_tutorial.msg.navServAction)
+    client = actionlib.SimpleActionClient('navServer', actionlib.msg.navServAction)
 
     # Waits until the action server has started up and started
     # listening for goals.
     client.wait_for_server()
 
     # Creates a goal to send to the action server.
-    goal = actionlib_tutorial.msg.navServGoal(order = "kitchen")
+    goal = actionlib.msg.navServGoal(order = "kitchen")
 
     # Sends the goal to the action server.
     client.send_goal(goal)
