@@ -2,8 +2,6 @@
 #ifndef Motor_h
 #define Motor_h
 
-#include <stdint.h>
-#include <math.h>
 #include <Arduino.h>
 
 #include "MotorId.h"

@@ -25,7 +25,7 @@ uint8_t BNO::orientationStatus() {
 
 
 //////////////////////////////////Get Functions//////////////////////////////////////
-int BNO::getCurrentAngle() {
+int BNO::getCurrentXAngle() {
   int angle = getAngleX() - bno_set_point_;
   if (angle < 0) {
     angle +=  360;

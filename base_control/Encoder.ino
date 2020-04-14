@@ -11,6 +11,10 @@ void Encoder::handleEncoder(Motor &motor) {
 }
 
 //////////////////////////////////Motor Functions//////////////////////////////////////
+// TODO(Josecisneros001): Check if there is a way to avoid the use of global variables 
+// in this static functions.
+// Robot* is declared in base_control.ino. It is used as a global variable to use it in
+// the static functions that are required by the attachInterrupts of the encoders.
 void Encoder::backLeftEncoder() {
   handleEncoder(robot->back_left_motor_);
 }

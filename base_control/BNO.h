@@ -7,8 +7,6 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-#include <stdint.h>
-
 class BNO {
 
   public:
@@ -23,7 +21,7 @@ class BNO {
 
     //////////////////////////////////Get Functions//////////////////////////////////////
     // Returns the angle in X axis considering bno_set_point_ and it is in a range of 0-360.
-    int getCurrentAngle();
+    int getCurrentXAngle();
     
     // Returns the angle in X axis.
     double getAngleX();

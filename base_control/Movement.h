@@ -4,7 +4,6 @@
 
 #include "MotorId.h"
 
-#include <stdint.h>
 #include <math.h>
 #include <Arduino.h>
 

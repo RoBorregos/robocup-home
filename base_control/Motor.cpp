@@ -1,3 +1,4 @@
+#include <math.h>
 #include "Encoder.h"
 #include "Motor.h"
 
@@ -49,11 +50,13 @@ void Motor::initEncoders() {
 
 //////////////////////////////////Motor State//////////////////////////////////////
 void Motor::forward() {
+  
+  analogWrite(analog_one_, pwm_);
+
   if(current_state_ == MotorState::Forward) {
     return;
   }
-
-  analogWrite(analog_one_, pwm_);
+  
   digitalWrite(digital_one_, HIGH);
   digitalWrite(digital_two_, LOW);
 
@@ -65,11 +68,13 @@ void Motor::forward() {
 }
 
 void Motor::backward() {
+
+  analogWrite(analog_one_, pwm_);
+  
   if(current_state_ == MotorState::Backward) {
     return;
   }
-
-  analogWrite(analog_one_, pwm_);
+  
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, HIGH);
   
@@ -81,11 +86,12 @@ void Motor::backward() {
 }
 
 void Motor::stop() {
+  analogWrite(analog_one_, LOW);
+
   if(current_state_ == MotorState::Stop) {
     return;
   }
 
-  analogWrite(analog_one_, LOW);
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, LOW);
   

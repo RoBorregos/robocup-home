@@ -1,13 +1,11 @@
 #include "Movement.h"
 
 //////////////////////////////////Constructor//////////////////////////////////////
-Movement::Movement(BNO *bno) : 
+Movement::Movement(BNO *bno) : bno_(bno),
 pid_straight_(kPPidStraight, kIPidStraight, kDPidStraight, kOutputMinLimitPidStraight, 
 kOutputMaxLimitPidStraight, kPidMaxErrorSum, kPidMovementTimeSample), 
 pid_rotation_(kPPidRotation, kIPidRotation, kDPidRotation, kOutputMinLimitPidRotation, 
 kOutputMaxLimitPidRotation, kPidMaxErrorSum, kPidMovementTimeSample) {
-  
-  bno_ = bno;
   
   back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[0], 
                           kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, 
@@ -65,7 +63,7 @@ double Movement::getTargetAngle() {
       return 270;
     }
   }
-  //If delta_y_ = 0 it means the angle is either in 0 or 180 degrees, depending on delta_x sign.
+  // If delta_y_ == 0 it means the angle is either in 0 or 180 degrees, depending on delta_x sign.
   if(delta_y_ == 0) {
     if(delta_x_ > 0) {
       return 0;
@@ -101,7 +99,7 @@ Direction Movement::whereToGo(double &current_angle) {
 }
 
 Direction Movement::whereToGo(double &current_angle, const double target_angle) {
-    double current_a = bno_->getCurrentAngle();
+    double current_a = bno_->getCurrentXAngle();
     current_angle = current_a;
     double diff_angle = current_a - target_angle; 
 
@@ -118,9 +116,9 @@ Direction Movement::whereToGo(double &current_angle, const double target_angle) 
     current_angle = sign * ((diff_angle > kInterAngle) ? kMaxAngle - diff_angle : diff_angle);
 
     if(sign != 1) {
-        return Direction::left;
+        return Direction::right;
     }
-    return Direction::right;
+    return Direction::left;
 }
 
 int Movement::angleToDirection(const int angle) {
@@ -275,7 +273,7 @@ void Movement::pidLinearMovement() {
 }
 
 void Movement::pidAngularMovement() {
-    if(delta_angular_<0) {
+    if(delta_angular_ < 0) {
         rotateRight();
     } else {
         rotateLeft();
@@ -300,9 +298,9 @@ bool Movement::pidRotate(const double target_angle) {
     output = abs(output)+kOutputAdjustment;
     
     if(where == Direction::left) {
-        rotateRight();
-    } else {
         rotateLeft();
+    } else {
+        rotateRight();
     }
 
     back_left_motor_.setVelocityAdjustment(output);

@@ -25,7 +25,7 @@ class Plot {
     
     
   private:
-    // Prints data send in parameters.
+    // Prints data sent in parameters.
     void PlotData(const double data1, const double data2, const double data3, const double data4);
 
     Movement *moveAll_;

@@ -2,10 +2,6 @@
 #ifndef Encoder_h
 #define Encoder_h
 
-#include <stdint.h>
-#include <math.h>
-#include <Arduino.h>
-
 #include "Motor.h"
 
 namespace Encoder{
