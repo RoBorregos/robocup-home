@@ -23,6 +23,8 @@ class Movement {
 
 
     //////////////////////////////////Motors//////////////////////////////////////
+    // TODO(Josecisneros001): Change the declaration of motors to a simple array of size 
+    // 4 and use MotorId enum as index. 
     Motor back_right_motor_;
     Motor back_left_motor_;
     Motor front_right_motor_;
