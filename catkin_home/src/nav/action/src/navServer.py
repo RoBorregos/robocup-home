@@ -1,17 +1,17 @@
 #! /usr/bin/env python
-
+from __future__ import print_function
 import rospy
 import actionlib
 import json
 
-import actionlib.msg
+import navigation.msg
 from geometry_msgs.msg import PoseStamped
 from move_base_msgs.msg import MoveBaseActionGoal, MoveBaseGoal, MoveBaseAction
 
 class navigationServer(object):
     # Create messages that are used to publish feedback/result
-    _feedback = actionlib.msg.navServFeedback()
-    _result = actionlib.msg.navServResult()
+    _feedback = navigation.msg.navServFeedback()
+    _result = navigation.msg.navServResult()
 
     # Initialize posestamped variables
     x=0
@@ -26,14 +26,14 @@ class navigationServer(object):
     def __init__(self, name):
         self._action_name = name
         # Initialize Navigation Action Server
-        self._as = actionlib.SimpleActionServer(self._action_name, actionlib.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
+        self._as = actionlib.SimpleActionServer(self._action_name, navigation.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
 
     def searchGoal(self, goal):
 
        # Load data
         i=""
-        with open('src/actionlib/src/mock_locations.json') as x:
+        with open('src/nav/action/src/mock_locations.json') as x:
             goals = json.load(x)
 
         for pos in goals:
@@ -58,12 +58,14 @@ class navigationServer(object):
         # Helper variables
         r = rospy.Rate(1)
         success = True
-        g = rospy.Publisher('move_base_simple/goal', MoveBaseGoal, queue_size=10)
+        g = rospy.Publisher('goal', MoveBaseGoal, queue_size=10)
         
         # Start executing the action
-        self._feedback.status = True
+        # self._feedback.status = True
         rospy.loginfo("Looking for the goal")
-        if(type(goal) == str):
+        isValid = False
+        print(type(goal.order))
+        if(type(goal.order) == str):
             isValid = self.searchGoal(goal)
         #else:
             #go to object action
@@ -101,19 +103,21 @@ class navigationServer(object):
             target.target_pose.pose.orientation.z = self.qz
             target.target_pose.pose.orientation.w = self.qw
 
-            g.publish(target)
+            while True:
+                g.publish(target)
+                rospy.sleep(1)
 
             rospy.loginfo("Sending Goal to move base node")
             #move_base_client.send_goal(target)
             #rospy.loginfo("Goal sent!")
             #client.wait_for_result()
             #move_base_result = move_base_client.get_result() 
-            while (move_base_result.result != 3):
+            while (move_base_result.result != 3 or move_base_result != 1):
                 if move_base_result.result == 1:
                     self._as.publish_feedback(self._feedback)
                 else:
                      self._result = False
-                     self._as.publish_feedback(False)
+                     self._as.publish_feedback(None)
                      self._as.set_succeeded(self._result)    
 
             self._result = success
