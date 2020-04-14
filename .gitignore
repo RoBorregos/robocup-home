@@ -18,6 +18,15 @@
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm/lm.binary
 /catkin_home/src/action_selectors/src/GLOBAL.txt
 
+### BASE CONTROL ###
+base_control/test
+base_control/serialplotter
+base_control/testPID
+base_control/lib/ros_lib
+base_control/links.txt
+base_control/oldCode.txt
+wrokspace.code-workspace
+
 ### Others ###
 /rasa/venv/
 /object_detection/venv/
