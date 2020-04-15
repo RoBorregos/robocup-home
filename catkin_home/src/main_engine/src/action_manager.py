@@ -68,7 +68,7 @@ class Main_Engine(object):
         self.action_queue.append(new_action)
      
 
-    def printaction_queue(self):
+    def print_action_queue(self):
             print("*********************")
             for action in self.action_queue:
                 action.print_self(endline=False)
@@ -108,10 +108,8 @@ def listener():
     rospy.Subscriber("action_requested", action_selector_cmd,
                      main_engine.new_action_request_callback)
     rate = rospy.Rate(0.5) # 5hz
-    # spin() simply keeps python from exiting until this node is stopped
     while not rospy.is_shutdown():
-        main_engine.printaction_queue()
-        print("Spin!")
+        main_engine.print_action_queue()
         rate.sleep()
     rospy.spin()
 

@@ -50,6 +50,7 @@ class Parser(object):
                     cmd_id = row.get('cmd_id')
                     del row['cmd_id']
                     dictionary_possible_actions[cmd_id] = dict(row)
+            print("Closed possible actions")
             return dictionary_possible_actions
 
     def debug(self, text):
@@ -139,7 +140,6 @@ class Parser(object):
             if(intent == "bring_something"):
                 self.publish_bring_something(intent,args)
             else:
-                
                 action_request= action_selector_cmd()
                 action_request.intent= intent
                 action_request.args= ''.join(args)
