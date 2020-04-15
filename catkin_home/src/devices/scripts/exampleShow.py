@@ -7,7 +7,6 @@ import numpy as np
 import cv2
 
 
-
 def callback(data):
     print("yeet")
     bridge = CvBridge()
@@ -17,8 +16,8 @@ def callback(data):
         return
     print(cv_image)
    
-def listener():
-    
+
+def main():
     # In ROS, nodes are uniquely named. If two nodes with the same
     # name are launched, the previous one is kicked off. The
     # anonymous=True flag means that rospy will choose a unique
@@ -26,12 +25,14 @@ def listener():
     # run simultaneously.
     rospy.init_node('exampleShow', anonymous=True)
 
-    rospy.Subscriber("image", Image, callback)
+    rospy.Subscriber("frames", Image, callback, queue_size=5)
 
     # spin() simply keeps python from exiting until this node is stopped
     try:
         rospy.spin()
     except:
         cv2.destroyAllWindows()
+
 if __name__ == '__main__':
-    listener()
+    main()
+
