@@ -36,10 +36,6 @@ def main():
         # ROS image stuff
         if frame is not None:
             frame = np.uint8(frame)
-<<<<<<< HEAD
-            image_message = bridge.cv2_to_imgmsg(frame, encoding="bgr8")
-            pub.publish(image_message)
-=======
             image_message = bridge.cv2_to_imgmsg(frame, encoding="passthrough")
             pub.publish(image_message)
             #rospy.loginfo("Frame published")
@@ -48,7 +44,6 @@ def main():
             pass
 
         rater.sleep()
->>>>>>> 71d1cbda1779108bf79bd8a138fa6d33fe645192
     cam.release()
     
     rospy.loginfo("*Node closed*")
@@ -58,4 +53,3 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         pass
-
