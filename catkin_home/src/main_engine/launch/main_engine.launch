@@ -1,4 +1,3 @@
 <launch>
-<node name="engine" pkg="main_engine" type="engine.py" respawn="true"/>
-<node name="mock" pkg="main_engine" type="mock_command_creator.py" respawn="true"/>
+<node name="engine" pkg="main_engine" type="action_manager.py" respawn="true"/>
 </launch>
