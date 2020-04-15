@@ -1,5 +1,5 @@
 #goal definition
-string order
+string target_location
 ---
 #result definition
 bool result

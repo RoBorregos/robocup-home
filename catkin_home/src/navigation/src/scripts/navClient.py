@@ -20,7 +20,7 @@ def navigationClient():
     client.wait_for_server()
 
     # Creates a goal to send to the action server.
-    goal = navigation.msg.navServGoal(order = "kitchen")
+    goal = navigation.msg.navServGoal(target_location = "kitchen")
 
     # Sends the goal to the action server.
     client.send_goal(goal)

@@ -37,8 +37,8 @@ class navigationServer(object):
             goals = json.load(x)
 
         for pos in goals:
-            # goal.order -> the location sent by the main_engine (specify the type on nav_action/navServ.action)
-            if(pos == goal.order): 
+            # goal.target_location -> the location sent by the main_engine (specify the type on nav_action/navServ.action)
+            if(pos == goal.target_location): 
                 i  = goals[pos]["location"]
 
        
@@ -64,8 +64,8 @@ class navigationServer(object):
         # self._feedback.status = True
         rospy.loginfo("Looking for the goal")
         isValid = False
-        print(type(goal.order))
-        if(type(goal.order) == str):
+        print(type(goal.target_location))
+        if(type(goal.target_location) == str):
             isValid = self.searchGoal(goal)
         #else:
             #go to object action
