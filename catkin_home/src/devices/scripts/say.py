@@ -58,7 +58,7 @@ def listener():
     # run simultaneously.
     rospy.init_node('SpeechSynthesizer', anonymous=True)
 
-    rospy.Subscriber("bot_response", response, callback)
+    rospy.Subscriber("BotResponse", response, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
