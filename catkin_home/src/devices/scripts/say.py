@@ -56,7 +56,7 @@ def listener():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
-    rospy.init_node('SpeechSynthesizer', anonymous=True)
+    rospy.init_node('say', anonymous=True)
 
     rospy.Subscriber("BotResponse", response, callback)
 
