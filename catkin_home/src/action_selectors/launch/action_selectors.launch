@@ -1,4 +1,5 @@
 <launch>
 <node name="hear" pkg="action_selectors" type="hear.py" respawn="true" output="screen"/>
 <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen"/>
+<node name="ObjectDetector" pkg="action_selectors" type="ObjectDetector.py" respawn="true" output="screen"/>
 </launch>
