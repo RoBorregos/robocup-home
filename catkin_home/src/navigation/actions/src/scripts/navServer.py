@@ -33,7 +33,7 @@ class navigationServer(object):
 
        # Load data
         i=""
-        with open('src/navigation/src/data/mock_locations.json') as x:
+        with open('src/navigation/actions/src/data/mock_locations.json') as x:
             goals = json.load(x)
 
         for pos in goals:
