@@ -19,10 +19,16 @@
 
 inline int sign(int a) { return min(1, max(-1, a)); };
 
+enum class OdometryState {
+    Linear = 1, 
+    Angular = 2, 
+    Stop = 3
+};
+
 class Odometry{
     public:
         //////////////////////////////////Constructor//////////////////////////////////////
-        Odometry(Movement *move_all);
+        Odometry(Movement *move_all,ros::NodeHandle *nh);
         
         
         //////////////////////////////////Run//////////////////////////////////////
@@ -45,16 +51,17 @@ class Odometry{
         void publish();
         
         Movement *move_all_;
+        OdometryState odom_state_ = OdometryState::Stop;
         static constexpr uint8_t kCountMotors = 4;
 
         // Node.
-        ros::NodeHandle  nh_;
+        ros::NodeHandle  *nh_;
         
         // Suscriber.
         ros::Subscriber<geometry_msgs::Twist, Odometry> velocity_subscriber_;
-        static constexpr double kLinearXMaxVelocity = 1.1;
-        static constexpr double kLinearYMaxVelocity = 1.3;
-        static constexpr double kAngularZMaxVelocity = 2.8;
+        static constexpr double kLinearXMaxVelocity = 0.39;
+        static constexpr double kLinearYMaxVelocity = 0.39;
+        static constexpr double kAngularZMaxVelocity = 0.39;
         static constexpr uint16_t kWatchdogPeriod = 500;
         
         // Publisher.

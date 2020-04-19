@@ -1,7 +1,7 @@
 #include "Movement.h"
 
 //////////////////////////////////Constructor//////////////////////////////////////
-Movement::Movement(BNO *bno) : bno_(bno),
+Movement::Movement(BNO *bno, ros::NodeHandle *nh) : bno_(bno), nh_(nh),
 pid_straight_(kPPidStraight, kIPidStraight, kDPidStraight, kOutputMinLimitPidStraight, 
 kOutputMaxLimitPidStraight, kPidMaxErrorSum, kPidMovementTimeSample), 
 pid_rotation_(kPPidRotation, kIPidRotation, kDPidRotation, kOutputMinLimitPidRotation, 
@@ -234,6 +234,9 @@ void Movement::rotateRight() {
 
 //////////////////////////////////PID//////////////////////////////////////
 void Movement::constantLinearSpeed() {
+  char result[8];
+  dtostrf(getTargetLinearVelocity(), 6, 2, result); 
+  nh_->loginfo(result);
   front_right_motor_.constantSpeed(getTargetLinearVelocity());
   front_left_motor_.constantSpeed(getTargetLinearVelocity());
   back_left_motor_.constantSpeed(getTargetLinearVelocity());
@@ -265,6 +268,7 @@ void Movement::velocityAdjustment(const int adjustment) {
 void Movement::pidLinearMovement() {
     setDirection(angleToDirection(getTargetAngle()));
     constantLinearSpeed();
+    
 
     double angle_error = 0;
     Direction where = whereToGo(angle_error);

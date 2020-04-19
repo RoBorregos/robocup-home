@@ -4,6 +4,7 @@
 
 #include "MotorId.h"
 
+#include <ros.h>
 #include <math.h>
 #include <Arduino.h>
 
@@ -19,7 +20,7 @@ enum class Direction{
 class Movement {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
-    Movement(BNO * bno);
+    Movement(BNO * bno, ros::NodeHandle *nh);
 
 
     //////////////////////////////////Motors//////////////////////////////////////
@@ -60,6 +61,9 @@ class Movement {
     // Return target anuglar velocity.
     double getTargetAngularVelocity();
     
+    // This function sets a direction according to an angle.
+    void setDirection(const int angle); 
+    
     // Stop robot.
     void stop();
     
@@ -89,8 +93,6 @@ class Movement {
     // This function change any angle to the closer mechanum direction angle. 
     int angleToDirection(const int angle);
     
-    // This function sets a direction according to an angle.
-    void setDirection(const int angle); 
     
     // Put motors in 0° direction.
     void move0();
@@ -134,21 +136,24 @@ class Movement {
     void velocityAdjustment(const int adjustment);
 
     // Pins,
-    static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {15, 14};
-    static constexpr uint8_t kAnalogPinBackLeftMotor = 11;
+    static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {14, 15};
+    static constexpr uint8_t kAnalogPinFrontLeftMotor = 11;
+    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {3, 25};
+
+    static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {22, 23};
+    static constexpr uint8_t kAnalogPinBackLeftMotor = 6;
     static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2, 37};
 
-    static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {37, 36};
-    static constexpr uint8_t kAnalogPinFrontLeftMotor = 5;
-    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {2, 22};
-
-    static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {45, 43};
-    static constexpr uint8_t kAnalogPinBackRightMotor = 6;
-    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {19, 14};
-
-    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {25, 24};
+    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {26,27};
     static constexpr uint8_t kAnalogPinFrontRightMotor = 7;
-    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {18, 23};
+    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {18, 33};
+
+    static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {31,30};
+    static constexpr uint8_t kAnalogPinBackRightMotor = 8;
+    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {19, 29};
+
+    // ROS
+    ros::NodeHandle * nh_;
 
     // Bno.
     BNO *bno_;
