@@ -1,7 +1,8 @@
 import rospy
 import actionlib
 import time
-#from object_detection.msg import RecognizeObjectAction, RecognizeObjectGoal, RecognizeObjectFeedback
+import sys
+import navigation.msg
 # TODO: Import all the messages related to actions I guess ?
 '''
 All Goals, and Actions must be imported here from he corresponding packages
@@ -43,17 +44,32 @@ class Action(object):
 
     def run(self):
         print("Run Action")
+        print(self.id)
         self.specific_function[self.id]()
         self.feedback_step+=1
 
     def run_action_client(self, ROS_action):
         print("Booting action client")
-        #self.action_client = actionlib.SimpleActionClient(self.action_client_name, ROS_action)
-        # self.action_client.wait_for_server()
+        self.action_client = actionlib.SimpleActionClient(self.action_client_name, ROS_action)
+        self.action_client.wait_for_server()
         return True
 
-        '''Specific Goals and Results'''
 
+    def get_state(self):
+        state = "LOST"
+        ATTEMPTS = 2
+        #Contacts Action Server to get state of action
+        for i in range(0, ATTEMPTS):
+            try:
+                state =  self.action_client.get_state()
+                break
+            except:
+                print "Failed attempt " +str(i) +"Error: " + sys.exc_info()[0]
+                state = "LOST"
+        return state
+
+
+        '''Specific Goals and Results'''
     def bring_something(self):
         print("Setting goal,filling it and contacting action server of bring_something")
         # self.run_action_client(BringSomethingAction)
@@ -64,7 +80,8 @@ class Action(object):
 
     def go_to(self):
         print("Setting goal,filling it and contacting action server of bring_something")
-        # self.run_action_client(GoToAction)
-        #goal = GoToGoal()
-        #goal.target_location = "kitchen"
-        # action.send_goal(goal)
+        GoToAction = navigation.msg.navServAction
+        self.run_action_client(GoToAction)
+        goal = navigation.msg.navServGoal()
+        goal.target_location = "kitchen"
+        self.action_client.send_goal(goal)
