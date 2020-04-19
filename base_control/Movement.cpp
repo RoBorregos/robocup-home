@@ -54,6 +54,19 @@ void Movement::setDeltaAngular(const double delta_angular) {
   delta_angular_ = delta_angular;
 }
 
+double Movement::getDeltaX(){
+  return delta_x_;
+}
+
+double Movement::getDeltaY(){
+  return delta_y_;
+}
+
+double Movement::getDeltaAngular(){
+  return delta_angular_;
+}
+
+
 double Movement::getTargetAngle() {
   //If delta_x_ = 0 it means the angle is either in 90 or 270 degrees, depending on delta_y sign.
   if(delta_x_ == 0) {
@@ -71,7 +84,22 @@ double Movement::getTargetAngle() {
       return 180;
     }
   }
-  return radiansToDegrees(atan2(delta_y_, delta_x_));
+  const double angle_first_quadrant = radiansToDegrees(atan( abs(delta_y_) / abs(delta_x_)));
+  
+  // If delta_x is negative and delta_y is positve that means angle is in the second quadrant.
+  if(delta_x_ < 0 && delta_y_ > 0 ) {
+    return angle_first_quadrant + 90;
+  }
+  // If both delta_x and delta_y are negative that means angle is in the third quadrant.
+  if(delta_x_ < 0 && delta_y_ < 0 ) {
+    return angle_first_quadrant + 180;
+  }
+  // If delta_x is positve and delta_y is negative that means angle is in the fourth quadrant.
+  if(delta_x_ > 0 && delta_y_ < 0 ) {
+    return angle_first_quadrant + 270;
+  }
+  // If both delta_y and delta_x are positve that means angle is in the first quadrant.
+  return angle_first_quadrant;
 }
 
 double Movement::radiansToDegrees(const double radians) {
@@ -234,9 +262,6 @@ void Movement::rotateRight() {
 
 //////////////////////////////////PID//////////////////////////////////////
 void Movement::constantLinearSpeed() {
-  char result[8];
-  dtostrf(getTargetLinearVelocity(), 6, 2, result); 
-  nh_->loginfo(result);
   front_right_motor_.constantSpeed(getTargetLinearVelocity());
   front_left_motor_.constantSpeed(getTargetLinearVelocity());
   back_left_motor_.constantSpeed(getTargetLinearVelocity());

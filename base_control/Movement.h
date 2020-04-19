@@ -51,6 +51,15 @@ class Movement {
     
     // Change deltaAngular value.
     void setDeltaAngular(const double delta_angular);
+
+    // Return deltaX value.
+    double getDeltaX();
+    
+    // Return deltaY value.
+    double getDeltaY();
+    
+    // Return deltaAngular value.
+    double getDeltaAngular();
     
     // Return target linear angle.
     double getTargetAngle();
@@ -63,6 +72,9 @@ class Movement {
     
     // This function sets a direction according to an angle.
     void setDirection(const int angle); 
+    
+    // This function change any angle to the closer mechanum direction angle. 
+    int angleToDirection(const int angle);
     
     // Stop robot.
     void stop();
@@ -90,9 +102,6 @@ class Movement {
     // Convert radians to degrees.
     double radiansToDegrees(const double radians);
 
-    // This function change any angle to the closer mechanum direction angle. 
-    int angleToDirection(const int angle);
-    
     
     // Put motors in 0° direction.
     void move0();
