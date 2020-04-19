@@ -4,14 +4,14 @@ import rospy
 import actionlib
 import json
 
-import navigation.msg
+import actions.msg
 from geometry_msgs.msg import PoseStamped
 from move_base_msgs.msg import MoveBaseActionGoal, MoveBaseGoal, MoveBaseAction
 
 class navigationServer(object):
     # Create messages that are used to publish feedback/result
-    _feedback = navigation.msg.navServFeedback()
-    _result = navigation.msg.navServResult()
+    _feedback = actions.msg.navServFeedback()
+    _result = actions.msg.navServResult()
 
     # Initialize posestamped variables
     x=0
@@ -26,14 +26,14 @@ class navigationServer(object):
     def __init__(self, name):
         self._action_name = name
         # Initialize Navigation Action Server
-        self._as = actionlib.SimpleActionServer(self._action_name, navigation.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
+        self._as = actionlib.SimpleActionServer(self._action_name, actions.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
 
     def searchGoal(self, goal):
 
        # Load data
         i=""
-        with open('src/navigation/actions/src/data/mock_locations.json') as x:
+        with open('src/navigation/actions/data/mock_locations.json') as x:
             goals = json.load(x)
 
         for pos in goals:
