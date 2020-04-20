@@ -2,7 +2,7 @@ import rospy
 import actionlib
 import time
 import sys
-import navigation.msg
+import actions.msg
 # TODO: Import all the messages related to actions I guess ?
 '''
 All Goals, and Actions must be imported here from he corresponding packages
@@ -16,7 +16,6 @@ class Action(object):
         # Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST.
         self.feedback = ["PENDING", "ACTIVE", "RECALLED",
                          "REJECTED", "PREEMPTED", "ABORTED", "SUCCEEDED", "LOST"]
-        self.feedback_step = 0
         self.action_client_name = action_client_binded
         self.action_client = None
         self.time_requested = int(time.time())
@@ -30,14 +29,14 @@ class Action(object):
     def specific_function_not_found(self):
         print("Not found the corresponding action")
 
-    def print_self(self, endline):
+    def print_self(self, endline=False):
         if(endline == False):
             print(self.get_description(),)
             return
         print(self.get_description())
 
     def get_description(self):
-        return self.id + "-"+ str(self.time_requested) +  "-" + self.args +  " : " + self.feedback[self.feedback_step]
+        return self.id + "-"+ str(self.time_requested) +  "-" + self.args +  " : " + self.feedback[self.get_state()]
 
     def stop(self):
         print("Stop Action")
@@ -46,26 +45,31 @@ class Action(object):
         print("Run Action")
         print(self.id)
         self.specific_function[self.id]()
-        self.feedback_step+=1
 
     def run_action_client(self, ROS_action):
-        print("Booting action client")
+        print("Booting action client, waiting...")
         self.action_client = actionlib.SimpleActionClient(self.action_client_name, ROS_action)
         self.action_client.wait_for_server()
         return True
 
+    def get_feedback(self):
+        #TODO: Validation of get_state
+        return self.feedback[self.get_state()]
 
     def get_state(self):
-        state = "LOST"
-        ATTEMPTS = 2
-        #Contacts Action Server to get state of action
-        for i in range(0, ATTEMPTS):
-            try:
-                state =  self.action_client.get_state()
-                break
-            except:
-                print "Failed attempt " +str(i) +"Error: " + sys.exc_info()[0]
-                state = "LOST"
+        if(self.action_client):
+            state = 7
+            ATTEMPTS = 2
+            #Contacts Action Server to get state of action
+            for i in range(0, ATTEMPTS):
+                try:
+                    state =  self.action_client.get_state() #Returns an int apparently (?)
+                    break
+                except:
+                    print "Failed attempt " +str(i) +"Error: " + str(sys.exc_info()[0])
+            print(state)
+        else:
+            state=0
         return state
 
 
@@ -80,8 +84,8 @@ class Action(object):
 
     def go_to(self):
         print("Setting goal,filling it and contacting action server of bring_something")
-        GoToAction = navigation.msg.navServAction
+        GoToAction = actions.msg.navServAction
         self.run_action_client(GoToAction)
-        goal = navigation.msg.navServGoal()
+        goal = actions.msg.navServGoal()
         goal.target_location = "kitchen"
         self.action_client.send_goal(goal)

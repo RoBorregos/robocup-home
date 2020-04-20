@@ -68,13 +68,15 @@ class Main_Engine(object):
             self.trigger_new_action(new_action,PREVIOUS_ACTION_NOT_DONE)
         #Add it to the queue (doesn't matter if it was triggered or not)
         self.action_queue.append(new_action)
+        print("new action added to the queue")
      
 
     def print_action_queue(self):
-            print("*********************")
+            print("*********ACTION QUEUE************")
             for action in self.action_queue:
                 action.print_self(endline=False)
-            print("*********************")
+            print("*********************************")
+            print("")
  
 
     def stop_everything(self):
@@ -88,14 +90,16 @@ class Main_Engine(object):
         if(len(self.action_queue) > 0):
             print("Stopping previous action...")
             # Find the first ocurrence of the same category
-            current_action = self.action_queue[0]
-            # If previous action done (current_action.feedback == DONE|FAILED) remove from queue
-            current_action.stop()
             if(previous_action_done):
-                self.history.append(self.action_queue.pop(0))
+                self.delete_an_action(0)
             # Else keep it in the queue       
         # Call the corresponding action server with the request
         new_action.run()
+
+    def delete_an_action(self,position_in_queue):
+        current_action = self.action_queue[position_in_queue]
+        current_action.stop()
+        self.history.append(self.action_queue.pop(position_in_queue))
 
 
     '''
@@ -103,13 +107,18 @@ class Main_Engine(object):
     when done, notifies if an error arises.
     '''
     def monitor(self):
-        current_action = self.action_queue[0]
-        # Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST.
-        current_action_status  = current_action.get_state()
-        if(current_action_status == "SUCCEEDED"):
-            current_action.print_self()
-            print('Action Completed Succesfully!')
-            self.trigger_new_action(self.action_queue[1],PREVIOUS_ACTION_DONE)
+        if(len(self.action_queue) > 0):
+            current_action = self.action_queue[0]
+            # Possible States Are: PENDING, ACTIVE, RECALLED, REJECTED, PREEMPTED, ABORTED, SUCCEEDED, LOST.
+            current_action_status  = current_action.get_feedback()
+            if(current_action_status == "SUCCEEDED"):
+                current_action.print_self()
+                print('Action Completed Succesfully!')
+                self.trigger_new_action(self.action_queue[1],PREVIOUS_ACTION_DONE)
+            elif(current_action_status == "LOST"):
+                current_action.print_self()
+                print('Action Failed!')
+                self.delete_an_action(0)
 
 def listener():
 
