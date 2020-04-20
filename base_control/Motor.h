@@ -41,11 +41,23 @@ class Motor {
 
 
     //////////////////////////////////Velocity//////////////////////////////////////
-    // Calculate target Rpm according to a velocity.
-    double getTargetRpm(const double velocity);
+    // Calculate target Rps according to a velocity in meters per second.
+    double getTargetRps(const double velocity);
     
-    // Calculate target Ticks according to a velocity.
+    // Calculate target Ticks according to a velocity  in meters per second.
     double getTargetTicks(const double velocity);
+
+    // Converts revolutions per second to encoder pulses.
+    static double RpsToTicks(const double rps);
+    
+    // Converts encoder pulses to revolutions per second.
+    static double TicksToRps(const double ticks);
+    
+    // Converts Revolutions per second to meters per second.
+    static double RpsToMs(const double rps);
+    
+    // Converts meters per second to revolutions per second.
+    static double MsToRps(const double ms);
     
     // Change Pwm value of a motor.
     void changePwm(const uint8_t pwm);
@@ -83,10 +95,10 @@ class Motor {
 
   private:
     MotorId id_;
-    MotorState current_state_;
+    MotorState current_state_ = MotorState::Forward;
     
     // Motor Characteristics.
-    static constexpr uint16_t kPulsesPerRevolution = 4320;
+    static constexpr double kPulsesPerRevolution = 4320.0;
     static constexpr double kWheelDiameter = 0.1;
     
     // Robot Movement Limits.
@@ -114,8 +126,10 @@ class Motor {
     static constexpr uint8_t kPidMaxOutputLimit = 255;
     static constexpr uint16_t kPidMaxErrorSum = 4000;
     static constexpr uint8_t kPidMotorTimeSample = 100;
-    static constexpr uint16_t kOneSecondInMillis = 1000;
-    static constexpr uint16_t kPidCountTimeSamplesInOneSecond = kOneSecondInMillis/kPidMotorTimeSample;
+    static constexpr double kOneSecondInMillis = 1000.0;
+    static constexpr double kSecondsInMinute = 60;
+    static constexpr double kPidCountTimeSamplesInOneSecond = kOneSecondInMillis/kPidMotorTimeSample;
+    static constexpr double kPidCountTimeSamplesInOneMinute = kSecondsInMinute*kPidCountTimeSamplesInOneSecond;
     static constexpr double kP = 45;
     static constexpr double kI = 55;
     static constexpr double kD = 40;

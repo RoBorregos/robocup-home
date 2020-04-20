@@ -1,3 +1,4 @@
+#include <ros.h>
 #include "BNO.h"
 #include "Movement.h"
 #include "Odometry.h"
@@ -6,26 +7,26 @@
 Movement *robot = nullptr;
 
 void setup() {
-    Serial.begin(9600);
-    while (!Serial) {
-        delay(1);
-    } 
-    Serial.println("Serial Initialization completed.");
+    ros::NodeHandle nh; 
+    
+    nh.initNode();
+    while (!nh.connected()) {
+        nh.spinOnce();
+    }
+    nh.loginfo("Node Initialization completed.");
 
     BNO bno;
-    Serial.println("Bno Initialization completed.");
-
-    Movement initRobot(&bno);
+    nh.loginfo("Bno Initialization completed.");
+    Movement initRobot(&bno, &nh);
     robot = &initRobot;
     robot->initEncoders();
-    Serial.println("Movement Initialization completed.");
+    nh.loginfo("Movement Initialization completed.");
 
-    Odometry odom(robot);
-    Serial.println("Odometry Initialization completed.");
+    Odometry odom(robot,&nh);
+    nh.loginfo("Odometry Initialization completed.");
 
     Plot plot(robot);
-    Serial.println("Plot Initialization completed.");
-
+    nh.loginfo("Plot Initialization completed.");
 
     odom.run();
 }

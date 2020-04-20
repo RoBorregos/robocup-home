@@ -26,9 +26,9 @@ void Plot::PlotMotorTicks() {
 
 void Plot::PlotTargetandCurrent() {
     PlotData(
-        moveAll_->back_right_motor_.getTargetRpm(moveAll_->getTargetLinearVelocity()),
+        moveAll_->back_right_motor_.getTargetRps(moveAll_->getTargetLinearVelocity()),
         moveAll_->back_right_motor_.getCurrentSpeed(),
-        moveAll_->front_right_motor_.getTargetRpm(moveAll_->getTargetLinearVelocity()),
+        moveAll_->front_right_motor_.getTargetRps(moveAll_->getTargetLinearVelocity()),
         moveAll_->front_right_motor_.getCurrentSpeed()
     );
 }
