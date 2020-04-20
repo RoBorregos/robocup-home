@@ -1,5 +1,5 @@
 <launch>
+    <!-- <TODO run /control_base publisher/> -->
     <include file="$(find rplidar_ros)/launch/rplidar.launch" />
-    <node name="state_publisher" pkg="r2d2" type="state_publisher" />
     <include file="$(find robot_description)/launch/display.launch" />
 </launch>
