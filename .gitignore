@@ -9,13 +9,23 @@
 /catkin_home/.catkin_tools/
 /catkin_home/.catkin_workspace
 
-### DeepSpeech ###
+### DeepSpeech && Speech API ###
 /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech/manifest.dev-clean
 /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech/manifest.test-clean
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/mean_std.npz
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/params.tar.gz
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/vocab.txt
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm/lm.binary
+/catkin_home/src/action_selectors/src/GLOBAL.txt
+
+### BASE CONTROL ###
+base_control/test
+base_control/serialplotter
+base_control/testPID
+base_control/lib/ros_lib
+base_control/links.txt
+base_control/oldCode.txt
+wrokspace.code-workspace
 
 ### Others ###
 /rasa/venv/
@@ -24,4 +34,5 @@
 *.DS_Store
 *.pyc
 .vscode/
+
 # End 

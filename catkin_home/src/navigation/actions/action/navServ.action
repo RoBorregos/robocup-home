@@ -1,0 +1,8 @@
+#goal definition
+string target_location
+---
+#result definition
+bool result
+---
+#feedback
+geometry_msgs/PoseStamped pose
