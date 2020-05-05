@@ -1,0 +1,6 @@
+<launch>
+    <node name="hear" pkg="action_selectors" type="hear.py" respawn="true" output="screen"/>
+    <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen"/>
+    <node name="AudioCapturer" pkg="devices" type="AudioCapturer" respawn="true" output="screen"/>
+    <node name="InputAudio" pkg="devices" type="InputAudio" respawn="true" output="screen"/>
+</launch>
