@@ -1,6 +1,7 @@
-# Train a Tensorflow model from scratch using Google Colab
+# Train the Object Detection TF API from scratch using Google Colab
+We are using the [TensorFlow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection) to retrain the models with the objects that we need. Check installation and more info there. All this has been tried for python2/3 and tensorflow==1.15.
 
-Colab offers free access to a computer that has reasonable GPU, it is a cloud service based on Jupyter Notebooks and internet connectivity is required for access.
+[Colab](http://colab.research.google.com/) offers free access to a computer that has reasonable GPU good for training, it is a cloud service based on Jupyter Notebooks and internet connectivity is required for access.
 
 ## Preprocessing
 
@@ -23,7 +24,7 @@ python split_images.py -d ../images/complete_dataset -o ../images --train 80
 
 Now you need to label the images, use the [labelimg](https://github.com/tzutalin/labelImg) open source tool to label all the pictures in both train/test directories (this is a tedious and long process).
 
-![labeling](https://github.com/RoBorregos/Robocup-Home/blob/object_detection/object_detection/images/readme_images/labeling.png)
+![labeling](https://github.com/RoBorregos/Robocup-Home/blob/develop/object_detection/images/readme_images/labeling.png)
 
 **As of this point you should have a `image` directory that contains your train and test images with respective xml file of each images.**
 
@@ -46,7 +47,7 @@ Download the [labelmap](https://github.com/RoBorregos/Robocup-Home/blob/develop/
 
 We are using the Faster-RCNN-Inception-V2 model. [Download the model here.](http://download.tensorflow.org/models/object_detection/faster_rcnn_inception_v2_coco_2018_01_28.tar.gz) Open the downloaded faster_rcnn_inception_v2_coco_2018_01_28.tar.gz file with a file archiver and extract the faster_rcnn_inception_v2_coco_2018_01_28 folder.
 
-Download the [faster_rcnn_inception_v2_pets](https://github.com/RoBorregos/Robocup-Home/blob/develop/object_detection/training/faster_rcnn_inception_v2_pets.config) file and change:
+Download the [faster_rcnn_inception_v2_pets](https://github.com/RoBorregos/Robocup-Home/blob/develop/object_detection/training/faster_rcnn_inception_v2_pets.config) file. Here you can find several parameters like batch size, learning rate, etc. Then, change:
 
 - Line 9. Change `num_classes` to the number of different objects you want the classifier to detect.
 - Line 130. Change `num_examples` to the number of images you have in the `\images\test` directory.
@@ -115,9 +116,9 @@ As we are running this in Colab, with 3-4 hours its pretty enough, every 5 minut
 The final step is to export your inference graph, the command is already in the notebook, the only thing you have to change is the `--trained_checkpoint_prefix` flag.  Go to the `training` folder and you will see some of the last checkpoints the model saved, copy the `id` of the last checkpoint and change it on the command:
 `--trained_checkpoint_prefix training/model.ckpt-158879`
 
-![traning_folder](https://github.com/RoBorregos/Robocup-Home/blob/object_detection/object_detection/images/readme_images/training_folder.png)
+![traning_folder](https://github.com/RoBorregos/Robocup-Home/blob/develop/object_detection/images/readme_images/training_folder.png)
 
-Finally, you can run the code in the last shell of the notebook to test your model, take new pictures to test the model and place them on a folder named `test_images`.
+Finally, you can run the code in the last shell of the notebook to test your model, take new pictures to test the model and place them on a folder named `test_images`. Remember you should use for inference at least the same tf version that the one used for training.
 
 Change the `IMAGE_NAME` on the script:
 ```python
@@ -126,4 +127,4 @@ IMAGE_NAME = 'test_images/IMG_0681.jpg'
 
 Run the shell, you should see the image with the objects detected:
 
-![test_model](https://github.com/RoBorregos/Robocup-Home/blob/object_detection/object_detection/images/readme_images/test_model.png)
+![test_model](https://github.com/RoBorregos/Robocup-Home/blob/develop/object_detection/images/readme_images/test_model.png)
