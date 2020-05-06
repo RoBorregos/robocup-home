@@ -1,8 +1,0 @@
-#goal definition
-string object
----
-#result definition
-bool taken
----
-#feedback (TODO: change this)
-int32 position_of_arm
