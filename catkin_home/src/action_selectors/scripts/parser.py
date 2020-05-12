@@ -34,24 +34,24 @@ class Parser(object):
         self.possible_actions = self.loadActions(filename)
 
     def loadActions(self, filename):
-            '''
-            Returns a dictionary with the possible actions defined in the csv file
-            {
-                cmd_id:{cmd_category,cmd_priority,require_args}
-            }
-            '''
-            directory = os.path.dirname(os.path.realpath(__file__))
-            absolute_path_to_csv = os.path.join(directory, filename)
-            print("Opening possible actions: "+absolute_path_to_csv)
-            dictionary_possible_actions = dict()
-            with open(absolute_path_to_csv, 'r') as action_file:
-                dict_reader = csv.DictReader(action_file)
-                for row in dict_reader:
-                    cmd_id = row.get('cmd_id')
-                    del row['cmd_id']
-                    dictionary_possible_actions[cmd_id] = dict(row)
-            print("Closed possible actions")
-            return dictionary_possible_actions
+        '''
+        Returns a dictionary with the possible actions defined in the csv file
+        {
+            cmd_id:{cmd_category,cmd_priority,require_args}
+        }
+        '''
+        directory = os.path.dirname(os.path.realpath(__file__))
+        absolute_path_to_csv = os.path.join(directory, filename)
+        print("Opening possible actions: "+absolute_path_to_csv)
+        dictionary_possible_actions = dict()
+        with open(absolute_path_to_csv, 'r') as action_file:
+            dict_reader = csv.DictReader(action_file)
+            for row in dict_reader:
+                cmd_id = row.get('cmd_id')
+                del row['cmd_id']
+                dictionary_possible_actions[cmd_id] = dict(row)
+        print("Closed possible actions")
+        return dictionary_possible_actions
 
     def debug(self, text):
         if(self.debug_option):
@@ -86,7 +86,7 @@ class Parser(object):
                     response_to_publish.data = responseData["text"]
                     self.pub_resp.publish(response_to_publish)
                     nlu_info = nlu_response.json()
-                    if(nlu_info["intent"]["confidence"]>=0.60):
+                    if(nlu_info["intent"]["confidence"] >= 0.60):
                         self.debug(nlu_info["intent"])
                         intent = nlu_info["intent"]["name"]
                         args = nlu_info["entities"]
@@ -108,17 +108,20 @@ class Parser(object):
                 target_object = entity.get("value")
             elif(entity.get("entity") == 'place'):
                 target_location = entity.get("value")
-        actions_needed = [["go_to", target_location], ["approach", target_object],["center",target_object],["pick_up",target_object],["go_to","original_location"]]
+        actions_needed = [["go_to", target_location], ["approach", target_object], [
+            "center", target_object], ["pick_up", target_object], ["go_to", "original_location"]]
         for action in actions_needed:
             arg = ""
-            action_request= action_selector_cmd()
-            action_request.intent= action[0]
-            if(len(action)>1):
+            action_request = action_selector_cmd()
+            action_request.intent = action[0]
+            if(len(action) > 1):
                 arg = action[1]
-            action_request.args= arg
-            action_request.action_client_binded= self.possible_actions[action[0]]['action_client_binded']
+            action_request.args = arg
+            action_request.action_client_binded = self.possible_actions[action[0]
+                                                                        ]['action_client_binded']
             rospy.loginfo(action_request)
-            story.storyline.append(action_request.intent + " : " + action_request.args)
+            story.storyline.append(
+                action_request.intent + " : " + action_request.args)
             self.pub.publish(action_request)
             print(self.possible_actions[intent])
         self.pub_story.publish(story)
@@ -127,7 +130,7 @@ class Parser(object):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.data)
         # Here the parsing is done
         try:
-            intent, args= self.callRASA(msg.data)
+            intent, args = self.callRASA(msg.data)
             pass
         except:
             response_to_publish = String()
@@ -135,40 +138,33 @@ class Parser(object):
             self.pub_resp.publish(response_to_publish)
             self.debug("Failed response")
             pass
-        
+
         if(self.possible_actions.get(intent)):
             if(intent == "bring_something"):
-                self.publish_bring_something(intent,args)
+                self.publish_bring_something(intent, args)
             else:
-                action_request= action_selector_cmd()
-                action_request.intent= intent
-                action_request.args= ''.join(args)
-                action_request.action_client_binded= self.possible_actions[intent]['action_client_binded']
+                action_request = action_selector_cmd()
+                action_request.intent = intent
+                action_request.args = ''.join(args)
+                action_request.action_client_binded = self.possible_actions[
+                    intent]['action_client_binded']
                 rospy.loginfo(action_request)
                 self.pub.publish(action_request)
 
 
-
-
 def main():
-
-    # In ROS, nodes are uniquely named. If two nodes with the same
-    # name are launched, the previous one is kicked off. The
-    # anonymous=True flag means that rospy will choose a unique
-    # name for our 'listener' node so that multiple listeners can
-    # run simultaneously.
-
-
     rospy.init_node('parser', anonymous=True)
-    FILENAME_OF_CSV= 'possible_actions.csv'
+    FILENAME_OF_CSV = 'possible_actions.csv'
 
-    pub_resp= rospy.Publisher('robot_text', String, queue_size=10)
-    pub= rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
+    pub_resp = rospy.Publisher('robot_text', String, queue_size=10)
+    pub = rospy.Publisher('action_requested',
+                          action_selector_cmd, queue_size=10)
     pub_story = rospy.Publisher("story", Story, queue_size=10)
-    parser= Parser(pub, pub_resp, pub_story, "possible_actions.csv")
+    parser = Parser(pub, pub_resp, pub_story, "possible_actions.csv")
     rospy.Subscriber("operator_text", String, parser.callback)
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
+
 
 if __name__ == '__main__':
     main()

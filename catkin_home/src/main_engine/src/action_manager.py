@@ -97,8 +97,8 @@ class Main_Engine(object):
         new_action.run()
 
     def delete_an_action(self,position_in_queue):
-        current_action = self.action_queue[position_in_queue]
-        current_action.stop()
+        #current_action = self.action_queue[position_in_queue]
+        #current_action.stop()
         self.history.append(self.action_queue.pop(position_in_queue))
 
 
@@ -114,7 +114,11 @@ class Main_Engine(object):
             if(current_action_status == "SUCCEEDED"):
                 current_action.print_self()
                 print('Action Completed Succesfully!')
-                self.trigger_new_action(self.action_queue[1],PREVIOUS_ACTION_DONE)
+                if(len(self.action_queue)>1):
+                    #There are more actions pending
+                    self.trigger_new_action(self.action_queue[1],PREVIOUS_ACTION_DONE)
+                else:
+                    self.delete_an_action(0)
             elif(current_action_status == "LOST"):
                 current_action.print_self()
                 print('Action Failed!')
