@@ -87,7 +87,7 @@ int main(int argc, char* argv[]){
   // This must be called before anything else ROS-related
   ros::init(argc, argv, "AzureSpeechToText");
   
-  ROS_INFO_STREAM("*Node initiated");
+  ROS_INFO_STREAM("*Node initiated*");
   
   // Create a ROS node handle
   ros::NodeHandle nh;

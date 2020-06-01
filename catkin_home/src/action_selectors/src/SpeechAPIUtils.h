@@ -1,3 +1,7 @@
+#ifndef SPEECH_API_UTILS_H
+#define SPEECH_API_UTILS_H
+
+#include "ros/package.h"
 
 class SpeechAPIUtils {
     public:
@@ -6,12 +10,11 @@ class SpeechAPIUtils {
         string getAPI();
         string getRegion();
 
-
     private:
         string API="";
         string Region="";
-        string VarsFile="src/action_selectors/src/GLOBAL.txt";
-  
+        const string VarsFile = 
+            ros::package::getPath("action_selectors") + "/data/AzureSTTAPIKey.txt";
 };
 
 
@@ -47,3 +50,5 @@ string SpeechAPIUtils::getAPI(){
 string SpeechAPIUtils::getRegion(){
     return this->Region;
 }
+
+#endif
