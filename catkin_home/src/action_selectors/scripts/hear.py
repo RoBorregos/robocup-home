@@ -18,10 +18,6 @@ import scipy
 
 from audio_common_msgs.msg import AudioData
 from action_selectors.msg import RawInput
-# TODO: Analyze why inside the DeepSpeech dir, everything can be imported
-# directly without the package. Maybe is because the _init_paths.py and/or
-# the `absolute_import`.
-from DeepSpeech.deploy.ros_server import ASRServer
 from SpeechApiUtils import SpeechApiUtils
 
 
@@ -34,6 +30,12 @@ FORCE_USE_STT = ["none", "online", "offline"][0]
 
 # Num of process for searching in the LM scorer.
 NUM_PROCESSES_BEAM_SEARCH = 2
+
+
+if FORCE_USE_STT != "online":
+    # To avoid having to install DS2's dependencies and 
+    # all the required files if using this only online.
+    from DeepSpeech.deploy.ros_server import ASRServer
 
 
 publisher = None
