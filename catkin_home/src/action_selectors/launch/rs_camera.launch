@@ -1,0 +1,49 @@
+<!--
+Launch file that configures the Intel RealSense camera in a
+"commonly good" and required way for the computer vision's 
+segmentation algorithm.
+
+This uses the realsense2_camera pkg's rs_camera.launch. This
+keeps streams the same (size and fps).
+
+TODO: Include an arg to allow renaming the RS node launched. And
+maybe include too the serial no. arg to select the camera, and
+a <machine> tag to specify the correct computer where it is located.
+TODO: Include options to output point cloud.
+TODO: Maybe include the option to change between (a set of)
+values of height, width, fps. and not output gyro, accel, etc.
+machine.
+-->
+<launch>
+  <arg 
+    name="hole_filling" 
+    doc="Whether or not set hole filling filter function in depth img improvement. Default: False"
+    default="True" />
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <!--Helps to most of the time init the camera successfully.-->
+    <arg name="initial_reset" value="True" />
+    <arg name="align_depth" value="True" />
+
+    <!--These are the filters that get the best results improving the
+    depth imgs. Some could have better specifications by their own flags.-->
+    <arg 
+      if="$(arg hole_filling)" 
+      name="filters" 
+      value="disparity,spatial,temporal,disparity,hole_filling" />
+    <arg 
+      unless="$(arg hole_filling)" 
+      name="filters" 
+      value="disparity,spatial,temporal,disparity" />
+
+    <arg name="color_width" value="1280" />
+    <arg name="color_height" value="720" />
+    <arg name="color_fps" value="15" />
+    <arg name="depth_width" value="1280" />
+    <arg name="depth_height" value="720" />
+    <arg name="depth_fps" value="15" />
+    <arg name="infra_width" value="1280" />
+    <arg name="infra_height" value="720" />
+    <arg name="infra_fps" value="15" />
+  </include>
+</launch>
