@@ -15,18 +15,14 @@ PID::PID(const double kp, const double ki, const double kd, const double out_min
 }
 
 //////////////////////////////////Compute//////////////////////////////////////
-void PID::compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev,const int count_time_samples_in_one_second) {
+void PID::compute(const double setpoint, double &input, double &output, int &reset_variable, const double pulses_per_rev,const double count_time_samples_in_one_second) {
   if(millis()-time_ < sample_time_) {
       return;
   }
-
-  if(reset_variable>0) {
-    input = (reset_variable / pulses_per_rev) * count_time_samples_in_one_second;
-    reset_variable = 0;
-  } else {
-    return;
-  }
-
+  
+  input = (reset_variable / pulses_per_rev) * count_time_samples_in_one_second;
+  reset_variable = 0;
+  
   const double error = setpoint - input;
   output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
   

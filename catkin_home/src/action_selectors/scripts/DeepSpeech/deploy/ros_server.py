@@ -8,6 +8,9 @@ import functools
 import paddle.v2 as paddle
 # TODO: Check if rospy should also be imported.
 import rospkg
+# TODO: Analyze why inside the DeepSpeech dir, everything can be imported
+# directly without the package. Maybe is because the _init_paths.py and/or
+# the `absolute_import`.
 import _init_paths
 from data_utils.data import DataGenerator
 from model_utils.model import DeepSpeech2Model

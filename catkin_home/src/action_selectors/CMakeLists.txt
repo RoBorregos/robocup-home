@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   roscpp
   rospy
+  roslib
   std_msgs
   audio_common_msgs
   intercom
@@ -115,7 +116,7 @@ generate_messages(
 catkin_package(
  # INCLUDE_DIRS include
   #LIBRARIES action_selectors
-  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs audio_common_msgs intercom
+  CATKIN_DEPENDS message_runtime roscpp rospy roslib std_msgs audio_common_msgs intercom
   #DEPENDS system_lib
 )
 

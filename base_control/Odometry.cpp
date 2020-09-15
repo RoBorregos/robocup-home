@@ -1,22 +1,15 @@
 #include "Odometry.h"
 
 //////////////////////////////////Constructor//////////////////////////////////////
-Odometry::Odometry(Movement *move_all) : 
-velocity_subscriber_("/base_control/cmd/velocity",&Odometry::velocityCallback, this),
+Odometry::Odometry(Movement *move_all, ros::NodeHandle *nh) : move_all_(move_all), nh_(nh), 
+velocity_subscriber_("/base_control/cmd_vel",&Odometry::velocityCallback, this),
 front_encoder_publisher_("/base_control/front/encoders", &front_encoders_msg_), 
 back_encoder_publisher_("/base_control/back/encoders", &back_encoders_msg_) {
 
-    move_all_ = move_all;
     //Node Handle
-    nh_.initNode();
-    nh_.subscribe(velocity_subscriber_);
-    nh_.advertise(front_encoder_publisher_);
-    nh_.advertise(back_encoder_publisher_);
-    
-    while(!nh_.connected()) {
-        nh_.spinOnce();
-    }
-
+    nh_->subscribe(velocity_subscriber_);
+    nh_->advertise(front_encoder_publisher_);
+    nh_->advertise(back_encoder_publisher_);
     
     //Timers
     odom_timer_ = millis();
@@ -47,13 +40,16 @@ void Odometry::velocityCallback(const geometry_msgs::Twist& cmd_velocity) {
 }
 
 void Odometry::cmdVelocity(const double linear_x, const double linear_y, const double angular_z) {
+    nh_->loginfo("Cmd Velocity Received.");
+    
+    move_all_->setDeltaX(linear_y);
+    move_all_->setDeltaY(linear_x);
+    move_all_->setDeltaAngular(angular_z);
+
     if(angular_z > linear_x && angular_z > linear_y) {
-        move_all_->setDeltaAngular(angular_z);
-        move_all_->pidAngularMovement();
+        odom_state_ = OdometryState::Angular;
     } else {
-        move_all_->setDeltaX(linear_x);
-        move_all_->setDeltaY(linear_y);
-        move_all_->pidLinearMovement();
+        odom_state_ = OdometryState::Linear;
     }
 }
 
@@ -119,10 +115,21 @@ void Odometry::publish() {
 void Odometry::run() {
     while(1) { 
         if((millis() - watchdog_timer_) > kWatchdogPeriod) {
-            move_all_->stop();
+            odom_state_ = OdometryState::Stop;
             watchdog_timer_ = millis();
         }
+        switch (odom_state_) {
+            case OdometryState::Linear:
+                move_all_->pidLinearMovement(); 
+            break;
+            case OdometryState::Angular: 
+                move_all_->pidAngularMovement();
+            break;
+            case OdometryState::Stop: 
+                move_all_->stop();
+            break;
+        }
         publish();
-        nh_.spinOnce();
+        nh_->spinOnce();
     }
 }

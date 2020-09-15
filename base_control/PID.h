@@ -23,7 +23,7 @@ class PID{
     
     // Computes an output accoriding to the error calculated internally and PID constants,
     // also it resets a variable (used with ticks).
-    void compute(const double setpoint, double &input, double &output, int &reset_variable, const int pulses_per_rev,const int count_time_samples_in_one_second);
+    void compute(const double setpoint, double &input, double &output, int &reset_variable, const double pulses_per_rev,const double count_time_samples_in_one_second);
     
     //////////////////////////////////Set Methods//////////////////////////////////////
     // This function set kp_, ki_, kd_ variables.

@@ -17,7 +17,6 @@ pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidMo
 
   stop();
   defineOutput();
-  changePwm(LOW);
 
 }
 
@@ -63,7 +62,7 @@ void Motor::forward() {
   if(current_state_ != MotorState::Forward) {
     pid_.reset();
   }
-
+  
   current_state_ = MotorState::Forward;
 }
 
@@ -103,15 +102,28 @@ void Motor::stop() {
 }
 
 //////////////////////////////////Velocity//////////////////////////////////////
-double Motor::getTargetRpm(const double velocity) {
-  return ( (getTargetTicks(velocity) / kPulsesPerRevolution) * kPidCountTimeSamplesInOneSecond)
-         + velocity_adjustment_;
+double Motor::getTargetRps(const double velocity) {
+  return MsToRps(velocity) + velocity_adjustment_;
 }
 
 double Motor::getTargetTicks(const double velocity) {
-  double ticks = velocity * (kPidMotorTimeSample / kOneSecondInMillis);
-  ticks = ticks / (kWheelDiameter * M_PI);  
-  return ceil(ticks * kPulsesPerRevolution);
+  return RpsToTicks( MsToRps(velocity) );
+}
+
+double Motor::RpsToTicks(const double rpm) {
+  return  (rpm / kPidCountTimeSamplesInOneSecond) * kPulsesPerRevolution;
+}
+
+double Motor::TicksToRps(const double ticks) {
+  return  (ticks * kPidCountTimeSamplesInOneSecond) / kPulsesPerRevolution;
+}
+
+double Motor::RpsToMs(const double rpm) {
+  return  rpm * M_PI * 2 * kWheelDiameter;
+}
+
+double Motor::MsToRps(const double ms) {
+  return  (ms / ( M_PI * 2 * kWheelDiameter));
 }
 
 void Motor::changePwm(const uint8_t pwm) {
@@ -132,9 +144,10 @@ void Motor::changePwm(const uint8_t pwm) {
 void Motor::constantSpeed(const double velocity) {
   double tmp_pwm = pwm_;
   pid_.compute(
-    getTargetRpm(velocity), current_speed_, tmp_pwm, pid_ticks_, 
-    kPulsesPerRevolution,kPidCountTimeSamplesInOneSecond
+    getTargetRps(velocity), current_speed_, tmp_pwm, pid_ticks_,
+    kPulsesPerRevolution, kPidCountTimeSamplesInOneSecond
   );
+
   changePwm(tmp_pwm);
 }
 
