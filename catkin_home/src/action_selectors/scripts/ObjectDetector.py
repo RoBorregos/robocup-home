@@ -59,22 +59,29 @@ ENV_VARS_COMMAND = {
 cv_bridge = None
 rater = None
 obj_det_process = None
+
+is_new_image = False
 actual_msg_img = None
+
 publisher = None
 
 
 def callback_topic_img(msg):
     #rospy.loginfo("Image received")
-    global actual_msg_img
-    actual_msg_img = msg
+    global actual_msg_img, is_new_image
+    actual_msg_img, is_new_image = msg, True
 
 def callback_timer_analyze_msg_image(_):
-    rospy.loginfo("Analyzing")
+    #rospy.loginfo("Entering callback timer")
 
-    # Quickly save the image locally.
-    msg_img = actual_msg_img
-    if msg_img is None:
+    # Quickly save the image locally and reset global img flag in one pass.
+    global is_new_image
+    if is_new_image:
+        msg_img, is_new_image = actual_msg_img, False
+    else:
         return
+
+    rospy.loginfo("Analyzing")
 
     cv_image = cv_bridge.imgmsg_to_cv2(msg_img, desired_encoding="passthrough")
 
@@ -142,6 +149,7 @@ def init_obj_det_process():
         )
         if process.returncode != None:
             return None
+        rospy.loginfo("PID of opened subprocess=" + str(process.pid))
     except:
         return None
     rospy.loginfo("Process opened successfully")
@@ -171,7 +179,7 @@ def close_obj_det_process():
 def callback_shutting_down():
     # Because we 'are not able to' inmedietly terminate the node, let's only
     # say that we received it and the node will directly die by itself.
-    rospy.loginfo("*Received signal, node will finish*")
+    rospy.loginfo("*Received signal, node will finish (only if it finished setting up)*")
 
 
 def main():

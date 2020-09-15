@@ -4,7 +4,10 @@ Launch file that configures the Intel RealSense camera in a
 segmentation algorithm.
 
 This uses the realsense2_camera pkg's rs_camera.launch. This
-keeps streams the same (size and fps).
+launches all the 3 streams, keeping these equal (size and fps),
+and having aligned depth to color.
+The data will be available at /camera/color[/image_raw] and
+/camera/aligned_depth_to_color[/image_raw].
 
 TODO: Include an arg to allow renaming the RS node launched. And
 maybe include too the serial no. arg to select the camera, and
@@ -18,11 +21,15 @@ machine.
   <arg 
     name="hole_filling" 
     doc="Whether or not set hole filling filter function in depth img improvement. Default: False"
-    default="True" />
+    default="False" />
 
   <include file="$(find realsense2_camera)/launch/rs_camera.launch">
     <!--Helps to most of the time init the camera successfully.-->
     <arg name="initial_reset" value="True" />
+    <!--This creates /camera/aligned_depth_to_color `ImageTransport` topics with the depth
+    aligned to color (note this makes that /camera/depth to be exactly the same aligned frames)
+    because is better to introduce some glitches in the depth frame (filters help) than in the
+    color frame (E.g. align [color] to depth) used by the neural network. -->
     <arg name="align_depth" value="True" />
 
     <!--These are the filters that get the best results improving the
