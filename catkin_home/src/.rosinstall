@@ -1,0 +1,18 @@
+# File used by the ROS command `wstool` to download packages
+# that the project needs.
+# http://wiki.ros.org/wstool
+# 
+# `wstool update -t src` automatically downloads packages listed 
+# here. They will be downloaded inside a ExternalPackages/ directory;
+# then, when running `catkin build`/`catkin_make`, those packages
+# will be also build, included in the same workspace, and
+# will be available like other packages declared there.
+#
+# To include a new one from the catkin_home directory run:
+# `wstool set ExternalPackages/*package's-drectory-name* --git *https://link.git* --version=*vrsn* -t src`
+#
+# NOTE: After running a `wstool set`, please add again this comment.
+
+- git:
+    local-name: ExternalPackages/vizbox
+    uri: https://github.com/RoboCupAtHome/vizbox.git
