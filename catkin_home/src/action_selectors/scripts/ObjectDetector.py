@@ -17,11 +17,13 @@ TODO: Try to implement try-except in several parts with the subprocess and
 implement timeouts when reading because something could go wrong with the
 script. Maybe using `asyncio`, `pexpect`, or others.
 '''
+import argparse
 import json
 import tempfile
 from os import path
 # TODO: Update to subprocess32
 import subprocess
+import sys
 
 import rospy
 import rospkg
@@ -30,6 +32,20 @@ from action_selectors.msg import ObjectsDetected, ObjectDetected
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 
+
+argp = argparse.ArgumentParser()
+argp.add_argument(
+    "--use_rs_camera", 
+    help=("Use the Intel RS camera instead of normal `frames` topic. " +
+        "This effectively turns on the segmentation algorithms and (in the future) " +
+        "enables to publish the results of these."),
+    action="store_true",
+    default=False)
+# Remove the ROS args and start after the name of the program.
+args = argp.parse_args(rospy.myargv(argv=sys.argv)[1:])
+
+
+USE_RS_CAMERA = args.use_rs_camera
 
 #TODO: Pass arguments to node to determine these constants.
 # Frequency for (aprox) calling the object detection code.
@@ -62,6 +78,7 @@ obj_det_process = None
 
 is_new_image = False
 actual_msg_img = None
+actual_msg_depth = None
 
 publisher = None
 
@@ -71,19 +88,39 @@ def callback_topic_img(msg):
     global actual_msg_img, is_new_image
     actual_msg_img, is_new_image = msg, True
 
+def callback_topic_depth(msg):
+    #rospy.loginfo("Depth received")
+    # We don't do any kind of sync between depth and color img, only
+    # hope they arrive timely and are of the same scene.
+    global actual_msg_depth
+    actual_msg_depth = msg
+
 def callback_timer_analyze_msg_image(_):
     #rospy.loginfo("Entering callback timer")
+    RE_SIZE = (800, 600)
 
     # Quickly save the image locally and reset global img flag in one pass.
     global is_new_image
     if is_new_image:
-        msg_img, is_new_image = actual_msg_img, False
+        msg_img, msg_depth, is_new_image = actual_msg_img, actual_msg_depth, False
+        # As there isn't implemented (yet) any sync, we need to ensure
+        # depth has arrived at least once in live.
+        if USE_RS_CAMERA and msg_depth is None:
+            return
     else:
         return
 
     rospy.loginfo("Analyzing")
 
-    cv_image = cv_bridge.imgmsg_to_cv2(msg_img, desired_encoding="passthrough")
+    if USE_RS_CAMERA:
+        cv_image = cv_bridge.imgmsg_to_cv2(msg_img, desired_encoding="bgr8")
+    else:
+        cv_image = cv_bridge.imgmsg_to_cv2(msg_img, desired_encoding="passthrough")
+    # Resize the image to meet the requirements of ObjDetecion.
+    # TODO: Check size to see if it will enlarge or shrink and use
+    # CV_INTER_AREA. Check https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html#resize
+    # also check whether changing the ratio is very harmful.
+    cv_image = cv2.resize(cv_image, RE_SIZE, interpolation=cv2.INTER_LINEAR)
 
     # Save and process the image with the objectdetection script.
     # TODO: Maybe is desired to actually save the file, then `mkstemp` could be used.
@@ -92,11 +129,6 @@ def callback_timer_analyze_msg_image(_):
         # We create a temporal file that can be opened by the other process
         # and that will be deleted when closed.
 
-        # Resize the image to meet the requirements of ObjDetecion.
-        # TODO: Check size to see if it will enlarge or shrink and use
-        # CV_INTER_AREA. Check https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html#resize
-        # also check whether changing the ratio is very harmful.
-        cv_image = cv2.resize(cv_image, (800, 600), interpolation=cv2.INTER_LINEAR)
         _, img_buffer = cv2.imencode(".jpg", cv_image)
 
         temp_img_file.write(img_buffer.tostring())
@@ -117,11 +149,20 @@ def callback_timer_analyze_msg_image(_):
 
     #rospy.loginfo("Json result=" + str(json_result))
     detected_objects = json.loads(json_result)
+
+    # Segmentation algorithm using depth.
+    if USE_RS_CAMERA:
+        depth_image = cv_bridge.imgmsg_to_cv2(msg_depth, desired_encoding="passthrough")
+        depth_image = cv2.resize(depth_image, RE_SIZE, interpolation=cv2.INTER_LINEAR)
+
+        # TODO(dc): Add the actual algorithm call here.
+
+    # Prepare the data and publish it.
     objects = []
     for object_name in detected_objects:
         objects.append(
             ObjectDetected(
-                name=obj,
+                name=str(object_name),
                 score=detected_objects[object_name]['score'],
                 x_min=detected_objects[object_name]['xmin'],
                 y_min=detected_objects[object_name]['ymin'],
@@ -200,7 +241,14 @@ def main():
     seconds = int(1/RATE)
     timer_analyze = rospy.Timer(rospy.Duration(seconds, int(1000000000*(1.0/RATE - seconds))), callback_timer_analyze_msg_image)
     # `queue_size=1` to always get the last one.
-    rospy.Subscriber("frames", Image, callback_topic_img, queue_size=1)
+    if USE_RS_CAMERA:
+        # TODO: Changing to use `image_transport` instead of the raw, could be good idea.
+        rospy.Subscriber(
+            "/camera/color/image_raw", Image, callback_topic_img, queue_size=1)
+        rospy.Subscriber(
+            "/camera/aligned_depth_to_color/image_raw", Image, callback_topic_depth, queue_size=1)
+    else:
+        rospy.Subscriber("frames", Image, callback_topic_img, queue_size=1)
     rospy.loginfo("*ObjectDetection module ready to callback*")
     rospy.spin()
 

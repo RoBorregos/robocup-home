@@ -11,13 +11,11 @@ without capturing depth, calling segmentation, etc.
 <launch>
   <include file="$(find action_selectors)/launch/rs_camera.launch" />
 
-  <!--TODO(dc): Add the actual flag to set to use the rs camera
-  here and in the ObjectDetector.py-->
   <node 
     name="ObjectDetector"
     pkg="action_selectors"
     type="ObjectDetector.py"
-    args=""
+    args="--use_rs_camera"
     required="true"
     output="screen" />
 </launch>
