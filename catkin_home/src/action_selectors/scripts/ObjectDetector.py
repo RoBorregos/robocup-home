@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''
+"""
 This is a node in ROS that takes the published message image and 
 calls with certain `RATE` the script object_detection and publishes
 the results to `objects_detected`. To do this, `subprocess` module is
@@ -12,11 +12,12 @@ callback of a timer to actually do the computation, because anyway `rospy`
 always callbacks with the published topics, then to achieve the rate was the
 only way; also with the logic's delay in topic's callback the msgs were always
 super delayed.
+Support for the Intel RealSense is also included via the flag --use_rs_camera.
 
 TODO: Try to implement try-except in several parts with the subprocess and
 implement timeouts when reading because something could go wrong with the
 script. Maybe using `asyncio`, `pexpect`, or others.
-'''
+"""
 import argparse
 import json
 import tempfile
@@ -27,7 +28,7 @@ import sys
 
 import rospy
 import rospkg
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CameraInfo
 from action_selectors.msg import ObjectsDetected, ObjectDetected
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
@@ -46,6 +47,12 @@ args = argp.parse_args(rospy.myargv(argv=sys.argv)[1:])
 
 
 USE_RS_CAMERA = args.use_rs_camera
+
+# To make others' life easier...
+if USE_RS_CAMERA:
+    import pyrealsense2 as rs
+
+    import DepthSegmentation.Segmentation
 
 #TODO: Pass arguments to node to determine these constants.
 # Frequency for (aprox) calling the object detection code.
@@ -79,6 +86,7 @@ obj_det_process = None
 is_new_image = False
 actual_msg_img = None
 actual_msg_depth = None
+rs_intrinsics = None
 
 publisher = None
 
@@ -150,14 +158,7 @@ def callback_timer_analyze_msg_image(_):
     #rospy.loginfo("Json result=" + str(json_result))
     detected_objects = json.loads(json_result)
 
-    # Segmentation algorithm using depth.
-    if USE_RS_CAMERA:
-        depth_image = cv_bridge.imgmsg_to_cv2(msg_depth, desired_encoding="passthrough")
-        depth_image = cv2.resize(depth_image, RE_SIZE, interpolation=cv2.INTER_LINEAR)
-
-        # TODO(dc): Add the actual algorithm call here.
-
-    # Prepare the data and publish it.
+    # Rearrange the data.
     objects = []
     for object_name in detected_objects:
         objects.append(
@@ -170,6 +171,28 @@ def callback_timer_analyze_msg_image(_):
                 y_max=detected_objects[object_name]['ymax'],
             ),
         )
+
+
+    # Segmentation algorithm using depth.
+    if USE_RS_CAMERA:
+        depth_image = cv_bridge.imgmsg_to_cv2(msg_depth, desired_encoding="passthrough")
+        depth_image = cv2.resize(depth_image, RE_SIZE, interpolation=cv2.INTER_LINEAR)
+
+        for obj in objects[0:2]:
+            (angle_x_y, angle_z_y), (center_x, center_y, _) = Segmentation.depth_segment_to_get_center_and_angle_of_object(
+                cv_image, depth_image, obj, paint_image=True)
+            # Try to adjust (even more, as the center of mass should already account
+            # for this) the y_center with the z inclination.
+            # center_y += center_y * 0.20 * (angle_z_y / 90.0) if angle_z_y > 0 else center_y * 0.20 * (-angle_z_y / 90.0)
+            center_y = center_y * (1 + 1.0 * (90 - angle_z_y) / 90.0) if angle_z_y > 0 else center_y * (1 + 1.0 * (90 + angle_z_y) / 90.0)
+            center_y = int(center_y)
+            four_limits_obj = Segmentation.depth_trace_limits_of_four_sides_of_object(
+                cv_image, depth_image, obj, rs_intrinsics, center_x_y=[center_x, center_y],
+                angle_x_y=angle_x_y, paint_image=True)
+
+        # show_image(cv_image, objects)
+
+
     publisher.publish(ObjectsDetected(objects_detected=objects))
 
 def init_obj_det_process():
@@ -242,6 +265,25 @@ def main():
     timer_analyze = rospy.Timer(rospy.Duration(seconds, int(1000000000*(1.0/RATE - seconds))), callback_timer_analyze_msg_image)
     # `queue_size=1` to always get the last one.
     if USE_RS_CAMERA:
+        # Let's wait to get the intrinsics of the depth.
+        # TODO: Obviously this isn't the best way, as if the config of the
+        # camera changes or just that this blocks the start.
+        rospy.loginfo("Waiting to receive camera info topic...")
+        depth_info = rospy.wait_for_message("/camera/depth/camera_info", CameraInfo)
+        global rs_intrinsics
+        # IntelRealSense/realsense-ros: realsense2_camera/src/base_realsense_node.cpp::BaseRealSenseNode::updateStreamCalibData()
+        rs_intrinsics = rs.intrinsics()
+        rs_intrinsics.height = depth_info.height
+        rs_intrinsics.width = depth_info.width
+        rs_intrinsics.ppx = depth_info.K[2]
+        rs_intrinsics.ppy = depth_info.K[5]
+        rs_intrinsics.fx = depth_info.K[0]
+        rs_intrinsics.fy = depth_info.K[4]
+        rs_intrinsics.coeffs = []
+        for i in range(len(depth_info.D)): rs_intrinsics.coeffs[i] = depth_info.D[i]
+        # This is hardcoded as (at this point) isn't correctly set. Check updateStreamCalibData() 
+        rs_intrinsics.model = rs.distortion.inverse_brown_conrady
+
         # TODO: Changing to use `image_transport` instead of the raw, could be good idea.
         rospy.Subscriber(
             "/camera/color/image_raw", Image, callback_topic_img, queue_size=1)
