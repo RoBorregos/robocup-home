@@ -32,6 +32,9 @@ from sensor_msgs.msg import Image, CameraInfo
 from action_selectors.msg import ObjectsDetected, ObjectDetected
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
+import numpy as np
+
+from DepthSegmentation import RenderImage
 
 
 argp = argparse.ArgumentParser()
@@ -52,7 +55,7 @@ USE_RS_CAMERA = args.use_rs_camera
 if USE_RS_CAMERA:
     import pyrealsense2 as rs
 
-    import DepthSegmentation.Segmentation
+    from DepthSegmentation import Segmentation
 
 #TODO: Pass arguments to node to determine these constants.
 # Frequency for (aprox) calling the object detection code.
@@ -187,13 +190,41 @@ def callback_timer_analyze_msg_image(_):
             center_y = center_y * (1 + 1.0 * (90 - angle_z_y) / 90.0) if angle_z_y > 0 else center_y * (1 + 1.0 * (90 + angle_z_y) / 90.0)
             center_y = int(center_y)
             four_limits_obj = Segmentation.depth_trace_limits_of_four_sides_of_object(
-                cv_image, depth_image, obj, rs_intrinsics, center_x_y=[center_x, center_y],
+                cv_image, depth_image, obj, rs_intrinsics, center_x_y=(center_x, center_y),
                 angle_x_y=angle_x_y, paint_image=True)
 
-        # show_image(cv_image, objects)
 
+    show_image_with_boxes(cv_image, objects, wait_millis=50)
 
     publisher.publish(ObjectsDetected(objects_detected=objects))
+
+def show_image_with_boxes(image, objects, wait_millis=0):
+    boxes = []
+    category_index = {}
+    map_name_id = {}
+    scores = []
+    classes = []
+    for obj in objects:
+        if obj.name not in map_name_id:
+            index = len(map_name_id) + 1
+            map_name_id[obj.name] = index
+            category_index[index] = {'id': index, 'name': obj.name}
+
+            classes.append(index)
+        else:
+            classes.append(map_name_id[obj.name])
+
+        scores.append(obj.score)
+        boxes.append([obj.y_min, obj.x_min, obj.y_max, obj.x_max])
+
+    RenderImage.visualize_boxes_and_labels_on_image_array(
+        image, np.array(boxes), np.array(classes).astype(np.int32),
+        np.array(scores), category_index, use_normalized_coordinates=False,
+        line_thickness=8, min_score_thresh=0.6)
+
+    # Display the results image.
+    cv2.imshow('image_results', image)
+    cv2.waitKey(wait_millis)
 
 def init_obj_det_process():
     '''
@@ -280,7 +311,7 @@ def main():
         rs_intrinsics.fx = depth_info.K[0]
         rs_intrinsics.fy = depth_info.K[4]
         rs_intrinsics.coeffs = []
-        for i in range(len(depth_info.D)): rs_intrinsics.coeffs[i] = depth_info.D[i]
+        for i in range(len(depth_info.D)): rs_intrinsics.coeffs.append(depth_info.D[i])
         # This is hardcoded as (at this point) isn't correctly set. Check updateStreamCalibData() 
         rs_intrinsics.model = rs.distortion.inverse_brown_conrady
 
@@ -297,6 +328,7 @@ def main():
     rospy.loginfo("*Finishing node*")
     close_obj_det_process()
     timer_analyze.shutdown()
+    cv2.destroyAllWindows()
     rospy.loginfo("*Node finished*")
 
 if __name__ == '__main__':

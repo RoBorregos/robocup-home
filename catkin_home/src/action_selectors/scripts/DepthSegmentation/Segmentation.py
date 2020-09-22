@@ -169,7 +169,7 @@ def depth_trace_limits_of_four_sides_of_object(
     # [i believe] are only between 90,-90 to something useful here. Also,
     # includes some params to modulate the actual impact of the angle in
     # the ratio between K_x and K_y.
-    angle_x_y = angle_x_y - (90 - angle_x_y) * 1 if angle_x_y > 0 else angle_x_y + (90 + angle_x_y) * 1
+    angle_x_y = angle_x_y - (90 - angle_x_y) * 1.0 if angle_x_y > 0 else angle_x_y + (90 + angle_x_y) * 1.0
     K_y, K_x = K * math.sin(math.radians(angle_x_y)), K * math.cos(math.radians(angle_x_y))
     K_x *= -1 if angle_x_y > 0 else 1
     K_y, K_x = int(round(abs(K_y))), int(round(K_x))
@@ -183,7 +183,7 @@ def depth_trace_limits_of_four_sides_of_object(
     center_x = int((obj.x_max - obj.x_min) / 2 + obj.x_min)
     center_y = int((obj.y_max - obj.y_min) / 2 + obj.y_min)
   else:
-    [center_x, center_y] = center_x_y
+    (center_x, center_y) = center_x_y
 
 
   # Left (west). When blocked: left-north.
