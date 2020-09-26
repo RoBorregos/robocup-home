@@ -32,7 +32,6 @@ def move():
     t1 = rospy.Time.now().to_sec()
     indexDirection = 0
     while not rospy.is_shutdown():
-    
         if rospy.Time.now().to_sec() - t0 > 2.5:
             t0 = rospy.Time.now().to_sec()
             
@@ -41,9 +40,7 @@ def move():
         
         if rospy.Time.now().to_sec() - t1 > 2.5:
             t1 = rospy.Time.now().to_sec()
-            indexDirection = indexDirection + 1
-            if indexDirection > 9:
-                indexDirection = 0
+            indexDirection = (indexDirection +1) % 10
             
         enc_msgFront.encoders.left_wheel  = encFrontL[indexDirection]
         enc_msgBack.encoders.left_wheel   = encBackL[indexDirection]
