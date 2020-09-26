@@ -33,13 +33,13 @@ def move():
     indexDirection = 0
     while not rospy.is_shutdown():
     
-        if rospy.Time.now().to_sec() - t0 > 5:
+        if rospy.Time.now().to_sec() - t0 > 2.5:
             t0 = rospy.Time.now().to_sec()
             
             front_publisher.publish(enc_msgFront)
             back_publisher.publish(enc_msgBack)
         
-        if rospy.Time.now().to_sec() - t1 > 5:
+        if rospy.Time.now().to_sec() - t1 > 2.5:
             t1 = rospy.Time.now().to_sec()
             indexDirection = indexDirection + 1
             if indexDirection > 9:
