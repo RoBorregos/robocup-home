@@ -8,6 +8,22 @@
 - Bring me the [pizza](object) from the [basement](place)
 - Bring me the [soda](object) from the [kitchen](place)
 
+## intent: yes
+- yes
+- yeah
+- sure
+- ok
+- fine
+- yes, do that
+
+## intent:no
+- no
+- nope
+- don't
+- please no
+- forget it
+- cancel that
+
 ## intent:bye
 - bye
 - Bye
