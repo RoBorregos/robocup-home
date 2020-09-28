@@ -5,7 +5,7 @@ class segmentation {
     explicit segmentation(ros::NodeHandle nh) : m_nh(nh) {
         // define the subscriber and publisher
         m_sub = m_nh.subscribe("/camera/depth/color/points", 1, &segmentation::cloud_cb, this);
-        m_clusterPub = m_nh.advertise<my_pcl_tutorial::SegmentedClustersArray>("pcl_clusters", 1);
+        m_clusterPub = m_nh.advertise<arm_vision::SegmentedClustersArray>("pcl_clusters", 1);
         m_pub = m_nh.advertise<sensor_msgs::PointCloud2>("output", 1);
         m_pub2 = m_nh.advertise<sensor_msgs::PointCloud2>("output2", 1);
     }
@@ -54,7 +54,7 @@ void segmentation::cloud_cb(const sensor_msgs::PointCloud2ConstPtr& input) {
     double zplanee = 0;
     pcl::fromPCLPointCloud2(*cloud_filtered2, *temp);
     PlannedCloud = PlanarRANSAC(temp, zplanee);
-    my_pcl_tutorial::SegmentedClustersArray CloudClusters1;
+    arm_vision::SegmentedClustersArray CloudClusters1;
     CloudClusters1 = Clustering(PlannedCloud);
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr THEcluster(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -82,7 +82,7 @@ void segmentation::cloud_cb(const sensor_msgs::PointCloud2ConstPtr& input) {
 }
 int main(int argc, char** argv) {
     // Initialize ROS
-    ros::init(argc, argv, "my_pcl_tutorial");
+    ros::init(argc, argv, "arm_vision");
     ros::NodeHandle nh;
 
     segmentation segs(nh);

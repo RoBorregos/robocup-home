@@ -9,7 +9,7 @@
 //#include <pcl/ros/conversions.h>
 #include <pcl_conversions/pcl_conversions.h>
 //#include <pcl/conversions.h>
-#include <my_pcl_tutorial/SegmentedClustersArray.h>
+#include <arm_vision/SegmentedClustersArray.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/passthrough.h>

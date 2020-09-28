@@ -271,9 +271,9 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr PlanarRANSAC(
     return outcloud_XYZ;
 }
 
-my_pcl_tutorial::SegmentedClustersArray Clustering(
+arm_vision::SegmentedClustersArray Clustering(
     const pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud) {
-    my_pcl_tutorial::SegmentedClustersArray CloudClusters;
+    arm_vision::SegmentedClustersArray CloudClusters;
     /*
     // Create the KdTree object for the search method of the extraction
     pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
@@ -292,7 +292,7 @@ my_pcl_tutorial::SegmentedClustersArray Clustering(
     ec.extract(cluster_indices);
 
     // declare an instance of the SegmentedClustersArray message
-    my_pcl_tutorial::SegmentedClustersArray CloudClusters;
+    arm_vision::SegmentedClustersArray CloudClusters;
 
     // declare the output variable instances
     sensor_msgs::PointCloud2 output;
