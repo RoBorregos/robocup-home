@@ -1,5 +1,4 @@
 Header header
-uint8 cmd_id
-uint8 cmd_priority
-uint8 critic_shutdown
-string[] args
+string intent
+string action_client_binded
+string args

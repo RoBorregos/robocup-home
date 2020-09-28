@@ -5,6 +5,7 @@
 #include <geometry_msgs/Quaternion.h>
 #include <ros/console.h>
 #include "base_control/StampedEncoders.h"
+#include <math.h>
 
 
 //initialize global variables
@@ -16,10 +17,10 @@ double dt_front = 0.000001;
 double dt_back = 0.000001;
 
 //initialize constants
-const double wheel_radius = 0.125;
-const double wheel_circumference = 0.785;
-const double encoder_resolution = 1250*4*20;
-const double k = 0.47 + 0.55; //the sum of the distance between the wheel's x-coord and the origin, and the y-coord and the origin
+const double wheel_radius = 0.05;
+const double wheel_circumference = wheel_radius * 2 * M_PI;
+const double encoder_resolution = 17280;
+const double k = 0.25 + 0.20; //the sum of the distance between the wheel's x-coord and the origin, and the y-coord and the origin
 const double dist_per_tick = wheel_circumference / encoder_resolution;
 
 //function to save front encoder data to global variables
@@ -102,18 +103,18 @@ int main(int argc, char** argv)
     //create quaternion created from yaw
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
 
-    /*
+  
     //publish the transform
     geometry_msgs::TransformStamped odom_trans;
     odom_trans.header.stamp = current_time;
     odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "base_footprint";
+    odom_trans.child_frame_id = "base_link";
     odom_trans.transform.translation.x = x;
     odom_trans.transform.translation.y = y;
     odom_trans.transform.translation.z = 0.0;
     odom_trans.transform.rotation = odom_quat;
     odom_broadcaster.sendTransform(odom_trans);
-    */
+    
 
     //publish the odometry
     nav_msgs::Odometry odom;
@@ -135,7 +136,7 @@ int main(int argc, char** argv)
     odom.pose.covariance[35] = 1e3; //0.2;
 
     //set the velocity
-    odom.child_frame_id = "base_footprint";
+    odom.child_frame_id = "base_link";
     odom.twist.twist.linear.x = vx;
     odom.twist.twist.linear.y = vy;
     odom.twist.twist.linear.z = 0.0;

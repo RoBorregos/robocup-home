@@ -1,0 +1,4 @@
+<launch>
+    <node name="engine" pkg="main_engine" type="action_manager.py" respawn="true" output="screen"/>
+    <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen"/>
+</launch>

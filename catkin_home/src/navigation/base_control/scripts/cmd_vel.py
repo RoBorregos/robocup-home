@@ -8,7 +8,7 @@ def move():
     rate = rospy.Rate(4) # ROS Rate at 4Hz
     velocity_publisher = rospy.Publisher('/base_control/cmd_vel', Twist, queue_size=10)
     
-    rospy.loginfo("Node Initiated");
+    rospy.loginfo("Node Initiated")
     
     #Initialize Twist Message
     vel_msg = Twist()
@@ -30,9 +30,10 @@ def move():
 
     while not rospy.is_shutdown():
     
-        if rospy.Time.now().to_sec() - t0 > 3:
+        if rospy.Time.now().to_sec() - t0 > 5:
             state = (state+1) % len(xValues)
             t0 = rospy.Time.now().to_sec()
+            rospy.loginfo("Velocity Changing")
 
 
         vel_msg.linear.x  = xValues[state]

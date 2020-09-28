@@ -17,6 +17,7 @@ import rospy
 import scipy
 
 from audio_common_msgs.msg import AudioData
+from std_msgs.msg import String
 from action_selectors.msg import RawInput
 from SpeechApiUtils import SpeechApiUtils
 
@@ -54,10 +55,9 @@ def callback_deepspeech(data):
 
     rospy.loginfo("Voice audio said: \"{0}\".".format(text))
 
-    msg = RawInput()
-    # TODO: Check this isWoman field.
-    msg.isWoman = False
-    msg.inputText = text
+    msg = String()
+
+    msg.data = text
     publisher.publish(msg)
     rospy.loginfo("Published the msg.")
 
