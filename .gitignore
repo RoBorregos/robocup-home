@@ -29,10 +29,12 @@ base_control/links.txt
 base_control/oldCode.txt
 wrokspace.code-workspace
 
-### Others ###
-/rasa/venv/
+### OBJECT DETECTION ###
 /object_detection/venv/
 /object_detection/models/
+
+### Others ###
+/rasa/venv/
 *.DS_Store
 *.pyc
 .vscode/

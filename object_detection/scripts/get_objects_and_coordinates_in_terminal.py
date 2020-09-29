@@ -26,15 +26,16 @@ output:
 
 import os
 # Run tensorflow CPU instead of GPU (because the Jetson Nano runs out of memory when using GPU)
-os.environ["CUDA_VISIBLE_DEVICES"]="-1" 
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"
+
 import json
 
 import cv2
 import numpy as np
 import tensorflow as tf
 
-from utils import label_map_util
-from utils import visualization_utils as vis_util
+from object_detection.utils import label_map_util
+from object_detection.utils import visualization_utils as vis_util
 
 
 MODEL_NAME = 'inference_graph'

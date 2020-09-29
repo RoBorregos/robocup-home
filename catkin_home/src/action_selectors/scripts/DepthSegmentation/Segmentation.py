@@ -28,6 +28,8 @@ size, and adjust the algorithms to ensure they are using the
 inclusive/exclusive agreements.
 """
 import pyrealsense2 as rs
+import numpy as np
+import math
 
 
 def depth_segment_to_get_center_and_angle_of_object(
@@ -188,15 +190,18 @@ def depth_trace_limits_of_four_sides_of_object(
 
   # Left (west). When blocked: left-north.
   y, x = center_y, center_x
+  y = min(max(y, 0), 599)
+  x = min(max(x, 0), 599)
   continuous_holes = 0
   continuous_changes = 0
   past_y, past_x = y, x
   while (x > obj.x_min and y > obj.y_min + (obj.y_max - obj.y_min) * 0.30 and
-    continuous_holes < 10 and continuous_changes < 10):
+    continuous_holes < 10 and continuous_changes < 10 and x < obj.x_max and y < obj.y_max):
     # The new coord is inside of the square by the left, hasn't move too
     # much to the north, and the continuous holes found and changes required
     # haven't been too much.
     if paint_image:
+      print y, x
       image[y, x, :] = (0, 255, 0)
 
     if depth_image[y, x] == 0:
@@ -231,6 +236,8 @@ def depth_trace_limits_of_four_sides_of_object(
 
   # Right (east). When blocked: right-south
   y, x = center_y, center_x
+  y = min(max(y, 0), 599)
+  x = min(max(x, 0), 599)
   continuous_holes = 0
   continuous_changes = 0
   past_y, past_x = y, x
@@ -264,11 +271,13 @@ def depth_trace_limits_of_four_sides_of_object(
 
   # North. When blocked: north-right
   y, x = center_y, center_x
+  y = min(max(y, 0), 599)
+  x = min(max(x, 0), 599)
   continuous_holes = 0
   continuous_changes = 0
   past_y, past_x = y, x
   while (y > obj.y_min and x < obj.x_max - (obj.x_max - obj.x_min) * 0.30 and
-    continuous_holes < 10 and continuous_changes < 10):
+    continuous_holes < 10 and continuous_changes < 10 and x < obj.x_max and y < obj.y_max):
     if paint_image:
       image[y, x, :] = (0, 255, 0)
 
@@ -297,11 +306,13 @@ def depth_trace_limits_of_four_sides_of_object(
 
   # South. When blocked: south-left
   y, x = center_y, center_x
+  y = min(max(y, 0), 599)
+  x = min(max(x, 0), 599)
   continuous_holes = 0
   continuous_changes = 0
   past_y, past_x = y, x
   while (y < obj.y_max and x > obj.x_min + (obj.x_max - obj.x_min) * 0.30 and
-    continuous_holes < 10 and continuous_changes < 10):
+    continuous_holes < 10 and continuous_changes < 10 and x < obj.x_max and y > obj.y_min):
     if paint_image:
       image[y, x, :] = (0, 255, 0)
 
@@ -329,6 +340,15 @@ def depth_trace_limits_of_four_sides_of_object(
   print("Stats south = ", continuous_holes, continuous_changes)
 
   
+  
+  left_x = min(max(left_x, 0), 599)
+  left_y = min(max(left_y, 0), 599)
+  right_x = min(max(right_x, 0), 599)
+  right_y = min(max(right_y, 0), 599)
+  north_x = min(max(north_x, 0), 599)
+  north_y = min(max(north_y, 0), 599)
+  south_x = min(max(south_x, 0), 599)
+  south_y = min(max(south_y, 0), 599)
   # Using the intrinsics and the deprojection of the RS, translate to real
   # measurements the four points. For this, convert the pixels to the
   # original img size and the depth (ROS) millis to the cm used in the `rs2`.

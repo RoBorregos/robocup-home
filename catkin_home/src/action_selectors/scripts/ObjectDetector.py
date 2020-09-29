@@ -44,7 +44,7 @@ argp.add_argument(
         "This effectively turns on the segmentation algorithms and (in the future) " +
         "enables to publish the results of these."),
     action="store_true",
-    default=False)
+    default=True)
 # Remove the ROS args and start after the name of the program.
 args = argp.parse_args(rospy.myargv(argv=sys.argv)[1:])
 
@@ -61,26 +61,21 @@ if USE_RS_CAMERA:
 # Frequency for (aprox) calling the object detection code.
 RATE = 3
 
-VENV_PATH = '/home/roborregos/object_detection/bin/python3'
+VENV_PATH = '/media/Data/lugol/Desktop/RoBorregos/Robocup-Home/object_detection/bin/env/bin/python3'
 # This is relative to "object_detection" dir (`CWD_COMMAND_OBJ_DETECTION`).
 PATH_OBJ_DET_SCRIPT = 'scripts/get_objects_and_coordinates_in_terminal.py'
 
 rp = rospkg.RosPack()
 # https://answers.ros.org/question/236116/how-do-i-access-files-in-same-directory-as-executable-python-catkin/
 obj_det_home_path = path.join(rp.get_path("action_selectors"), "..", "..", "..", "object_detection")
-COMMAND_OBJ_DETECTION = [
-    # To activate and use the virtual env, use its python executable.
-    VENV_PATH,
-    # To receive instantaneously outputs and inputs, make it unbuffered.
-    '-u',
-    PATH_OBJ_DET_SCRIPT,
-]
-CWD_COMMAND_OBJ_DETECTION = obj_det_home_path
-# TODO: This could be relative.
-ENV_VARS_COMMAND = {
-    "PYTHONPATH": path.join(obj_det_home_path, "models", "research") + ":" + path.join(obj_det_home_path, "models", "research", "object_detection"),
-}
 
+COMMAND_OBJ_DETECTION = path.join(obj_det_home_path, "venv", "env", "bin", "activate")
+COMMAND_OBJ_DETECTION += "; "
+COMMAND_OBJ_DETECTION += path.join(obj_det_home_path, "venv", "env", "bin", "python3")
+COMMAND_OBJ_DETECTION += " "
+COMMAND_OBJ_DETECTION += path.join(obj_det_home_path, "scripts", "get_objects_and_coordinates_in_terminal.py")
+
+CWD_COMMAND_OBJ_DETECTION = obj_det_home_path
 
 cv_bridge = None
 rater = None
@@ -107,7 +102,7 @@ def callback_topic_depth(msg):
     actual_msg_depth = msg
 
 def callback_timer_analyze_msg_image(_):
-    #rospy.loginfo("Entering callback timer")
+    rospy.loginfo("Entering callback timer")
     RE_SIZE = (800, 600)
 
     # Quickly save the image locally and reset global img flag in one pass.
@@ -238,7 +233,7 @@ def init_obj_det_process():
             # TODO: Check how to send this to null.
             stderr=subprocess.STDOUT,
             bufsize=1,
-            env=ENV_VARS_COMMAND,
+            shell=True,
             cwd=CWD_COMMAND_OBJ_DETECTION,
             universal_newlines=True,
         )
@@ -250,7 +245,10 @@ def init_obj_det_process():
     rospy.loginfo("Process opened successfully")
 
     while True:
-        if process.stdout.readline().decode('utf-8') == "~#ready#~\n":
+        process_msg = process.stdout.readline().decode('utf-8')
+        if(len(process_msg) > 1):
+            print "[CHILD PROCESS]", process_msg
+        if process_msg == "~#ready#~\n":
             break
 
     rospy.loginfo("Process is ready")
@@ -310,7 +308,7 @@ def main():
         rs_intrinsics.ppy = depth_info.K[5]
         rs_intrinsics.fx = depth_info.K[0]
         rs_intrinsics.fy = depth_info.K[4]
-        rs_intrinsics.coeffs = []
+        # rs_intrinsics.coeffs = []
         for i in range(len(depth_info.D)): rs_intrinsics.coeffs.append(depth_info.D[i])
         # This is hardcoded as (at this point) isn't correctly set. Check updateStreamCalibData() 
         rs_intrinsics.model = rs.distortion.inverse_brown_conrady
