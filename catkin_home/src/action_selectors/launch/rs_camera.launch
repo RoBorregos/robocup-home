@@ -1,0 +1,56 @@
+<!--
+Launch file that configures the Intel RealSense camera in a
+"commonly good" and required way for the computer vision's 
+segmentation algorithm.
+
+This uses the realsense2_camera pkg's rs_camera.launch. This
+launches all the 3 streams, keeping these equal (size and fps),
+and having aligned depth to color.
+The data will be available at /camera/color[/image_raw] and
+/camera/aligned_depth_to_color[/image_raw].
+
+TODO: Include an arg to allow renaming the RS node launched. And
+maybe include too the serial no. arg to select the camera, and
+a <machine> tag to specify the correct computer where it is located.
+TODO: Include options to output point cloud.
+TODO: Maybe include the option to change between (a set of)
+values of height, width, fps. and not output gyro, accel, etc.
+machine.
+-->
+<launch>
+  <arg 
+    name="hole_filling" 
+    doc="Whether or not set hole filling filter function in depth img improvement. Default: False"
+    default="False" />
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <!--Helps to most of the time init the camera successfully.-->
+    <arg name="initial_reset" value="True" />
+    <!--This creates /camera/aligned_depth_to_color `ImageTransport` topics with the depth
+    aligned to color (note this makes that /camera/depth to be exactly the same aligned frames)
+    because is better to introduce some glitches in the depth frame (filters help) than in the
+    color frame (E.g. align [color] to depth) used by the neural network. -->
+    <arg name="align_depth" value="True" />
+
+    <!--These are the filters that get the best results improving the
+    depth imgs. Some could have better specifications by their own flags.-->
+    <arg 
+      if="$(arg hole_filling)" 
+      name="filters" 
+      value="disparity,spatial,temporal,disparity,hole_filling" />
+    <arg 
+      unless="$(arg hole_filling)" 
+      name="filters" 
+      value="disparity,spatial,temporal,disparity" />
+
+    <arg name="color_width" value="1280" />
+    <arg name="color_height" value="720" />
+    <arg name="color_fps" value="15" />
+    <arg name="depth_width" value="1280" />
+    <arg name="depth_height" value="720" />
+    <arg name="depth_fps" value="15" />
+    <arg name="infra_width" value="1280" />
+    <arg name="infra_height" value="720" />
+    <arg name="infra_fps" value="15" />
+  </include>
+</launch>

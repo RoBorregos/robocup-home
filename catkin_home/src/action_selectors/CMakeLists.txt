@@ -11,6 +11,8 @@ add_compile_options(-std=c++14)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
+# TODO: Add rs_camera for Intel RealSense camera used in the
+# launch files. After that, roslaunch_add_file_check() could be added too.
 find_package(catkin REQUIRED COMPONENTS
   message_generation
   roscpp
