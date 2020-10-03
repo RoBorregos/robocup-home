@@ -7,7 +7,11 @@ from threading import Thread
 import rospy
 import csv
 import os
-from Action import Action
+
+# IMPORT ACTIONS
+from actions.go_to import go_to
+from actions.pick_up import pick_up
+from actions.put_down import put_down
 
 """
 	TODO: Define description
@@ -57,8 +61,9 @@ class Main_Engine(object):
         print("args: ")
         print(msg.args)
         # registered action
-        new_action = Action(msg.intent,
-                            msg.action_client_binded, msg.args)
+        new_action = self.createAction(msg)
+        if(new_action == None):
+            print("No action registered with that name" + msg.intent)
         self.lastActionReceived = new_action       
         ##Stop Action
         if(new_action.id=="stop"):
@@ -70,7 +75,16 @@ class Main_Engine(object):
         self.action_queue.append(new_action)
         print("new action added to the queue")
      
-
+    def createAction(self,msg):
+       # TODO: See if dynamically create classes based on the string
+       # target_class = getattr(actions, msg.intent)
+        if(msg.intent == "go_to"):
+            return go_to(msg.intent,msg.action_client_binded, msg.args)
+        elif(msg.intent == "pick_up"):
+            return pick_up(msg.intent,msg.action_client_binded, msg.args)
+        elif(msg.intent == "put_down"):
+            return put_down(msg.intent,msg.action_client_binded, msg.args)
+            
     def print_action_queue(self):
             print("*********ACTION QUEUE************")
             for action in self.action_queue:
