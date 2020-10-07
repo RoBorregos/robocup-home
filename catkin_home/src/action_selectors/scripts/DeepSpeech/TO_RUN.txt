@@ -1,0 +1,11 @@
+To easily test without calling all the nodes or anything from ROS, the DeepSpeech/deploy/demo server and client
+file can be called inside of the DeepSpeech folder (remember you need the models and data files in its folders, check ros_server.py):
+
+python2 deploy/demo_server.py --host_ip localhost --host_port 8086 --beam_size 800 \
+--rnn_layer_size 1024 --alpha 1.5 --beta 3 --use_gru True --use_gpu False --share_rnn_weights False \
+--warmup_manifest "data/librispeech/manifest.test-clean" --mean_std_path "models/baidu_en8k/mean_std.npz" --vocab_path "models/baidu_en8k/vocab.txt" \
+--model_path "models/baidu_en8k/params.tar.gz" --lang_model_path "models/lm/lm.binary" --decoding_method ctc_beam_search
+
+python2 deploy/demo_client.py --host_ip localhost --host_port 8086
+
+Then, having both programs running in different terminals, in the client-one you can hold spacebar, speak, leave it, and see the result.

@@ -1,0 +1,7 @@
+<launch>
+  <group name="everything">
+    <include file="$(find action_selectors)/launch/action_selectors.launch" />
+    <include file="$(find devices)/launch/devices.launch" />
+    <include file="$(find main_engine)/launch/main_engine.launch" /> 
+  </group>
+</launch>

@@ -1,0 +1,21 @@
+<!--
+Launch file that configures the RealSense camera and launches
+the object detection node using it.
+
+This effectively launches the obj detection node configured
+to use the RS camera and run the segmentation algorithm.
+
+TODO: Maybe is desired to use the RS as the camera, but 
+without capturing depth, calling segmentation, etc.
+-->
+<launch>
+  <include file="$(find action_selectors)/launch/rs_camera.launch" />
+
+  <node 
+    name="ObjectDetector"
+    pkg="action_selectors"
+    type="ObjectDetector.py"
+    args="--use_rs_camera"
+    required="true"
+    output="screen" />
+</launch>

@@ -1,0 +1,15 @@
+cmd_id,cmd_priority,requires_args,action_client_binded,description,actions_involved
+pick_up,1,True,arm_action_server,Pick up an object from a surface,
+bring_something,5,True,navigation,Bring an object from a location,"go_to, approach, center,pick_up, put_down,"
+stop,0,False,main_engine,Stop everything,
+go_to,1,True,navigation,Go to a location,
+approach,1,True,navigation,Approach an object located inside the current room,
+center,1,True,navigation,Center the position of the robot to the location of the object,
+pause,1,False,main_engine,Pause the robot,
+resume,1,False,main_engine,Resume the robot,
+put_down,1,True,arm_action_server,"Put_down the object, if a surface is given as an argument then place the object in the surface.",
+take_object,1,False,arm_action_server,Take an object from the operator giving it to the robot.,
+follow,1,False,navigation,Follow an operator.,find_operator
+find_operator,1,False,vision,Find an operator in the field of view of the robot.,
+clean_up,1,True,arm_action_server,Find unrecognized objects in a room and deposite them in the garbage.,
+scout_operators,1,True,navigation,Go around the arena asking people their names and saving their description,"go_to, find_operator"
