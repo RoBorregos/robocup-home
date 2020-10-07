@@ -1,0 +1,22 @@
+name: catkin
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: [ubuntu-18.04]
+    steps:
+    - uses: actions/checkout@v1
+    - uses: betwo/github-setup-catkin@v1.1.1
+      with:
+        ros-version: 'melodic'
+        workspace: '$GITHUB_WORKSPACE'
+    - run: catkin_make_isolated
