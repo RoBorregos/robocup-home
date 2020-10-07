@@ -19,6 +19,4 @@ jobs:
       with:
         ros-version: 'melodic'
         workspace: '$GITHUB_WORKSPACE'
-    - run: |
-        cd $HOME/work/Robocup-Home/Robocup-Home/catkin_make
-        catkin_make_isolated
+    - run: catkin_make_isolated
