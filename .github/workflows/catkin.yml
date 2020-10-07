@@ -21,7 +21,4 @@ jobs:
         workspace: '$GITHUB_WORKSPACE/catkin_home'
     - run: |
         cd $GITHUB_WORKSPACE/catkin_home
-        ls
-        ls src
-        unlink $GITHUB_WORKSPACE/catkin_home/CMakeLists.txt
-        catkin_make -j8 -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_CXX_STANDARD=14
+        catkin_make_isolated
