@@ -18,5 +18,5 @@ jobs:
     - uses: betwo/github-setup-catkin@v1.1.1
       with:
         ros-version: 'melodic'
-        workspace: '$GITHUB_WORKSPACE'
+        workspace: 'catkin_home'
     - run: catkin_make_isolated
