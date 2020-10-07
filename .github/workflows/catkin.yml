@@ -15,19 +15,11 @@ jobs:
     runs-on: [ubuntu-18.04]
     steps:
     - uses: actions/checkout@v1
-    - run: pwd
-    - run: ls
     - run: cd catkin_home
-    - run: pwd
-    - run: ls
     - uses: betwo/github-setup-catkin@v1.1.1
       with:
         ros-version: 'melodic'
         workspace: '$GITHUB_WORKSPACE/catkin_home'
-    - run: pwd
-    - run: ls
     - run: |
         cd $GITHUB_WORKSPACE/catkin_home
         catkin_make_isolated
-    - run: pwd
-    - run: ls
