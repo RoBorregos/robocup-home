@@ -18,5 +18,5 @@ jobs:
     - uses: betwo/github-setup-catkin@v1.1.1
       with:
         ros-version: 'melodic'
-        workspace: '$HOME/work/Robocup-Home/catkin_home'
+        workspace: '$GITHUB_WORKSPACE/../catkin_home'
     - run: catkin_make_isolated
