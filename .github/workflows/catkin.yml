@@ -26,6 +26,8 @@ jobs:
         workspace: '$GITHUB_WORKSPACE/catkin_home'
     - run: pwd
     - run: ls
-    - run: catkin_make_isolated
+    - run: |
+        cd $GITHUB_WORKSPACE/catkin_home
+        catkin_make_isolatedcatkin_make_isolated
     - run: pwd
     - run: ls
