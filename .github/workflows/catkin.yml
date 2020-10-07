@@ -15,11 +15,13 @@ jobs:
     runs-on: [ubuntu-18.04]
     steps:
     - uses: actions/checkout@v1
-    - run: cd catkin_home
     - uses: betwo/github-setup-catkin@v1.1.1
       with:
         ros-version: 'melodic'
         workspace: '$GITHUB_WORKSPACE/catkin_home'
     - run: |
         cd $GITHUB_WORKSPACE/catkin_home
+        ls
+        ls src
+        unlink $GITHUB_WORKSPACE/catkin_home/CMakeLists.txt
         catkin_make -j8 -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_CXX_STANDARD=14
