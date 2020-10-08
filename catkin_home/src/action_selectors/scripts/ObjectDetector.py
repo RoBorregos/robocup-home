@@ -34,7 +34,7 @@ from cv_bridge import CvBridge
 import cv2
 import numpy as np
 
-from DepthSegmentation import RenderImage
+from DepthSegmentation import RenderImage # type: ignore
 
 
 argp = argparse.ArgumentParser()
@@ -55,7 +55,7 @@ USE_RS_CAMERA = args.use_rs_camera
 if USE_RS_CAMERA:
     import pyrealsense2 as rs
 
-    from DepthSegmentation import Segmentation
+    from DepthSegmentation import Segmentation # type: ignore
 
 #TODO: Pass arguments to node to determine these constants.
 # Frequency for (aprox) calling the object detection code.
