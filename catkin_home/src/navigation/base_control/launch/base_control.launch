@@ -1,0 +1,19 @@
+<launch>
+    <master auto="start"/>
+    <include file="$(find robot_description)/launch/display.launch" />
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find base_control)/rviz/base_control.rviz" />
+    <node pkg="rosserial_python" type="serial_node.py" name="rosserial" output="screen">
+        <param name="port" value="/dev/ttyUSB0" />
+        <param name="baud" value="57600" />
+    </node>
+    <node
+        pkg="base_control"
+        name="base_odom"
+        type="base_odom"
+    />
+    <node
+        pkg="base_control"
+        name="cmd_vel_simulation"
+        type="cmd_vel.py"
+    />
+ </launch>
