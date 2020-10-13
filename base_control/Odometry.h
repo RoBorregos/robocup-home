@@ -59,9 +59,9 @@ class Odometry{
         
         // Suscriber.
         ros::Subscriber<geometry_msgs::Twist, Odometry> velocity_subscriber_;
-        static constexpr double kLinearXMaxVelocity = 0.39;
-        static constexpr double kLinearYMaxVelocity = 0.39;
-        static constexpr double kAngularZMaxVelocity = 0.39;
+        static constexpr double kLinearXMaxVelocity = 0.22;
+        static constexpr double kLinearYMaxVelocity = 0.22;
+        static constexpr double kAngularZMaxVelocity = 0.22;
         static constexpr uint16_t kWatchdogPeriod = 500;
         
         // Publisher.

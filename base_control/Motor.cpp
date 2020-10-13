@@ -110,20 +110,20 @@ double Motor::getTargetTicks(const double velocity) {
   return RpsToTicks( MsToRps(velocity) );
 }
 
-double Motor::RpsToTicks(const double rpm) {
-  return  (rpm / kPidCountTimeSamplesInOneSecond) * kPulsesPerRevolution;
+double Motor::RpsToTicks(const double rps) {
+  return  (rps / kPidCountTimeSamplesInOneSecond) * kPulsesPerRevolution;
 }
 
 double Motor::TicksToRps(const double ticks) {
   return  (ticks * kPidCountTimeSamplesInOneSecond) / kPulsesPerRevolution;
 }
 
-double Motor::RpsToMs(const double rpm) {
-  return  rpm * M_PI * 2 * kWheelDiameter;
+double Motor::RpsToMs(const double rps) {
+  return  rps * M_PI * kWheelDiameter;
 }
 
 double Motor::MsToRps(const double ms) {
-  return  (ms / ( M_PI * 2 * kWheelDiameter));
+  return  (ms / ( M_PI * kWheelDiameter));
 }
 
 void Motor::changePwm(const uint8_t pwm) {

@@ -9,10 +9,10 @@
 
 
 // Initialize global variables.
-int wheel1_new = 0;
-int wheel2_new = 0;
-int wheel3_new = 0;
-int wheel4_new = 0;
+int front_left = 0;
+int front_right = 0;
+int back_left = 0;
+int back_right = 0;
 double dt_front = 0.000001;
 double dt_back = 0.000001;
 
@@ -27,16 +27,16 @@ const double dist_per_tick = wheel_circumference / encoder_resolution;
 // Function to save front encoder data to global variables.
 void feCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
   ROS_INFO_STREAM("INFO RECEIVED \n *Front Encoders");
-  wheel1_new = msg->encoders.left_wheel;
-  wheel2_new = msg->encoders.right_wheel;
+  front_left = msg->encoders.left_wheel;
+  front_right = msg->encoders.right_wheel;
   dt_front = msg->encoders.time_delta;
 }
 
 // Function to save back encoder data to global variables.
 void reCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
   ROS_INFO_STREAM("INFO RECEIVED \n *back Encoders");
-  wheel3_new = msg->encoders.left_wheel;
-  wheel4_new = msg->encoders.right_wheel;
+  back_left = msg->encoders.left_wheel;
+  back_right = msg->encoders.right_wheel;
   dt_back = msg->encoders.time_delta;
 }
 
@@ -77,15 +77,15 @@ int main(int argc, char** argv) {
     }
 
     // Compute the velocities of each wheel.
-    double v_w1 = (wheel1_new * dist_per_tick) / dt_front;
-    double v_w2 = (wheel2_new * dist_per_tick) / dt_front;
-    double v_w3 = (wheel3_new * dist_per_tick) / dt_back;
-    double v_w4 = (wheel4_new * dist_per_tick) / dt_back;
+    double v_fl = (front_left * dist_per_tick) / dt_front;
+    double v_fr = (front_right * dist_per_tick) / dt_front;
+    double v_bl = (back_left * dist_per_tick) / dt_back;
+    double v_br = (back_right * dist_per_tick) / dt_back;
 
     // Compute the overall velocity of the robot.
-    vx = (v_w1 + v_w2 + v_w3 + v_w4) / 4.0;
-    vy = (v_w1 - v_w2 - v_w3 + v_w4) / 4.0;
-    vth = (-v_w1 + v_w2 - v_w3 + v_w4) / (4.0 * k);
+    vx = (v_fl + v_fr + v_bl + v_br) / 4.0;
+    vy = (v_fl - v_fr - v_bl + v_br) / 4.0;
+    vth = (-v_fl + v_fr - v_bl + v_br) / (4.0 * k);
 
     // Compute the change in displacement.
     double delta_x = vx * avg_dt;
