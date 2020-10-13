@@ -10,6 +10,7 @@ back_encoder_publisher_("/base_control/back/encoders", &back_encoders_msg_) {
     nh_->subscribe(velocity_subscriber_);
     nh_->advertise(front_encoder_publisher_);
     nh_->advertise(back_encoder_publisher_);
+    nh_->negotiateTopics();
     
     //Timers
     odom_timer_ = millis();
@@ -40,8 +41,6 @@ void Odometry::velocityCallback(const geometry_msgs::Twist& cmd_velocity) {
 }
 
 void Odometry::cmdVelocity(const double linear_x, const double linear_y, const double angular_z) {
-    nh_->loginfo("Cmd Velocity Received.");
-    
     move_all_->setDeltaX(linear_y);
     move_all_->setDeltaY(linear_x);
     move_all_->setDeltaAngular(angular_z);

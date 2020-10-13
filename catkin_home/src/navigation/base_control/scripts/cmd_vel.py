@@ -3,14 +3,14 @@ import rospy
 from geometry_msgs.msg import Twist
 
 def move():
-    # Starts a new node
+    # Starts a new node.
     rospy.init_node('cmd_velocity', anonymous=True)
-    rate = rospy.Rate(4) # ROS Rate at 4Hz
+    rate = rospy.Rate(4) # ROS Rate at 4Hz.
     velocity_publisher = rospy.Publisher('/base_control/cmd_vel', Twist, queue_size=10)
     
     rospy.loginfo("Node Initiated")
     
-    #Initialize Twist Message
+    # Initialize Twist Message.
     vel_msg = Twist()
     vel_msg.linear.x = 0
     vel_msg.linear.y = 0
@@ -19,8 +19,8 @@ def move():
     vel_msg.angular.y = 0
     vel_msg.angular.z = 0
     
-    speed = 0.35
-    #Direction:  0    , 45   , 90   , 135   , 180   , 225   , 270   , 315     Left   Right   
+    speed = 0.18
+    # Direction: 0    , 45   , 90   , 135   , 180   , 225   , 270   , 315     Left   Right
     xValues=    [0    , speed, speed, speed , 0     , -speed, -speed, -speed, 0    , 0     ]
     yValues=    [speed, speed, 0    , -speed, -speed, -speed, 0     , speed , 0    , 0     ]
     zValues=    [0    , 0    , 0    , 0     , 0     ,  0    ,  0    , 0     , speed, -speed]
@@ -42,7 +42,7 @@ def move():
 
         velocity_publisher.publish(vel_msg)
         
-        #Publish Rate
+        # Publish Rate.
         rate.sleep()
         
 

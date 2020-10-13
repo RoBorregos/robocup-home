@@ -70,7 +70,7 @@ class Odometry{
         base_control::StampedEncoders front_encoders_msg_;
         base_control::StampedEncoders back_encoders_msg_;
         int last_encoder_counts_[kCountMotors];
-        static constexpr uint8_t kOdomPeriod = 50;
+        static constexpr uint8_t kOdomPeriod = 40;
         static constexpr uint16_t kIntMax = 65535;
         static constexpr uint16_t kCountReset = 250;
         static constexpr uint16_t kCountOverflow = 16374;        

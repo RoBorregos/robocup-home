@@ -1,6 +1,5 @@
 <launch>
     <master auto="start"/>
-    <!-- Run the map server --> 
     <include file="$(find robot_description)/launch/display.launch" />
     <node
         pkg="base_control"
