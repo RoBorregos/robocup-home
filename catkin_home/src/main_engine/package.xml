@@ -62,8 +62,6 @@
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>intercom</exec_depend>
-  <exec_depend>python-csv</exec_depend>
-  <exec_depend>python-os</exec_depend>
 
   <test_depend>rosunit</test_depend>
 
