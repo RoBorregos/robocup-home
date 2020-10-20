@@ -2,8 +2,10 @@
 
 ### ROS ###
 /catkin_home/devel/
+/catkin_home/devel_isolated/
 /catkin_home/logs/
 /catkin_home/build/
+/catkin_home/build_isolated/
 /catkin_home/bin/
 /catkin_home/install/
 /catkin_home/.catkin_tools/
