@@ -1,0 +1,4 @@
+<launch>
+    <node name="engine" pkg="main_engine" type="action_manager.py" respawn="true" output="screen"/>
+    <test test-name="test_action_manager"  pkg="main_engine" type="action_manager_tests.py" />
+</launch>
