@@ -1,10 +1,28 @@
 #include <ProcessingCloud.h>
 
+std::string topic_path;
+std::string param;
+
 class segmentation {
  public:
     explicit segmentation(ros::NodeHandle nh) : m_nh(nh) {
         // define the subscriber and publisher
-        m_sub = m_nh.subscribe("/camera/depth/color/points", 1, &segmentation::cloud_cb, this);
+        //m_sub = m_nh.subscribe("/camera/depth_registered/points", 1, &segmentation::cloud_cb, this);
+
+        
+        if(param.compare("intel") == 0)
+        {
+            m_sub = m_nh.subscribe("/camera/depth/color/points", 1, &segmentation::cloud_cb, this);
+            std::cout << "intel" << std::endl;
+
+        }
+        else if(param.compare("kinect") == 0)
+        {
+            m_sub = m_nh.subscribe("/camera/depth_registered/points", 1, &segmentation::cloud_cb, this);
+            std::cout << "kinect" << std::endl;
+        }
+        
+        //m_sub = m_nh.subscribe("/camera/depth/color/points", 1, &segmentation::cloud_cb, this);
         m_clusterPub = m_nh.advertise<arm_vision::SegmentedClustersArray>("pcl_clusters", 1);
         m_pub = m_nh.advertise<sensor_msgs::PointCloud2>("output", 1);
         m_pub2 = m_nh.advertise<sensor_msgs::PointCloud2>("output2", 1);
@@ -80,14 +98,21 @@ void segmentation::cloud_cb(const sensor_msgs::PointCloud2ConstPtr& input) {
     m_clusterPub.publish(CloudClusters1);
     m_pub2.publish(output2);
 }
-int main(int argc, char** argv) {
-    // Initialize ROS
+int main(int argc, char* argv[]) {
+    // Initialize ROS  
     ros::init(argc, argv, "arm_vision");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh("~");
+    nh.getParam("param", param);
+    ROS_INFO("Got parameter : %s", param.c_str());
 
+    if(param.compare("intel") != 0 && param.compare("kinect") != 0)
+    {
+        ROS_INFO("Not parameter selected");
+        return 0;
+        
+    }
     segmentation segs(nh);
 
-    // Create a ROS publisher for the output point cloud
 
     // Spin
     ros::spin();
