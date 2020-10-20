@@ -24,7 +24,6 @@ jobs:
         catkin_make_isolated
     - run: |
         cd $GITHUB_WORKSPACE/catkin_home
-        catkin_make_isolated
         catkin_make_isolated --catkin-make-args run_tests
         chmod +x ./check_test_result.sh
         ./check_test_result.sh
