@@ -2,7 +2,7 @@ import rospy
 import actionlib
 import time
 import sys
-#import rb_home_arm.msg
+import rb_home_arm.msg
 
 '''
 All Goals, and Actions must be imported here from he corresponding packages
