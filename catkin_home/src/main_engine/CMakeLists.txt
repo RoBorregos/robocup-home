@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  
+  rb_home_arm
   intercom
 )
 
@@ -105,7 +105,7 @@ catkin_python_setup()
 catkin_package(
  #INCLUDE_DIRS include
  LIBRARIES main_engine
- CATKIN_DEPENDS roscpp rospy std_msgs message_runtime intercom
+ CATKIN_DEPENDS roscpp rospy std_msgs message_runtime intercom rb_home_arm
  #DEPENDS system_lib
 )
 
