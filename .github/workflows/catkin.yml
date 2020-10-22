@@ -12,12 +12,12 @@ env:
 
 jobs:
   build:
-    runs-on: [ubuntu-18.04]
+    runs-on: [ubuntu-20.04]
     steps:
     - uses: actions/checkout@v1
     - uses: betwo/github-setup-catkin@v1.1.1
       with:
-        ros-version: 'melodic'
+        ros-version: 'noetic'
         workspace: '$GITHUB_WORKSPACE/catkin_home'
     - run: |
         cd $GITHUB_WORKSPACE/catkin_home
