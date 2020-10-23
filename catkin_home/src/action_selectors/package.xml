@@ -57,8 +57,7 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>audio_common_msgs</build_depend>
   <build_depend> intercom </build_depend>
-  <!-- Removed for CI, maybe it shouldn't be removed -->
-  <!--   <build_depend> python3-requests </build_depend> -->
+  <!-- Before it was python-requests. I hope it works. This comment will be deleted once it is verified. -->
   <build_depend> python3-requests </build_depend>
   <build_depend>roslib</build_depend>
   <build_export_depend>roscpp</build_export_depend>
@@ -71,8 +70,7 @@
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>audio_common_msgs</exec_depend>
   <exec_depend> intercom </exec_depend>
-  <!-- Removed for CI, maybe it shouldn't be removed -->
-  <!--   <exec_depend>python-requests</exec_depend> -->
+  <!-- Before it was python-requests. I hope it works. This comment will be deleted once it is verified. -->
   <exec_depend>python3-requests</exec_depend>
   <exec_depend>roslib</exec_depend>
 
