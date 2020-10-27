@@ -1,7 +1,7 @@
 #ifndef SEGMENTATIONNODE_H_
 #define SEGMENTATIONNODE_H_
 
-#include <ProcessingCloud.h>
+#include <ProcessingCloud/ProcessingCloud.h>
 
 class segmentation {
  public:

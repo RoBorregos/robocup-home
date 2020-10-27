@@ -1,7 +1,5 @@
 #include "SegmentationNode.h"
 
-#include <ProcessingCloud.h>
-
 segmentation::segmentation(ros::NodeHandle nh, const std::string& camera_selection) : m_nh_(nh), camera_selection_(camera_selection) {
     // define the subscriber and publisher
     

@@ -204,7 +204,6 @@ include_directories(
 # Add libraries
 add_subdirectory(include/SegmentationNode)
 
-
 add_executable(cloud_segmentation_example_node src/cloud_segmentation_example.cpp)
 add_dependencies(cloud_segmentation_example_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 

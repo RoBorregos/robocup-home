@@ -1,7 +1,7 @@
 #ifndef PROCESSINGCLOUD_H_
 #define PROCESSINGCLOUD_H_
 
-#include <IncludersCloud.h>
+#include <IncludersCloud/IncludersCloud.h>
 
 // hand limits
 // float lower[3] = { 0, 0.23, .1 };
@@ -19,7 +19,6 @@ bool flag = true;
 pcl::PointXYZ FingertipPoint;
 pcl::PointCloud<pcl::PointXYZ>::Ptr CloudSaver(new pcl::PointCloud<pcl::PointXYZ>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr CloudFinal(new pcl::PointCloud<pcl::PointXYZ>);
-// std::stringstream UserName;
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr inputcloud_RGB(new pcl::PointCloud<pcl::PointXYZRGB>);
 pcl::PointCloud<pcl::PointXYZ>::Ptr inputcloud_XYZ(new pcl::PointCloud<pcl::PointXYZ>);
