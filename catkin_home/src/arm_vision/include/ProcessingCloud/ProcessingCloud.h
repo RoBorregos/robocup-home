@@ -3,6 +3,13 @@
 
 #include <IncludersCloud.h>
 
+// hand limits
+// float lower[3] = { 0, 0.23, .1 };
+// float upper[3] = { 360, .68, .9 };
+
+// float lower[3] = { 0, 0.23, .1 };
+// float upper[3] = { 50, .68, .9 };
+
 // GlobalVariables
 int resolution = 100;
 std::vector<float> NormalHand;

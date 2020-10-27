@@ -199,10 +199,16 @@ include_directories(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+
+# Add libraries
+add_subdirectory(include/SegmentationNode)
+
+
 add_executable(cloud_segmentation_example_node src/cloud_segmentation_example.cpp)
 add_dependencies(cloud_segmentation_example_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-target_link_libraries(cloud_segmentation_example_node ${catkin_LIBRARIES})
+target_link_libraries(cloud_segmentation_example_node ${catkin_LIBRARIES} SegmentationNode)
 #############
 ## Testing ##
 #############
