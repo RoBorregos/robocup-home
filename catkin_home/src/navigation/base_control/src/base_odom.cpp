@@ -38,6 +38,7 @@ const double encoder_resolution = 4320;
 // the wheel's x-coord & the origin, and the y-coord & the origin.
 const double robot_constant = 0.25 + 0.20;
 const double dist_per_tick = wheel_circumference / encoder_resolution;
+const bool publish_odom_message = true;
 
 // Function to save front encoder data to global variables.
 void feCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
@@ -194,7 +195,9 @@ int main(int argc, char** argv) {
         odom.twist.twist.angular.z = robot_velocity.th;
 
         // Publish odometry message.
-        odom_pub.publish(odom);
+        if (publish_odom_message) {
+            odom_pub.publish(odom);
+        }
         
         // Publish odometry transform.
         odom_broadcaster.sendTransform(odom_trans);

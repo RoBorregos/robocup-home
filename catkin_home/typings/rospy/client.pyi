@@ -54,7 +54,7 @@ def spin():
 _logging_level_names = { logging.DEBUG: 'DEBUG',logging.INFO: 'INFO',logging.WARNING: 'WARN',logging.ERROR: 'ERROR',logging.CRITICAL: 'FATAL' }
 _names_to_logging_levels = { 'DEBUG': logging.DEBUG,'INFO': logging.INFO,'WARN': logging.WARNING,'ERROR': logging.ERROR,'FATAL': logging.CRITICAL }
 _init_node_args = None
-def init_node(name, argv=..., anonymous=..., log_level=..., disable_rostime=..., disable_rosout=..., disable_signals=..., xmlrpc_port=..., tcpros_port=...):
+def init_node(name, argv=..., anonymous=..., log_level=..., disable_rostime=..., disable_rosout=..., disable_signals=..., xmlrpc_port=..., tcpros_port=...) -> None:
     """
     Register client node with the master under the specified name.
     This MUST be called from the main Python thread unless

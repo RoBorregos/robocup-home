@@ -1,3 +1,8 @@
+<!--
+    TODO(Josecisneros001): 
+    Merge this launch file with base_control.launch and according to a 
+    flag select whether it will be simulated or run with the robot.
+-->
 <launch>
     <master 
         auto="start"

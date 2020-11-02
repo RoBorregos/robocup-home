@@ -153,13 +153,13 @@ class Movement {
     static constexpr uint8_t kAnalogPinBackLeftMotor = 6;
     static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2, 37};
 
-    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {26,27};
+    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {27,26};
     static constexpr uint8_t kAnalogPinFrontRightMotor = 7;
-    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {18, 33};
+    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {19, 33};
 
-    static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {31,30};
+    static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {30,31};
     static constexpr uint8_t kAnalogPinBackRightMotor = 8;
-    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {19, 29};
+    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {18, 29};
 
     // ROS
     ros::NodeHandle * nh_;

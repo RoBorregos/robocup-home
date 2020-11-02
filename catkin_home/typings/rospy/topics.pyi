@@ -420,7 +420,7 @@ class Publisher(Topic):
         """
         ...
     
-    def publish(self, *args, **kwds):
+    def publish(self, *args, **kwds) -> None:
         """
         Publish message data object to this topic. 
         Publish can either be called with the message instance to

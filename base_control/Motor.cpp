@@ -59,9 +59,7 @@ void Motor::forward() {
   digitalWrite(digital_one_, HIGH);
   digitalWrite(digital_two_, LOW);
 
-  if(current_state_ != MotorState::Forward) {
-    pid_.reset();
-  }
+  pid_.reset();
   
   current_state_ = MotorState::Forward;
 }
@@ -77,10 +75,8 @@ void Motor::backward() {
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, HIGH);
   
-  if(current_state_ != MotorState::Backward) {
-    pid_.reset();
-  }
-  
+  pid_.reset();
+
   current_state_ = MotorState::Backward;
 }
 
@@ -94,10 +90,8 @@ void Motor::stop() {
   digitalWrite(digital_one_, LOW);
   digitalWrite(digital_two_, LOW);
   
-  if(current_state_ != MotorState::Stop) {
-    pid_.reset();
-  }
-
+  pid_.reset();
+  
   current_state_ = MotorState::Stop;
 }
 
