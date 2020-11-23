@@ -1,8 +1,5 @@
 #include <SegmentationNode/SegmentationNode.h>
 
-//////////////////////////////////////
-/////////////////////////////////////
-
 int main(int argc, char* argv[]) {
     // Initialize ROS
     ros::init(argc, argv, "arm_vision");
