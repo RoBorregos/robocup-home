@@ -1,17 +1,20 @@
 #include "SegmentationNode.h"
 
-segmentation::segmentation(ros::NodeHandle nh, const std::string& camera_selection) : m_nh_(nh), camera_selection_(camera_selection) {
+//Leaf size
+double leafSize[3]={0.01,0.01,0.01};
+
+Segmentation::Segmentation(ros::NodeHandle nh, const std::string& camera_selection) : m_nh_(nh), camera_selection_(camera_selection) {
     // define the subscriber and publisher
     
-    if(camera_selection.compare("intel") == 0)
+    if(camera_selection.compare(intelParam) == 0)
     {
-        m_sub_ = m_nh_.subscribe("/camera/depth/color/points", 1, &segmentation::cloud_cb, this);
+        m_sub_ = m_nh_.subscribe("/camera/depth/color/points", 1, &Segmentation::cloud_cb, this);
         ROS_INFO("intel camera selected");
 
     }
-    else if(camera_selection.compare("kinect") == 0)
+    else if(camera_selection.compare(kinectParam) == 0)
     {
-        m_sub_ = m_nh_.subscribe("/camera/depth_registered/points", 1, &segmentation::cloud_cb, this);
+        m_sub_ = m_nh_.subscribe("/camera/depth_registered/points", 1, &Segmentation::cloud_cb, this);
         ROS_INFO("kinect camera selected");
     }
     
@@ -21,7 +24,7 @@ segmentation::segmentation(ros::NodeHandle nh, const std::string& camera_selecti
     m_pub2_ = m_nh_.advertise<sensor_msgs::PointCloud2>("output2", 1);
 }
 
-void segmentation::cloud_cb(const sensor_msgs::PointCloud2ConstPtr& input) {
+void Segmentation::cloud_cb(const sensor_msgs::PointCloud2ConstPtr& input) {
     // ... do data processing
     sensor_msgs::PointCloud2 output;
     pcl::PCLPointCloud2 outputPCL;
@@ -40,7 +43,7 @@ void segmentation::cloud_cb(const sensor_msgs::PointCloud2ConstPtr& input) {
     // Perform the actual filtering
     pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
     sor.setInputCloud(cloudorigin);
-    sor.setLeafSize(0.01, 0.01, 0.01);
+    sor.setLeafSize(leafSize[0],leafSize[1],leafSize[2]);
     sor.filter(*cloud_filtered);
 
     pcl::PCLPointCloud2::Ptr cloud_filtered2(new pcl::PCLPointCloud2);
@@ -61,7 +64,7 @@ void segmentation::cloud_cb(const sensor_msgs::PointCloud2ConstPtr& input) {
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr THEcluster(new pcl::PointCloud<pcl::PointXYZRGB>);
 
     flag = true;
-    double tolerance = 0.05;
+    const double tolerance = 0.05;
 
     // Line for test
     float dumb[2] = {0.4, 0.03};

@@ -3,9 +3,12 @@
 
 #include <ProcessingCloud/ProcessingCloud.h>
 
-class segmentation {
+static std::string intelParam = "intel";
+static std::string kinectParam = "kinect";
+
+class Segmentation {
  public:
-    explicit segmentation(ros::NodeHandle nh, const std::string& camera_selection);
+    explicit Segmentation(ros::NodeHandle nh, const std::string& camera_selection);
 
  private:
     ros::NodeHandle m_nh_;
