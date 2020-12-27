@@ -1,6 +1,5 @@
 <launch>
     <node pkg="tf" type="static_transform_publisher" name="dummy_base_link" args="1 0 0 0 0 0 1 map base_link 100" />
-    <!-- <node pkg="map_visualizer" name="map_tagger" type="map_tagger.py" output="screen" /> -->
     <node pkg="map_visualizer" name="map_displayer" type="map_tagger_display.py" output="screen" />
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
       <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
