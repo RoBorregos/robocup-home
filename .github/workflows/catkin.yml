@@ -14,6 +14,9 @@ jobs:
   build:
     runs-on: [ubuntu-18.04]
     steps:
+    - name: ACTIONS_ALLOW_UNSECURE_COMMANDS
+      id: ACTIONS_ALLOW_UNSECURE_COMMANDS
+      run: echo 'ACTIONS_ALLOW_UNSECURE_COMMANDS=true' >> $GITHUB_ENV
     - uses: actions/checkout@v1
     - uses: betwo/github-setup-catkin@v1.1.1
       with:
@@ -23,11 +26,9 @@ jobs:
         cd $GITHUB_WORKSPACE/catkin_home
         catkin_make_isolated
     - run: |
-        echo "::stop-commands::`echo -n ${{ github.token }} | sha256sum | head -c 64`"
         cd $GITHUB_WORKSPACE/catkin_home
         catkin_make_isolated --catkin-make-args run_tests
         chmod +x ./check_test_result.sh
         ./check_test_result.sh
-        echo "::`echo -n ${{ github.token }} | sha256sum | head -c 64`::"
     env:
       QT_QPA_PLATFORM: offscreen
