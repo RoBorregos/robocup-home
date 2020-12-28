@@ -23,9 +23,11 @@ jobs:
         cd $GITHUB_WORKSPACE/catkin_home
         catkin_make_isolated
     - run: |
+        echo "::stop-commands::`echo -n ${{ github.token }} | sha256sum | head -c 64`"
         cd $GITHUB_WORKSPACE/catkin_home
         catkin_make_isolated --catkin-make-args run_tests
         chmod +x ./check_test_result.sh
         ./check_test_result.sh
+        echo "::`echo -n ${{ github.token }} | sha256sum | head -c 64`::"
     env:
       QT_QPA_PLATFORM: offscreen
