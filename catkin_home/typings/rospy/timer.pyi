@@ -26,7 +26,7 @@ class Rate(object):
         """
         ...
     
-    def sleep(self):
+    def sleep(self) -> None:
         """
         Attempt sleep at the specified rate. sleep() takes into
         account the time elapsed since the last successful
