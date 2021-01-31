@@ -44,7 +44,6 @@ def callback_deepspeech(data):
 
 def both_callback(data):
     rospy.loginfo("*Received a voice audio, computing...*")
-    rospy.loginfo(FORCE_ENGINE)
     if (FORCE_ENGINE == "online" or 
         (FORCE_ENGINE == "none" and SpeechApiUtils.is_connected())):
         callback_azure(data)
