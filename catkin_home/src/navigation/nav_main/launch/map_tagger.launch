@@ -1,0 +1,13 @@
+<launch>
+    <node pkg="tf" type="static_transform_publisher" name="dummy_base_link" args="1 0 0 0 0 0 1 map base_link 100" />
+    <node pkg="map_visualizer" name="map_displayer" type="map_tagger_display.py" output="screen" />
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+      <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
+      <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find nav_main)/config/local_costmap_params.yaml" command="load" />
+      <rosparam file="$(find nav_main)/config/global_costmap_params.yaml" command="load" /> 
+      <rosparam file="$(find nav_main)/config/base_local_planner_params.yaml" command="load" />
+    </node>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nav_main)/rviz/map_tagging.rviz"/>
+    <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find nav_main)/maps/map_3.pgm 0.050000" />
+</launch>
