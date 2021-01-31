@@ -1,8 +1,3 @@
-<!--
-    TODO(Josecisneros001): 
-    Merge this launch file with base_control.launch and according to a 
-    flag select whether it will be simulated or run with the robot.
--->
 <launch>
     <master 
         auto="start"
@@ -24,19 +19,35 @@
         name="odom_broadcaster" 
         args="0 0 0 0 0 0 1 map odom 20" 
     />
-    <!-- Run the encoders simulation node. --> 
-    <node
-        pkg="base_control"
-        name="encoders_simulation"
-        type="encoders.py"
-    />
+    <!-- Run the arduino serial communication node. --> 
+    <node 
+        pkg="rosserial_python" 
+        type="serial_node.py" 
+        name="rosserial" 
+        output="screen"
+    >
+        <param 
+            name="port" 
+            value="/dev/ttyUSB0" 
+        />
+        <param 
+            name="baud" 
+            value="57600" 
+        />
+    </node>
     <!-- Run the odometry calculator node. --> 
     <node
         pkg="base_control"
         name="base_odom"
         type="base_odom"
     />
-    <!-- Run rviz Simulation. --> 
+    <!-- Run the velocity commands simulation node. --> 
+    <node
+        pkg="base_control"
+        name="cmd_vel_simulation"
+        type="cmd_vel.py"
+    />
+    <!-- Run rviz simulation. --> 
     <include 
         file="$(find robot_description)/launch/display.launch" 
     />
