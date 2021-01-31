@@ -16,6 +16,8 @@ This project is made using:
 - [VIA EPIA](https://www.viatech.com/en/support/eol/epia-eol/)
 - [Jetson](https://developer.nvidia.com/EMBEDDED/jetson-nano-developer-kit)
 
+<img src="SystemDesignv3.png" width="1500" ><img> 
+
 For more information about the project system, structure, and development areas you can check our [Official Documentation](https://github.com/RoBorregos/Robocup-Home/wiki).
 
 ### Development team
