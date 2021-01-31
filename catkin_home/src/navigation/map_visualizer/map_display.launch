@@ -1,0 +1,5 @@
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find config_files)/rviz/goal_tf.rviz"/>
+  <node name="map_server" pkg="map_server" type="map_server" output="screen"
+        args="$(find config_files)/occupancy_grids/TMR_2019.yaml"/>
+</launch>
