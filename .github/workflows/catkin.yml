@@ -24,7 +24,7 @@ jobs:
         workspace: '$GITHUB_WORKSPACE/catkin_home'
     - run: |
         cd $GITHUB_WORKSPACE/catkin_home
-        catkin build
+        catkin_make_isolated
     - run: |
         cd $GITHUB_WORKSPACE/catkin_home
         catkin_make_isolated --catkin-make-args run_tests
