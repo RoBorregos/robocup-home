@@ -93,7 +93,7 @@ int main(int argc, char* argv[]){
   // Create a ROS node handle
   ros::NodeHandle nh;
   publi = nh.advertise<action_selectors::RawInput>("RawInput", 10);
-  ros::Subscriber sub = nh.subscribe("UsefulAudio16kHZ", 5, onAudioCallback);
+  ros::Subscriber sub = nh.subscribe("UsefulAudioAzure", 5, onAudioCallback);
 
   ROS_INFO_STREAM("*Node initiated*");
   
