@@ -56,8 +56,9 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
         }
 
         ROS_INFO_STREAM("Recognized: " << result->Text);
-        //Publish messge
+        // Publish messge.
         action_selectors::RawInput msg;
+        // TODO(Josecisneros001): See posibility of gender and age detection.
         msg.isWoman = false;
         msg.inputText = result->Text;
         publi.publish(msg);
@@ -82,7 +83,7 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
 
 
 int main(int argc, char* argv[]){
-  // This must be called before anything else ROS-related
+  // This must be called before anything else ROS-related.
   ros::init(argc, argv, "AzureSpeechToText");
   ROS_INFO_STREAM("Starting node...");
 
@@ -90,10 +91,10 @@ int main(int argc, char* argv[]){
     return 1;
   }
 
-  // Create a ROS node handle
+  // Create a ROS node handle.
   ros::NodeHandle nh;
   publi = nh.advertise<action_selectors::RawInput>("RawInput", 10);
-  ros::Subscriber sub = nh.subscribe("UsefulAudio16kHZ", 5, onAudioCallback);
+  ros::Subscriber sub = nh.subscribe("UsefulAudioAzure", 5, onAudioCallback);
 
   ROS_INFO_STREAM("*Node initiated*");
   
