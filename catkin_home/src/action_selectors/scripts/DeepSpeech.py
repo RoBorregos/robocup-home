@@ -32,7 +32,7 @@ def on_audio_callback(data):
     rospy.loginfo("Voice audio said: \"{0}\".".format(text))
 
     msg = RawInput()
-    
+    # TODO(Josecisneros001): See posibility of gender and age detection.
     msg.isWoman = False
     msg.inputText = text
     publisher.publish(msg)
