@@ -1,4 +1,4 @@
-<img src="logo_negro.png" width="400" ><img> 
+<img src="roborregos_logo.png" width="400" ><img> 
 
 # RoBorregos Robocup-Home
 This repository contains the development of RoBorregos' robotic solution for [RoboCup's @HOME competition](https://athome.robocup.org/), Open Platform League (OPL), where the robot must be capable of interacting with people, manipulate objects and have intelligent responses for everyday home tasks.
@@ -16,7 +16,7 @@ This project is made using:
 - [VIA EPIA](https://www.viatech.com/en/support/eol/epia-eol/)
 - [Jetson](https://developer.nvidia.com/EMBEDDED/jetson-nano-developer-kit)
 
-<img src="SystemDesignv3.png" width="1500" ><img> 
+<img src="SystemDesignv3_white.png" width="1500" ><img> 
 
 For more information about the project system, structure, and development areas you can check our [Official Documentation](https://github.com/RoBorregos/Robocup-Home/wiki).
 
