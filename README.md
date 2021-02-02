@@ -33,8 +33,8 @@ For more information about the project system, structure, and development areas 
 | Amin Mendez | [mendezamin.com@gmail.com](mailto:mendezamin.com@gmail.com) | [@AminMendez](https://github.com/AminMendez) | Mechanical Design | 
 | Gaby Alvarez | [gabrielaj.alvarez@outlook.com](mailto:gabrielaj.alvarez@outlook.com) | [@gabyjazzmin ](https://github.com/gabyjazzmin ) |  NLP Conversation |
 | Anel Alvarado | [anelgtz01@gmail.com](mailto:anelgtz01@gmail.com) | [@AnelAlvarado ](https://github.com/AnelAlvarado ) | Elevator Electronics |
-| Jose Francisco Pacheco | [pacocheco7@gmail.com](mailto:pacocheco7@gmail.com) | [@JFPach98 ](https://github.com/JFPach98 ) | Human Detection |
-| AlonRuiz | [alonsort11@gmail.com](mailto:alonsort11@gmail.com) | [@AlonRuiz](https://github.com/AlonRuiz) | Arm Mechanics |
+| José Pacheco | [pacocheco7@gmail.com](mailto:pacocheco7@gmail.com) | [@JFPach98 ](https://github.com/JFPach98 ) | Human Detection |
+| Alonso Ruiz | [alonsort11@gmail.com](mailto:alonsort11@gmail.com) | [@AlonRuiz](https://github.com/AlonRuiz) | Arm Mechanics |
 | Andy Salcedo | [andrea2702@gmail.com](mailto:andrea2702@gmail.com) | [@andrea2702](https://github.com/andrea2702) | Arm Electronics |
 | Ignacio Maldonado | [igna-tenkov@gmail.com](mailto:igna-tenkov@gmail.com) | [@IGNA-TENKOV](https://github.com/IGNA-TENKOV) | Mechanical Design |
 | Paul Vazquez | [pev@live.com.mx](mailto:pev@live.com.mx) | [@paulvazbad](https://github.com/paulvazbad) | Mentor |
