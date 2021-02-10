@@ -1,14 +1,14 @@
 # ----------------------------------------------------------------------
-#  Development
+#  Development Noetic
 # ----------------------------------------------------------------------
 
 #: Builds a Docker image from the current Dockerfile file
-build:
-	@docker build -t ros:noetic .
+noetic.build:
+	@docker build -t ros:noetic -f Dockerfile.noetic .
 
 
 #: Create Docker container
-create: 
+noetic.create: 
 	@docker run \
 		-it -d \
 		-v ${shell pwd}/catkin_home:/catkin_home \
@@ -17,28 +17,73 @@ create:
 		ros:noetic
 
 #: Start the container in background
-up:
+noetic.up:
 	@docker start ros-noetic
 
 #: Stop the container
-down:
+noetic.down:
 	@docker stop ros-noetic
 
 #: Restarts the container
-restart:
+noetic.restart:
 	@docker restart ros-noetic
 
 #: Shows the logs of the ros-noetic service container
-logs:
+noetic.logs:
 	@docker logs --tail 50 ros-noetic
 
 #: Fires up a bash session inside the ros-noetic service container
-shell:
+noetic.shell:
 	@docker exec -it ros-noetic bash
 
 #: Remove ros-noetic container. 
-remove:
+noetic.remove:
 	@docker container rm ros-noetic
+
+# ----------------------------------------------------------------------
+#  Development Melodic
+# ----------------------------------------------------------------------
+
+#: Builds a Docker image from the current Dockerfile file
+melodic.build:
+	@docker build -t ros:melodic -f Dockerfile.melodic .
+
+#: Create Docker container
+melodic.create: 
+	@docker run \
+		-it -d \
+		-v ${shell pwd}/catkin_home:/catkin_home \
+		--network host \
+		--name ros-melodic \
+		ros:melodic
+
+#: Start the container in background
+melodic.up:
+	@docker start ros-melodic
+
+#: Stop the container
+melodic.down:
+	@docker stop ros-melodic
+
+#: Restarts the container
+melodic.restart:
+	@docker restart ros-melodic
+
+#: Shows the logs of the ros-melodic service container
+melodic.logs:
+	@docker logs --tail 50 ros-melodic
+
+#: Fires up a bash session inside the ros-melodic service container
+melodic.shell:
+	@docker exec -it ros-melodic bash
+
+#: Remove ros-melodic container. 
+melodic.remove:
+	@docker container rm ros-melodic
+
+# ----------------------------------------------------------------------
+#  General Docker
+# ----------------------------------------------------------------------
 
 #: Show a list of containers.
 list:

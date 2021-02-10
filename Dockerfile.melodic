@@ -1,0 +1,6 @@
+# Use the existing ROS-MELODIC image
+FROM osrf/ros:melodic-desktop-full
+
+# Init catkin_home directoy
+RUN mkdir /catkin_home
+COPY catkin_home/ catkin_home/
