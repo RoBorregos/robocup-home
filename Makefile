@@ -37,7 +37,7 @@ noetic.shell:
 	@docker exec -it ros-noetic bash
 
 #: Remove ros-noetic container. 
-noetic.remove:
+noetic.remove: noetic.down
 	@docker container rm ros-noetic
 
 # ----------------------------------------------------------------------
@@ -78,7 +78,7 @@ melodic.shell:
 	@docker exec -it ros-melodic bash
 
 #: Remove ros-melodic container. 
-melodic.remove:
+melodic.remove: melodic.down
 	@docker container rm ros-melodic
 
 # ----------------------------------------------------------------------
