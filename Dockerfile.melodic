@@ -9,6 +9,7 @@ RUN apt-get update -qq && \
     git \
     autoconf \
     libtool \
+    python-pip \
     ros-melodic-audio-common \
     ros-melodic-move-base && \
     rm -rf /var/lib/apt/lists/*
@@ -16,8 +17,30 @@ RUN apt-get update -qq && \
 # Init catkin_home directoy
 RUN mkdir /catkin_home
 COPY catkin_home/ catkin_home/
+
+# Speech Dependencies
+# PyAudio
+RUN apt-get update && apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg -y
+# Microphone
+RUN apt-get update && apt-get install alsa-base alsa-utils -y
+# Deepspeech
+RUN apt-get update && apt-get install -y pkg-config libflac-dev libogg-dev libvorbis-dev libboost-dev swig python-dev
+RUN apt-get update && apt-get install -y wget && wget http://prdownloads.sourceforge.net/swig/swig-3.0.12.tar.gz && \
+    tar xvzf swig-3.0.12.tar.gz && cd swig-3.0.12 && ./autogen.sh && ./configure && make && make install &&\
+    cd /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig && ./setup.sh
+
+# Python Dependencies
+COPY pythonDependencies.txt /pythonDependencies.txt
+RUN pip install -r pythonDependencies.txt
+
+# Deepspeech Pre-Run
+RUN cd /catkin_home/src/action_selectors/scripts/DeepSpeech && python2 -m data.librispeech.librispeech --full_download False --manifest_prefix "data/librispeech/manifest"
+
+# Change Workdir
 WORKDIR catkin_home
 
 # Add ROS environment variables automatically
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 RUN echo "[ -f /catkin_home/devel/setup.bash ] && source /catkin_home/devel/setup.bash" >> ~/.bashrc
+
+#dos2unix

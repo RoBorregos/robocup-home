@@ -52,7 +52,9 @@ melodic.build:
 melodic.create: 
 	@docker run \
 		-it -d \
-		-v ${shell pwd}/catkin_home:/catkin_home \
+		--device /dev/snd:/dev/snd \
+		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
+		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
 		--network host \
 		--name ros-melodic \
 		ros:melodic

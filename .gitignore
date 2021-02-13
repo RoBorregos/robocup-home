@@ -14,6 +14,14 @@
 /catkin_home/src/.rosinstall.bak
 
 ### DeepSpeech && Speech API ###
+/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/build
+/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/dist
+/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/kenlm
+/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/*.egg-info
+/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/openfst*
+/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/openfst*
+/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/swig_decoders.py
+/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/decoders_wrap.cxx
 /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech/manifest.dev-clean
 /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech/manifest.test-clean
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/mean_std.npz
