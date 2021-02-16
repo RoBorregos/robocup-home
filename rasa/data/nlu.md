@@ -55,6 +55,13 @@
 - thanks mate
 - Thanks
 
+## intent: introduce_people
+- Please introduce me
+- Please tell my name
+- Hi, my name is {person1}
+- Hi, my name is {person2}
+
+
 ## lookup:objects
   data/lookup_tables/objects.txt
 

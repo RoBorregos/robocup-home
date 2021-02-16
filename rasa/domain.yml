@@ -46,3 +46,7 @@ templates:
   utter_you're_welcome:
   - text: You're welcome
   - text: I'm glad im being useful
+  utter_receptionist:
+  -text: let me introduce you 
+  -text: let me introduce you to {person2}
+  -text: hey {person1}, let me introduce you to {person2}
