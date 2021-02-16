@@ -13,5 +13,5 @@
     </node>
     <!-- launches rviz and map server for map visulalization -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nav_main)/rviz/map_tagging.rviz"/>
-    <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find nav_main)/maps/map_3.pgm 0.050000" />
+    <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find nav_main)/maps/TMR_2019.pgm 0.050000" />
 </launch>

@@ -6,9 +6,9 @@ converting it into transforms and placing markers in each one.
 
 Global app states:
 -1: Tagging finished
- 0: Waiting state
- 1: Add room area
- 2: Add object area
+0:  Waiting state
+1:  Add room area
+2:  Add object area
 """
 
 import roslib; roslib.load_manifest('visualization_marker_tutorials')
@@ -78,7 +78,13 @@ def changeState(data):
 def updateMarkers():
     """Updates map visualization in rviz.
 
-    Marker ataching to current Map context positions.
+    A transform base on the current Map context positions is 
+    created and a marker is attached to it.
+
+    - Cylinder = entrace
+    - Sphere = room area
+    - Cube = object of interest
+
     This must be updated frequently because markers have a
     lifetime of 0.1 seconds, so that they can also be eliminated
     if a room is eliminated.
@@ -91,6 +97,38 @@ def updateMarkers():
     counter=0
     if(marker_map != None):
         for room in marker_map.rooms:
+            area_counter = 0
+            for entrance in room.entrances:
+                br.sendTransform((entrance.x, entrance.y, entrance.z),
+                                (0.0, 0.0, 0.0, 1.0),
+                                rospy.Time.now(),
+                                room.name + "-entrance-" + str(area_counter),
+                                "/map")
+                marker = Marker()
+                marker.header.frame_id = room.name + "-entrance-" + str(area_counter)
+                marker.header.stamp = rospy.Time.now()
+                marker.type = marker.CYLINDER
+                marker.action = marker.ADD
+                marker.ns = "map_goal_point"
+                marker.id = counter
+                marker.scale.x = 0.4
+                marker.scale.y = 0.4
+                marker.scale.z = 0.4
+                map_color = 0
+                if(room.name == marker_state.room):
+                    map_color = 1
+                marker.color.a = 1.0
+                marker.color.r = map_colors[map_color][0]
+                marker.color.g = map_colors[map_color][1]
+                marker.color.b = map_colors[map_color][2]
+                marker.pose.orientation.w = 1.0
+                marker.pose.position.x = 0.0
+                marker.pose.position.y = 0.0
+                marker.pose.position.z = 0.0
+                marker.lifetime = rospy.Duration.from_sec(0.1)
+                markerArray.markers.append(marker)
+                area_counter+=1
+                counter+=1
             area_counter = 0
             for area_point in room.area:
                 br.sendTransform((area_point.x, area_point.y, area_point.z),
@@ -158,8 +196,8 @@ def updateMarkers():
     # rospy.loginfo("Map updated")
 
 if __name__ == '__main__':
-     """main, updates transforms and markers.
-    """
+    """ Main, updates transforms and markers. """
+
     rospy.Subscriber("/tagged_map", MapContext, getMapContext)
     rospy.Subscriber("/map_tagger_state", MapDisplayState, changeState)
     topic = 'goal_visualization_array'

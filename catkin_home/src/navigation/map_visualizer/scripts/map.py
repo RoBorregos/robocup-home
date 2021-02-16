@@ -18,12 +18,13 @@ class Room:
         self.name = name
         self.entrance = []
 
-    def __init__(self, name, area, obj_int):
+    def __init__(self, name, area, obj_int, entrances):
         self.name = name
         self.area = []
         self.obj_int = {}
         self.path = []
         self.entrance = []
+        self.set_entrance(entrances)
         self.set_area(area)
         for index in range(len(obj_int)):
             self.set_obj_int(obj_int[index])
@@ -37,8 +38,9 @@ class Room:
         for point in obj.obj_area:
             self.obj_int[obj.name].append([point.x, point.y, point.z])
 
-    def set_entrance(self, point):
-        self.entrance = point
+    def set_entrance(self, points):
+        for point in points:
+            self.entrance.append([point.x, point.y, point.z])
 
     def reset_room(self):
         self.area = []
@@ -60,7 +62,7 @@ class Map:
 
     def set_rooms(self, room_list):
         for room in room_list:
-            self.rooms[room.name]=Room(room.name, room.area, room.obj_int)
+            self.rooms[room.name]=Room(room.name, room.area, room.obj_int, room.entrances)
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
