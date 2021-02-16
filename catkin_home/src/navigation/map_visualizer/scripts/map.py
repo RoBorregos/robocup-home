@@ -3,7 +3,14 @@ import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped
 import json
 
+""" Map tagger classes, where the class Map contains an array of rooms.
+
+Inside rooms, objects of interest, paths, entrances and its overal area
+can be defined. 
+"""
+
 class Room:
+    """Room class to store room characteristics and contain objects positions."""
     def __init__(self, name):
         self.area = []
         self.obj_int = {}
@@ -41,6 +48,7 @@ class Room:
         self.entrance = None
 
 class Map:
+    """Map class that can contain rooms."""
     def __init__(self, name):
         self.rooms = {}
         self.name = name

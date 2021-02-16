@@ -1,4 +1,16 @@
 #!/usr/bin/env python
+""" Map tagger display script.
+
+Displays the map information given by the /tagged_map topic by
+converting it into transforms and placing markers in each one.
+
+Global app states:
+-1: Tagging finished
+ 0: Waiting state
+ 1: Add room area
+ 2: Add object area
+"""
+
 import roslib; roslib.load_manifest('visualization_marker_tutorials')
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
@@ -12,6 +24,7 @@ from map_visualizer.msg import MapContext
 markerArray = MarkerArray()
 marker_state = MapDisplayState()
 
+# Green for active, purple for inactive
 map_colors = ((1.0, 0.0, 1.0), (0.0, 1.0, 0.0))
 
 marker_map = MapContext()
@@ -23,6 +36,14 @@ marker_map = MapContext()
 ##################################################
 
 def getMapContext(data):
+    """Updates map context from /tagged_map topic.
+
+    Parameters
+    ----------
+    data : MapContext
+        /tagged_map published by user app.
+    """
+
     global marker_state
     global marker_map
     if(marker_state.state not in [-1]):
@@ -32,6 +53,14 @@ def getMapContext(data):
         marker_map = None
 
 def changeState(data):
+    """Updates app state based on /map_tagger_state topic.
+
+    Parameters
+    ----------
+    data : MapDisplayState
+        Global app state published by user app.
+    """
+
     global marker_state
     global marker_map
     marker_state = data
@@ -47,6 +76,14 @@ def changeState(data):
     rospy.loginfo("State changed to " + str(marker_state.state))
 
 def updateMarkers():
+    """Updates map visualization in rviz.
+
+    Marker ataching to current Map context positions.
+    This must be updated frequently because markers have a
+    lifetime of 0.1 seconds, so that they can also be eliminated
+    if a room is eliminated.
+    """
+
     global markerArray
     global marker_map
     global marker_state
@@ -121,6 +158,8 @@ def updateMarkers():
     # rospy.loginfo("Map updated")
 
 if __name__ == '__main__':
+     """main, updates transforms and markers.
+    """
     rospy.Subscriber("/tagged_map", MapContext, getMapContext)
     rospy.Subscriber("/map_tagger_state", MapDisplayState, changeState)
     topic = 'goal_visualization_array'

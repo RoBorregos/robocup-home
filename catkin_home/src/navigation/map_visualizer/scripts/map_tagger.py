@@ -1,4 +1,22 @@
 #!/usr/bin/env python
+""" Map tagger application script.
+
+Application for manual map contextualization done by tagging the map,
+with rooms and objects of interest.
+
+The user will use rviz and the terminal to define the area of rooms 
+and objects of interest in the map. For this, please run the map_tagger
+launch file and follow the app menu.
+
+Global app states:
+-1: Tagging finished
+ 0: Waiting state
+ 1: Add room area
+ 2: Add object area
+
+In the end, it generates a .json file with the map description.
+"""
+
 import rospy
 from geometry_msgs.msg import PoseStamped
 import json
@@ -12,6 +30,15 @@ from map import Map
 import os
 
 def callback(data):
+    """Gets point location placed on the map in rviz and
+    adds it to the map object according to its state
+
+    Parameters
+    ----------
+    data : PoseStamped
+        /move_base_simple/goal published by 2D Nav Goal.
+    """
+
     rospy.loginfo(rospy.get_caller_id() + "Pose given %s", data.pose.position)
     global map
     global map_publisher
@@ -32,6 +59,17 @@ state_publisher = None
 obj_name = None
 
 if __name__ == '__main__':
+    """Main application workflow.
+    Follows steps to save map data, publishes /tagged_map and
+    /map_tagger_state topics each time the map is tagged.
+    When finished, generates a json with the information.
+
+    User app states:
+    0: Finished application
+    1: Add room (area, obj of interest)
+    2: Delete room
+    """
+    
     global map_publisher
     global state_publisher
     rospy.init_node('map_tagger')
