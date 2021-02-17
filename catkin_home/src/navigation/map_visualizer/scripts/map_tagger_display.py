@@ -23,11 +23,15 @@ from map_visualizer.msg import MapContext
 
 markerArray = MarkerArray()
 marker_state = MapDisplayState()
+marker = Marker()
 
 # Green for active, purple for inactive
 map_colors = ((1.0, 0.0, 1.0), (0.0, 1.0, 0.0))
 
 marker_map = MapContext()
+
+counter = 0
+area_counter = 0
 
 ##################################################
 # State 0 = wating/default
@@ -75,6 +79,55 @@ def changeState(data):
         rospy.loginfo("Displaying specific room with objects")
     rospy.loginfo("State changed to " + str(marker_state.state))
 
+def defineMarker(current_room, frame_id, marker_type):
+    """Defines marker creating a transform and attaching it to its frame.
+
+    Parameters
+    ----------
+    current_room : boolean
+        Tells if room is the one being defined in the application.
+    frame_id : string
+        Unique frame id for marker and transform creation
+    marker_type : int
+        Variable that states the shape the object must have.
+    """
+
+    global marker
+    global counter
+    global area_counter
+    
+    marker = Marker()
+    marker.header.frame_id = frame_id
+    if marker_type == 0:
+        marker.type = marker.CYLINDER
+    elif marker_type == 1:
+        marker.type = marker.SPHERE
+    else:
+        marker.type = marker.CUBE
+    marker.header.stamp = rospy.Time.now()
+    marker.action = marker.ADD
+    marker.ns = "map_goal_point"
+    marker.id = counter
+    marker.scale.x = 0.4
+    marker.scale.y = 0.4
+    marker.scale.z = 0.4
+    map_color = 0
+    if(current_room):
+        map_color = 1
+    marker.color.a = 1.0
+    marker.color.r = map_colors[map_color][0]
+    marker.color.g = map_colors[map_color][1]
+    marker.color.b = map_colors[map_color][2]
+    marker.pose.orientation.w = 1.0
+    marker.pose.position.x = 0.0
+    marker.pose.position.y = 0.0
+    marker.pose.position.z = 0.0
+    marker.lifetime = rospy.Duration.from_sec(0.1)
+    markerArray.markers.append(marker)
+    area_counter+=1
+    counter+=1
+
+
 def updateMarkers():
     """Updates map visualization in rviz.
 
@@ -93,106 +146,31 @@ def updateMarkers():
     global markerArray
     global marker_map
     global marker_state
+    global marker
+    global counter
+    global area_counter
     markerArray = MarkerArray()
     counter=0
     if(marker_map != None):
         for room in marker_map.rooms:
             area_counter = 0
             for entrance in room.entrances:
+                frame_id = room.name + "-entrance-" + str(area_counter)
                 br.sendTransform((entrance.x, entrance.y, entrance.z),
-                                (0.0, 0.0, 0.0, 1.0),
-                                rospy.Time.now(),
-                                room.name + "-entrance-" + str(area_counter),
-                                "/map")
-                marker = Marker()
-                marker.header.frame_id = room.name + "-entrance-" + str(area_counter)
-                marker.header.stamp = rospy.Time.now()
-                marker.type = marker.CYLINDER
-                marker.action = marker.ADD
-                marker.ns = "map_goal_point"
-                marker.id = counter
-                marker.scale.x = 0.4
-                marker.scale.y = 0.4
-                marker.scale.z = 0.4
-                map_color = 0
-                if(room.name == marker_state.room):
-                    map_color = 1
-                marker.color.a = 1.0
-                marker.color.r = map_colors[map_color][0]
-                marker.color.g = map_colors[map_color][1]
-                marker.color.b = map_colors[map_color][2]
-                marker.pose.orientation.w = 1.0
-                marker.pose.position.x = 0.0
-                marker.pose.position.y = 0.0
-                marker.pose.position.z = 0.0
-                marker.lifetime = rospy.Duration.from_sec(0.1)
-                markerArray.markers.append(marker)
-                area_counter+=1
-                counter+=1
+                    (0.0, 0.0, 0.0, 1.0), rospy.Time.now(), frame_id, "/map")
+                defineMarker(room.name == marker_state.room, frame_id, 0)
             area_counter = 0
             for area_point in room.area:
+                frame_id = room.name + "-" + str(area_counter)
                 br.sendTransform((area_point.x, area_point.y, area_point.z),
-                                (0.0, 0.0, 0.0, 1.0),
-                                rospy.Time.now(),
-                                room.name + "-" + str(area_counter),
-                                "/map")
-                marker = Marker()
-                marker.header.frame_id = room.name + "-" + str(area_counter)
-                marker.header.stamp = rospy.Time.now()
-                marker.type = marker.SPHERE
-                marker.action = marker.ADD
-                marker.ns = "map_goal_point"
-                marker.id = counter
-                marker.scale.x = 0.4
-                marker.scale.y = 0.4
-                marker.scale.z = 0.4
-                map_color = 0
-                if(room.name == marker_state.room):
-                    map_color = 1
-                marker.color.a = 1.0
-                marker.color.r = map_colors[map_color][0]
-                marker.color.g = map_colors[map_color][1]
-                marker.color.b = map_colors[map_color][2]
-                marker.pose.orientation.w = 1.0
-                marker.pose.position.x = 0.0
-                marker.pose.position.y = 0.0
-                marker.pose.position.z = 0.0
-                marker.lifetime = rospy.Duration.from_sec(0.1)
-                markerArray.markers.append(marker)
-                area_counter+=1
-                counter+=1
+                    (0.0, 0.0, 0.0, 1.0), rospy.Time.now(), frame_id, "/map")
+                defineMarker(room.name == marker_state.room, frame_id, 1)
             area_counter = 0
             for obj in room.obj_int:
+                frame_id = room.name + "-" + obj.name + "-" + str(area_counter)
                 br.sendTransform((obj.obj_area[0].x, obj.obj_area[0].y, obj.obj_area[0].z),
-                                (0.0, 0.0, 0.0, 1.0),
-                                rospy.Time.now(),
-                                room.name + "-" + obj.name + "-" + str(area_counter),
-                                "/map")
-                marker = Marker()
-                marker.header.frame_id = room.name + "-" + obj.name + "-" + str(area_counter)
-                marker.header.stamp = rospy.Time.now()
-                marker.type = marker.CUBE
-                marker.action = marker.ADD
-                marker.ns = "map_goal_point"
-                marker.id = counter
-                marker.scale.x = 0.4
-                marker.scale.y = 0.4
-                marker.scale.z = 0.4
-                map_color = 0
-                if(room.name == marker_state.room):
-                    map_color = 1
-                marker.color.a = 1.0
-                marker.color.r = map_colors[map_color][0]
-                marker.color.g = map_colors[map_color][1]
-                marker.color.b = map_colors[map_color][2]
-                marker.pose.orientation.w = 1.0
-                marker.pose.position.x = 0.0
-                marker.pose.position.y = 0.0
-                marker.pose.position.z = 0.0
-                marker.lifetime = rospy.Duration.from_sec(0.1)
-                markerArray.markers.append(marker)
-                area_counter+=1
-                counter+=1
+                    (0.0, 0.0, 0.0, 1.0), rospy.Time.now(), frame_id, "/map")
+                defineMarker(room.name == marker_state.room, frame_id, 2)
     # rospy.loginfo("Map updated")
 
 if __name__ == '__main__':
