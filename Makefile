@@ -49,6 +49,16 @@ melodic.build:
 	@docker build -t ros:melodic -f Dockerfile.melodic .
 
 #: Create Docker container
+melodic.rviz:
+	@docker run \
+		-it -d --privileged \
+		-v /tmp/.X11-unix:/tmp/.X11-unix \
+		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
+		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
+		--network host \
+		--name ros-melodic \
+		ros:melodic
+
 melodic.create: 
 	@docker run \
 		-it -d \
