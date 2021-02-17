@@ -52,6 +52,19 @@ melodic.build:
 melodic.create: 
 	@docker run \
 		-it -d \
+		--gpus all \
+		--device /dev/snd:/dev/snd \
+		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
+		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
+		--network host \
+		--name ros-melodic \
+		ros:melodic
+	
+#: Create Docker container
+melodic.gpu.create: 
+	@nvidia-docker run \
+		-it -d \
+		--gpus all \
 		--device /dev/snd:/dev/snd \
 		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
 		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
@@ -94,4 +107,3 @@ list:
 #: Show a list of containers.
 listUp:
 	@docker ps
-
