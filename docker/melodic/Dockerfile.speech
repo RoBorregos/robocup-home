@@ -34,14 +34,17 @@ RUN apt-get update && apt-get install -y wget && wget http://prdownloads.sourcef
     rm -rf /var/lib/apt/lists/*
 
 # Python Dependencies
-COPY pythonDependencies.txt /pythonDependencies.txt
-RUN pip install -r pythonDependencies.txt
+COPY docker/melodic/speechDependencies.txt /speechDependencies.txt
+RUN pip install -r speechDependencies.txt
 
 # Deepspeech Pre-Run
 RUN cd /catkin_home/src/action_selectors/scripts/DeepSpeech && python2 -m data.librispeech.librispeech --full_download False --manifest_prefix "data/librispeech/manifest"
 
 # Change Workdir
 WORKDIR catkin_home
+
+# catkin_make
+RUN /bin/bash -c '. /opt/ros/melodic/setup.bash;catkin_make'
 
 # Add ROS environment variables automatically
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
