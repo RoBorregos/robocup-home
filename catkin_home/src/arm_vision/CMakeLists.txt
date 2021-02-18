@@ -72,11 +72,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
+generate_messages(
    DEPENDENCIES
    sensor_msgs
    std_msgs
-   )
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -203,9 +203,18 @@ include_directories(
 
 # Add libraries
 add_subdirectory(include/SegmentationNode)
+add_dependencies(SegmentationNode 
+  ${PROJECT_NAME}_generate_messages_cpp
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+  ${catkin_EXPORTED_TARGETS}
+)
 
 add_executable(cloud_segmentation_example_node src/cloud_segmentation_example.cpp)
-add_dependencies(cloud_segmentation_example_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(cloud_segmentation_example_node 
+  ${PROJECT_NAME}_generate_messages_cpp
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+  ${catkin_EXPORTED_TARGETS}
+)
 
 target_link_libraries(cloud_segmentation_example_node ${catkin_LIBRARIES} SegmentationNode)
 #############
