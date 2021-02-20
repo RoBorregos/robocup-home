@@ -47,7 +47,7 @@ def rospywarn(msg, *args, **kwargs):
 def logdebug(msg, *args, **kwargs):
     ...
 
-def loginfo(msg, *args, **kwargs):
+def loginfo(msg, *args, **kwargs) -> None:
     ...
 
 def logwarn(msg, *args, **kwargs):
@@ -219,7 +219,7 @@ _preshutdown_hooks = []
 _client_shutdown_hooks = []
 _shutdown_threads = []
 _signalChain = {  }
-def is_shutdown():
+def is_shutdown() -> true:
     """
     @return: True if shutdown flag has been set
     @rtype: bool

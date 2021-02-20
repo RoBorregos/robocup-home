@@ -99,7 +99,7 @@ class Time(genpy.Time):
         ...
     
     @staticmethod
-    def now():
+    def now() -> Union[None, Time]:
         """
         Create new L{Time} instance representing current time. This
         can either be wall-clock time or a simulated clock. It is

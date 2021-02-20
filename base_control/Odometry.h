@@ -59,9 +59,9 @@ class Odometry{
         
         // Suscriber.
         ros::Subscriber<geometry_msgs::Twist, Odometry> velocity_subscriber_;
-        static constexpr double kLinearXMaxVelocity = 0.39;
-        static constexpr double kLinearYMaxVelocity = 0.39;
-        static constexpr double kAngularZMaxVelocity = 0.39;
+        static constexpr double kLinearXMaxVelocity = 0.19;
+        static constexpr double kLinearYMaxVelocity = 0.19;
+        static constexpr double kAngularZMaxVelocity = 0.19;
         static constexpr uint16_t kWatchdogPeriod = 500;
         
         // Publisher.
@@ -70,7 +70,7 @@ class Odometry{
         base_control::StampedEncoders front_encoders_msg_;
         base_control::StampedEncoders back_encoders_msg_;
         int last_encoder_counts_[kCountMotors];
-        static constexpr uint8_t kOdomPeriod = 50;
+        static constexpr uint8_t kOdomPeriod = 40;
         static constexpr uint16_t kIntMax = 65535;
         static constexpr uint16_t kCountReset = 250;
         static constexpr uint16_t kCountOverflow = 16374;        
