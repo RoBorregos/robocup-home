@@ -1,46 +1,4 @@
 # ----------------------------------------------------------------------
-#  Development Noetic
-# ----------------------------------------------------------------------
-
-#: Builds a Docker image from the current Dockerfile file
-noetic.build:
-	@docker build -t ros:noetic -f Dockerfile.noetic .
-
-
-#: Create Docker container
-noetic.create: 
-	@docker run \
-		-it -d \
-		-v ${shell pwd}/catkin_home:/catkin_home \
-		--network host \
-		--name ros-noetic \
-		ros:noetic
-
-#: Start the container in background
-noetic.up:
-	@docker start ros-noetic
-
-#: Stop the container
-noetic.down:
-	@docker stop ros-noetic
-
-#: Restarts the container
-noetic.restart:
-	@docker restart ros-noetic
-
-#: Shows the logs of the ros-noetic service container
-noetic.logs:
-	@docker logs --tail 50 ros-noetic
-
-#: Fires up a bash session inside the ros-noetic service container
-noetic.shell:
-	@docker exec -it ros-noetic bash
-
-#: Remove ros-noetic container. 
-noetic.remove: noetic.down
-	@docker container rm ros-noetic
-
-# ----------------------------------------------------------------------
 #  Development Melodic
 # ----------------------------------------------------------------------
 
