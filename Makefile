@@ -4,41 +4,65 @@
 
 #: Builds a Docker image from the current Dockerfile file
 noetic.build:
-	@docker build -t ros:noetic -f Dockerfile.noetic .
-
+	@docker build -t ros:noetic -f docker/noetic/Dockerfile .
+noetic.speech.build:
+	@docker build -t ros:noetic-speech -f docker/noetic/Dockerfile.speech .
 
 #: Create Docker container
 noetic.create: 
 	@docker run \
 		-it -d \
-		-v ${shell pwd}/catkin_home:/catkin_home \
+		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
+		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
 		--network host \
 		--name ros-noetic \
 		ros:noetic
+noetic.speech.create:
+	@docker run \
+		-it -d \
+		--gpus all \
+		--device /dev/snd:/dev/snd \
+		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
+		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
+		--network host \
+		--name ros-noetic-speech \
+		ros:noetic-speech
 
 #: Start the container in background
 noetic.up:
 	@docker start ros-noetic
+noetic.speech.up:
+	@docker start ros-noetic-speech
 
 #: Stop the container
 noetic.down:
 	@docker stop ros-noetic
+noetic.speech.down:
+	@docker stop ros-noetic-speech
 
 #: Restarts the container
 noetic.restart:
 	@docker restart ros-noetic
+noetic.speech.restart:
+	@docker restart ros-noetic-speech
 
 #: Shows the logs of the ros-noetic service container
 noetic.logs:
 	@docker logs --tail 50 ros-noetic
+noetic.speech.logs:
+	@docker logs --tail 50 ros-noetic-speech
 
 #: Fires up a bash session inside the ros-noetic service container
 noetic.shell:
 	@docker exec -it ros-noetic bash
+noetic.speech.shell:
+	@docker exec -it ros-noetic-speech bash
 
 #: Remove ros-noetic container. 
 noetic.remove: noetic.down
 	@docker container rm ros-noetic
+noetic.speech.remove: noetic.speech.down
+	@docker container rm ros-noetic-speech
 
 # ----------------------------------------------------------------------
 #  Development Melodic
