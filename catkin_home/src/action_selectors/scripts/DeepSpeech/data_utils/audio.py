@@ -1,7 +1,17 @@
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Contains the audio segment class."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 import numpy as np
 import io
@@ -12,6 +22,7 @@ import resampy
 from scipy import signal
 import random
 import copy
+import io
 
 
 class AudioSegment(object):
@@ -61,11 +72,11 @@ class AudioSegment(object):
         """Create audio segment from audio file.
         
         :param filepath: Filepath or file object to audio file.
-        :type filepath: basestring|file
+        :type filepath: str|file
         :return: Audio segment instance.
         :rtype: AudioSegment
         """
-        if isinstance(file, basestring) and re.findall(r".seqbin_\d+$", file):
+        if isinstance(file, str) and re.findall(r".seqbin_\d+$", file):
             return cls.from_sequence_file(file)
         else:
             samples, sample_rate = soundfile.read(file, dtype='float32')
@@ -77,7 +88,7 @@ class AudioSegment(object):
         the entire file into the memory which can be incredibly wasteful.
 
         :param file: Input audio filepath or file object.
-        :type file: basestring|file
+        :type file: str|file
         :param start: Start time in seconds. If start is negative, it wraps
                       around from the end. If not provided, this function 
                       reads from the very beginning.
@@ -96,7 +107,7 @@ class AudioSegment(object):
         sample_rate = sndfile.samplerate
         duration = float(len(sndfile)) / sample_rate
         start = 0. if start is None else start
-        end = 0. if end is None else end
+        end = duration if end is None else end
         if start < 0.0:
             start += duration
         if end < 0.0:
@@ -142,7 +153,7 @@ class AudioSegment(object):
         sequence file (starting from 1).
 
         :param filepath: Filepath of sequence file.
-        :type filepath: basestring
+        :type filepath: str
         :return: Audio segment instance.
         :rtype: AudioSegment
         """
@@ -154,7 +165,7 @@ class AudioSegment(object):
         fileno = int(matches.group(2))
 
         # read headers
-        f = open(filename, 'rb')
+        f = io.open(filename, mode='rb', encoding='utf8')
         version = f.read(4)
         num_utterances = struct.unpack("i", f.read(4))[0]
         bytes_per_header = struct.unpack("i", f.read(4))[0]
@@ -178,19 +189,16 @@ class AudioSegment(object):
             return cls(samples=samples, sample_rate=8000)
 
     @classmethod
-    def from_bytes(cls, bytes, **soundfile_options):
+    def from_bytes(cls, bytes):
         """Create audio segment from a byte string containing audio samples.
         
         :param bytes: Byte string containing audio samples.
         :type bytes: str
-        :param soundfile_options: Options for opening with soundfile library.
-        :type soundfile_options: **kwargs
         :return: Audio segment instance.
         :rtype: AudioSegment
         """
         samples, sample_rate = soundfile.read(
-            io.BytesIO(bytes), dtype='float32', 
-            **soundfile_options)
+            io.BytesIO(bytes), dtype='float32')
         return cls(samples, sample_rate)
 
     @classmethod
@@ -238,7 +246,7 @@ class AudioSegment(object):
         
         :param filepath: WAV filepath or file object to save the
                          audio segment.
-        :type filepath: basestring|file
+        :type filepath: str|file
         :param dtype: Subtype for audio file. Options: 'int16', 'int32',
                       'float32', 'float64'. Default is 'float32'.
         :type dtype: str
