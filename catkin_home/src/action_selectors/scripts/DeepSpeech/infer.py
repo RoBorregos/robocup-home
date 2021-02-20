@@ -1,13 +1,25 @@
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Inferer for DeepSpeech2 model."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
+import sys
 import argparse
 import functools
-import paddle.v2 as paddle
+import paddle.fluid as fluid
 from data_utils.data import DataGenerator
 from model_utils.model import DeepSpeech2Model
+from model_utils.model_check import check_cuda, check_version
 from utils.error_rate import wer, cer
 from utils.utility import add_arguments, print_arguments
 
@@ -15,7 +27,6 @@ parser = argparse.ArgumentParser(description=__doc__)
 add_arg = functools.partial(add_arguments, argparser=parser)
 # yapf: disable
 add_arg('num_samples',      int,    10,     "# of samples to infer.")
-add_arg('trainer_count',    int,    8,      "# of Trainers (CPUs or GPUs).")
 add_arg('beam_size',        int,    500,    "Beam search width.")
 add_arg('num_proc_bsearch', int,    8,      "# of CPUs for beam search.")
 add_arg('num_conv_layers',  int,    2,      "# of convolution layers.")
@@ -42,7 +53,7 @@ add_arg('lang_model_path',  str,
         'models/lm/common_crawl_00.prune01111.trie.klm',
         "Filepath for language model.")
 add_arg('model_path',       str,
-        './checkpoints/libri/params.latest.tar.gz',
+        './checkpoints/libri/step_final',
         "If None, the training starts from scratch, "
         "otherwise, it resumes from the pre-trained model.")
 add_arg('decoding_method',  str,
@@ -63,20 +74,31 @@ args = parser.parse_args()
 
 def infer():
     """Inference for DeepSpeech2."""
+
+    # check if set use_gpu=True in paddlepaddle cpu version
+    check_cuda(args.use_gpu)
+    # check if paddlepaddle version is satisfied
+    check_version()
+
+    if args.use_gpu:
+        place = fluid.CUDAPlace(0)
+    else:
+        place = fluid.CPUPlace()
+
     data_generator = DataGenerator(
         vocab_filepath=args.vocab_path,
         mean_std_filepath=args.mean_std_path,
         augmentation_config='{}',
         specgram_type=args.specgram_type,
-        num_threads=1,
-        keep_transcription_text=True)
+        keep_transcription_text=True,
+        place = place,
+        is_training = False)
     batch_reader = data_generator.batch_reader_creator(
         manifest_path=args.infer_manifest,
         batch_size=args.num_samples,
-        min_batch_size=1,
         sortagrad=False,
         shuffle_method=None)
-    infer_data = batch_reader().next()
+    infer_data = next(batch_reader())
 
     ds2_model = DeepSpeech2Model(
         vocab_size=data_generator.vocab_size,
@@ -84,16 +106,19 @@ def infer():
         num_rnn_layers=args.num_rnn_layers,
         rnn_layer_size=args.rnn_layer_size,
         use_gru=args.use_gru,
-        pretrained_model_path=args.model_path,
-        share_rnn_weights=args.share_rnn_weights)
+        share_rnn_weights=args.share_rnn_weights,
+        place=place,
+        init_from_pretrained_model=args.model_path)
 
     # decoders only accept string encoded in utf-8
-    vocab_list = [chars.encode("utf-8") for chars in data_generator.vocab_list]
+    vocab_list = [chars for chars in data_generator.vocab_list]
 
     if args.decoding_method == "ctc_greedy":
         ds2_model.logger.info("start inference ...")
-        probs_split = ds2_model.infer_batch_probs(infer_data=infer_data,
+        probs_split = ds2_model.infer_batch_probs(
+            infer_data=infer_data,
             feeding_dict=data_generator.feeding)
+
         result_transcripts = ds2_model.decode_batch_greedy(
             probs_split=probs_split,
             vocab_list=vocab_list)
@@ -101,9 +126,11 @@ def infer():
         ds2_model.init_ext_scorer(args.alpha, args.beta, args.lang_model_path,
                                   vocab_list)
         ds2_model.logger.info("start inference ...")
-        probs_split = ds2_model.infer_batch_probs(infer_data=infer_data,
+        probs_split= ds2_model.infer_batch_probs(
+            infer_data=infer_data,
             feeding_dict=data_generator.feeding)
-        result_transcripts = ds2_model.decode_batch_beam_search(
+
+        result_transcripts= ds2_model.decode_batch_beam_search(
             probs_split=probs_split,
             beam_alpha=args.alpha,
             beam_beta=args.beta,
@@ -114,7 +141,7 @@ def infer():
             num_processes=args.num_proc_bsearch)
 
     error_rate_func = cer if args.error_rate_type == 'cer' else wer
-    target_transcripts = [data[1] for data in infer_data]
+    target_transcripts = infer_data[1]
     for target, result in zip(target_transcripts, result_transcripts):
         print("\nTarget Transcription: %s\nOutput Transcription: %s" %
               (target, result))
@@ -125,9 +152,6 @@ def infer():
 
 def main():
     print_arguments(args)
-    paddle.init(use_gpu=args.use_gpu,
-                rnn_use_batch=True,
-                trainer_count=args.trainer_count)
     infer()
 
 

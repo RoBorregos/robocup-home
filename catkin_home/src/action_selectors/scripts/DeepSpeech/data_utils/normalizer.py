@@ -1,7 +1,17 @@
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Contains feature normalizers."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 import numpy as np
 import random
@@ -18,9 +28,9 @@ class FeatureNormalizer(object):
     should be given for on-the-fly mean and stddev computing.
 
     :param mean_std_filepath: File containing the pre-computed mean and stddev.
-    :type mean_std_filepath: None|basestring
+    :type mean_std_filepath: None|str
     :param manifest_path: Manifest of instances for computing mean and stddev.
-    :type meanifest_path: None|basestring
+    :type meanifest_path: None|str
     :param featurize_func: Function to extract features. It should be callable
                            with ``featurize_func(audio_segment)``.
     :type featurize_func: None|callable
@@ -63,7 +73,7 @@ class FeatureNormalizer(object):
         """Write the mean and stddev to the file.
 
         :param filepath: File to write mean and stddev.
-        :type filepath: basestring
+        :type filepath: str
         """
         np.savez(filepath, mean=self._mean, std=self._std)
 

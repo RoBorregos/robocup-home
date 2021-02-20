@@ -1,5 +1,18 @@
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Client-end for the ASR demo."""
-from pynput import keyboard
+import keyboard
 import struct
 import socket
 import sys
@@ -23,22 +36,17 @@ is_recording = False
 enable_trigger_record = True
 
 
-def on_press(key):
-    """On-press keyboard callback function."""
+def on_press_release(x):
+    """Keyboard callback function."""
     global is_recording, enable_trigger_record
-    if key == keyboard.Key.space:
+    press = keyboard.KeyboardEvent('down', 28, 'space')
+    release = keyboard.KeyboardEvent('up', 28, 'space')
+    if x.event_type == 'down' and x.name == press.name:
         if (not is_recording) and enable_trigger_record:
             sys.stdout.write("Start Recording ... ")
             sys.stdout.flush()
             is_recording = True
-
-
-def on_release(key):
-    """On-release keyboard callback function."""
-    global is_recording, enable_trigger_record
-    if key == keyboard.Key.esc:
-        return False
-    elif key == keyboard.Key.space:
+    if x.event_type == 'up' and x.name == release.name:
         if is_recording == True:
             is_recording = False
 
@@ -61,7 +69,7 @@ def callback(in_data, frame_count, time_info, status):
         print('Speech[length=%d] Sent.' % len(sent))
         # Receive data from the server and shut down
         received = sock.recv(1024)
-        print "Recognition Results: {}".format(received)
+        print("Recognition Results: {}".format(received))
         sock.close()
         data_list = []
     enable_trigger_record = True
@@ -80,9 +88,10 @@ def main():
     stream.start_stream()
 
     # prepare keyboard listener
-    with keyboard.Listener(
-            on_press=on_press, on_release=on_release) as listener:
-        listener.join()
+    while (1):
+        keyboard.hook(on_press_release)
+        if keyboard.record('esc'):
+            break
 
     # close up
     stream.stop_stream()

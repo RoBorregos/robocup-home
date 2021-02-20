@@ -3,15 +3,16 @@ import time
 import random
 from os import path
 import sys
+import numpy as np
 import argparse
 import functools
-import paddle.v2 as paddle
-# TODO: Check if rospy should also be imported.
+# TODO: Check GPU Implementation.
+import paddle.fluid as fluid
 import rospkg
 # TODO: Analyze why inside the DeepSpeech dir, everything can be imported
 # directly without the package. Maybe is because the _init_paths.py and/or
 # the `absolute_import`.
-import _init_paths
+from DeepSpeech.deploy import _init_paths
 from data_utils.data import DataGenerator
 from model_utils.model import DeepSpeech2Model
 from data_utils.utility import read_manifest
@@ -39,10 +40,8 @@ add_arg('cutoff_top_n',     int,    40,     "Cutoff number for pruning.")
 
 add_arg('use_gpu',          bool,   False,   "Use GPU or not.")
 
-# https://stackoverflow.com/questions/3430372/how-do-i-get-the-full-path-of-the-current-files-directory
-# deepspeech_home_path = path.join(path.dirname(path.abspath(__file__)), "../")
 rp = rospkg.RosPack()
-# https://answers.ros.org/question/236116/how-do-i-access-files-in-same-directory-as-executable-python-catkin/
+
 deepspeech_home_path = path.join(rp.get_path("action_selectors"), "scripts", "DeepSpeech")
 add_arg('warmup_manifest',  str,
         path.join(deepspeech_home_path, 'data/librispeech/manifest.test-clean'),
@@ -54,7 +53,7 @@ add_arg('vocab_path',       str,
         path.join(deepspeech_home_path, 'models/baidu_en8k/vocab.txt'),
         "Filepath of vocabulary.")
 add_arg('model_path',       str,
-        path.join(deepspeech_home_path, 'models/baidu_en8k/params.tar.gz'),
+        path.join(deepspeech_home_path, 'models/baidu_en8k/'),
         "If None, the training starts from scratch, "
         "otherwise, it resumes from the pre-trained model.")
 add_arg('lang_model_path',  str,
@@ -72,9 +71,12 @@ class ASRServer:
     def __init__(self, num_processes_beam_search=1):
         self.num_processes_beam_search = num_processes_beam_search
         print_arguments(args)
-
-        paddle.init(use_gpu=args.use_gpu, trainer_count=1)
-
+        
+        if args.use_gpu:
+            self.place = fluid.CUDAPlace(0)
+        else:
+            self.place = fluid.CPUPlace()
+        
         self._start_server()
 
 
@@ -92,10 +94,29 @@ class ASRServer:
 
         return self._predict_with_features(features)
 
+    def _process_features(self, feature):
+        audio_len = feature[0].shape[1]
+        mask_shape0 = (feature[0].shape[0] - 1) // 2 + 1
+        mask_shape1 = (feature[0].shape[1] - 1) // 3 + 1
+        mask_max_len = (audio_len - 1) // 3 + 1
+        mask_ones = np.ones((mask_shape0, mask_shape1))
+        mask_zeros = np.zeros((mask_shape0, mask_max_len - mask_shape1))
+        mask = np.repeat(
+            np.reshape(
+                np.concatenate((mask_ones, mask_zeros), axis=1),
+                (1, mask_shape0, mask_max_len)),
+            32,
+            axis=0)
+        feature = (np.array([feature[0]]).astype('float32'),
+                   None,
+                   np.array([audio_len]).astype('int64').reshape([-1,1]),
+                   np.array([mask]).astype('float32'))
+        return feature
 
     def _predict_with_features(self, features):
+        features = self._process_features(features)
         probs_split = self.ds2_model.infer_batch_probs(
-            infer_data=[features],
+            infer_data=features,
             feeding_dict=self.data_generator.feeding)
 
         if args.decoding_method == "ctc_greedy":
@@ -122,7 +143,7 @@ class ASRServer:
             mean_std_filepath=args.mean_std_path,
             augmentation_config='{}',
             specgram_type=SPECGRAM_TYPE,
-            num_threads=1,
+            place = self.place,
             keep_transcription_text=True)
 
         self.ds2_model = DeepSpeech2Model(
@@ -131,11 +152,12 @@ class ASRServer:
             num_rnn_layers=NUM_RNN_LAYERS,
             rnn_layer_size=RNN_LAYER_SIZE,
             use_gru=USE_GRU,
-            pretrained_model_path=args.model_path,
+            init_from_pretrained_model=args.model_path,
+            place = self.place,
             share_rnn_weights=SHARE_RNN_WEIGHTS)
-
-        self.vocab_list = [chars.encode("utf-8") for chars in self.data_generator.vocab_list]
-
+        
+        self.vocab_list = [chars for chars in self.data_generator.vocab_list]
+        
         if args.decoding_method == "ctc_beam_search":
             self.ds2_model.init_ext_scorer(args.alpha, args.beta, args.lang_model_path,
                                     self.vocab_list)
@@ -172,9 +194,7 @@ if not path.isfile(args.mean_std_path):
     print("It should be in " + args.mean_std_path)
 
     print("To download it go to " +
-        "https://github.com/diegocardozo97/DeepSpeech/releases " +
-        "and select the file called 'speech_model-baidu_en8k.zip', " +
-        "extract it and inside is the needed file.\n")
+        "models/baidu_en8k and run download_model.sh .\n")
 
     error_and_exit = True
 
@@ -183,20 +203,7 @@ if not path.isfile(args.vocab_path):
     print("It should be in " + args.vocab_path)
 
     print("To download it go to " +
-        "https://github.com/diegocardozo97/DeepSpeech/releases " +
-        "and select the file called 'speech_model-baidu_en8k.zip', " +
-        "extract it and inside is the needed file.\n")
-    
-    error_and_exit = True
-
-if not path.isfile(args.model_path):
-    print("ERROR[DeepSpeech]: The file for 'speech model' seems to be missing.")
-    print("It should be in " + args.model_path)
-
-    print("To download it go to " +
-        "https://github.com/diegocardozo97/DeepSpeech/releases " +
-        "and select the file called 'speech_model-baidu_en8k.zip', " +
-        "extract it and inside is the needed file.\n")
+        "models/baidu_en8k and run download_model.sh .\n")
     
     error_and_exit = True
 
@@ -206,7 +213,7 @@ if not path.isfile(args.warmup_manifest):
 
     print("To download it executes the python script " +
         "DeepSpeech/data/librispeech/librispeech.py in the DeepSpeech folder in following way: " +
-        "python2 -m data.librispeech.librispeech --full_download False --manifest_prefix \"data/librispeech/manifest\" " +
+        "python3 -m data.librispeech.librispeech --full_download False --manifest_prefix \"data/librispeech/manifest\" " +
         "\n")
     
     error_and_exit = True

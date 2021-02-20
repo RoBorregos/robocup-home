@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
     Script that simulate physical robot action of sending encoders ticks.
 '''

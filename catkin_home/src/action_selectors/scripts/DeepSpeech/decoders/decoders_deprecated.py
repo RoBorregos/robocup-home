@@ -1,7 +1,17 @@
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Contains various CTC decoders."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 from itertools import groupby
 import numpy as np
@@ -102,7 +112,7 @@ def ctc_beam_search_decoder(probs_seq,
     probs_b_prev, probs_nb_prev = {'\t': 1.0}, {'\t': 0.0}
 
     ## extend prefix in loop
-    for time_step in xrange(len(probs_seq)):
+    for time_step in range(len(probs_seq)):
         # prefix_set_next: the set containing candidate prefixes
         # probs_b_cur: prefixes' probability ending with blank in current step
         # probs_nb_cur: prefixes' probability ending with non-blank in current step
@@ -114,7 +124,7 @@ def ctc_beam_search_decoder(probs_seq,
         if cutoff_prob < 1.0 or cutoff_top_n < cutoff_len:
             prob_idx = sorted(prob_idx, key=lambda asd: asd[1], reverse=True)
             cutoff_len, cum_prob = 0, 0.0
-            for i in xrange(len(prob_idx)):
+            for i in range(len(prob_idx)):
                 cum_prob += prob_idx[i][1]
                 cutoff_len += 1
                 if cum_prob >= cutoff_prob:
@@ -123,11 +133,11 @@ def ctc_beam_search_decoder(probs_seq,
             prob_idx = prob_idx[0:cutoff_len]
 
         for l in prefix_set_prev:
-            if not prefix_set_next.has_key(l):
+            if l not in prefix_set_next:
                 probs_b_cur[l], probs_nb_cur[l] = 0.0, 0.0
 
             # extend prefix by travering prob_idx
-            for index in xrange(cutoff_len):
+            for index in range(cutoff_len):
                 c, prob_c = prob_idx[index][0], prob_idx[index][1]
 
                 if c == blank_id:
@@ -137,7 +147,7 @@ def ctc_beam_search_decoder(probs_seq,
                     last_char = l[-1]
                     new_char = vocabulary[c]
                     l_plus = l + new_char
-                    if not prefix_set_next.has_key(l_plus):
+                    if l_plus not in prefix_set_next:
                         probs_b_cur[l_plus], probs_nb_cur[l_plus] = 0.0, 0.0
 
                     if new_char == last_char:
@@ -164,7 +174,7 @@ def ctc_beam_search_decoder(probs_seq,
 
         ## store top beam_size prefixes
         prefix_set_prev = sorted(
-            prefix_set_next.iteritems(), key=lambda asd: asd[1], reverse=True)
+            prefix_set_next.items(), key=lambda asd: asd[1], reverse=True)
         if beam_size < len(prefix_set_prev):
             prefix_set_prev = prefix_set_prev[:beam_size]
         prefix_set_prev = dict(prefix_set_prev)

@@ -1,5 +1,4 @@
 """Prepare Librispeech ASR datasets.
-
 Download, unpack and create manifest files.
 Manifest file is a json-format file with each line containing the
 meta data (i.e. audio filepath, transcript and audio duration)

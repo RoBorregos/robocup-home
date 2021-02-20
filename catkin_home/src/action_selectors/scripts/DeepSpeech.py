@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 This script creates the node `DeepSpeech` that taking voice audio from topic
 `UsefulAudioDeepSpeech`, does speech-to-text and publishes the resulting text.

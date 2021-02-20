@@ -1,0 +1,42 @@
+# Use the existing ROS-NOETIC image
+FROM osrf/ros:noetic-desktop-full
+
+# Install dependencies
+RUN apt-get update -qq && \
+    apt-get install -y \
+    build-essential \
+    nano \
+    git \
+    autoconf \
+    libtool \
+    python3-pip \
+    ros-noetic-audio-common \
+    ros-noetic-map-server \
+    ros-noetic-move-base \
+    ros-noetic-rosserial-arduino \ 
+    ros-noetic-rosserial && \
+    rm -rf /var/lib/apt/lists/*
+
+# nvidia-container-runtime
+ENV NVIDIA_VISIBLE_DEVICES \
+    ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES \
+    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+
+
+# Init catkin_home directoy
+RUN mkdir /catkin_home
+COPY catkin_home/ catkin_home/
+
+# Change Workdir
+WORKDIR catkin_home
+
+# catkin_make
+RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;catkin_make'
+
+# Base Control Dependency
+RUN /bin/bash -c 'mkdir -p /Arduino/libraries;cd /Arduino/libraries;. /catkin_home/devel/setup.bash;rosrun rosserial_arduino make_libraries.py . '
+
+# Add ROS environment variables automatically
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN echo "[ -f /catkin_home/devel/setup.bash ] && source /catkin_home/devel/setup.bash" >> ~/.bashrc
