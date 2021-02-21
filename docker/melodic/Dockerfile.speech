@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y pkg-config libflac-dev libogg-dev libvo
     rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y wget && wget http://prdownloads.sourceforge.net/swig/swig-3.0.12.tar.gz && \
     tar xvzf swig-3.0.12.tar.gz && cd swig-3.0.12 && ./autogen.sh && ./configure && make && make install &&\
-    cd /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig && ./setup.sh && \
+    cd /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig && swig -python -c++ ./decoders.i && ./setup.sh && \
     rm -rf /var/lib/apt/lists/*
 
 # Python Dependencies
@@ -41,7 +41,7 @@ RUN pip install -r speechDependencies.txt
 RUN cd /catkin_home/src/action_selectors/scripts/DeepSpeech && python2 -m data.librispeech.librispeech --full_download False --manifest_prefix "data/librispeech/manifest"
 
 # Change Workdir
-WORKDIR catkin_home
+WORKDIR /catkin_home
 
 # catkin_make
 RUN /bin/bash -c '. /opt/ros/melodic/setup.bash;catkin_make'

@@ -25,6 +25,8 @@ melodic.speech.create:
 		--gpus all \
 		--device /dev/snd:/dev/snd \
 		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
+		-v /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig  \
+		-v /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech  \
 		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
 		--network host \
 		--name ros-melodic-speech \
