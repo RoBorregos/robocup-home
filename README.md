@@ -5,6 +5,16 @@ This repository contains the development of RoBorregos' robotic solution for [Ro
 
 See [RoboCup @HOME Rules](https://robocupathome.github.io/RuleBook/rulebook/master.pdf).
 
+## Project setup
+
+1. Clone the project repository on your local machine.
+
+   SSH:
+
+   ```bash
+   $ git clone --recurse-submodules https://github.com/RoBorregos/Robocup-Home.git
+   ```
+
 ## Project details
 
 This project is made using:
