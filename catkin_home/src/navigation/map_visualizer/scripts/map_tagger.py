@@ -28,6 +28,8 @@ from map_visualizer.msg import Room
 from map_visualizer.msg import ObjInt
 from map import Map
 import os
+from os import listdir
+from os.path import isfile, join
 
 def callback(data):
     """Gets point location placed on the map in rviz and
@@ -86,9 +88,63 @@ if __name__ == '__main__':
     print("~~~~~~~~~~~~~~~~~~~~~~~~~")
     global map
     global state
-    x = 1
-    x = raw_input("Give me the name of the map: ")
-    map.name = x
+    print("What do you want to do?")
+    print("1. Open existing map")
+    print("2. Create new map")
+    print("0. Exit")
+    x = input()
+    print()
+
+    if(x not in [1, 2]):
+        exit(0)
+
+    if(x==1):
+        print("Choose a map:")
+        maps = [f for f in listdir("./src/navigation/map_visualizer/contextmaps") ]
+        x=-1
+        for index, context_map in enumerate(maps):
+            print(str(index+1) + ". " + context_map[:-5])
+        print("0. Exit")
+        x = input()
+        if x==0 or x>len(maps): exit(0)
+
+        context_map = None
+        with open("./src/navigation/map_visualizer/contextmaps/" + maps[x-1], "r") as read_file:
+            context_map = json.load(read_file)
+
+        map.name = context_map["name"]
+        for room in context_map["rooms"]:
+            new_room = Room()
+            new_room.name = context_map["rooms"][room]["name"]
+            map.rooms.append(new_room)
+            for area_point in context_map["rooms"][room]["area"]:
+                point = Point()
+                point.x = area_point[0]
+                point.y = area_point[1]
+                point.z = 0.0
+                map.rooms[-1].area.append(point)
+            for entrance in context_map["rooms"][room]["entrance"]:
+                point = Point()
+                point.x = entrance[0]
+                point.y = entrance[1]
+                point.z = 0.0
+                map.rooms[-1].entrances.append(point)
+            for obj in context_map["rooms"][room]["obj_int"]:
+                obj_int = ObjInt()
+                obj_int.name = obj
+                map.rooms[-1].obj_int.append(obj_int)
+                for obj_point in context_map["rooms"][room]["obj_int"][obj]:
+                    point = Point()
+                    point.x = obj_point[0]
+                    point.y = obj_point[1]
+                    point.z = 0.0
+                    map.rooms[-1].obj_int[-1].obj_area.append(point)
+        map_publisher.publish(map)
+        print(map)
+    else:
+        x = raw_input("Give me the name of the map: ")
+        map.name = x
+
     while not rospy.is_shutdown():
         print("What do you want to do?")
         print("1. Add a room")
