@@ -29,7 +29,7 @@ RUN mkdir /catkin_home
 COPY catkin_home/ catkin_home/
 
 # Change Workdir
-WORKDIR catkin_home
+WORKDIR /catkin_home
 
 # catkin_make
 RUN /bin/bash -c '. /opt/ros/melodic/setup.bash;catkin_make'
