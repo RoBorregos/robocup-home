@@ -22,12 +22,13 @@ docker run -it -d\
     --volume="$PWD/catkin_home/typings:/catkin_home/typings" \
     --net=host \
     --privileged \
-    --name=ros-melodic-navigation \
-    ros:melodic-navigation \
+    --runtime=nvidia \
+    --name=ros-melodic-navigation-gpu \
+    ros:melodic-navigation-gpu \
     bash
 
 ARDUINO_PATH="${HOME}/Arduino/libraries/ros_lib" 
 rm -f -r ${ARDUINO_PATH}
 mkdir -p $ARDUINO_PATH
-docker cp ros-melodic-navigation:/Arduino/libraries/ros_lib $ARDUINO_PATH
+docker cp ros-melodic-navigation-gpu:/Arduino/libraries/ros_lib $ARDUINO_PATH
 chmod -R 777 ${ARDUINO_PATH}
