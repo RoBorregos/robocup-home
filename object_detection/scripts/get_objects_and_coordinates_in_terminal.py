@@ -137,4 +137,3 @@ if __name__ == '__main__':
         print(json_result)
 
     print("*Script ended*")
-
