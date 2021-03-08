@@ -25,6 +25,7 @@ output:
 """
 
 import os
+import time
 # Run tensorflow CPU instead of GPU (because the Jetson Nano runs out of memory when using GPU)
 os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
@@ -46,7 +47,7 @@ matplotlib.use('TkAgg')
 MODEL_NAME = 'saved_model'
 # TODO: Because this is going to be called by other script, maybe is better to use
 # __file__. https://stackoverflow.com/a/3430395
-CWD_PATH = '/home/ricardochapa/Desktop/Roborregos/TensorFlow'
+CWD_PATH = '/home/ricardochapa/Desktop/Roborregos/TensorFlow/model_tf2'
 PATH_TO_SAVED_MODEL = os.path.join(CWD_PATH, MODEL_NAME)
 PATH_TO_LABELS = os.path.join(CWD_PATH,'label_map.pbtxt')
 NUM_CLASSES = 4
@@ -69,8 +70,7 @@ def load_model():
     category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
 
     def run_inference_on_image(image):
-
-        # Convert CV2 imagre from BGR to RGB
+        # Convert CV2 image from BGR to RGB
         # Comment this line in case the model can take any order of RGB
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -81,8 +81,16 @@ def load_model():
         # The input needs to be a tensor, convert it using `tf.convert_to_tensor`.
         input_tensor = tf.convert_to_tensor(image_np, dtype=tf.uint8)
 
+        print('Loading model...', end='')
+        start_time = time.time()
+
         # Run the model to get the detections dictionary
         detections = detect_fn(input_tensor)
+
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print('Done! Took {} seconds'.format(elapsed_time))
+
 
         # All outputs are batches tensors.
         # Convert to numpy arrays, and take index [0] to remove the batch dimension.
@@ -141,7 +149,7 @@ def get_objects_json(boxes, scores, classes, height, width):
             }
     
     # Return the most compact form of the json.
-    return json.dumps(objects, separators=(',',':'))
+    return json.dumps(objects, separators=(',',':'), indent=2)
     
 def compute_result(run_inference_on_image, path_to_img):
     image = cv2.imread(path_to_img)
@@ -150,20 +158,20 @@ def compute_result(run_inference_on_image, path_to_img):
     return get_objects_json(boxes, scores, classes, image.shape[0], image.shape[1])
 
 if __name__ == '__main__':
-    print("*Script started*")
+    print("*Script started*\n")
     run_inference_on_image = load_model()
-    print("*Model loaded*")
-
     print("~#ready#~")
+
+    # Path to test_image example. Replace this with another test image of your choice
     # /home/ricardochapa/Downloads/test_image.jpg
     while True:
-        print("~#waiting input#~")
+        print("~#waiting input#~\n")
         img_path = input()
         if img_path == "~#exit#~":
             break
 
         json_result = compute_result(run_inference_on_image, img_path)
-        print("~#result#~")
+        print("~#result#~\n")
         print(json_result)
 
     print("*Script ended*")
