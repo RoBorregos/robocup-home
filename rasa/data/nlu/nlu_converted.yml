@@ -1,0 +1,72 @@
+version: "2.0"
+nlu:
+- intent: bring_something
+  examples: |
+    - Bring the [soda](object) from the [living room](place)
+    - Please bring and [apple](object) from the [kitchen](place)
+    - Bring the a [banana](object) from the [studio](place) robot
+    - Go to the [bedroom](place) and bring me [coffee](object)
+    - Bring me the [bottle](object) from the [kitchen](place)
+    - Bring me the [pizza](object) from the [basement](place)
+    - Bring me the [soda](object) from the [kitchen](place)
+- intent: introduce_people
+  examples: |
+    - Please introduce me to [karla](names)
+    - I want to meet [hector](names)
+    - introduce me to [isaac](names)
+- intent: introduce_myself
+  examples: |
+    - Im called [juan](names)
+    - My name is [jorge](names)
+    - [Manuel](names)
+    - [Ricardo](names)
+    - [Isamel](names)
+    - [Karina](names)
+    - I am [israel](names)
+    - [a-zA-Z\s]+$
+- intent: yes
+  examples: |
+    - yes
+    - yeah
+    - sure
+    - ok
+    - fine
+    - yes, do that
+- intent: no
+  examples: |
+    - no
+    - nope
+    - don't
+    - please no
+    - forget it
+    - cancel that
+- intent: bye
+  examples: |
+    - bye
+    - Bye
+    - Goodbye
+    - See you
+    - Ok bye
+    - Later bitch
+    - See ya later alligator
+    - Byebye
+    - Bay
+- intent: greet
+  examples: |
+    - Hey
+    - Hi
+    - Hello
+- intent: stop
+  examples: |
+    - stop
+    - exit
+    - close
+    - please end
+    - please stop
+    - stop stop
+- intent: thank
+  examples: |
+    - thanks
+    - thank you
+    - thanks mate
+    - Thanks

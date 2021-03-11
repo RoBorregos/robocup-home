@@ -1,0 +1,20 @@
+version: "2.0"
+rules:
+- rule: activate_form_ask_name
+  steps:
+  - intent: introduce_people
+  - action: name_form
+  - active_loop: name_form
+- rule: submit_form_ask_name
+  condition:
+  - active_loop: name_form
+  steps:
+  - action: name_form
+  - active_loop: null
+  - slot_was_set:
+    - request_slot: null
+  - action: utter_introduce
+- rule: Rule to map `thank` intent to `utter_you're_welcome` (automatic conversion)
+  steps:
+  - intent: thank
+  - action: utter_you're_welcome
