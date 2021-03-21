@@ -18,6 +18,7 @@ import json
 import codecs
 from data_utils.utility import download, unpack
 
+# TODO(Josecisneros001): Support ipv6 with this dependency.
 URL_ROOT = "http://www.openslr.org/resources/12"
 URL_TEST_CLEAN = URL_ROOT + "/test-clean.tar.gz"
 URL_TEST_OTHER = URL_ROOT + "/test-other.tar.gz"

@@ -1,0 +1,51 @@
+# Use the existing ROS-MELODIC image
+FROM osrf/ros:melodic-desktop-full
+
+# Install dependencies
+RUN apt-get update -qq && \
+    apt-get install -y \
+    build-essential \
+    nano \
+    git \
+    autoconf \
+    libtool \
+    python-pip \
+    ros-melodic-audio-common \
+    ros-melodic-move-base && \
+    rm -rf /var/lib/apt/lists/*
+
+# Init catkin_home directoy
+RUN mkdir /catkin_home
+COPY catkin_home/ catkin_home/
+
+# Speech Dependencies
+# PyAudio
+RUN apt-get update && apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg -y && \
+    rm -rf /var/lib/apt/lists/*
+# Microphone
+RUN apt-get update && apt-get install alsa-base alsa-utils -y && \
+    rm -rf /var/lib/apt/lists/*
+# Deepspeech
+RUN apt-get update && apt-get install -y pkg-config libflac-dev libogg-dev libvorbis-dev libboost-dev swig python-dev && \
+    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y wget && wget http://prdownloads.sourceforge.net/swig/swig-3.0.12.tar.gz && \
+    tar xvzf swig-3.0.12.tar.gz && cd swig-3.0.12 && ./autogen.sh && ./configure && make && make install &&\
+    cd /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig && swig -python -c++ ./decoders.i && ./setup.sh && \
+    rm -rf /var/lib/apt/lists/*
+
+# Python Dependencies
+COPY docker/melodic/speechDependencies.txt /speechDependencies.txt
+RUN pip install -r speechDependencies.txt
+
+# Deepspeech Pre-Run
+RUN cd /catkin_home/src/action_selectors/scripts/DeepSpeech && python2 -m data.librispeech.librispeech --full_download False --manifest_prefix "data/librispeech/manifest"
+
+# Change Workdir
+WORKDIR /catkin_home
+
+# catkin_make
+RUN /bin/bash -c '. /opt/ros/melodic/setup.bash;catkin_make'
+
+# Add ROS environment variables automatically
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+RUN echo "[ -f /catkin_home/devel/setup.bash ] && source /catkin_home/devel/setup.bash" >> ~/.bashrc
