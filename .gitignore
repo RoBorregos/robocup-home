@@ -37,6 +37,8 @@ wrokspace.code-workspace
 
 ### Others ###
 /rasa/venv/
+/rasa/models/
+/rasa/results/
 *.DS_Store
 *.pyc
 .vscode/

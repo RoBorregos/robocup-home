@@ -14,19 +14,17 @@ pipeline: null
 #   - name: DIETClassifier
 #     epochs: 100
 #     constrain_similarities: true
-#     model_confidence: cosine
 #   - name: EntitySynonymMapper
 #   - name: ResponseSelector
 #     epochs: 100
 #     constrain_similarities: true
-#     model_confidence: cosine
 #   - name: FallbackClassifier
 #     threshold: 0.3
 #     ambiguity_threshold: 0.1
 policies:
 - name: MemoizationPolicy
 - name: TEDPolicy
-- name: RulePolicy
-  nlu_threshold: 0.6
-  core_threshold: 0.3
-  fallback_action_name: action_default_fallback
+#- name: RulePolicy
+#  nlu_threshold: 0.3
+ # core_threshold: 0.3
+  #fallback_action_name: action_default_fallback

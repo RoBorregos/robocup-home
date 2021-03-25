@@ -11,9 +11,9 @@ intents:
 - stop
 - bye
 entities:
+- names
 - object
 - place
-- names
 slots:
   object:
     type: text
@@ -56,13 +56,15 @@ responses:
   utter_introduce:
   - text: okay, i will present you to {names}
 actions:
+- action_default_fallback
+- action_bring_something
+- utter_ask_identity
 - utter_bye
 - utter_command
 - utter_default
 - utter_greet
 - utter_understood
 - utter_you're_welcome
-- utter_ask_identity
 forms:
   name_form:
     names:

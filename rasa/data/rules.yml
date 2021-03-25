@@ -14,7 +14,8 @@ rules:
   - slot_was_set:
     - request_slot: null
   - action: utter_introduce
-- rule: Rule to map `thank` intent to `utter_you're_welcome` (automatic conversion)
-  steps:
-  - intent: thank
-  - action: utter_you're_welcome
+  
+##- rule: Rule to map `thank` intent to `utter_you're_welcome` (automatic conversion)
+  ##steps:
+  ##- intent: thank
+  ##- action: utter_you're_welcome
