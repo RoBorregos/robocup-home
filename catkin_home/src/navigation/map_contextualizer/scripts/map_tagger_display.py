@@ -18,9 +18,8 @@ from geometry_msgs.msg import Point
 import rospy
 import tf
 from std_msgs.msg import Int16
-from map_visualizer.msg import MapDisplayState
-from map_visualizer.msg import MapContext
-
+from map_contextualizer.msg import MapDisplayState
+map_contextualizer
 markerArray = MarkerArray()
 marker_state = MapDisplayState()
 marker = Marker()

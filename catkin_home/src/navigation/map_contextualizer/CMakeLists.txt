@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(map_visualizer)
+project(map_contextualizer)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -40,7 +40,7 @@ generate_messages(
 
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES map_visualizer
+#  LIBRARIES map_contextualizer
   CATKIN_DEPENDS roscpp visualization_msgs message_runtime
 #  DEPENDS system_lib
 )

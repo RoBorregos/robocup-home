@@ -22,10 +22,10 @@ from geometry_msgs.msg import PoseStamped
 import json
 from geometry_msgs.msg import Point
 from std_msgs.msg import Int16
-from map_visualizer.msg import MapDisplayState
-from map_visualizer.msg import MapContext
-from map_visualizer.msg import Room
-from map_visualizer.msg import ObjInt
+from map_contextualizer.msg import MapDisplayState
+from map_contextualizer.msg import MapContext
+from map_contextualizer.msg import Room
+from map_contextualizer.msg import ObjInt
 from map import Map
 import os
 from os import listdir
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     if(x==1):
         print("Choose a map:")
-        maps = [f for f in listdir("./src/navigation/map_visualizer/contextmaps") ]
+        maps = [f for f in listdir("./src/navigation/map_contextualizer/contextmaps") ]
         x=-1
         for index, context_map in enumerate(maps):
             print(str(index+1) + ". " + context_map[:-5])
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         if x==0 or x>len(maps): exit(0)
 
         context_map = None
-        with open("./src/navigation/map_visualizer/contextmaps/" + maps[x-1], "r") as read_file:
+        with open("./src/navigation/map_contextualizer/contextmaps/" + maps[x-1], "r") as read_file:
             context_map = json.load(read_file)
 
         map.name = context_map["name"]
