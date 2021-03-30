@@ -19,7 +19,8 @@ import rospy
 import tf
 from std_msgs.msg import Int16
 from map_contextualizer.msg import MapDisplayState
-map_contextualizer
+from map_contextualizer.msg import MapContext
+
 markerArray = MarkerArray()
 marker_state = MapDisplayState()
 marker = Marker()
