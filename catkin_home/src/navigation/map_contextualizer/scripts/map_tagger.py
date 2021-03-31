@@ -55,6 +55,8 @@ def callback(data):
         elif state.state == 2:
             map.rooms[room_index].area.append(data.pose.position)
         elif state.state == 3:
+            map.rooms[-1].path.append(data.pose.position)
+        elif state.state == 4:
             map.rooms[-1].obj_int[-1].obj_area.append(data.pose.position)
         map_publisher.publish(map)
     
@@ -123,6 +125,12 @@ if __name__ == '__main__':
                 point.y = area_point[1]
                 point.z = 0.0
                 map.rooms[-1].area.append(point)
+            for path_point in context_map["rooms"][room]["path"]:
+                point = Point()
+                point.x = path_point[0]
+                point.y = path_point[1]
+                point.z = 0.0
+                map.rooms[-1].path.append(point)
             for entrance in context_map["rooms"][room]["entrance"]:
                 point = Point()
                 point.x = entrance[0]
@@ -170,12 +178,17 @@ if __name__ == '__main__':
             print("Insert any key to stop")
             x = raw_input()
             print("Area saved.")
+            state.state = 3
+            print("Please make a path around the room with the goal publisher")
+            print("Insert any key to stop")
+            x = raw_input()
+            print("Path saved.")
             state.state = 0
             x = input("Save object of interest? (0 = no, 1 = Yes): ")
             while(x):
                 global obj_name
                 obj_name = str(raw_input('Give me the name of the object: '))
-                state.state = 3
+                state.state = 4
                 state_publisher.publish(state)
                 obj = ObjInt()
                 obj.name = obj_name

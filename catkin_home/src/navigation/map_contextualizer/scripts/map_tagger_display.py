@@ -26,7 +26,7 @@ marker_state = MapDisplayState()
 marker = Marker()
 
 # Green for active, purple for inactive
-map_colors = ((1.0, 0.0, 1.0), (0.0, 1.0, 0.0))
+map_colors = ((1.0, 0.0, 1.0), (0.0, 1.0, 0.0), (1, 0.2, 0.46))
 
 marker_map = MapContext()
 
@@ -102,6 +102,8 @@ def defineMarker(current_room, frame_id, marker_type):
         marker.type = marker.CYLINDER
     elif marker_type == 1:
         marker.type = marker.SPHERE
+    elif marker_type == 2:
+        marker.type = marker.SPHERE
     else:
         marker.type = marker.CUBE
     marker.header.stamp = rospy.Time.now()
@@ -112,7 +114,9 @@ def defineMarker(current_room, frame_id, marker_type):
     marker.scale.y = 0.4
     marker.scale.z = 0.4
     map_color = 0
-    if(current_room):
+    if(marker_type == 2):
+        map_color = 2
+    elif(current_room):
         map_color = 1
     marker.color.a = 1.0
     marker.color.r = map_colors[map_color][0]
@@ -166,11 +170,17 @@ def updateMarkers():
                     (0.0, 0.0, 0.0, 1.0), rospy.Time.now(), frame_id, "/map")
                 defineMarker(room.name == marker_state.room, frame_id, 1)
             area_counter = 0
+            for path_point in room.path:
+                frame_id = room.name + "-path-" + str(area_counter)
+                br.sendTransform((path_point.x, path_point.y, path_point.z),
+                    (0.0, 0.0, 0.0, 1.0), rospy.Time.now(), frame_id, "/map")
+                defineMarker(room.name == marker_state.room, frame_id, 2)
+            area_counter = 0
             for obj in room.obj_int:
                 frame_id = room.name + "-" + obj.name + "-" + str(area_counter)
                 br.sendTransform((obj.obj_area[0].x, obj.obj_area[0].y, obj.obj_area[0].z),
                     (0.0, 0.0, 0.0, 1.0), rospy.Time.now(), frame_id, "/map")
-                defineMarker(room.name == marker_state.room, frame_id, 2)
+                defineMarker(room.name == marker_state.room, frame_id, 3)
     # rospy.loginfo("Map updated")
 
 if __name__ == '__main__':
