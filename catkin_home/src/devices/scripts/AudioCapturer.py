@@ -34,7 +34,7 @@ def main():
     while stream.is_active() and not rospy.is_shutdown():
         try:
             # TODO: Check for byte order.
-            in_data = stream.read(CHUNK_SIZE) # exception_on_overflow=True(?)
+            in_data = stream.read(CHUNK_SIZE, exception_on_overflow = False)
 
             # TODO: Look for the lightest way to do this.
             # msg = tuple(bytearray(in_data))
