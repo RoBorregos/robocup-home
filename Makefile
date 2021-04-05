@@ -18,6 +18,7 @@ melodic.navigation.gpu.build:
 melodic.create: 
 	@docker run \
 		-it -d \
+		-v ${shell pwd}/object_detection:/object_detection \
 		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
 		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
 		--network host \
