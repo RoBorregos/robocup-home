@@ -79,7 +79,6 @@ mock==2.0.0
 numpy==1.19.5
 oauth2client==4.1.3
 oauthlib==3.1.0
-object-detection @ file:///home/ricardochapa/Desktop/Roborregos/TensorFlow/models/research
 opencv-python-headless==4.5.1.48
 opt-einsum==3.3.0
 packaging==20.9
@@ -99,10 +98,8 @@ pycparser==2.20
 pydot==1.4.2
 pymongo==3.11.3
 pyparsing==2.4.7
-python-dateutil @ file:///home/ktietz/src/ci/python-dateutil_1611928101742/work
 python-qt-binding==0.4.3
 python-slugify==4.0.1
-pytz @ file:///tmp/build/80754af9/pytz_1612215392582/work
 PyYAML==5.4.1
 qt-dotgraph==0.4.2
 qt-gui==0.4.2
