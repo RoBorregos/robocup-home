@@ -21,22 +21,23 @@ then
 	echo $'\nStarting to install packages'
 	conda create -n object_detection_env pip python=3.8 # create the working virtual environment with conda
 	conda activate object_detection_env # activate the virtual env
-	pip install -r ./requirements.txt 
 	cd ./models/requirements
 	mkdir TensorFlow && cd TensorFlow/ # create directory contaning object detection api
 	git clone https://github.com/tensorflow/models.git
-	cd models/research
+	cd models/research # models/requirements/Tensorflow/models/research
 	protoc object_detection/protos/*.proto --python_out=. # generate dependency from object detection API
-	cd ../../../ # models/
+	cd ../../../ # models/requirements
 	mkdir coco && cd coco/
 	git clone https://github.com/cocodataset/cocoapi.git
-	cd cocoapi/PythonAPI
+	cd cocoapi/PythonAPI # models/requirements/coco/cocoapi/PythonAPI/
 	make
-	cp -r pycocotools ../../../TensorFlow/models/research/
-	cd ../../../TensorFlow/models/research/
-	cp object_detection/packages/tf2/setup.py .
+	cd ../../../ # models/requirements
+	cp -r pycocotools ./TensorFlow/models/research/
+	pip install -r ../../requirements.txt 
 	python -m pip install .
-	python object_detection/builders/model_builder_tf2_test.py
+	cd ./TensorFlow/models/research/
+	python object_detection/builders/model_builder_tf2_test.py # test for correct installation
+	echo $'\nInstallation completed'
 
 else
 	echo $'\nOperation cancelled successfully'
