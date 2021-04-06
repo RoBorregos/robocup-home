@@ -42,7 +42,6 @@ wrokspace.code-workspace
 /object_detection/venv/
 /object_detection/models/model_tf2
 /object_detection/models/dependencies/TensorFlow
-/object_detection/models/dependencies/TensorFlow/models/research/setup.py
 /object_detection/models/dependencies/coco
 
 ### Others ###
