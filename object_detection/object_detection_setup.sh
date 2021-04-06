@@ -37,7 +37,6 @@ then
 	cp -r coco/cocoapi/PythonAPI/pycocotools ./TensorFlow/models/research/ 
 	mv ./setup.py ./TensorFlow/models/research
 	python -m pip install ./TensorFlow/models/research
-	cd ./TensorFlow/models/research/
 	echo $'\nInstallation completed'
 
 else
