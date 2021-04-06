@@ -41,13 +41,15 @@ import matplotlib.pyplot as plt
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
+''' Comment only for docker testing
 # Use matplotlib tkinter GUI 
-matplotlib.use('TkAgg')
+matplotlib.use('TkAgg') 
+'''
 
 MODEL_NAME = 'saved_model'
 # TODO: Because this is going to be called by other script, maybe is better to use
 # __file__. https://stackoverflow.com/a/3430395
-CWD_PATH = '/home/ricardochapa/Desktop/Roborregos/TensorFlow/model_tf2'
+CWD_PATH = './models/model_tf2'
 PATH_TO_SAVED_MODEL = os.path.join(CWD_PATH, MODEL_NAME)
 PATH_TO_LABELS = os.path.join(CWD_PATH,'label_map.pbtxt')
 NUM_CLASSES = 4
@@ -163,7 +165,8 @@ if __name__ == '__main__':
     print("~#ready#~")
 
     # Path to test_image example. Replace this with another test image of your choice
-    # /home/ricardochapa/Downloads/test_image.jpg
+    # /object_detection/test_images/test_image_tf2.jpg
+
     while True:
         print("~#waiting input#~\n")
         img_path = input()

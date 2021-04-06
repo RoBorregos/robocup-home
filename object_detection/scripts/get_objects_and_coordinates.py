@@ -40,7 +40,7 @@ from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
 MODEL_NAME = 'saved_model'
-CWD_PATH = '/home/ricardochapa/Desktop/Roborregos/TensorFlow/model_tf2'
+CWD_PATH = './models/model_tf2'
 PATH_TO_SAVED_MODEL = os.path.join(CWD_PATH, MODEL_NAME)
 PATH_TO_LABELS = os.path.join(CWD_PATH,'label_map.pbtxt')
 NUM_CLASSES = 4
