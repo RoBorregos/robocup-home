@@ -20,23 +20,24 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
 	echo $'\nStarting to install packages'
 	conda create -n object_detection_env pip python=3.8 # create the working virtual environment with conda
+	source ~/anaconda3/etc/profile.d/conda.sh # allow to activate the conda env from shell
 	conda activate object_detection_env # activate the virtual env
-	cd ./models/requirements
+	cd ./models/dependencies
 	mkdir TensorFlow && cd TensorFlow/ # create directory contaning object detection api
 	git clone https://github.com/tensorflow/models.git
-	cd models/research # models/requirements/Tensorflow/models/research
+	cd models/research # models/dependencies/Tensorflow/models/research
 	protoc object_detection/protos/*.proto --python_out=. # generate dependency from object detection API
-	cd ../../../ # models/requirements
-	mkdir coco && cd coco/
-	git clone https://github.com/cocodataset/cocoapi.git
-	cd cocoapi/PythonAPI # models/requirements/coco/cocoapi/PythonAPI/
+	cd ../../../ # models/dependencies
+	mkdir coco && cd coco/ # models/dependencies/coco
+	git clone https://github.com/cocodataset/cocoapi.git # models/dependencies/coco/cocoapi
+	pip install -r ../../../requirements.txt
+	cd ./cocoapi/PythonAPI # models/dependencies/coco/cocoapi/PythonAPI/
 	make
-	cd ../../../ # models/requirements
-	cp -r pycocotools ./TensorFlow/models/research/
-	pip install -r ../../requirements.txt 
-	python -m pip install .
+	cd ../../../ # models/dependencies
+	cp -r coco/cocoapi/PythonAPI/pycocotools ./TensorFlow/models/research/ 
+	mv ./setup.py ./TensorFlow/models/research
+	python -m pip install ./TensorFlow/models/research
 	cd ./TensorFlow/models/research/
-	python object_detection/builders/model_builder_tf2_test.py # test for correct installation
 	echo $'\nInstallation completed'
 
 else

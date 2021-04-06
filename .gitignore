@@ -41,8 +41,9 @@ wrokspace.code-workspace
 ### OBJECT DETECTION ###
 /object_detection/venv/
 /object_detection/models/model_tf2
-/object_detection/models/requirements/TensorFlow
-/object_detection/models/requirements/coco
+/object_detection/models/dependencies/TensorFlow
+/object_detection/models/dependencies/TensorFlow/models/research/setup.py
+/object_detection/models/dependencies/coco
 
 ### Others ###
 /rasa/venv/
