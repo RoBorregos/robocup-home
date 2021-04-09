@@ -19,7 +19,7 @@ MODEL_NAME = 'saved_model'
 CWD_PATH = './models/model_tf2'
 PATH_TO_SAVED_MODEL = os.path.join(CWD_PATH, MODEL_NAME)
 PATH_TO_LABELS = os.path.join(CWD_PATH,'label_map.pbtxt')
-PATH_TO_IMAGE = '/object_detection/test_images/test_image_tf2.jpg'
+PATH_TO_IMAGE = './test_images/test_image_tf2.jpg'
 NUM_CLASSES = 4
 MIN_SCORE_THRESH = 0.6
 

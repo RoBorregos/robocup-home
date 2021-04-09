@@ -164,8 +164,9 @@ if __name__ == '__main__':
     run_inference_on_image = load_model()
     print("~#ready#~")
 
-    # Path to test_image example. Replace this with another test image of your choice
-    # /object_detection/test_images/test_image_tf2.jpg
+    # Path to test_image example. Replace this with another test image of your choice. 
+    # Suggested path to a test image if running under /object_detection
+    # ./test_images/test_image_tf2.jpg
 
     while True:
         print("~#waiting input#~\n")
