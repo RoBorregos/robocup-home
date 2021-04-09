@@ -9,11 +9,32 @@ nlu:
     - Bring me the [bottle](object) from the [kitchen](place)
     - Bring me the [pizza](object) from the [basement](place)
     - Bring me the [soda](object) from the [kitchen](place)
-- intent: introduce_people
+
+- intent: bring_to
   examples: |
-    - Please introduce me to [karla](names)
-    - I want to meet [hector](names)
-    - introduce me to [isaac](names)
+    - Please bring the [luggage](object) to the [car](place)
+    - Help me carry my [bag](object) to the [car](place)
+
+- intent: clean
+  examples: |
+    - Please clean the [trash bag](object)
+    - Clean the [tiny object](object)
+
+- intent: farewell
+  examples: |
+    - Please bring my [red](color) [coat](object)
+    - Bring my [white](color) [coat](object)
+
+- intent: search_for_people
+  examples: |
+    - Please search for [Karla](names) location
+    - Find [Manuel](names) location
+    - I want to speak to [Fernando](names) 
+    - I want to meet [Isamel](names)
+    - Search for [Gaby](names)
+    - Please find [Karina](names)
+    - Find [Camille]
+
 - intent: introduce_myself
   examples: |
     - Im called [juan](names)
