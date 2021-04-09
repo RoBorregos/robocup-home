@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 from __future__ import print_function
-
 import rospy
 # Brings in the SimpleActionClient
 import actionlib
@@ -9,22 +8,28 @@ import actionlib
 # Brings in the messages used by the navigation action, including the
 # goal message and the result message.
 import actions.msg
+from std_msgs.msg import String
+
+def navServerFeedback(serverFeedback):
+    actionStatus = serverFeedback.feedback.status
+    rospy.loginfo(rospy.get_caller_id() + " Nav Server status is %s", actionStatus)
 
 def navigationClient():
     # Creates the SimpleActionClient, passing the type of the action
     # (NavigationAction) to the constructor.
     client = actionlib.SimpleActionClient('navServer', actions.msg.navServAction)
-
     # Waits until the action server has started up and started
     # listening for goals.
     client.wait_for_server()
     print("Nav server running...")
 
     # Creates a goal to send to the action server.
-    goal = actions.msg.navServGoal(target_location = "kitchen")
+    goal = actions.msg.navServGoal(target_location = "so-kitchen")
 
     # Sends the goal to the action server.
     client.send_goal(goal)
+
+    nsFeedback = rospy.Subscriber("navServer/feedback", String, navServerFeedback)
 
     # Waits for the server to finish performing the action.
     client.wait_for_result()
@@ -39,7 +44,6 @@ if __name__ == '__main__':
         rospy.init_node('nav_client_py')
         
         result = navigationClient()
-        print("Result:")
         print(result)
     except rospy.ROSInterruptException:
         print("program interrupted before completion", file=sys.stderr)

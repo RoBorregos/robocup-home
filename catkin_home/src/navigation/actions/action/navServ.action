@@ -5,4 +5,5 @@ string target_location
 bool result
 ---
 #feedback
-geometry_msgs/PoseStamped pose
+string status
+float64 travel

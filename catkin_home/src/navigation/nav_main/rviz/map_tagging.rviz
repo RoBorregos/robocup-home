@@ -67,7 +67,13 @@ Visualization Manager:
         All Enabled: true
         base_link:
           Value: true
+        laser:
+          Value: true
+        laser_link:
+          Value: true
         map:
+          Value: true
+        odom:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -76,8 +82,11 @@ Visualization Manager:
       Show Names: true
       Tree:
         map:
-          base_link:
-            {}
+          odom:
+            base_link:
+              laser_link:
+                laser:
+                  {}
       Update Interval: 0
       Value: true
     - Class: rviz/MarkerArray
@@ -126,7 +135,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 11.421727180480957
+      Distance: 11.633988380432129
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

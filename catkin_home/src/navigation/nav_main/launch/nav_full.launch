@@ -1,0 +1,55 @@
+<launch>
+  <include file="$(find robot_description)/launch/display.launch" />
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nav_main)/rviz/nav_simul.rviz"/>
+
+  <node name="laser_simulator" pkg="laser_simulator" type="laser_simulator" output="screen">
+    <param name="noise" value="0.0"/>
+  </node>
+  
+  <node name="mobile_base" pkg="mobile_base_simulator" type="mobile_base_simulator.py" output="screen"/>
+
+  <node name="map_server" pkg="map_server" type="map_server" output="screen"
+        args="$(find nav_main)/maps/TMR_2019.pgm 0.050000" />
+
+  <node name="loc_amcl" pkg="amcl" type="amcl" output="screen" args="scan:=/scan">
+    <param name="odom_alpha1" value="0.6"/>
+    <param name="odom_alpha2" value="0.6"/>
+    <param name="odom_alpha3" value="0.6"/>
+    <param name="odom_alpha4" value="0.6"/>
+    <param name="odom_alpha5" value="0.6"/>
+    <param name="recovery_alpha_slow" value="0.001"/>
+    <param name="recovery_alpha_fast" value="0.1"/>
+    <param name="initial_pose_x" value="0.0"/>
+    <param name="initial_pose_y" value="0.0"/>
+    <param name="initial_pose_a" value="0.0"/>
+    <param name="update_min_a" value="0.3"/>
+    <param name="laser_min_range" value="0.3"/>
+    <param name="odom_model_type" value="omni"/>
+  </node>
+
+  <!-- <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+      <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
+      <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find nav_main)/config/local_costmap_params.yaml" command="load" />
+      <rosparam file="$(find nav_main)/config/global_costmap_params.yaml" command="load" /> 
+      <rosparam file="$(find nav_main)/config/base_local_planner_params.yaml" command="load" />
+  </node> -->
+
+   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find config_files)/move_base_params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find config_files)/move_base_params/costmap_common_params.yaml" command="load" ns="local_costmap" />   
+    <rosparam file="$(find config_files)/move_base_params/local_costmap_params.yaml" command="load" />   
+    <rosparam file="$(find config_files)/move_base_params/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find config_files)/move_base_params/dwa_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find config_files)/move_base_params/move_base_params.yaml" command="load" />
+    <rosparam file="$(find config_files)/move_base_params/global_planner_params.yaml" command="load" />
+    <rosparam file="$(find config_files)/move_base_params/navfn_global_planner_params.yaml" command="load" />
+
+    <param name="global_costmap/global_frame" value="map"/>
+    <param name="global_costmap/robot_base_frame" value="base_link"/>
+    <param name="local_costmap/global_frame" value="odom"/>
+    <param name="local_costmap/robot_base_frame" value="base_link"/>
+    <param name="DWAPlannerROS/global_frame_id" value="odom"/>
+  </node>
+</launch>
