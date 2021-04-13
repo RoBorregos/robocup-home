@@ -38,6 +38,7 @@ class navigationServer(object):
     def __init__(self, name):
         self._action_name = name
         rospy.loginfo(name)
+        self.pub_amcl = rospy.Publisher('initialpose', PoseWithCovarianceStamped, queue_size=10)
         self.context_map = None
         with open("./src/navigation/map_contextualizer/contextmaps/DemoMap.json", "r") as read_file:
             self.context_map = json.load(read_file)
@@ -84,7 +85,10 @@ class navigationServer(object):
                 return
             else: # action == "so":
                 path = self.context_map["rooms"][room]["path"]
+                # i = 0
+                # j = i + 1
                 for goalPoint in path:
+                    # direction = (path[j][0]-path[i][0], path[j][1]-path[i][1])
                     result = self.send_goal(goalPoint)
                     if (not result):
                         rospy.loginfo("The robot failed to reach the destination")
@@ -187,7 +191,7 @@ class navigationServer(object):
         # self.tf = tf.TransformListener(True, rospy.Duration(3.0))
         
         # # Create a topic listener of move_base node status
-        # moveBaseStatusTopic = rospy.Subscriber("move_base/status", GoalStatusArray, self.setServerFeedback)
+        moveBaseStatusTopic = rospy.Subscriber("move_base/status", GoalStatusArray, self.setServerFeedback)
         
         # rospy.loginfo("Sending goal location ...")
         # moveBaseState = self._goal.sendGoalToNavStack()
@@ -214,6 +218,12 @@ class navigationServer(object):
             rospy.signal_shutdown("Action server not available!")
             return None
         else:
+            renewed_pose = PoseWithCovarianceStamped()
+            renewed_pose.header.frame_id = "map"
+            renewed_pose.header.stamp = rospy.Time.now()
+            renewed_pose.pose.pose = goal.target_pose.pose
+            renewed_pose.pose.covariance = [0] * 36
+            self.pub_amcl.publish(renewed_pose)
             return client.get_result()
 
 

@@ -51,5 +51,6 @@
     <param name="local_costmap/global_frame" value="odom"/>
     <param name="local_costmap/robot_base_frame" value="base_link"/>
     <param name="DWAPlannerROS/global_frame_id" value="odom"/>
+    <!-- <param name="/clearing_rotation_allowed" value="false" /> -->
   </node>
 </launch>
