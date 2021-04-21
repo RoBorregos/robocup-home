@@ -55,9 +55,43 @@ stories:
   - action: action_bring_something
   - intent: bye
   - action: utter_bye
-  
-  # Saludos y bye
 
+
+- story: farewell_goalonng
+  steps: 
+  - intent: farewell
+    entities:
+    - color: red
+    - object: coat
+  - slot_was_set:
+    - object: coat
+  - slot_was_set:
+    - color: red
+  - action: utter_understood
+  - action: utter_ask_farewell
+  - intent: yes
+  - action: action_farewell_yes
+
+
+
+- story: farewell_notalonng
+  steps: 
+  - intent: farewell
+    entities:
+    - color: green
+    - object: coat
+  - slot_was_set:
+    - object: coat
+  - slot_was_set:
+    - color: red
+  - action: utter_understood
+  - action: utter_ask_farewell
+  - intent: no
+  - action: action_farewell_no
+
+ 
+
+# Saludos y bye
 - story: saludo
   steps:
   - intent: greet
@@ -69,3 +103,18 @@ stories:
   - action: utter_bye
 
 
+  
+#search for people
+
+- story: search_for_people
+  steps:
+  - intent: search_for_people
+    entities:
+    - names: manuel
+  - slot_was_set:
+    - names: manuel
+  - action: utter_will_look
+  - action: action_search_for_people
+  - slot_was_set:
+    - place: kitchen
+  - action: utter_found_location
