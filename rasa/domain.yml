@@ -3,20 +3,14 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
-- search_for_people
-- farewell
-- yes
-- no
 - bring_something
+- introduce_people
 - introduce_myself
 - thank
 - greet
 - stop
 - bye
-- clean
-- bring_to
 entities:
-- color
 - names
 - object
 - place
@@ -28,9 +22,6 @@ slots:
     type: text
     influence_conversation: true
   names:
-    type: text
-    influence_conversation: true
-  color:
     type: text
     influence_conversation: true
 responses:
@@ -62,27 +53,17 @@ responses:
   - text: what is your name
   - text: how should i address you
   - text: may i know your name
-  utter_found_location:
-  - text: i found {names} on the {place}
-  utter_will_look:
-  - text: okay, i will look for {names} location
-  utter_ask_farewell:
-  - text: would you like me to go along with you?
+  utter_introduce:
+  - text: okay, i will present you to {names}
 actions:
-- action_bring_something
 - action_default_fallback
-- action_farewell_no
-- action_farewell_yes
-- action_search_for_people
-- utter_ask_farewell
+- action_bring_something
 - utter_ask_identity
 - utter_bye
 - utter_command
 - utter_default
-- utter_found_location
 - utter_greet
 - utter_understood
-- utter_will_look
 - utter_you're_welcome
 forms:
   name_form:

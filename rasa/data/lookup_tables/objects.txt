@@ -5,5 +5,3 @@ Pringles
 Bottle
 Cereal
 Bowl
-Coat
-Garbage

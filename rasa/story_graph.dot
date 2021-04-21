@@ -2,11 +2,11 @@ digraph  {
 0 [class="start active", fillcolor=green, fontsize=12, label=START, style=filled];
 "-1" [class=end, fillcolor=red, fontsize=12, label=END, style=filled];
 1 [class=active, fontsize=12, label=action_session_start];
-2 [class=active, fontsize=12, label=utter_will_look];
-3 [class=active, fontsize=12, label=action_search_for_people];
-4 [class=active, fontsize=12, label=utter_found_location];
+2 [class=active, fontsize=12, label=utter_understood];
+3 [class=active, fontsize=12, label=utter_command];
+4 [class=active, fontsize=12, label=action_bring_something];
 5 [class="intent dashed active", label="  ?  ", shape=rect];
-6 [class="intent active", fillcolor=lightblue, label="find manuel", shape=rect, style=filled];
+6 [class="intent active", fillcolor=lightblue, label="bring me the pizza from the kitchen", shape=rect, style=filled];
 0 -> "-1"  [class="", key=NONE, label=""];
 0 -> 1  [class=active, key=NONE, label=""];
 1 -> 6  [class=active, key=0];
