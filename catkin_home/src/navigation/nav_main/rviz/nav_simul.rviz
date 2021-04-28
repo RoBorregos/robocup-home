@@ -5,7 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded: ~
       Splitter Ratio: 0.5
-    Tree Height: 405
+    Tree Height: 363
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties

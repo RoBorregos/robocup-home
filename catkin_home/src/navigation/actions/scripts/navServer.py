@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import csv
 import json
-from math import degrees, radians
+import math
 import tf
 
 import actionlib
@@ -38,6 +38,9 @@ class navigationServer(object):
     def __init__(self, name):
         self._action_name = name
         rospy.loginfo(name)
+        self.move_base_status = 0
+        # Create a topic listener of move_base node status
+        moveBaseStatusTopic = rospy.Subscriber("move_base/status", GoalStatusArray, self.setServerFeedback)
         self.pub_amcl = rospy.Publisher('initialpose', PoseWithCovarianceStamped, queue_size=10)
         self.context_map = None
         with open("./src/navigation/map_contextualizer/contextmaps/DemoMap.json", "r") as read_file:
@@ -180,19 +183,18 @@ class navigationServer(object):
          #   rospy.loginfo("true")
           #  timeStamp = self.tf.getLatestCommonTime("/base_link", "/map")
            # currentPos, quat = self.tf.lookupTransform("/base_link", "/map", timeStamp)
+        if len(data.status_list):
+            self.move_base_status = data.status_list[0].status
+            # print(data.status_list[0].status)
+        # self._feedback.status = self._goal.getMoveBaseStatus(data)
 
-        self._feedback.status = self._goal.getMoveBaseStatus(data)
-        self._as.publish_feedback(self._feedback)
+        # self._as.publish_feedback(self._feedback)
     
     def send_goal(self, goal_pose_given):
         rospy.loginfo(goal_pose_given)
         # self._goal = MoveBase()
         # self._goal.setGoal(goal_pose_given)
         # self.tf = tf.TransformListener(True, rospy.Duration(3.0))
-        
-        # # Create a topic listener of move_base node status
-        moveBaseStatusTopic = rospy.Subscriber("move_base/status", GoalStatusArray, self.setServerFeedback)
-        
         # rospy.loginfo("Sending goal location ...")
         # moveBaseState = self._goal.sendGoalToNavStack()
         # moveBaseStatusTopic.unregister()
@@ -212,19 +214,38 @@ class navigationServer(object):
         goal.target_pose.pose = Pose(point, Quaternion(0.0, 0.0, -0.698491025714, 0.715618814032))
 
         client.send_goal(goal)
-        wait = client.wait_for_result()
-        if not wait:
-            rospy.logerr("Action server not available!")
-            rospy.signal_shutdown("Action server not available!")
-            return None
+        # wait = client.wait_for_result()
+        # if not wait:
+        #     rospy.logerr("Action server not available!")
+        #     rospy.signal_shutdown("Action server not available!")
+        #     return None
+        # else:
+        while not self.move_base_status == 1:
+            print("Waiting for move_base to start")
+            rospy.sleep(2)
+        rate = rospy.Rate(10.0)
+        trans, rot = None, None
+        distance = 1
+        self.move_base_status = 1
+        listener = tf.TransformListener()
+        while self.move_base_status == 1:
+            try:
+                (trans,rot) = listener.lookupTransform('/map', '/base_link',rospy.Time(0))
+                prev_trans = trans
+                prev_rot = rot
+                distance = math.sqrt(pow((point.x - trans[0]),2)+ pow((point.y - trans[1]),2))
+                if distance < 0.3:
+                    print("Close enough")
+                    break
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                continue
+        if distance > 0.3:
+            print("Error occured in movebase")
+            return False
         else:
-            renewed_pose = PoseWithCovarianceStamped()
-            renewed_pose.header.frame_id = "map"
-            renewed_pose.header.stamp = rospy.Time.now()
-            renewed_pose.pose.pose = goal.target_pose.pose
-            renewed_pose.pose.covariance = [0] * 36
-            self.pub_amcl.publish(renewed_pose)
-            return client.get_result()
+            client.cancel_goal()
+            print("Reached position.")
+            return True
 
 
 if __name__ == '__main__':
