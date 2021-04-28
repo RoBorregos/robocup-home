@@ -65,7 +65,7 @@ add_arg('decoding_method',  str,
         "Decoding method. Options: ctc_beam_search, ctc_greedy",
         choices = ['ctc_beam_search', 'ctc_greedy'])
 
-args = parser.parse_args()
+args, unknown = parser.parse_known_args()
 
 
 class ASRServer:
