@@ -42,10 +42,14 @@ wrokspace.code-workspace
 /object_detection/venv/
 /object_detection/models/
 
-### Others ###
+### CONVERSATION ###
 /rasa/venv/
 /rasa/models/
 /rasa/results/
+out.log
+
+
+### Others ###
 *.DS_Store
 *.pyc
 .vscode/
