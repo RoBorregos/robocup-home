@@ -5,6 +5,8 @@ from rasa_sdk.executor import CollectingDispatcher
 import json
 import os.path
 from os import path
+from rasa_sdk.events import UserUtteranceReverted
+from rasa_sdk.executor import CollectingDispatcher
 
 
 #bring something
@@ -30,6 +32,52 @@ class ActionBring(Action):
          dispatcher.utter_message()
 
          return []
+
+class ActionStore(Action):
+
+     def name(self) -> Text:
+         return "action_store_object"
+
+     def run(self, dispatcher: CollectingDispatcher,
+             tracker: Tracker,
+             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+         object_in_place =tracker.get_slot("object")
+         place=tracker.get_slot("place")
+         dic={"Intent":'Store object',
+         'Object': object_in_place ,
+         'Place': place
+         }
+         with open("jsons/results.json", "w") as write_file:
+            json.dump(dic, write_file)
+
+         dispatcher.utter_message()
+
+         return []
+
+#action tidy up
+class ActionClean(Action):
+
+     def name(self) -> Text:
+         return "action_clean_up"
+
+     def run(self, dispatcher: CollectingDispatcher,
+             tracker: Tracker,
+             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+    
+         place=tracker.get_slot("place")
+         dic={"Intent":'Clean',
+         'Place': place
+         }
+         with open("jsons/results.json", "w") as write_file:
+            json.dump(dic, write_file)
+
+         dispatcher.utter_message()
+
+         return []
+
+
 
 #search for people
 class ActionSearch_for_people(Action):
@@ -110,3 +158,5 @@ class ActionFarewell_no(Action):
          dispatcher.utter_message()
 
          return []
+
+

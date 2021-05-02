@@ -19,8 +19,8 @@ pipeline:
   epochs: 200
   constrain_similarities: true
 - name: FallbackClassifier
-  threshold: 0.3
-  ambiguity_threshold: 0.1
+  threshold: 0.7
+  ambiguity_threshold: 0.7
 
 policies:
 - name: MemoizationPolicy
@@ -28,6 +28,9 @@ policies:
   model_confidence: linear_norm
   constrain_similarities: True
 - name: RulePolicy
+  core_fallback_threshold: 0.4
+  core_fallback_action_name: "action_default_fallback"
+  enable_fallback_prediction: True
   nlu_threshold: 0.3
   core_threshold: 0.3
   #fallback_action_name: action_default_fallback

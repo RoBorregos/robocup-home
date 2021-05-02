@@ -15,6 +15,7 @@ intents:
 - bye
 - clean
 - bring_to
+- store_object
 entities:
 - color
 - names
@@ -33,7 +34,12 @@ slots:
   color:
     type: text
     influence_conversation: true
+
 responses:
+  utter_please_rephrase:
+  - text: I'm sorry, I didn't quite understand that. Could you rephrase?
+  utter_out_of_scope:
+  - text: Sorry, I can't handle that request.
   utter_bye:
   - text: Goodbye
   - text: Later!
@@ -68,9 +74,12 @@ responses:
   - text: okay, i will look for {names} location
   utter_ask_farewell:
   - text: would you like me to go along with you?
+  utter_anything_else:
+  - text: would you like anyhting else?
 actions:
+- action_clean_up
+- action_store_object
 - action_bring_something
-- action_default_fallback
 - action_farewell_no
 - action_farewell_yes
 - action_search_for_people
@@ -84,6 +93,7 @@ actions:
 - utter_understood
 - utter_will_look
 - utter_you're_welcome
+- utter_anything_else
 forms:
   name_form:
     names:

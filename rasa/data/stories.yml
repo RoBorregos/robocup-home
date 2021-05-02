@@ -118,3 +118,31 @@ stories:
   - slot_was_set:
     - place: kitchen
   - action: utter_found_location
+
+#strore 
+- story: store_object
+  steps:
+  - intent: store_object
+    entities:
+    - object: apple
+    - place: shelf
+  - slot_was_set:
+    - object: apple
+    - place: shelf
+  - action: utter_understood
+  - action: action_store_object
+  - action: utter_anything_else
+
+#clean
+- story: clean
+  steps:
+  - intent: clean
+    entities:
+    - place: bedroom
+  - slot_was_set:
+    - place: bedroom
+  - action: utter_understood
+  - action: action_clean_up
+
+
+#combinaciones

@@ -9,16 +9,31 @@ nlu:
     - Bring me the [bottle](object) from the [kitchen](place)
     - Bring me the [pizza](object) from the [basement](place)
     - Bring me the [soda](object) from the [kitchen](place)
+- intent: store_object
+  examples: |
+   - Please store the [apple](object) in the [shelf](place)
+   - store the [pizza](object) in the [shelf](place)
+   - put the [can](object) in the [shelf](place)
+   - can you store the [potatoe](object) in the [shelf](place)
 
 - intent: bring_to
   examples: |
     - Please bring the [luggage](object) to the [car](place)
     - Help me carry my [bag](object) to the [car](place)
 
+- intent: out_of_scope
+  examples: |
+    - I want to order food
+    - What is 2 + 2?
+    - Who's the US President?
+    
 - intent: clean
   examples: |
-    - Please clean the [trash bag](object)
-    - Clean the [tiny object](object)
+    - Please clean the [room](place)
+    - Clean the [bedroom](place)
+    - tidy up the [kitchen](place)
+    - please tidy up the [garage](place)
+    - can you clean the [attic](place)
 
 - intent: farewell
   examples: |
