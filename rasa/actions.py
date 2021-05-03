@@ -33,6 +33,30 @@ class ActionBring(Action):
 
          return []
 
+class ActionBringTo(Action):
+
+     def name(self) -> Text:
+         return "action_bring_to"
+
+
+     def run(self, dispatcher: CollectingDispatcher,
+             tracker: Tracker,
+             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        
+         object_in_place =tracker.get_slot("object")
+         place=tracker.get_slot("place")
+         dic={"Intent":'Bring to',
+         'Object': object_in_place ,
+         'Place': place
+         }
+         with open("jsons/results.json", "w") as write_file:
+            json.dump(dic, write_file)
+
+         dispatcher.utter_message()
+
+         return []
+
+#store object
 class ActionStore(Action):
 
      def name(self) -> Text:

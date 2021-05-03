@@ -63,6 +63,8 @@ responses:
   utter_you're_welcome:
   - text: You're welcome
   - text: I'm glad im being useful
+  utter_carry_bag:
+  - text: Understood i will carry your bag
   utter_ask_identity:
   - text: who are you
   - text: what is your name
@@ -77,6 +79,7 @@ responses:
   utter_anything_else:
   - text: would you like anyhting else?
 actions:
+- action_bring_to
 - action_clean_up
 - action_store_object
 - action_bring_something

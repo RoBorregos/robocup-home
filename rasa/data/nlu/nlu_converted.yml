@@ -20,13 +20,19 @@ nlu:
   examples: |
     - Please bring the [luggage](object) to the [car](place)
     - Help me carry my [bag](object) to the [car](place)
+    - Carry my [luggage](object)
+    - please carry my [luggage](object)
+    - please help me carry my [luggage](object)
+    - can you please carry my [luggage](object)?
+    - could you carry my [bag](object)?
+    - will you carry my [bag](object) to the [car](place)?
 
 - intent: out_of_scope
   examples: |
-    - I want to order food
+    - I want to know the weather
     - What is 2 + 2?
     - Who's the US President?
-    
+
 - intent: clean
   examples: |
     - Please clean the [room](place)

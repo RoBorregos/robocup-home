@@ -144,5 +144,15 @@ stories:
   - action: utter_understood
   - action: action_clean_up
 
+#carry my lugage
+- story: carry_my
+  steps:
+  - intent: bring_to
+    entities:
+    - object: luggage
+  - slot_was_set:
+    - object: luggage
+  - action: utter_carry_bag
+  - action: action_bring_to
 
-#combinaciones
+#Receptionist
