@@ -7,3 +7,4 @@ garden
 backyard
 basement
 attic
+shelf
