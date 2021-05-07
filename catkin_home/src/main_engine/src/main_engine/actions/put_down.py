@@ -1,5 +1,5 @@
 import rb_home_arm.msg
-from Action import Action
+from .Action import Action
 
 class put_down(Action):
     def __init__(self, id, action_client_binded, args):

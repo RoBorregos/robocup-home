@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 This script creates the node `hear` that taking voice audio from topic
 `UsefulAudio`, does speech-to-text and publishes the resulting text.
