@@ -8,9 +8,7 @@ from std_msgs.msg import String
 
 # Connection to the flask server.server_connection = None
 
-    
-
-if __name__ == '__main__':
+def main():
     rospy.init_node('hri', anonymous=True)
 
     # Create a new process to execute the flask server.
@@ -28,3 +26,7 @@ if __name__ == '__main__':
     server_connection.close()
     p.kill()
     rospy.loginfo("Killed web server")
+    
+
+if __name__ == '__main__':
+    main()
