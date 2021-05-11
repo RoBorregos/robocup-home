@@ -20,11 +20,12 @@ class ActionBring(Action):
              tracker: Tracker,
              domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-         object_in_place =tracker.get_slot("object")
-         place=tracker.get_slot("place")
-         dic={"Intent":'Bring something',
-         'Object': object_in_place ,
-         'Place': place
+         object_in_place = tracker.get_slot("object")
+         place = tracker.get_slot("place")
+         dic = {
+            "Intent": 'Bring something',
+            'Object': object_in_place ,
+            'Place': place
          }
          with open("jsons/results.json", "w") as write_file:
             json.dump(dic, write_file)
@@ -101,8 +102,6 @@ class ActionClean(Action):
 
          return []
 
-
-
 #search for people
 class ActionSearch_for_people(Action):
 
@@ -133,6 +132,7 @@ class ActionSearch_for_people(Action):
         status=data['person_location']
 
         return [SlotSet("place", status)]
+
 #farewell go along
 class ActionFarewell_yes(Action):
 

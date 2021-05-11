@@ -2,6 +2,7 @@ version: '2.0'
 session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
+
 intents:
 - search_for_people
 - farewell
@@ -16,11 +17,13 @@ intents:
 - clean
 - bring_to
 - store_object
+
 entities:
 - color
 - names
 - object
 - place
+
 slots:
   object:
     type: text
@@ -78,6 +81,7 @@ responses:
   - text: would you like me to go along with you?
   utter_anything_else:
   - text: would you like anyhting else?
+
 actions:
 - action_bring_to
 - action_clean_up
@@ -97,6 +101,7 @@ actions:
 - utter_will_look
 - utter_you're_welcome
 - utter_anything_else
+
 forms:
   name_form:
     names:
