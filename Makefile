@@ -9,6 +9,8 @@ melodic.speech.build:
 	@docker build -t ros:melodic-speech -f docker/melodic/Dockerfile.speech .
 melodic.speech.gpu.build:
 	@docker build -t ros:melodic-speech-gpu -f docker/melodic/Dockerfile.speech.gpu .
+melodic.objectDetection.build:
+	@docker build -t ros:melodic-object-detection -f docker/melodic/Dockerfile.objectDetection .
 melodic.navigation.build:
 	@docker build -t ros:melodic-navigation -f docker/melodic/Dockerfile.navigation .
 melodic.navigation.gpu.build:
@@ -47,6 +49,8 @@ melodic.speech.gpu.create:
 		--network host \
 		--name ros-melodic-speech-gpu \
 		ros:melodic-speech-gpu
+melodic.objectDetection.create: 
+	@./docker/melodic/runObjectDetection.bash
 melodic.navigation.create:
 	@./docker/melodic/runNavigation.bash
 melodic.navigation.gpu.create:
@@ -59,6 +63,8 @@ melodic.speech.up:
 	@docker start ros-melodic-speech
 melodic.speech.gpu.up:
 	@docker start ros-melodic-speech-gpu
+melodic.objectDetection.up:
+	@docker start ros-melodic-object-detection
 melodic.navigation.up:
 	@docker start ros-melodic-navigation
 melodic.navigation.gpu.up:
@@ -71,6 +77,8 @@ melodic.speech.down:
 	@docker stop ros-melodic-speech
 melodic.speech.gpu.down:
 	@docker stop ros-melodic-speech-gpu
+melodic.objectDetection.down:
+	@docker stop ros-melodic-object-detection
 melodic.navigation.down:
 	@docker stop ros-melodic-navigation
 melodic.navigation.gpu.down:
@@ -83,6 +91,8 @@ melodic.speech.restart:
 	@docker restart ros-melodic-speech
 melodic.speech.gpu.restart:
 	@docker restart ros-melodic-speech-gpu
+melodic.objectDetection.restart:
+	@docker restart ros-melodic-object-detection
 melodic.navigation.restart:
 	@docker restart ros-melodic-navigation
 melodic.navigation.gpu.restart:
@@ -95,6 +105,8 @@ melodic.speech.logs:
 	@docker logs --tail 50 ros-melodic-speech
 melodic.speech.gpu.logs:
 	@docker logs --tail 50 ros-melodic-speech-gpu
+melodic.objectDetection.logs:
+	@docker logs --tail 50 ros-melodic-object-detection
 melodic.navigation.logs:
 	@docker logs --tail 50 ros-melodic-navigation
 melodic.navigation.gpu.logs:
@@ -107,6 +119,8 @@ melodic.speech.shell:
 	@docker exec -it ros-melodic-speech bash
 melodic.speech.gpu.shell:
 	@docker exec -it ros-melodic-speech-gpu bash
+melodic.objectDetection.shell:
+	@docker exec -it ros-melodic-object-detection bash
 melodic.navigation.shell:
 	@docker exec -it ros-melodic-navigation bash
 melodic.navigation.gpu.shell:
@@ -119,6 +133,8 @@ melodic.speech.remove: melodic.speech.down
 	@docker container rm ros-melodic-speech
 melodic.speech.gpu.remove: melodic.speech.gpu.down
 	@docker container rm ros-melodic-speech-gpu
+melodic.objectDetection.remove: melodic.objectDetection.down
+	@docker container rm ros-melodic-object-detection
 melodic.navigation.remove: melodic.navigation.down
 	@docker container rm ros-melodic-navigation
 melodic.navigation.gpu.remove: melodic.navigation.gpu.down

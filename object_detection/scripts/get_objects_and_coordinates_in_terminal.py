@@ -41,10 +41,8 @@ import matplotlib.pyplot as plt
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
-''' Comment only for docker testing
 # Use matplotlib tkinter GUI 
 matplotlib.use('TkAgg') 
-'''
 
 MODEL_NAME = 'saved_model'
 # TODO: Because this is going to be called by other script, maybe is better to use
@@ -105,7 +103,7 @@ def load_model():
         # Detection_classes should be ints.
         detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
-        #display_image_detection(image, detections)
+        display_image_detection(image, detections)
 
         return detections['detection_boxes'], detections['detection_scores'], detections['detection_classes']
     return run_inference_on_image
