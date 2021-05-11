@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # DESCRIPTION
 from intercom.msg import action_selector_cmd
@@ -8,6 +8,8 @@ import rospy
 from actions.go_to import go_to
 from actions.pick_up import pick_up
 from actions.put_down import put_down
+import actions
+import importlib
 
 """
 	TODO: Define description
@@ -72,14 +74,11 @@ class Main_Engine(object):
         print("new action added to the queue")
 
     def createAction(self, msg):
-       # TODO: See if dynamically create classes based on the string
-       # target_class = getattr(actions, msg.intent)
-        if(msg.intent == "go_to"):
-            return go_to(msg.intent, msg.action_client_binded, msg.args)
-        elif(msg.intent == "pick_up"):
-            return pick_up(msg.intent, msg.action_client_binded, msg.args)
-        elif(msg.intent == "put_down"):
-            return put_down(msg.intent, msg.action_client_binded, msg.args)
+        # Class should be implemented in its own inside /actions/
+        module = importlib.import_module("actions."+msg.intent)
+        class_ = getattr(module, msg.intent)
+        return class_(msg.intent, msg.action_client_binded, msg.args)
+
 
     def print_action_queue(self):
         print("*********ACTION QUEUE************")

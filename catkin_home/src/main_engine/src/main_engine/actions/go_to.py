@@ -1,4 +1,4 @@
-from Action import Action
+from .Action import Action
 
 class go_to(Action):
     def __init__(self, id, action_client_binded, args):

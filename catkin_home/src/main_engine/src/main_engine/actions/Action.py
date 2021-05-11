@@ -55,7 +55,7 @@ class Action(object):
                     state =  self.action_client.get_state() #Returns an int apparently (?)
                     break
                 except:
-                    print "Failed attempt " +str(i) +"Error: " + str(sys.exc_info()[0])
+                    print("Failed attempt " +str(i) +"Error: " + str(sys.exc_info()[0]))
             print(state)
         else:
             state=0
