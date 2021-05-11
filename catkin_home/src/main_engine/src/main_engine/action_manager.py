@@ -5,9 +5,9 @@ from intercom.msg import action_selector_cmd
 import rospy
 
 # IMPORT ACTIONS
-from actions.go_to import go_to
-from actions.pick_up import pick_up
-from actions.put_down import put_down
+from .actions.go_to import go_to
+from .actions.pick_up import pick_up
+from .actions.put_down import put_down
 
 """
 	TODO: Define description

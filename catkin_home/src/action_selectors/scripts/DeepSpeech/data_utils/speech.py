@@ -1,8 +1,19 @@
+# Copyright (c) 2021 PaddlePaddle Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 """Contains the speech segment class."""
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
+import numpy as np
 from data_utils.audio import AudioSegment
 
 
@@ -15,7 +26,7 @@ class SpeechSegment(AudioSegment):
     :param sample_rate: Audio sample rate.
     :type sample_rate: int
     :param transcript: Transcript text for the speech.
-    :type transript: basestring
+    :type transript: str
     :raises TypeError: If the sample data type is not float or int.
     """
 
@@ -41,9 +52,9 @@ class SpeechSegment(AudioSegment):
         """Create speech segment from audio file and corresponding transcript.
         
         :param filepath: Filepath or file object to audio file.
-        :type filepath: basestring|file
+        :type filepath: str|file
         :param transcript: Transcript text for the speech.
-        :type transript: basestring
+        :type transript: str
         :return: Speech segment instance.
         :rtype: SpeechSegment
         """
@@ -101,7 +112,7 @@ class SpeechSegment(AudioSegment):
         the entire file into the memory which can be incredibly wasteful.
 
         :param filepath: Filepath or file object to audio file.
-        :type filepath: basestring|file
+        :type filepath: str|file
         :param start: Start time in seconds. If start is negative, it wraps
                       around from the end. If not provided, this function 
                       reads from the very beginning.
@@ -112,7 +123,7 @@ class SpeechSegment(AudioSegment):
         :type end: float
         :param transcript: Transcript text for the speech. if not provided, 
                            the defaults is an empty string.
-        :type transript: basestring
+        :type transript: str
         :return: SpeechSegment instance of the specified slice of the input
                  speech file.
         :rtype: SpeechSegment
@@ -140,6 +151,6 @@ class SpeechSegment(AudioSegment):
         """Return the transcript text.
 
         :return: Transcript text for the speech.
-        :rtype: basestring
+        :rtype: str
         """
         return self._transcript

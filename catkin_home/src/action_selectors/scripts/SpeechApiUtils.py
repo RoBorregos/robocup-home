@@ -31,7 +31,7 @@ class SpeechApiUtils(object):
     @staticmethod
     def resample_ratecv(data,samplerate=48000, resample_rate=16000):
         #Resamples the given PCM stream to resample_rate.
-        return audioop.ratecv(str(bytearray(data)), 2, 1, samplerate, resample_rate, None)
+        return audioop.ratecv(data, 2, 1, samplerate, resample_rate, None)
 
     @staticmethod
     def get_all_samples(data):
