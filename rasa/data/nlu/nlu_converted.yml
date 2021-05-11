@@ -9,6 +9,17 @@ nlu:
     - Bring me the [bottle](object) from the [kitchen](place)
     - Bring me the [pizza](object) from the [basement](place)
     - Bring me the [soda](object) from the [kitchen](place)
+    - the [soda](object) from the [living room](place)
+    - a [banana](object) from the [studio](place) robot
+    - the [pizza](object) from the [basement](place)
+
+- intent: bring_something_secret_intent
+  examples: |
+    - Activate bring_something
+    - Do bring_something
+    - Start bring_something
+
+
 - intent: store_object
   examples: |
    - Please store the [apple](object) in the [shelf](place)

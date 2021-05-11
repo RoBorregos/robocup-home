@@ -56,6 +56,20 @@ stories:
   - intent: bye
   - action: utter_bye
 
+- story: bring_something_secret_intent
+  steps:
+  - intent: bring_something_secret_intent
+  - action: utter_what_bring
+  - intent: bring_something
+    entities:
+    - object: pizza
+    - place: kitchen
+  - slot_was_set:
+    - object: pizza
+  - slot_was_set:
+    - place: kitchen
+  - action: utter_command
+  - action: action_bring_something
 
 - story: farewell_goalonng
   steps: 
@@ -156,3 +170,4 @@ stories:
   - action: action_bring_to
 
 #Receptionist
+

@@ -3,11 +3,12 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
+- bring_something_secret_intent
+- bring_something
 - search_for_people
 - farewell
 - yes
 - no
-- bring_something
 - introduce_myself
 - thank
 - greet
@@ -16,6 +17,7 @@ intents:
 - clean
 - bring_to
 - store_object
+
 entities:
 - color
 - names
@@ -36,6 +38,8 @@ slots:
     influence_conversation: true
 
 responses:
+  utter_what_bring:
+  - text: what would you like me to bring and from where?
   utter_please_rephrase:
   - text: I'm sorry, I didn't quite understand that. Could you rephrase?
   utter_out_of_scope:
@@ -79,10 +83,10 @@ responses:
   utter_anything_else:
   - text: would you like anyhting else?
 actions:
+- action_bring_something
 - action_bring_to
 - action_clean_up
 - action_store_object
-- action_bring_something
 - action_farewell_no
 - action_farewell_yes
 - action_search_for_people
