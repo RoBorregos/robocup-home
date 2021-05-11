@@ -13,3 +13,4 @@ follow,1,False,navigation,Follow an operator.,find_operator
 find_operator,1,False,vision,Find an operator in the field of view of the robot.,
 clean_up,1,True,arm_action_server,Find unrecognized objects in a room and deposite them in the garbage.,
 scout_operators,1,True,navigation,Go around the arena asking people their names and saving their description,"go_to, find_operator"
+say,1,True,say,Says something to the user,

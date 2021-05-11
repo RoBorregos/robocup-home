@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospy
 import requests
 from intercom.msg import action_selector_cmd
 from std_msgs.msg import String
-from vizbox.msg import Story
 import os
 import csv
 from time import sleep
@@ -25,12 +24,10 @@ El robot agarra el objeto pedido.
 
 
 class Parser(object):
-    def __init__(self, pub, pub_resp, pub_story, filename):
+    def __init__(self, pub, filename):
         self.debug_option = True
         # Im sorry but i gues this is b etter than creating the publisher in each callback.
         self.pub = pub
-        self.pub_resp = pub_resp
-        self.pub_story = pub_story
         self.possible_actions = self.loadActions(filename)
 
     def loadActions(self, filename):
@@ -70,7 +67,7 @@ class Parser(object):
         command = text
         # Publish to Vizbox
         # instantiate response msg object
-        response_to_publish = String()
+        utterance = None
         # evaluate
         self.say("You just said:" + command)
         data = {"sender": "home",
@@ -83,19 +80,18 @@ class Parser(object):
             if(len(responseHTTP.json()) > 0):
                 for responseData in responseHTTP.json():
                     self.debug("BOT SAYS: " + responseData["text"])
-                    response_to_publish.data = responseData["text"]
-                    self.pub_resp.publish(response_to_publish)
+                    # Send action say with response
+                    utterance = responseData["text"]
                     nlu_info = nlu_response.json()
                     if(nlu_info["intent"]["confidence"] >= 0.60):
                         self.debug(nlu_info["intent"])
                         intent = nlu_info["intent"]["name"]
                         args = nlu_info["entities"]
                         self.debug("Entities: " + str(nlu_info["entities"]))
-        else:
-            response_to_publish.data = "Cant connect to RASA server"
-            self.pub_resp.publish(response_to_publish)
+        else:            
             self.debug("Failed response")
-        return intent, args
+        
+        return intent, args, utterance
 
     def publish_bring_something(self, intent, args):
         target_location = ""
@@ -124,13 +120,12 @@ class Parser(object):
                 action_request.intent + " : " + action_request.args)
             self.pub.publish(action_request)
             print(self.possible_actions[intent])
-        self.pub_story.publish(story)
 
     def callback(self, msg):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.data)
         # Here the parsing is done
         try:
-            intent, args = self.callRASA(msg.data)
+            intent, args , utterance = self.callRASA(msg.data)
             pass
         except:
             response_to_publish = String()
@@ -138,6 +133,15 @@ class Parser(object):
             self.pub_resp.publish(response_to_publish)
             self.debug("Failed response")
             pass
+
+        # First send "say" action
+        if(utterance):
+            say_action_request = action_selector_cmd()
+            say_action_request.intent = "say"
+            say_action_request.args = utterance
+            say_action_request.action_client_binded = self.possible_actions[
+                        intent]['action_client_binded']
+            self.pub.publish(say_action_request)
 
         if(self.possible_actions.get(intent)):
             if(intent == "bring_something"):
@@ -156,11 +160,9 @@ def main():
     rospy.init_node('parser', anonymous=True)
     FILENAME_OF_CSV = 'possible_actions.csv'
 
-    pub_resp = rospy.Publisher('robot_text', String, queue_size=10)
     pub = rospy.Publisher('action_requested',
                           action_selector_cmd, queue_size=10)
-    pub_story = rospy.Publisher("story", Story, queue_size=10)
-    parser = Parser(pub, pub_resp, pub_story, "possible_actions.csv")
+    parser = Parser(pub, "possible_actions.csv")
     rospy.Subscriber("operator_text", String, parser.callback)
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
