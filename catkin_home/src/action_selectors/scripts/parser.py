@@ -1,11 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import rospy
 import requests
 from intercom.msg import action_selector_cmd
 from std_msgs.msg import String
-from vizbox.msg import Story
+from action_selectors.msg import RawInput
 import os
 import json
+import sys
+
 from time import sleep
 
 '''
@@ -30,11 +32,9 @@ class Parser(object):
 
     def __init__(self):
         self.say_publisher = rospy.Publisher('robot_text', String, queue_size=10)
-        self.story_publisher = rospy.Publisher("story", Story, queue_size=10)
         self.possible_actions = self.loadActions()
         self.actions_publisher = rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
-        self.input_suscriber = rospy.Subscriber("operator_text", String, self.callback)
-        
+        self.input_suscriber = rospy.Subscriber("RawInput", RawInput, self.callback)
 
     def loadActions(self):
         '''
@@ -52,7 +52,7 @@ class Parser(object):
 
     def debug(self, text):
         if(self.DEBUG):
-            rospy.loginfo(rospy.get_caller_id() + "I heard %s", msg.data)
+            rospy.loginfo(text)
 
     def say(self, text):
         response = String(text)
@@ -72,14 +72,14 @@ class Parser(object):
         parse_response = requests.post(self.PARSE_ENDPOINT, json = { "text": command })
 
         if(rest_response.status_code == 200 and parse_response.status_code == 200):
-            if(len(rest_response.json()) > 0 and len(parse_response.json) > 0):
+            if(len(rest_response.json()) > 0 and len(parse_response.json()) > 0):
                 for responseData in rest_response.json():
                     self.debug("BOT SAYS: " + responseData["text"])
                     self.say(responseData["text"])
                   
                 nlu_info = parse_response.json()
                 if(nlu_info["intent"]["confidence"] >= 0.60):
-                    self.debug("Intent: " + nlu_info["intent"])
+                    self.debug("Intent: " + str(nlu_info["intent"]))
                     self.debug("Entities: " + str(nlu_info["entities"]))
                     intent = nlu_info["intent"]["name"]
                     args = nlu_info["entities"]
@@ -92,10 +92,6 @@ class Parser(object):
     def publish_bring_something(self, intent, args):
         target_location = ""
         target_object = ""
-
-        story = Story()
-        story.title = "Bring Something"
-        story.storyline = []
 
         for entity in args:
             if(entity.get("entity") == 'object'):
@@ -116,18 +112,16 @@ class Parser(object):
 
             action_request.args = arg
             action_request.action_client_binded = self.possible_actions[action[0]]['action_client_binded']
-            story.storyline.append(action_request.intent + " : " + action_request.args)
 
             self.actions_publisher.publish(action_request)
 
-        self.story_publisher.publish(story)
-
     def callback(self, msg):
-        self.debug("I heard: " + msg.data)
+        inputText = msg.inputText
+        self.debug("I heard: " + inputText)
         
         # Rasa Parser
         try:
-            intent, args = self.callRASA(msg.data)
+            intent, args = self.callRASA(inputText)
 
             if intent in self.possible_actions:
                 if(intent == "bring_something"):
@@ -141,14 +135,17 @@ class Parser(object):
         except:
             self.say("Cant connect to Server")
             self.debug("Failed response")
+            print("Unexpected error:" + str(sys.exc_info()[0]))
 
 
 
 def main():
     rospy.init_node('parser', anonymous=True)
     parser = Parser()
+    parser.debug('Parser Initialized.')
     rospy.spin()
 
 
 if __name__ == '__main__':
     main()
+#  echo "options snd_hda_intel index=1" >  /etc/modprobe.d/default.conf
