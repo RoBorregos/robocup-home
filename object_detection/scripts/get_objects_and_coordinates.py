@@ -143,11 +143,12 @@ def display_image_detection(image, detections):
     cv2.destroyAllWindows()
 
 def compute_result(run_inference_on_image, path_to_img, image_view):
+    global category_index
     image = cv2.imread(path_to_img)
 
     (boxes, scores, classes, detections) = run_inference_on_image(image)
     
-    return get_objects(boxes, scores, classes, image.shape[0], image.shape[1]), detections, image
+    return get_objects(boxes, scores, classes, image.shape[0], image.shape[1]), detections, image, category_index
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Get objects and coordinates")
@@ -157,7 +158,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     run_inferance_on_image = load_model()
-    detected_objects, detections, image = compute_result(run_inferance_on_image, args.input_directory, args.image_view)
+    detected_objects, detections, image, _ = compute_result(run_inferance_on_image, args.input_directory, args.image_view)
     
     # Write JSON results to a txt file
     with open(os.path.join(args.output_directory,'detected_objects.txt'),'w') as outfile:

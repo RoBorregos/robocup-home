@@ -73,6 +73,7 @@ pymongo==3.11.3
 pyparsing==2.4.7
 python-qt-binding==0.4.3
 python-slugify==4.0.1
+pyrealsense2==2.45.0.3217
 PyYAML==5.4.1
 qt-dotgraph==0.4.2
 qt-gui==0.4.2
