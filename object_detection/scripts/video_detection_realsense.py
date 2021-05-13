@@ -3,13 +3,16 @@ import argparse
 import tensorflow as tf
 import cv2
 import pathlib
+import tempfile
+import os
 
 from object_detection.utils import ops as utils_ops
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
-import pyrealsense2 as rs
+#import pyrealsense2 as rs
 
-
+import get_objects_and_coordinates
+from get_objects_and_coordinates import load_model, compute_result
 
 # patch tf1 into `utils.ops`
 utils_ops.tf = tf.compat.v1
@@ -18,10 +21,8 @@ utils_ops.tf = tf.compat.v1
 tf.gfile = tf.io.gfile
 
 
-def load_model(model_path):
-    model = tf.saved_model.load(model_path)
-    return model
 
+category_index = None
 
 def run_inference_for_single_image(model, image):
     image = np.asarray(image)
@@ -56,7 +57,7 @@ def run_inference_for_single_image(model, image):
     return output_dict
 
 
-def run_inferenceintel(model, category_index, pipeline):
+def run_inferenceintel(run_inferance_on_image, pipeline):
     while True:
 
         # Wait for a coherent pair of frames: depth and color
@@ -73,13 +74,22 @@ def run_inferenceintel(model, category_index, pipeline):
         depth_image = np.asanyarray(depth_frame.get_data())
         color_image = np.asanyarray(color_frame.get_data())
 
-        # Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as temp_img_file:
+            # We create a temporal file that can be opened by the other process
+            # and that will be deleted when closed.
 
-        depth_colormap_dim = depth_colormap.shape
-        color_colormap_dim = color_image.shape
+            _, img_buffer = cv2.imencode(".jpg", color_image)
+        
+            temp_img_file.write(img_buffer.tostring())
+            temp_img_file.flush()
 
-        # Actual detection.
+            json_result = compute_result(run_inferance_on_image, temp_img_file.name)
+            print(json_result)
+        
+        '''
+        run the model from get objects and coordinates and save the result on a usb
+        '''
+        '''# Actual detection.
         output_dict = run_inference_for_single_image(model, color_image)
         # Visualization of the results of a detection.
         vis_util.visualize_boxes_and_labels_on_image_array(
@@ -95,12 +105,25 @@ def run_inferenceintel(model, category_index, pipeline):
         if cv2.waitKey(25) & 0xFF == ord('q'):
             cap.release()
             cv2.destroyAllWindows()
-            break
+            break'''
 
-def run_inference(model, category_index, cap):
+def run_inference(run_inferance_on_image, cap):
     while True:
         ret, image_np = cap.read()
-        # Actual detection.
+        
+        with tempfile.NamedTemporaryFile(suffix=".jpg") as temp_img_file:
+            # We create a temporal file that can be opened by the other process
+            # and that will be deleted when closed.
+
+            _, img_buffer = cv2.imencode(".jpg", image_np)
+        
+            temp_img_file.write(img_buffer.tostring())
+            temp_img_file.flush()
+
+            json_result = compute_result(run_inferance_on_image, temp_img_file.name)
+            print(json_result)
+
+        '''# Actual detection.
         output_dict = run_inference_for_single_image(model, image_np)
         # Visualization of the results of a detection.
         vis_util.visualize_boxes_and_labels_on_image_array(
@@ -116,45 +139,50 @@ def run_inference(model, category_index, cap):
         if cv2.waitKey(25) & 0xFF == ord('q'):
             cap.release()
             cv2.destroyAllWindows()
-            break
+            break'''
+
+def create_intelrs_pipeline():
+    pipeline = rs.pipeline()
+    config = rs.config()
+
+    # Get device product line for setting a supporting resolution
+    pipeline_wrapper = rs.pipeline_wrapper(pipeline)
+    pipeline_profile = config.resolve(pipeline_wrapper)
+    device = pipeline_profile.get_device()
+
+    ##
+    depth_sensor = pipeline_profile.get_device().first_depth_sensor()
+    depth_scale = depth_sensor.get_depth_scale()
+    ##
+
+    device_product_line = str(device.get_info(rs.camera_info.product_line))
+
+    config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+    if device_product_line == 'L500':
+        config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
+    else:
+        config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+
+    # Start streaming
+    pipeline.start(config)
+
+    return pipeline
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Detect objects inside webcam videostream')
-    parser.add_argument('-m', '--model', type=str, required=True, help='Model Path')
-    parser.add_argument('-l', '--labelmap', type=str, required=True, help='Path to Labelmap')
     parser.add_argument('-c', '--camera', type=bool, required=False, help='Camera choose')
 
     args = parser.parse_args()
 
-    detection_model = load_model(args.model)
-    category_index = label_map_util.create_category_index_from_labelmap(args.labelmap, use_display_name=True)
+    #detection_model = load_model(args.model)
+    #category_index = label_map_util.create_category_index_from_labelmap(args.labelmap, use_display_name=True)
     intel = args.camera
 
+    run_inferance_on_image = load_model()
+
     if intel==True:
-        pipeline = rs.pipeline()
-        config = rs.config()
-
-        # Get device product line for setting a supporting resolution
-        pipeline_wrapper = rs.pipeline_wrapper(pipeline)
-        pipeline_profile = config.resolve(pipeline_wrapper)
-        device = pipeline_profile.get_device()
-
-        ##
-        depth_sensor = pipeline_profile.get_device().first_depth_sensor()
-        depth_scale = depth_sensor.get_depth_scale()
-        ##
-
-        device_product_line = str(device.get_info(rs.camera_info.product_line))
-
-        config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-        if device_product_line == 'L500':
-            config.enable_stream(rs.stream.color, 960, 540, rs.format.bgr8, 30)
-        else:
-            config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
-
-        # Start streaming
-        pipeline.start(config)
-        run_inferenceintel(detection_model, category_index, pipeline)
+        pipeline = create_intelrs_pipeline()
+        run_inferenceintel(run_inferance_on_image, pipeline)
     else:
         cap = cv2.VideoCapture(0)
-        run_inference(detection_model, category_index, cap)
+        run_inference(run_inferance_on_image, cap)
