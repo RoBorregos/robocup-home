@@ -59,17 +59,46 @@ stories:
 - story: bring_something_secret_intent
   steps:
   - intent: bring_something_secret_intent
+  - action: utter_greet
+  - intent: greet
+  - action: utter_whereto
+  - intent: go_to
+    entities:
+    - place: kitchen
+  - slot_was_set:
+    - place: kitchen
   - action: utter_what_bring
-  - intent: bring_something
+  - intent: bring_only
     entities:
     - object: pizza
-    - place: kitchen
   - slot_was_set:
     - object: pizza
-  - slot_was_set:
-    - place: kitchen
   - action: utter_command
   - action: action_bring_something
+
+- story: bring_something_secret_intent2
+  steps:
+  - intent: bring_something_secret_intent
+  - action: utter_greet
+  - intent: greet
+  - action: utter_whereto
+  - intent: go_to
+    entities:
+    - place: kitchen
+  - slot_was_set:
+    - place: kitchen
+  - action: utter_what_bring
+  - intent: bring_only
+    entities:
+    - object: pizza
+  - slot_was_set:
+    - object: pizza
+  - action: utter_command
+  - action: action_bring_something
+  - intent: thank
+  - action: utter_you're_welcome
+  - action: action_restart
+
 
 - story: farewell_goalonng
   steps: 
@@ -169,5 +198,12 @@ stories:
   - action: utter_carry_bag
   - action: action_bring_to
 
-#Receptionist
+#reset
+- story: thanks
+  steps:
+  - intent: thank
+  - action: utter_you're_welcome
+  - action: action_restart
 
+
+  

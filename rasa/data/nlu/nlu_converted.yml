@@ -3,8 +3,8 @@ nlu:
 - intent: bring_something
   examples: |
     - Bring the [soda](object) from the [living room](place)
-    - Please bring and [apple](object) from the [kitchen](place)
-    - Bring the a [banana](object) from the [studio](place) robot
+    - Please bring an [apple](object) from the [kitchen](place)
+    - Bring  a [banana](object) from the [studio](place) robot
     - Go to the [bedroom](place) and bring me [coffee](object)
     - Bring me the [bottle](object) from the [kitchen](place)
     - Bring me the [pizza](object) from the [basement](place)
@@ -12,6 +12,7 @@ nlu:
     - the [soda](object) from the [living room](place)
     - a [banana](object) from the [studio](place) robot
     - the [pizza](object) from the [basement](place)
+    - From the [kitchen](place) bring [soda](object)
 
 - intent: bring_something_secret_intent
   examples: |
@@ -19,6 +20,20 @@ nlu:
     - Do bring_something
     - Start bring_something
 
+- intent: go_to
+  examples: |
+    - to the [kitchen](place)
+    - [attic](place)
+    - go to the [garden](place)
+    - please go to the [restroom](place)
+
+- intent: bring_only
+  examples: |
+    - bring the [pizza](object)
+    - please bring the [banana](object)
+    - the [soda](object)
+    - a [apple](object)
+    - [coke](object)
 
 - intent: store_object
   examples: |
@@ -123,3 +138,9 @@ nlu:
     - thank you
     - thanks mate
     - Thanks
+    - thanks robot
+    - thanks for the help
+    - thank you for your work
+
+
+
