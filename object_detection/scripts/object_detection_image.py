@@ -13,16 +13,21 @@ from object_detection.utils import visualization_utils as vis_util
 
 #from google.colab.patches import cv2_imshow
 
-# sys.path.append("..")
+# Look for object_detection directory based on absolute path to file.
+# This allows the scripts to be called from any directory.
+
+base_directory = 'object_detection'
+path_to_file = os.path.abspath(__file__) # get absolute path to current working file
+index_of_base_directory = path_to_file.find(base_directory)
+WORKING_DIR = path_to_file[0:index_of_base_directory + len(base_directory)]
 
 MODEL_NAME = 'saved_model'
-CWD_PATH = './models/model_tf2'
+CWD_PATH = os.path.join(WORKING_DIR, 'models', 'model_tf2')
 PATH_TO_SAVED_MODEL = os.path.join(CWD_PATH, MODEL_NAME)
 PATH_TO_LABELS = os.path.join(CWD_PATH,'label_map.pbtxt')
-PATH_TO_IMAGE = './test_images/test_image_tf2.jpg'
 NUM_CLASSES = 4
 MIN_SCORE_THRESH = 0.6
-
+PATH_TO_IMAGE = os.path.join(WORKING_DIR, 'test_images', 'test_image_tf2.jpg')
 
 # Load the label map.
 category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)

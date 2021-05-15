@@ -44,18 +44,19 @@ from object_detection.utils import visualization_utils as vis_util
 # Use matplotlib tkinter GUI 
 matplotlib.use('TkAgg') 
 
+base_directory = 'object_detection'
+path_to_file = os.path.abspath(__file__) # get absolute path to current working file
+index_of_base_directory = path_to_file.find(base_directory)
+WORKING_DIR = path_to_file[0:index_of_base_directory + len(base_directory)]
+
 MODEL_NAME = 'saved_model'
-# TODO: Because this is going to be called by other script, maybe is better to use
-# __file__. https://stackoverflow.com/a/3430395
-CWD_PATH = './models/model_tf2'
+CWD_PATH = os.path.join(WORKING_DIR, 'models', 'model_tf2')
 PATH_TO_SAVED_MODEL = os.path.join(CWD_PATH, MODEL_NAME)
 PATH_TO_LABELS = os.path.join(CWD_PATH,'label_map.pbtxt')
 NUM_CLASSES = 4
 MIN_SCORE_THRESH = 0.6
 
-
 category_index = None
-
 
 def load_model():
     """
