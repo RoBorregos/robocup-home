@@ -38,6 +38,8 @@ RUN apt-get update && apt-get install -y wget && \
 # Say
 RUN apt-get update && apt-get install -y espeak mpg321 pulseaudio && \
     rm -rf /var/lib/apt/lists/*
+# SomeoneToTalk
+RUN apt-get update && apt-get install libopencv-dev python3-opencv -y
 
 # Python Dependencies
 COPY docker/noetic/speechDependencies.txt /speechDependencies.txt

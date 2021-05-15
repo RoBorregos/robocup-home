@@ -2,7 +2,7 @@
 import rospy
 import requests
 from intercom.msg import action_selector_cmd
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 from action_selectors.msg import RawInput
 import os
 import json
@@ -34,6 +34,7 @@ class Parser(object):
         self.say_publisher = rospy.Publisher('robot_text', String, queue_size=10)
         self.possible_actions = self.loadActions()
         self.actions_publisher = rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
+        self.someone_to_talk_suscriber = rospy.Subscriber('someoneToTalkStatus', Bool, self.someone_to_talk_callback)
         self.input_suscriber = rospy.Subscriber("RawInput", RawInput, self.callback)
 
     def loadActions(self):
@@ -137,7 +138,8 @@ class Parser(object):
             self.debug("Failed response")
             print("Unexpected error:" + str(sys.exc_info()[0]))
 
-
+    def someone_to_talk_callback(self, msg):
+        pass
 
 def main():
     rospy.init_node('parser', anonymous=True)

@@ -3,6 +3,7 @@ docker run \
     --gpus all \
     --env PULSE_SERVER=unix:/tmp/pulseaudio.socket \
     --env PULSE_COOKIE=/tmp/pulseaudio.cookie \
+    --device /dev/video0 \
     --volume ~/.config/pulse/cookie:/tmp/pulseaudio.cookie \
     --volume /tmp/pulseaudio.socket:/tmp/pulseaudio.socket \
     --volume /tmp/pulseaudio.client.conf:/etc/pulse/client.conf \

@@ -45,6 +45,7 @@ wrokspace.code-workspace
 /object_detection/models/
 
 ### CONVERSATION ###
+catkin_home/src/action_selectors/scripts/FaceDetection/haarcascade_frontalface_default.xml
 /rasa/venv/
 /rasa/models/
 /rasa/results/
