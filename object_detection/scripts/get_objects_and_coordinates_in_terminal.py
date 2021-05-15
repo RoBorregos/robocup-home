@@ -44,6 +44,8 @@ from object_detection.utils import visualization_utils as vis_util
 # Use matplotlib tkinter GUI 
 matplotlib.use('TkAgg') 
 
+# Look for object_detection directory based on absolute path to file.
+# This allows the scripts to be called from any directory.
 base_directory = 'object_detection'
 path_to_file = os.path.abspath(__file__) # get absolute path to current working file
 index_of_base_directory = path_to_file.find(base_directory)
