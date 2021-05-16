@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from main_engine.action_manager import Main_Engine
+from main_engine.action_manager import *
 import os
 import unittest
 import sys
