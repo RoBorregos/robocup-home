@@ -10,30 +10,27 @@ import scipy
 import cv2
 import sys
 import os
+import numpy as np
 from std_msgs.msg import Bool
+from sensor_msgs.msg import CompressedImage
 
-dirname = os.path.dirname(__file__)
-cascPath = os.path.join(dirname, './FaceDetection/haarcascade_frontalface_default.xml')
-
-def main():
-    rospy.init_node('SomeoneToTalk', anonymous=True)
-    rospy.loginfo("*Starting SomeoneToTalk Node*")
-    status_publisher = rospy.Publisher('someoneToTalkStatus', Bool, queue_size=10)
-
-    faceCascade = cv2.CascadeClassifier(cascPath)
-
-    video_capture = cv2.VideoCapture(0)
-    
-    r = rospy.Rate(10) # 10FPS
+class SomeoneToTalk(object):
+    dirname = os.path.dirname(__file__)
+    cascPath = os.path.join(dirname, './FaceDetection/haarcascade_frontalface_default.xml')
     lastStatus = False
     countSameStatus = 0
-    while not rospy.is_shutdown():
-        # Capture frame-by-frame
-        ret, frame = video_capture.read()
+    
+    def __init__(self):
+        self.image_subscriber = rospy.Subscriber("camaras/0/" , CompressedImage, self.callback)
+        self.status_publisher = rospy.Publisher("someoneToTalkStatus", Bool, queue_size=10)
+        self.faceCascade = cv2.CascadeClassifier(self.cascPath)
+    
+    def callback(self, compressedImage):
+        np_arr = np.frombuffer(compressedImage.data, np.uint8)
+        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        faces = faceCascade.detectMultiScale(
+        faces = self.faceCascade.detectMultiScale(
             gray,
             scaleFactor=1.1,
             minNeighbors=5,
@@ -42,26 +39,25 @@ def main():
         )
         
         if len(faces) > 0:
-            if lastStatus == True:
-                countSameStatus += 1
+            if self.lastStatus == True:
+                self.countSameStatus += 1
             else:
-                lastStatus = True
-                countSameStatus = 0
+                self.lastStatus = True
+                self.countSameStatus = 0
         else:
-            if lastStatus == False:
-                countSameStatus += 1
+            if self.lastStatus == False:
+                self.countSameStatus += 1
             else:
-                lastStatus = False
-                countSameStatus = 0
+                self.lastStatus = False
+                self.countSameStatus = 0
         
-        if countSameStatus >= 10:
-            status_publisher.publish(Bool(lastStatus))
+        if self.countSameStatus >= 10:
+            self.status_publisher.publish(Bool(self.lastStatus))
 
-        r.sleep()
-
-    # When everything is done, release the capture
-    video_capture.release()
-    
+def main():
+    rospy.init_node('SomeoneToTalk', anonymous=True)
+    rospy.loginfo("*Starting SomeoneToTalk Node*")
+    SomeoneToTalk()
     rospy.spin()
 
 if __name__ == '__main__':
