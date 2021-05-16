@@ -1,6 +1,7 @@
 import time
 import rospy
 import os
+import threading
 import subprocess as sp
 
 from multiprocessing.connection import Client, Listener
@@ -18,12 +19,16 @@ server_sender = None
 server_receiver_listener = None
 server_receiver = None
 
+# Message receiving from flask is performed in a different thread.
+flask_messaging_thread = None
 
 def initialize_server_process():
+    global server_process
     server_process = sp.Popen(["/usr/bin/python3", server_script_path])
 
 
 def initialize_server_connection():
+    global server_sender, server_receiver
     # Give the subprocess some time to initialize its connection listener.
     time.sleep(1)
     # Create sender.
@@ -40,7 +45,26 @@ def initialize_server_connection():
     server_receiver = server_receiver_listener.accept()
 
 
+def flask_receive_handler():
+    while True:
+        if server_receiver is None:
+            # Don't block execution.
+            time.sleep(0.01)
+            continue
+        if server_receiver.poll():
+            try:
+                message = server_receiver.recv()
+                if message == "shutdown":
+                    rospy.loginfo("Stopping system")
+                rospy.loginfo(message)
+            except:
+                break
+        # Don't block execution.
+        time.sleep(.01)
+    
+    
 def cleanup():
+    print("Cleaning up")
     server_sender.send("Close")
     # Give the server time to close itself.
     time.sleep(1)
@@ -53,6 +77,12 @@ def main():
 
     initialize_server_process()
     initialize_server_connection()
+
+    # Create thread that handles messages from flask.
+    # The thread is daemonic so there's no need to clean
+    # it up at the end of execution.
+    flask_messaging_thread = threading.Thread(target=flask_receive_handler, daemon=True)
+    flask_messaging_thread.start()
     
     rospy.spin()
 

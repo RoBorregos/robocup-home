@@ -18,16 +18,18 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 receiver_address = ('localhost', 7000)
 sender_address = ('localhost', 7001)
 
-ros_receiver_listener = None
 ros_receiver = None
 ros_sender = None
 
 def initialize_ros_sender():
+    global ros_sender
     # Wait to give the ros node time to call its accept method.
     socketio.sleep(1)
     ros_sender = Client(sender_address)
+    print("Created ros_sender")
 
 def initialize_ros_receiver():
+    global ros_receiver
     ros_receiver_listener = Listener(receiver_address)
     ros_receiver = ros_receiver_listener.accept()
 
@@ -44,7 +46,7 @@ def ros_receive_handler():
             continue
         # Only call `recv` when we're sure there's a new message since
         # it is a blocking call.
-        if(ros_receiver.poll()):
+        if ros_receiver.poll():
             message = ros_receiver.recv()
             if message == "CreateSender":
                 initialize_ros_sender()
@@ -53,6 +55,8 @@ def ros_receive_handler():
             else:
                 # TODO: this should be serialized/processed
                 socketio.emit("Comm", message)
+        
+        # Waits 100ms in between messages.
         socketio.sleep(0.1)
 
 @socketio.on("connect")
@@ -76,6 +80,12 @@ def not_found(_):
 def root():
     socketio.emit("Comm", "Just some message")
     return jsonify({"message": "Welcome to the HOME API"})
+
+@app.route("/stop", methods=["POST"])
+def stop_robot():
+    global ros_sender
+    ros_sender.send("shutdown")
+    return jsonify({"message": "Robot was shutdown"})
 
 if __name__ == "__main__":
     # Patch python to make use of an event loop and make background tasks work.
