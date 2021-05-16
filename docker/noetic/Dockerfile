@@ -1,0 +1,26 @@
+# Use the existing ROS-NOETIC image
+FROM osrf/ros:noetic-desktop-full
+
+# Install dependencies
+RUN apt-get update -qq && \
+    apt-get install -y \
+    build-essential \
+    nano \
+    git \
+    autoconf \
+    libtool \
+    ros-noetic-audio-common \
+    ros-noetic-move-base && \
+    rm -rf /var/lib/apt/lists/*
+
+# Init catkin_home directoy
+RUN mkdir /catkin_home
+COPY catkin_home/ catkin_home/
+WORKDIR catkin_home
+
+# catkin_make
+RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;catkin_make'
+
+# Add ROS environment variables automatically
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN echo "[ -f /catkin_home/devel/setup.bash ] && source /catkin_home/devel/setup.bash" >> ~/.bashrc
