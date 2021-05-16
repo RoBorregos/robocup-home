@@ -6,9 +6,9 @@ import numpy as np
 from sensor_msgs.msg import CompressedImage
 
 # FPS.
-RATE = rospy.get_param('~RATE', 15)
+RATE = int(rospy.get_param('~RATE', 15))
 # Default webcam.
-CAMERA = rospy.get_param('~CAMERAID', 0)
+CAMERA = int(rospy.get_param('~CAMERAID', 0))
 # Show Images.
 VERBOSE = False
 

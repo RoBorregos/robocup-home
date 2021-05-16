@@ -1,0 +1,25 @@
+<launch>
+    <!-- Devices -->
+    <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
+    <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/>
+    <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
+        <param name="RATE" value="15" />
+        <param name="CAMERAID" value="0" />
+    </node>
+    <node name="say" pkg="devices" type="say.py" respawn="true" output="screen" />
+    <!-- Speech To Text -->
+    <!-- FORCE_ENGINE: 'online' - Azure, 'offline' - DeepSpeech, 'none' - Both Engines [it depends on internet] -->
+    <arg name="FORCE_ENGINE" default="online"/>
+    <node name="hear" pkg="action_selectors" type="hear.py" respawn="true" output="screen">
+        <param name="FORCE_ENGINE" value="$(arg FORCE_ENGINE)" />
+    </node>
+    <node name="azureSpeechText" pkg="action_selectors" type="AzureSpeechToText" output="screen" if="$(eval arg('FORCE_ENGINE') != 'offline')"/>
+    <node name="DeepSpeech" pkg="action_selectors" type="DeepSpeech.py" output="screen" if="$(eval arg('FORCE_ENGINE') != 'online')"/>
+    <!-- Conversation -->
+    <!-- START_TALK: 'True' - Start Conversation, 'False' - Wait until being Spoken -->
+    <arg name="START_TALK" default="True"/>
+    <node name="SomeoneToTalk" pkg="action_selectors" type="SomeoneToTalk.py" respawn="true" if="$(eval arg('START_TALK') != 'False')" />
+    <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen">
+        <param name="START_TALK" value="$(arg START_TALK)" />
+    </node>
+</launch>

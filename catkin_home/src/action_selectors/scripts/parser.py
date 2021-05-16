@@ -23,6 +23,7 @@ El robot navega al lugar pedido.
 El robot agarra el objeto pedido.
 
 '''
+START_TALK = rospy.get_param('START_TALK', 'False') == 'True'
 
 class Parser(object):
     JSON_FILENAME = 'possible_actions.json'
@@ -34,8 +35,9 @@ class Parser(object):
         self.say_publisher = rospy.Publisher('robot_text', String, queue_size=10)
         self.possible_actions = self.loadActions()
         self.actions_publisher = rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
-        self.someone_to_talk_suscriber = rospy.Subscriber('someoneToTalkStatus', Bool, self.someone_to_talk_callback)
         self.input_suscriber = rospy.Subscriber("RawInput", RawInput, self.callback)
+        if START_TALK:
+            self.someone_to_talk_suscriber = rospy.Subscriber('someoneToTalkStatus', Bool, self.someone_to_talk_callback)
 
     def loadActions(self):
         '''
