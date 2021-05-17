@@ -1,6 +1,7 @@
 import flask
 import eventlet
 import cv2
+import json
 from multiprocessing.connection import Listener, Client
 
 from flask import request, jsonify
@@ -46,6 +47,7 @@ def ros_receive_handler():
             continue
         # Only call `recv` when we're sure there's a new message since
         # it is a blocking call.
+        
         if ros_receiver.poll():
             message = ros_receiver.recv()
             if message == "CreateSender":
@@ -53,12 +55,13 @@ def ros_receive_handler():
             elif message == "Close":
                 cleanup()
             else:
-                # TODO: this should be serialized/processed
-                socketio.emit("Comm", message)
-        
-        # Waits 100ms in between messages.
-        socketio.sleep(0.1)
+                socketio.emit(message["channel"], json.dumps(message["value"]))
+                print(f"Received from ROS: {message}")
+        else:
+            # Only throttle if there are no available messages.
+            socketio.sleep(0.01)
 
+                
 @socketio.on("connect")
 def connect_handler():
     print('A user has connected to the server.')

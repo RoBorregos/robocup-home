@@ -4,6 +4,7 @@ import os
 import threading
 import subprocess as sp
 
+from hri.msg import RobotStatus
 from multiprocessing.connection import Client, Listener
 from std_msgs.msg import String
 
@@ -61,7 +62,18 @@ def flask_receive_handler():
                 break
         # Don't block execution.
         time.sleep(.01)
-    
+
+def robot_info_receive_handler(robot_status):
+    if server_sender is not None:
+        server_sender.send({
+            "channel": "SystemHealth",
+            "value": robot_status.system_health
+        })
+        server_sender.send({
+            "channel": "ActiveModules",
+            "value": robot_status.active_modules
+        })
+        
     
 def cleanup():
     print("Cleaning up")
@@ -83,6 +95,9 @@ def main():
     # it up at the end of execution.
     flask_messaging_thread = threading.Thread(target=flask_receive_handler, daemon=True)
     flask_messaging_thread.start()
+
+    # Start receiving status messages.
+    rospy.Subscriber("/robot_info", RobotStatus, robot_info_receive_handler)
     
     rospy.spin()
 
