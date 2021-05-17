@@ -43,6 +43,7 @@ wrokspace.code-workspace
 /object_detection/models/model_tf2
 /object_detection/models/dependencies/TensorFlow
 /object_detection/models/dependencies/coco
+/object_detection/images/train
 
 ### Others ###
 /rasa/venv/
