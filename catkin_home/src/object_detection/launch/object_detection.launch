@@ -1,0 +1,9 @@
+<launch>
+    <!-- Devices -->
+    <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
+        <param name="RATE" value="15" />
+        <param name="CAMERAID" value="0" />
+    </node>
+    <arg name="VERBOSE" default="True"/>
+    <node name="get..." pkg="object_detection" type="get..ess.py" respawn="true" output="screen" />
+</launch>
