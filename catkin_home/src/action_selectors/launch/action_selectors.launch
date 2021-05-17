@@ -1,5 +1,10 @@
 <launch>
-<node name="hear" pkg="action_selectors" type="hear.py" respawn="true" output="screen"/>
 <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen"/>
-<node name="ObjectDetector" pkg="action_selectors" type="ObjectDetector.py" respawn="true" output="screen"/>
+<!-- FORCE_ENGINE, 'online' - Azure, 'offline' - DeepSpeech, 'none' - Both Engines [it depends on internet] -->
+<arg name="FORCE_ENGINE" default="none"/>
+    <node name="hear" pkg="action_selectors" type="hear.py" respawn="true" output="screen">
+        <param name="FORCE_ENGINE" value="$(arg FORCE_ENGINE)" />
+    </node>
+    <node name="azureSpeechText" pkg="action_selectors" type="AzureSpeechToText" output="screen" if="$(eval arg('FORCE_ENGINE') != 'offline')"/>
+    <node name="DeepSpeech" pkg="action_selectors" type="DeepSpeech.py" output="screen" if="$(eval arg('FORCE_ENGINE') != 'online')"/>
 </launch>
