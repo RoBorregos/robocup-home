@@ -7,8 +7,8 @@ pipeline:
 - name: RegexFeaturizer
 - name: LexicalSyntacticFeaturizer
 - name: CountVectorsFeaturizer
-- name: RegexEntityExtractor
-  use_lookup_tables: True
+#- name: RegexEntityExtractor
+#  use_lookup_tables: True
 - name: CountVectorsFeaturizer
   analyzer: char_wb
   min_ngram: 1

@@ -26,14 +26,22 @@ nlu:
     - [attic](place)
     - go to the [garden](place)
     - please go to the [restroom](place)
+    - will you go to the [couch](place)
+    - to the [closet](place)
+    - Can you go to the [bathroom](place)
+  
+
 
 - intent: bring_only
   examples: |
     - bring the [pizza](object)
     - please bring the [banana](object)
     - the [soda](object)
-    - a [apple](object)
+    - an [apple](object)
     - [coke](object)
+    - can you please bring the [milk](object)
+    - will you bring the [tea](object)
+    - a [soup](object)
 
 - intent: store_object
   examples: |
