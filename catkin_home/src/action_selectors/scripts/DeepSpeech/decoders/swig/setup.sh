@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 if [ ! -d kenlm ]; then
-    git clone https://github.com/kpu/kenlm
+    git clone https://github.com/kpu/kenlm.git
+    cd kenlm/
+    git checkout df2d717e95183f79a90b2fa6e4307083a351ca6a
+    cd ..
     echo -e "\n"
 fi
 
@@ -18,4 +21,4 @@ if [ ! -d ThreadPool ]; then
 fi
 
 echo "Install decoders ..."
-python2 setup.py install --num_processes 4
+python3 setup.py install --num_processes 4

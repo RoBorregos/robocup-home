@@ -30,7 +30,7 @@ publisher_deepspeech = None
 
 def callback_azure(data):
     # Change Sample Rate.
-    resample=SpeechApiUtils.resample_ratecv(data.data,48000,16000)
+    resample=SpeechApiUtils.resample_ratecv(data.data, 48000, 16000)
     # getAllSamples.
     allsamples=SpeechApiUtils.get_all_samples(resample[0])
     # Publish.

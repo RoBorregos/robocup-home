@@ -33,16 +33,9 @@ def main():
     # by ROS.
     while stream.is_active() and not rospy.is_shutdown():
         try:
-            # TODO: Check for byte order.
             in_data = stream.read(CHUNK_SIZE, exception_on_overflow = False)
 
-            # TODO: Look for the lightest way to do this.
-            # msg = tuple(bytearray(in_data))
-            # or
-            # https://stackoverflow.com/questions/13401600/unpack-binary-data-with-python
-            msg = tuple(bytearray(in_data))
-            #msg = [ord(b) for b in in_data]
-
+            msg = in_data
             publisher.publish(AudioData(data=msg))
         except IOError as e:
             print("I/O error({0}): {1}".format(e.errno, e.strerror))
