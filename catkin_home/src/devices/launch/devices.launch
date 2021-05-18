@@ -11,11 +11,15 @@
   </node>
   <node name="Say" pkg="devices" type="say.py" respawn="true" output="screen" />
   
-  <arg name="enable_depth"        default="false"/>
-  <arg name="color_fps"           default="15"/>
+  <arg name="enable_depth"   default="false"/>
+  <arg name="color_width"    default="1280" />
+  <arg name="color_height"   default="720" />
+  <arg name="color_fps"      default="15" />
   <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-    <arg name="enable_depth"              value="$(arg enable_depth)"/>
-    <arg name="color_fps"                value="$(arg color_fps)"/>
+    <arg name="enable_depth"      value="$(arg enable_depth)"/>
+    <arg name="color_width"       value="$(arg color_width)" />
+    <arg name="color_height"      value="$(arg color_height)" />
+    <arg name="color_fps"         value="$(arg color_fps)"/>
   </include>    
   <node name="republish_intel_rgb" type="republish" pkg="image_transport" args="raw in:=/color/image_raw compressed out:=/camaras/1/" respawn="true"/>
 </launch>
