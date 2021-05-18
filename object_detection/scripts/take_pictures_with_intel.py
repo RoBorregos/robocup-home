@@ -16,7 +16,7 @@ WORKING_DIR = path_to_file[0:index_of_base_directory + len(base_directory)]
 IMG_DIR = os.path.join(WORKING_DIR, 'images', 'train')
 
 # Get amount of files in train directory to set the image IDs
-totalFiles = len(glob.glob1(IMG_DIR,"*.png"))
+totalFiles = len(glob.glob1(IMG_DIR, "*.png"))
 print('Amount of images so far: ' + str(totalFiles))
 
 pipeline = rs.pipeline()
@@ -50,10 +50,10 @@ while(True):
 
 	if cv2.waitKey(1) & 0xFF == ord('y'): #save on pressing 'y'
 		print('Writing image: ' + str(totalFiles))
-		cv2.imwrite('images/c' + str(totalFiles) + '.png',color_image)
+		cv2.imwrite(IMG_DIR + '/c' + str(totalFiles) + '.png',color_image)
 		totalFiles += 1
 
-	elif cv2.waitKey(1) & 0xFF == ord('q'): # end process on pressing 'q'
+	elif cv2.waitKey(1) & 0xFF == ord('q'): # end process by pressing 'q'
 		break
 
 pipeline.stop()
