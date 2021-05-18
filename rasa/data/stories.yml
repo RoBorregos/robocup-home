@@ -24,7 +24,7 @@ stories:
   - action: action_bring_something
   - intent: thank
   - action: utter_you're_welcome
-  
+  - action: action_restart
   
 - story: bring_something_3
   steps:
