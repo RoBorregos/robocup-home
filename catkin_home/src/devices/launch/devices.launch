@@ -1,7 +1,7 @@
 <launch>
-  <!-- TMR2021 - JESTON -->
-  <env name="ROS_MASTER_URI" value="http://192.168.31.3/" />
-  <env name="ROS_IP" value="192.168.31.2" />
+  <!-- TMR2021 - DEVICES -->
+  <env name="ROS_MASTER_URI" value="http://192.168.31.3:11311" />
+  <env name="ROS_IP" value="192.168.31.4" />
   
   <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
   <node name="InputAudio" pkg="devices" type="InputAudio" respawn="true" output="screen"/>
