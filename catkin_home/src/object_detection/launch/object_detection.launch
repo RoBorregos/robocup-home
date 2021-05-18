@@ -5,5 +5,5 @@
         <param name="CAMERAID" value="0" />
     </node>
     <arg name="VERBOSE" default="True"/>
-    <node name="get..." pkg="object_detection" type="get..ess.py" respawn="true" output="screen" />
+    <node name="get_objects_and_coordinates" pkg="object_detection" type="get_objects_and_coordinates.py" respawn="true" output="screen" />
 </launch>

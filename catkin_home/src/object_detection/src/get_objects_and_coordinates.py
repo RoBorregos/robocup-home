@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 This script test the trained model and performs object detection on a given image, the script prints
 in console a JSON with the objects detected and their info.
@@ -25,6 +26,7 @@ output:
 """
 import rospy
 from sensor_msgs.msg import CompressedImage
+from object_detection import *
 import os
 import time
 # Run tensorflow CPU instead of GPU (because the Jetson Nano runs out of memory when using GPU)
@@ -54,6 +56,7 @@ PATH_TO_LABELS = os.path.join(CWD_PATH,'label_map.pbtxt')
 NUM_CLASSES = 4
 MIN_SCORE_THRESH = 0.6
 
+VERBOSE = None
 category_index = None
 
 def load_model():
@@ -151,38 +154,43 @@ def display_image_detection(image, detections):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def compute_result(run_inference_on_image, image, image_view):
+def compute_result(model_call_function, image):
     global category_index
 
-    (boxes, scores, classes, detections) = run_inference_on_image(image)
+    (boxes, scores, classes, detections) = model_call_function(image)
     
     return get_objects(boxes, scores, classes, image.shape[0], image.shape[1]), detections, image, category_index
 
-run_inference_on_image = None
-def callback(self, compressedImage):
+def str2bool(v):
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+def callback(compressedImage):
+    global model_call_function
     np_arr = np.frombuffer(compressedImage.data, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-    compute_result(run_inference_on_image, image, image_view)
+    detected_objects, detections, image, _ = compute_result(model_call_function, frame)
 
+    if VERBOSE:
+        display_image_detection(image, detections)
+
+    print('Done')
+    #status_publisher = rospy.Publisher("objects_detected", ObjectDetected, queue_size=10)
 
 if __name__ == '__main__':
-    rospy.init_node('ObjectDetection', anonymous=True)
+    global model_call_function
+    model_call_function = load_model()
     
-    parser = argparse.ArgumentParser(description="Get objects and coordinates")
-    parser.add_argument('-i', '--input_directory', type=str, required=True, help='Input directory containing the image to analize')
-    parser.add_argument('-o', '--output_directory', type=str, required=True, help='Output directory to write the JSON results')
-    parser.add_argument('-v', '--image_view', type=str, required=True, help='Display the image results (true/false)')
-    args = parser.parse_args()
+    print(model_call_function)
+    VERBOSE = str2bool(str(rospy.get_param('~CAMERAID', 0)))
 
+    rospy.init_node('get_objects_and_coordinates', anonymous=True)
     image_subscriber = rospy.Subscriber("camaras/0/" , CompressedImage, callback)
-    run_inferance_on_image = load_model()
-    detected_objects, detections, image, _ = compute_result(run_inferance_on_image, args.input_directory, args.image_view)
-    
-    # Write JSON results to a txt file
-    with open(os.path.join(args.output_directory,'detected_objects.txt'),'w') as outfile:
-        json.dump(detected_objects, outfile, indent=2)
 
-    if args.image_view == "true":
-        display_image_detection(image, detections)
-    
     rospy.spin()
