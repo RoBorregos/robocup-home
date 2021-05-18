@@ -4,11 +4,14 @@ session_config:
   carry_over_slots_to_new_session: true
 
 intents:
+- bring_only
+- go_to
+- bring_something_secret_intent
+- bring_something
 - search_for_people
 - farewell
 - yes
 - no
-- bring_something
 - introduce_myself
 - thank
 - greet
@@ -39,6 +42,10 @@ slots:
     influence_conversation: true
 
 responses:
+  utter_whereto:
+  - text: Where would you like me to go?
+  utter_what_bring:
+  - text: And what would you like me to bring?
   utter_please_rephrase:
   - text: I'm sorry, I didn't quite understand that. Could you rephrase?
   utter_out_of_scope:
@@ -55,7 +62,9 @@ responses:
   - text: I didnt understand that, can you please rephrase
   utter_greet:
   - text: Hey!
-  - text: Hey, how can I help you?
+  - text: Hi
+  - text: Hello
+  - text: Hiii
   utter_understood:
   - text: Alright!
   - text: Understood, I am on it.
@@ -83,10 +92,10 @@ responses:
   - text: would you like anyhting else?
 
 actions:
+- action_bring_something
 - action_bring_to
 - action_clean_up
 - action_store_object
-- action_bring_something
 - action_farewell_no
 - action_farewell_yes
 - action_search_for_people
