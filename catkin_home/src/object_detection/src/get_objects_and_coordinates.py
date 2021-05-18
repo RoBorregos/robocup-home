@@ -154,6 +154,28 @@ def display_image_detection(image, detections):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+def get_objects(boxes, scores, classes, height, width):
+    """
+    This function creates a json of the detected objects with its coordinates.
+    """
+    objects = {}
+    for index,value in enumerate(classes):
+        if scores[index] > MIN_SCORE_THRESH:
+            if category_index[value]['name'] in objects:
+                # in case it detects more that one of each object, grabs the one with higher score
+                if objects[category_index[value]['name']]['score'] > scores[index]:
+                    continue
+            objects[category_index.get(value)['name']] = {
+                'score': float(scores[index]),
+                'ymin': float(boxes[index][0]*height),
+                'xmin': float(boxes[index][1]*width),
+                'ymax': float(boxes[index][2]*height),
+                'xmax': float(boxes[index][3]*width)
+            }
+    
+    # Return the most compact form of the json.
+    return objects
+
 def compute_result(model_call_function, image):
     global category_index
 
@@ -176,6 +198,8 @@ def callback(compressedImage):
     np_arr = np.frombuffer(compressedImage.data, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
     detected_objects, detections, image, _ = compute_result(model_call_function, frame)
+
+    print(detected_objects)
 
     if VERBOSE:
         display_image_detection(image, detections)
