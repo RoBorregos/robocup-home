@@ -1,16 +1,6 @@
 <launch>
   <!-- TMR2021 - DEVICES -->
-  <env name="ROS_MASTER_URI" value="http://192.168.31.3:11311" />
-  <env name="ROS_IP" value="192.168.31.4" />
-  
-  <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
-  <node name="InputAudio" pkg="devices" type="InputAudio" respawn="true" output="screen"/>
-  <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
-    <param name="RATE" value="15" />
-    <param name="CAMERAID" value="0" />
-  </node>
-  <node name="Say" pkg="devices" type="say.py" respawn="true" output="screen" />
-  
+  <!-- 
   <arg name="enable_depth"   default="false"/>
   <arg name="color_width"    default="1280" />
   <arg name="color_height"   default="720" />
@@ -20,6 +10,14 @@
     <arg name="color_width"       value="$(arg color_width)" />
     <arg name="color_height"      value="$(arg color_height)" />
     <arg name="color_fps"         value="$(arg color_fps)"/>
-  </include>    
-  <node name="republish_intel_rgb" type="republish" pkg="image_transport" args="raw in:=/color/image_raw compressed out:=/camaras/1/" respawn="true"/>
+  </include>  
+  <node name="republish_intel_rgb" type="republish" pkg="image_transport" args="raw in:=/camera/color/image_raw compressed out:=/camaras/1/" respawn="true"/>
+   -->
+  <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
+  <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/>
+  <node name="Say" pkg="devices" type="say.py" respawn="true" output="screen" />
+  <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
+    <param name="RATE" value="15" />
+    <param name="CAMERAID" value="0" />
+  </node>
 </launch>

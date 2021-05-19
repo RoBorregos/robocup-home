@@ -38,5 +38,6 @@ then
         export ROS_MASTER_URI
     fi
 fi
-
-echo "Done setting ROS_MASTER_URI=$ROS_MASTER_URI and ROS_IP=$ROS_IP"
+ROS_HOSTNAME=$ROS_IP
+export ROS_HOSTNAME
+echo "Done setting ROS_MASTER_URI=$ROS_MASTER_URI, ROS_IP=$ROS_IP and ROS_HOSTNAME=$ROS_HOSTNAME"
