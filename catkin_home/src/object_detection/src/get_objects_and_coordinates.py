@@ -59,6 +59,8 @@ MIN_SCORE_THRESH = 0.6
 VERBOSE = None
 category_index = None
 
+frame_counter = 0
+
 def load_model():
     """
     This function loads the neccesary files, load the model and returns a function ready
@@ -72,6 +74,7 @@ def load_model():
     category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
 
     def run_inference_on_image(image):
+        print('Running inference at: ', time.time())
         # Convert CV2 image from BGR to RGB
         # Comment this line in case the model can take any order of RGB
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -83,7 +86,7 @@ def load_model():
         # The input needs to be a tensor, convert it using `tf.convert_to_tensor`.
         input_tensor = tf.convert_to_tensor(image_np, dtype=tf.uint8)
 
-        print('Loading model...', end='')
+        print('Running model...', end='')
         start_time = time.time()
 
         # Run the model to get the detections dictionary
@@ -151,8 +154,7 @@ def display_image_detection(image, detections):
 
     # Display the results image.
     cv2.imshow('image_results', image_np_with_detections)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.waitKey(10)
 
 def get_objects(boxes, scores, classes, height, width):
     """
@@ -194,27 +196,37 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 def callback(compressedImage):
+    global VERBOSE
     global model_call_function
-    np_arr = np.frombuffer(compressedImage.data, np.uint8)
-    frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-    detected_objects, detections, image, _ = compute_result(model_call_function, frame)
+    global frame_counter
 
-    print(detected_objects)
+    frame_counter += 1
 
-    if VERBOSE:
-        display_image_detection(image, detections)
+    if (not frame_counter % 14) or (not frame_counter % 15):
 
-    print('Done')
-    #status_publisher = rospy.Publisher("objects_detected", ObjectDetected, queue_size=10)
+        np_arr = np.frombuffer(compressedImage.data, np.uint8)
+        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        detected_objects, detections, image, _ = compute_result(model_call_function, frame)
+
+        print(detected_objects)
+
+        if VERBOSE:
+            display_image_detection(image, detections)
+
+        print('Done with callback!\n')
+
+        frame_counter = 0
+        #status_publisher = rospy.Publisher("objects_detected", ObjectDetected, queue_size=10)
 
 if __name__ == '__main__':
     global model_call_function
     model_call_function = load_model()
     
-    print(model_call_function)
-    VERBOSE = str2bool(str(rospy.get_param('~CAMERAID', 0)))
+    VERBOSE = str2bool(str(rospy.get_param('~VERBOSE', 1)))
 
     rospy.init_node('get_objects_and_coordinates', anonymous=True)
-    image_subscriber = rospy.Subscriber("camaras/0/" , CompressedImage, callback)
+    print('Node: get_objects_and_coordinates initialized!')
+    image_subscriber = rospy.Subscriber("/camera/color/image_raw/compressed" , CompressedImage, callback)
 
     rospy.spin()
+    cv2.destroyAllWindows()
