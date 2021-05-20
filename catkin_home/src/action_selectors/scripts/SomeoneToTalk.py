@@ -20,8 +20,8 @@ class SomeoneToTalk(object):
     lastStatus = False
     countSameStatus = 0
     
-    def __init__(self):
-        self.image_subscriber = rospy.Subscriber("camaras/0/" , CompressedImage, self.callback)
+    def __init__(self, CAMERA):
+        self.image_subscriber = rospy.Subscriber("camaras/" + str(CAMERA) + "/" , CompressedImage, self.callback)
         self.status_publisher = rospy.Publisher("someoneToTalkStatus", Bool, queue_size=10)
         self.faceCascade = cv2.CascadeClassifier(self.cascPath)
     
@@ -56,8 +56,9 @@ class SomeoneToTalk(object):
 
 def main():
     rospy.init_node('SomeoneToTalk', anonymous=True)
+    CAMERA = int(rospy.get_param('~CAMERAID', 0))
     rospy.loginfo("*Starting SomeoneToTalk Node*")
-    SomeoneToTalk()
+    SomeoneToTalk(CAMERA)
     rospy.spin()
 
 if __name__ == '__main__':

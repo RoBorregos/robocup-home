@@ -100,7 +100,6 @@ nlu:
     - [Karina](names)
     - I am [israel](names)
     - [a-zA-Z\s]+$
-
 - intent: yes
   examples: |
     - yes
@@ -109,7 +108,6 @@ nlu:
     - ok
     - fine
     - yes, do that
-
 - intent: no
   examples: |
     - no
@@ -118,7 +116,6 @@ nlu:
     - please no
     - forget it
     - cancel that
-
 - intent: bye
   examples: |
     - bye
@@ -130,18 +127,11 @@ nlu:
     - See ya later alligator
     - Byebye
     - Bay
-
 - intent: greet
   examples: |
     - Hey
     - Hi
     - Hello
-    - Hi there
-    - Hi Robot
-    - Hello Robot
-    - Hey Robot
-    - Good 
-
 - intent: stop
   examples: |
     - stop
@@ -150,7 +140,6 @@ nlu:
     - please end
     - please stop
     - stop stop
-
 - intent: thank
   examples: |
     - thanks

@@ -15,6 +15,7 @@ class Say(object):
 
     def __init__(self):
         self.engine = pyttsx3.init()
+        self.engine.setProperty('voice', 'com.apple.speech.synthesis.voice.samantha')
         self.connected = self.is_connected()
         self.text_suscriber = rospy.Subscriber("robot_text", String, self.callback)
         self.hear_publisher = rospy.Publisher("inputAudioActive", Bool, queue_size=20)
@@ -62,9 +63,11 @@ class Say(object):
 
     def trySay(self, text):
         self.hear_publisher.publish(Bool(False))
+        self.connectedVoice(text)
         try:
-            self.connectedVoice(text)
-        except:
+            pass
+        except  Exception as e:
+            print(e)
             self.disconnectedVoice(text)
         sleep(1)
         self.hear_publisher.publish(Bool(True))

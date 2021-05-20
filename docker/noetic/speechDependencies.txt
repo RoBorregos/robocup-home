@@ -17,3 +17,5 @@ gTTS==2.2.2
 mpyg321==1.1.0
 pexpect==4.8.0
 playsound==1.2.2
+vext
+vext.gi

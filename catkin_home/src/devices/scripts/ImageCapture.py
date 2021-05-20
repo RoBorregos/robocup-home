@@ -5,15 +5,15 @@ import rospy
 import numpy as np
 from sensor_msgs.msg import CompressedImage
 
-# FPS.
-RATE = int(rospy.get_param('~RATE', 15))
-# Default webcam.
-CAMERA = int(rospy.get_param('~CAMERAID', 0))
 # Show Images.
 VERBOSE = False
-
 def main():
-    rospy.init_node("ImageCapture" + str(CAMERA))
+    rospy.init_node("ImageCapture")
+    # FPS.
+    RATE = int(rospy.get_param('~RATE', 15))
+    # Default webcam.
+    CAMERA = int(rospy.get_param('~CAMERAID', 0))
+    rospy.loginfo("CAMERA" + str(CAMERA))
     image_publisher = rospy.Publisher("camaras/" + str(CAMERA) + "/" , CompressedImage, queue_size = RATE)
     rospy.loginfo("*Node " + "ImageCapture-" + str(CAMERA) + " started*")
 

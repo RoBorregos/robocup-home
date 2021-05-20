@@ -64,7 +64,6 @@ responses:
   - text: Hey!
   - text: Hi
   - text: Hello
-  - text: Hiii
   utter_understood:
   - text: Alright!
   - text: Understood, I am on it.

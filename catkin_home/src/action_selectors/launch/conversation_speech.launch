@@ -4,7 +4,7 @@
     <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/>
     <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
         <param name="RATE" value="15" />
-        <param name="CAMERAID" value="0" />
+        <param name="CAMERAID" value="2" />
     </node>
     <node name="say" pkg="devices" type="say.py" respawn="true" output="screen" />
     <!-- Speech To Text -->
@@ -18,7 +18,9 @@
     <!-- Conversation -->
     <!-- START_TALK: 'True' - Start Conversation, 'False' - Wait until being Spoken -->
     <arg name="START_TALK" default="True"/>
-    <node name="SomeoneToTalk" pkg="action_selectors" type="SomeoneToTalk.py" respawn="true" if="$(eval arg('START_TALK') != 'False')" />
+    <node name="SomeoneToTalk" pkg="action_selectors" type="SomeoneToTalk.py" respawn="true" if="$(eval arg('START_TALK') != 'False')">
+        <param name="CAMERAID" value="2" />
+    </node>
     <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen">
         <param name="START_TALK" value="$(arg START_TALK)" />
     </node>

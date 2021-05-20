@@ -23,20 +23,22 @@ El robot navega al lugar pedido.
 El robot agarra el objeto pedido.
 
 '''
-START_TALK = rospy.get_param('START_TALK', 'False') == 'True'
 
 class Parser(object):
     JSON_FILENAME = 'possible_actions.json'
     REST_ENDPOINT = "http://localhost:5005/webhooks/rest/webhook"
     PARSE_ENDPOINT = "http://localhost:5005/model/parse"
+    START_TALK = None
     DEBUG = True
+    conversationStarted = False
 
-    def __init__(self):
+    def __init__(self, START_TALK):
+        self.START_TALK = START_TALK
         self.say_publisher = rospy.Publisher('robot_text', String, queue_size=10)
         self.possible_actions = self.loadActions()
         self.actions_publisher = rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
         self.input_suscriber = rospy.Subscriber("RawInput", RawInput, self.callback)
-        if START_TALK:
+        if self.START_TALK:
             self.someone_to_talk_suscriber = rospy.Subscriber('someoneToTalkStatus', Bool, self.someone_to_talk_callback)
 
     def loadActions(self):
@@ -61,33 +63,33 @@ class Parser(object):
         response = String(text)
         self.say_publisher.publish(response)
 
-    def callRASA(self, command):
+    def callRASA(self, command, silence = False):
         intent = ""
         args = []
-
-        self.say("You just said:" + command)
+        if not silence:
+            self.say("You just said:" + command)
         data = { 
             "sender": "HOME", 
             "message": command 
         }
 
         rest_response = requests.post(self.REST_ENDPOINT, json = data)
-        parse_response = requests.post(self.PARSE_ENDPOINT, json = { "text": command })
+        # parse_response = requests.post(self.PARSE_ENDPOINT, json = { "text": command })
 
-        if(rest_response.status_code == 200 and parse_response.status_code == 200):
-            if(len(rest_response.json()) > 0 and len(parse_response.json()) > 0):
+        if(rest_response.status_code == 200): #and parse_response.status_code == 200):
+            if(len(rest_response.json()) > 0): # and len(parse_response.json()) > 0):
                 for responseData in rest_response.json():
                     self.debug("BOT SAYS: " + responseData["text"])
                     self.say(responseData["text"])
                   
-                nlu_info = parse_response.json()
-                if(nlu_info["intent"]["confidence"] >= 0.60):
-                    self.debug("Intent: " + str(nlu_info["intent"]))
-                    self.debug("Entities: " + str(nlu_info["entities"]))
-                    intent = nlu_info["intent"]["name"]
-                    args = nlu_info["entities"]
+                # nlu_info = parse_response.json()
+                # if(nlu_info["intent"]["confidence"] >= 0.60):
+                #     self.debug("Intent: " + str(nlu_info["intent"]))
+                #     self.debug("Entities: " + str(nlu_info["entities"]))
+                #     intent = nlu_info["intent"]["name"]
+                #     args = nlu_info["entities"]
         else:
-            self.say("Cant connect to server")
+            self.say("I'm sorry, Could you rephrase?")
             self.debug("Cant connect to server")
 
         return intent, args
@@ -119,9 +121,19 @@ class Parser(object):
             self.actions_publisher.publish(action_request)
 
     def callback(self, msg):
+        if self.START_TALK and not self.conversationStarted:
+            return
         inputText = msg.inputText
         self.debug("I heard: " + inputText)
-        
+        self.callParser(inputText)
+    
+    def someone_to_talk_callback(self, msg):
+        if not self.conversationStarted and msg.data:
+            self.debug("I saw a person")
+            self.conversationStarted = True
+            self.callRASA("activate bring_something", True)
+
+    def callParser(self, inputText):
         # Rasa Parser
         try:
             intent, args = self.callRASA(inputText)
@@ -136,19 +148,16 @@ class Parser(object):
                     action_request.action_client_binded = self.possible_actions[intent]['action_client_binded']
                     self.actions_publisher.publish(action_request)
         except:
-            self.say("Cant connect to Server")
+            self.say("I'm sorry, Could you rephrase?")
             self.debug("Failed response")
             print("Unexpected error:" + str(sys.exc_info()[0]))
 
-    def someone_to_talk_callback(self, msg):
-        pass
-
 def main():
     rospy.init_node('parser', anonymous=True)
-    parser = Parser()
+    START_TALK = rospy.get_param('~START_TALK', False)
+    parser = Parser(START_TALK)
     parser.debug('Parser Initialized.')
     rospy.spin()
-
 
 if __name__ == '__main__':
     main()

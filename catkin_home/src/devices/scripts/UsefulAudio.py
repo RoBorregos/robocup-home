@@ -18,7 +18,7 @@ class UsefulAudio(object):
     MIN_AUDIO_LENGTH = 0.50
     MIN_CHUNKS_AUDIO_LENGTH = MIN_AUDIO_LENGTH / CHUNK_DURATION
     
-    PADDING_DURATION = 0.600
+    PADDING_DURATION = 0.50
     NUM_PADDING_CHUNKS = int(PADDING_DURATION / CHUNK_DURATION)
     
     triggered = False
@@ -68,14 +68,14 @@ class UsefulAudio(object):
             # If we're NOTTRIGGERED and more than 90% of the frames in
             # the ring buffer are voiced frames, then enter the
             # TRIGGERED state.
-            if num_voiced > 0.9 * self.ring_buffer.maxlen:
+            if num_voiced > 0.75 * self.ring_buffer.maxlen:
                 self.triggered = True
                 print("Start talking...")
                 # We want to publish all the audio we see from now until
                 # we are NOTTRIGGERED, but we have to start with the
                 # audio that's already in the ring buffer.
                 for f, _ in self.ring_buffer:
-                    self.buildAudio(chunk)
+                    self.buildAudio(f)
                 self.ring_buffer.clear()
         else:
             # We're in the TRIGGERED state, so collect the audio data
@@ -86,7 +86,7 @@ class UsefulAudio(object):
             # If more than 90% of the frames in the ring buffer are
             # unvoiced, then enter NOTTRIGGERED and publish whatever
             # audio we've collected.
-            if num_unvoiced > 0.9 * self.ring_buffer.maxlen:
+            if num_unvoiced > 0.75 * self.ring_buffer.maxlen:
                 print("Stop talking...")
                 self.triggered = False
                 self.publishAudio()
