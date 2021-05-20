@@ -31,9 +31,9 @@ import os
 import time
 # Run tensorflow CPU instead of GPU (because the Jetson Nano runs out of memory when using GPU)
 os.environ["CUDA_VISIBLE_DEVICES"]="-1" 
-import sys
 import json
 
+import threading
 import argparse
 import cv2
 import numpy as np
@@ -58,8 +58,8 @@ MIN_SCORE_THRESH = 0.6
 
 VERBOSE = None
 category_index = None
-
-frame_counter = 0
+thread_reference = None
+image_np_with_detections = []
 
 def load_model():
     """
@@ -74,7 +74,6 @@ def load_model():
     category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
 
     def run_inference_on_image(image):
-        print('Running inference at: ', time.time())
         # Convert CV2 image from BGR to RGB
         # Comment this line in case the model can take any order of RGB
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -113,29 +112,8 @@ def load_model():
 
     return run_inference_on_image
 
-def get_objects(boxes, scores, classes, height, width):
-    """
-    This function creates a json of the detected objects with its coordinates.
-    """
-    objects = {}
-    for index,value in enumerate(classes):
-        if scores[index] > MIN_SCORE_THRESH:
-            if category_index[value]['name'] in objects:
-                # in case it detects more that one of each object, grabs the one with higher score
-                if objects[category_index[value]['name']]['score'] > scores[index]:
-                    continue
-            objects[category_index.get(value)['name']] = {
-                'score': float(scores[index]),
-                'ymin': float(boxes[index][0]*height),
-                'xmin': float(boxes[index][1]*width),
-                'ymax': float(boxes[index][2]*height),
-                'xmax': float(boxes[index][3]*width)
-            }
-    
-    # Return the most compact form of the json.
-    return objects
-
 def display_image_detection(image, detections):
+    global image_np_with_detections
     """
     This function displays the image with the detections of the objects
     """
@@ -152,10 +130,6 @@ def display_image_detection(image, detections):
         min_score_thresh=MIN_SCORE_THRESH,
         agnostic_mode=False)
 
-    # Display the results image.
-    cv2.imshow('image_results', image_np_with_detections)
-    cv2.waitKey(10)
-
 def get_objects(boxes, scores, classes, height, width):
     """
     This function creates a json of the detected objects with its coordinates.
@@ -176,16 +150,24 @@ def get_objects(boxes, scores, classes, height, width):
             }
     
     # Return the most compact form of the json.
-    return objects
+    return json.dumps(objects, separators=(',',':'), indent=2)
 
 def compute_result(model_call_function, image):
-    global category_index
+    """
+    This function is the model handler for object detection.
+    Args:
+        rmodel_call_function: TF function to run the objet detection model
+        image: the compressed image to detect @type numpy.ndarray
+    """
 
     (boxes, scores, classes, detections) = model_call_function(image)
     
-    return get_objects(boxes, scores, classes, image.shape[0], image.shape[1]), detections, image, category_index
+    return get_objects(boxes, scores, classes, image.shape[0], image.shape[1]), detections
 
 def str2bool(v):
+    """
+    Function to convert from string to boolean
+    """
     if isinstance(v, bool):
        return v
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -195,33 +177,64 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
-def callback(compressedImage):
+def thread_callback(compressedImage):
+    """
+        This function takes the callback from the image thread to run the 
+        object detection model.
+
+        Args:
+            compressedImage: image taken from the intelrealsense 
+            ros topic camera/color/image_raw/compressed 
+
+    """
     global VERBOSE
     global model_call_function
-    global frame_counter
 
-    frame_counter += 1
+    np_arr = np.frombuffer(compressedImage.data, np.uint8)
+    frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    detected_objects, detections = compute_result(model_call_function, frame)
 
-    if (not frame_counter % 14) or (not frame_counter % 15):
+    print(detected_objects)
 
-        np_arr = np.frombuffer(compressedImage.data, np.uint8)
-        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-        detected_objects, detections, image, _ = compute_result(model_call_function, frame)
+    if VERBOSE:
+       display_image_detection(frame, detections)
 
-        print(detected_objects)
+    #status_publisher = rospy.Publisher("objects_detected", ObjectDetected, queue_size=10)
 
-        if VERBOSE:
-            display_image_detection(image, detections)
+def callback(compressedImage):
+    """
+    Credits to: @JoseCisneros
+    The idea of this function is to emulate the behavior of the file 
+    object_detection/scripts/get_objects_and_coordinates.py. This file takes the
+    input images from the intel camera at a rate of 15 fps generating multiple threads to process the
+    detections. 
+    
+    Since ROS doesn't automatically generate threads for its processes', the rate of detection of this file
+    decresases to significally for the detections (although the intel camera updates it's topic at 15 fps, the queue 
+    of the callback increases).
 
-        print('Done with callback!\n')
+    This file generates a thread that takes every update from the intel ros topic /camera/color/image_raw/compressed
+    and process every image once the TF object detection model finishes the previouse generated thread.
+    """
+    global thread_reference
+    global image_np_with_detections
 
-        frame_counter = 0
-        #status_publisher = rospy.Publisher("objects_detected", ObjectDetected, queue_size=10)
+    if thread_reference == None or not thread_reference.is_alive():        
+        # Update the image shown in the GUI
+        if len(image_np_with_detections) != 0:
+            cv2.imshow('image_results', image_np_with_detections)
+            cv2.waitKey(10)
+        
+        thread_reference = threading.Thread(target=thread_callback, args=(compressedImage, ), daemon=True)
+        thread_reference.start()
 
 if __name__ == '__main__':
     global model_call_function
+
+    # Load the TF model and generate it's function
     model_call_function = load_model()
     
+    # image display in GUI boolean variable
     VERBOSE = str2bool(str(rospy.get_param('~VERBOSE', 1)))
 
     rospy.init_node('get_objects_and_coordinates', anonymous=True)
