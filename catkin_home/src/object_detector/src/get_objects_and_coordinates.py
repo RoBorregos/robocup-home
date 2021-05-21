@@ -25,8 +25,10 @@ output:
 }
 """
 import rospy
+from std_msgs import *
 from sensor_msgs.msg import CompressedImage
-from object_detection import *
+from geometry_msgs.msg import Pose
+from object_detector.msg import ObjectArray, ObjectDetected
 import os
 import time
 # Run tensorflow CPU instead of GPU (because the Jetson Nano runs out of memory when using GPU)
@@ -60,6 +62,7 @@ VERBOSE = None
 category_index = None
 thread_reference = None
 image_np_with_detections = []
+objectArray = []
 
 def load_model():
     """
@@ -164,18 +167,59 @@ def compute_result(model_call_function, image):
     
     return get_objects(boxes, scores, classes, image.shape[0], image.shape[1]), detections
 
-def str2bool(v):
-    """
-    Function to convert from string to boolean
-    """
-    if isinstance(v, bool):
-       return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+def isInObjectArray(object, ObjectArray):
+    for i in range(len(ObjectArray)):
+        if (ObjectArray[i].id == str(object)):
+            return i
+    return -1
+
+def generate_object_detection_msg(frame, detected_objects):
+    global objectArray
+    detected_objects = json.loads(detected_objects)
+    ros_msg = None
+
+    for object in detected_objects:
+        indexInObjectArray = isInObjectArray(object, objectArray)
+        if (indexInObjectArray != -1):
+            objectArray[indexInObjectArray].object_pose.position.z = 0
+            objectArray[indexInObjectArray].object_pose.orientation.x = 0
+            objectArray[indexInObjectArray].object_pose.orientation.y = 0
+            objectArray[indexInObjectArray].object_pose.orientation.z = 0
+            objectArray[indexInObjectArray].object_pose.orientation.w = 0
+
+            image_height, image_width = frame.shape[0], frame.shape[1]
+            x_coordinate_in_image = (detected_objects[object]['xmax'] + detected_objects[object]['xmin']) / 2.0
+            y_coordinate_in_image = (detected_objects[object]['ymax'] + detected_objects[object]['ymin']) / 2.0
+
+            x_normalized = x_coordinate_in_image / image_width
+            y_normalized = y_coordinate_in_image / image_height
+
+            objectArray[indexInObjectArray].object_pose.position.x = x_normalized
+            objectArray[indexInObjectArray].object_pose.position.y = y_normalized
+
+        else:
+            ros_msg = ObjectDetected()
+            ros_msg.id = str(object)
+            ros_msg.in_view = True
+            ros_msg.object_pose = Pose()
+
+            ros_msg.object_pose.position.z = 0
+            ros_msg.object_pose.orientation.x = 0
+            ros_msg.object_pose.orientation.y = 0
+            ros_msg.object_pose.orientation.z = 0
+            ros_msg.object_pose.orientation.w = 0
+
+            image_height, image_width = frame.shape[0], frame.shape[1]
+            x_coordinate_in_image = (detected_objects[object]['xmax'] + detected_objects[object]['xmin']) / 2.0
+            y_coordinate_in_image = (detected_objects[object]['ymax'] + detected_objects[object]['ymin']) / 2.0
+
+            x_normalized = x_coordinate_in_image / image_width
+            y_normalized = y_coordinate_in_image / image_height
+
+            ros_msg.object_pose.position.x = x_normalized
+            ros_msg.object_pose.position.y = y_normalized
+
+            objectArray.append(ros_msg)
 
 def thread_callback(compressedImage):
     """
@@ -189,6 +233,7 @@ def thread_callback(compressedImage):
     """
     global VERBOSE
     global model_call_function
+    global objectArray
 
     np_arr = np.frombuffer(compressedImage.data, np.uint8)
     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
@@ -198,8 +243,11 @@ def thread_callback(compressedImage):
 
     if VERBOSE:
        display_image_detection(frame, detections)
+       
+    objectDetectdMsg = generate_object_detection_msg(frame, detected_objects)
 
-    #status_publisher = rospy.Publisher("objects_detected", ObjectDetected, queue_size=10)
+    status_publisher = rospy.Publisher("objects_detected", ObjectArray, queue_size=10)
+    status_publisher.publish(objectArray)
 
 def callback(compressedImage):
     """
@@ -227,6 +275,19 @@ def callback(compressedImage):
         
         thread_reference = threading.Thread(target=thread_callback, args=(compressedImage, ), daemon=True)
         thread_reference.start()
+
+def str2bool(v):
+    """
+    Function to convert from string to boolean
+    """
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 if __name__ == '__main__':
     global model_call_function

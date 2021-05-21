@@ -1,7 +1,7 @@
 <launch>
     <!-- Devices -->
     <arg name="VERBOSE" default="True"/>
-    <node name="get_objects_and_coordinates" pkg="object_detection" type="get_objects_and_coordinates.py" respawn="true" output="screen" />
+    <node name="get_objects_and_coordinates" pkg="object_detector" type="get_objects_and_coordinates.py" respawn="true" output="screen" />
 
 
     <!--<arg name="camera" default="camera" />
