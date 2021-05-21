@@ -17,19 +17,12 @@ RUN apt-get update -qq && \
     ros-noetic-rosserial && \
     rm -rf /var/lib/apt/lists/*
 
-# nvidia-container-runtime
-ENV NVIDIA_VISIBLE_DEVICES \
-    ${NVIDIA_VISIBLE_DEVICES:-all}
-ENV NVIDIA_DRIVER_CAPABILITIES \
-    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
-
-
 # Init catkin_home directoy
 RUN mkdir /catkin_home
 COPY catkin_home/ catkin_home/
 
 # Change Workdir
-WORKDIR catkin_home
+WORKDIR /catkin_home
 
 # catkin_make
 RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;catkin_make'

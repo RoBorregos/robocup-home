@@ -44,7 +44,7 @@ RUN python3 -m pip install --upgrade pip && pip3 install -r speechDependencies.t
 RUN cd /catkin_home/src/action_selectors/scripts/DeepSpeech && python3 -m data.librispeech.librispeech --full_download False --manifest_prefix "data/librispeech/manifest"
 
 # Change Workdir
-WORKDIR catkin_home
+WORKDIR /catkin_home
 
 # catkin_make
 RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;catkin_make'
