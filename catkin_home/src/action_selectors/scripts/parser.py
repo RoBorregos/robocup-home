@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import rospy
 import requests
-from intercom.msg import action_selector_cmd
+from main_engine.msg import bring_something_cmd
+from std_msgs.msg import String
 from std_msgs.msg import String, Bool
-from action_selectors.msg import RawInput
 import os
 import json
 import sys
@@ -36,7 +36,7 @@ class Parser(object):
         self.START_TALK = START_TALK
         self.say_publisher = rospy.Publisher('robot_text', String, queue_size=10)
         self.possible_actions = self.loadActions()
-        self.actions_publisher = rospy.Publisher('action_requested', action_selector_cmd, queue_size=10)
+        self.actions_publisher = rospy.Publisher('action/bring_something', bring_something_cmd, queue_size=10)
         self.input_suscriber = rospy.Subscriber("RawInput", RawInput, self.callback)
         if self.START_TALK:
             self.someone_to_talk_suscriber = rospy.Subscriber('someoneToTalkStatus', Bool, self.someone_to_talk_callback)
@@ -74,23 +74,23 @@ class Parser(object):
         }
 
         rest_response = requests.post(self.REST_ENDPOINT, json = data)
-        # parse_response = requests.post(self.PARSE_ENDPOINT, json = { "text": command })
+        parse_response = requests.post(self.PARSE_ENDPOINT, json = { "text": command })
 
-        if(rest_response.status_code == 200): #and parse_response.status_code == 200):
-            if(len(rest_response.json()) > 0): # and len(parse_response.json()) > 0):
+        if(rest_response.status_code == 200 and parse_response.status_code == 200):
+            if(len(rest_response.json()) > 0 and len(parse_response.json()) > 0):
                 for responseData in rest_response.json():
                     self.debug("BOT SAYS: " + responseData["text"])
                     self.say(responseData["text"])
                   
-                # nlu_info = parse_response.json()
-                # if(nlu_info["intent"]["confidence"] >= 0.60):
-                #     self.debug("Intent: " + str(nlu_info["intent"]))
-                #     self.debug("Entities: " + str(nlu_info["entities"]))
-                #     intent = nlu_info["intent"]["name"]
-                #     args = nlu_info["entities"]
-        else:
-            self.say("I'm sorry, Could you rephrase?")
-            self.debug("Cant connect to server")
+                nlu_info = parse_response.json()
+                if(nlu_info["intent"]["confidence"] >= 0.60):
+                    self.debug("Intent: " + str(nlu_info["intent"]))
+                    self.debug("Entities: " + str(nlu_info["entities"]))
+                    intent = nlu_info["intent"]["name"]
+                    args = nlu_info["entities"]
+        # else:
+        #     self.say("I'm sorry, Could you rephrase?")
+        #     self.debug("Cant connect to server")
 
         return intent, args
 
@@ -104,21 +104,26 @@ class Parser(object):
             elif(entity.get("entity") == 'place'):
                 target_location = entity.get("value")
 
-        actions_needed = [["go_to", target_location], ["approach", target_object], [
-            "center", target_object], ["pick_up", target_object], ["go_to", "original_location"]]
+        action_request = bring_something_cmd()
+        action_request.place = target_location
+        action_request.object = target_object
+        self.actions_publisher.publish(action_request)
+        # actions_needed = [["go_to", target_location], ["approach", target_object], [
+        #     "center", target_object], ["pick_up", target_object], ["go_to", "original_location"]]
 
-        for action in actions_needed:
-            arg = ""
-            action_request = action_selector_cmd()
-            action_request.intent = action[0]
 
-            if(len(action) > 1):
-                arg = action[1]
+        # for action in actions_needed:
+        #     arg = ""
+        #     action_request = bring_something_cmd()
+        #     action_request.intent = action[0]
 
-            action_request.args = arg
-            action_request.action_client_binded = self.possible_actions[action[0]]['action_client_binded']
+        #     if(len(action) > 1):
+        #         arg = action[1]
 
-            self.actions_publisher.publish(action_request)
+        #     action_request.args = arg
+        #     action_request.action_client_binded = self.possible_actions[action[0]]['action_client_binded']
+
+        #     self.actions_publisher.publish(action_request)
 
     def callback(self, msg):
         if self.START_TALK and not self.conversationStarted:
