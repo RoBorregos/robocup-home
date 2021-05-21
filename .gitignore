@@ -42,7 +42,10 @@ wrokspace.code-workspace
 
 ### OBJECT DETECTION ###
 /object_detection/venv/
-/object_detection/models/
+/object_detection/models/model_tf2
+/object_detection/models/dependencies/TensorFlow
+/object_detection/models/dependencies/coco
+/object_detection/images/train
 
 ### CONVERSATION ###
 catkin_home/src/action_selectors/scripts/FaceDetection/haarcascade_frontalface_default.xml
