@@ -63,6 +63,7 @@ category_index = None
 thread_reference = None
 image_np_with_detections = []
 objectArray = []
+objects_detected_in_run = []
 
 def load_model():
     """
@@ -175,12 +176,17 @@ def isInObjectArray(object, ObjectArray):
 
 def generate_object_detection_msg(frame, detected_objects):
     global objectArray
+    global objects_detected_in_run
     detected_objects = json.loads(detected_objects)
     ros_msg = None
+    
 
+    # Add new object detection or update the object position if seen again
     for object in detected_objects:
         indexInObjectArray = isInObjectArray(object, objectArray)
         if (indexInObjectArray != -1):
+            objectArray[indexInObjectArray].in_view = True
+
             objectArray[indexInObjectArray].object_pose.position.z = 0
             objectArray[indexInObjectArray].object_pose.orientation.x = 0
             objectArray[indexInObjectArray].object_pose.orientation.y = 0
@@ -220,6 +226,19 @@ def generate_object_detection_msg(frame, detected_objects):
             ros_msg.object_pose.position.y = y_normalized
 
             objectArray.append(ros_msg)
+        
+            objects_detected_in_run.append(str(object))
+
+    objects_detected_in_frame = list(detected_objects.keys())
+
+    for object in objects_detected_in_run:
+        if not (object in objects_detected_in_frame):
+            for object_detected_index in range(len(objectArray)):
+                if objectArray[object_detected_index].id == str(object):
+                    objectArray[object_detected_index].in_view = False
+  
+
+
 
 def thread_callback(compressedImage):
     """
