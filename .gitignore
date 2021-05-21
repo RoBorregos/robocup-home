@@ -56,5 +56,6 @@ out.log
 *.DS_Store
 *.pyc
 .vscode/
+venv/
 
 # End 

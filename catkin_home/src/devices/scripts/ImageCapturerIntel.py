@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import glob
 import cv2
+import rospy
 import os
 import numpy as np
 import pyrealsense2 as rs
