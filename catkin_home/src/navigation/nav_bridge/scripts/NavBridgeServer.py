@@ -13,7 +13,7 @@ from std_msgs.msg import String
 class NavBridgeServer(object):
     DEBUG = True
     CLIENT = ('192.168.31.200', 8009)
-    SERVER = ('192.168.31.146', 8009)
+    SERVER = ('192.168.31.187', 8009)
     BUFFER = 4096
 
     def __init__(self):
@@ -43,6 +43,7 @@ class NavBridgeServer(object):
 
 def main():
     rospy.init_node('navBridgeServer', anonymous=0)
+    rospy.loginfo('navBridgeServer initialized.')
     NavBridgeServer()
     rospy.spin()
 

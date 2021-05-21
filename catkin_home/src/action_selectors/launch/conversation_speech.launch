@@ -17,9 +17,9 @@
     <node name="DeepSpeech" pkg="action_selectors" type="DeepSpeech.py" output="screen" if="$(eval arg('FORCE_ENGINE') != 'online')"/>
     <!-- Conversation -->
     <!-- START_TALK: 'True' - Start Conversation, 'False' - Wait until being Spoken -->
-    <arg name="START_TALK" default="False"/>
-    <node name="SomeoneToTalk" pkg="action_selectors" type="SomeoneToTalk.py" respawn="true" if="$(eval arg('START_TALK') != 'False')">
-        <param name="CAMERAID" value="0" />
+    <arg name="START_TALK" default="True"/>
+    <node name="SomeoneToTalk" pkg="action_selectors" type="SomeoneToTalk.py" respawn="true">
+        <param name="CAMERAID" value="1" />
     </node>
     <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen">
         <param name="START_TALK" value="$(arg START_TALK)" />

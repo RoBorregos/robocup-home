@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import rospy
 import requests
-from main_engine.msg import bring_something_cmd
+from action_selectors.msg import RawInput
+from intercom.msg import bring_something_cmd
 from std_msgs.msg import String
 from std_msgs.msg import String, Bool
 import os
@@ -142,16 +143,7 @@ class Parser(object):
         # Rasa Parser
         try:
             intent, args = self.callRASA(inputText)
-
-            if intent in self.possible_actions:
-                if(intent == "bring_something"):
-                    self.publish_bring_something(intent, args)
-                else:
-                    action_request = action_selector_cmd()
-                    action_request.intent = intent
-                    action_request.args = ''.join(args)
-                    action_request.action_client_binded = self.possible_actions[intent]['action_client_binded']
-                    self.actions_publisher.publish(action_request)
+            self.publish_bring_something(intent, args)
         except:
             self.say("I'm sorry, Could you rephrase?")
             self.debug("Failed response")

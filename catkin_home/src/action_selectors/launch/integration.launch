@@ -1,0 +1,4 @@
+<launch>
+    <node name="Tmr2021Main" pkg="main_engine" type="Tmr2021Main.py" output="screen" />
+    <node name="NavBridgeServer" pkg="nav_bridge" type="NavBridgeServer.py" output="screen" />
+</launch>

@@ -19,6 +19,7 @@ class SomeoneToTalk(object):
     cascPath = os.path.join(dirname, './FaceDetection/haarcascade_frontalface_default.xml')
     lastStatus = False
     countSameStatus = 0
+    faceCascade = None
     
     def __init__(self, CAMERA):
         self.image_subscriber = rospy.Subscriber("camaras/" + str(CAMERA) + "/" , CompressedImage, self.callback)

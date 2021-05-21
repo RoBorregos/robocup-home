@@ -7,7 +7,7 @@ from devices.srv import GetCameraIndex
 from sensor_msgs.msg import CompressedImage
 
 # Show Images.
-VERBOSE = True
+VERBOSE = False
 
 def returnCameraIndex(CAMERA):
     index = 0
