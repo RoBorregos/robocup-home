@@ -169,6 +169,11 @@ def compute_result(model_call_function, image):
     return get_objects(boxes, scores, classes, image.shape[0], image.shape[1]), detections
 
 def isInObjectArray(object, ObjectArray):
+    '''
+    This function finds wheter a current object has already being seen or not.
+    TODO:
+    This function only 
+    '''
     for i in range(len(ObjectArray)):
         if (ObjectArray[i].id == str(object)):
             return i
@@ -184,6 +189,7 @@ def generate_object_detection_msg(frame, detected_objects):
     # Add new object detection or update the object position if seen again
     for object in detected_objects:
         indexInObjectArray = isInObjectArray(object, objectArray)
+        
         if (indexInObjectArray != -1):
             objectArray[indexInObjectArray].in_view = True
 
@@ -229,8 +235,8 @@ def generate_object_detection_msg(frame, detected_objects):
         
             objects_detected_in_run.append(str(object))
 
+    # update the objects that are not being seen in the frame
     objects_detected_in_frame = list(detected_objects.keys())
-
     for object in objects_detected_in_run:
         if not (object in objects_detected_in_frame):
             for object_detected_index in range(len(objectArray)):
@@ -319,7 +325,7 @@ if __name__ == '__main__':
 
     rospy.init_node('get_objects_and_coordinates', anonymous=True)
     print('Node: get_objects_and_coordinates initialized!')
-    image_subscriber = rospy.Subscriber("/camera/color/image_raw/compressed" , CompressedImage, callback)
-
+    #image_subscriber = rospy.Subscriber("/camera/color/image_raw/compressed" , CompressedImage, callback)
+    image_subscriber = rospy.Subscriber("/camaras/2" , CompressedImage, callback)
     rospy.spin()
     cv2.destroyAllWindows()
