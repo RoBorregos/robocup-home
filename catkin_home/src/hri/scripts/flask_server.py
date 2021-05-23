@@ -15,7 +15,6 @@ CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Full duplex connection with the HRI ros node.
-
 receiver_address = ('localhost', 7000)
 sender_address = ('localhost', 7001)
 
@@ -38,25 +37,36 @@ def cleanup():
     ros_sender.close()
 
     
-# Forward all messages to "Comm" websocket endpoint.
+# Decode messages and send them to the appropriate socket channel.
 def ros_receive_handler():
     while True:
         if ros_receiver is None:
-            # To avoid blocking the process
+            # Avoid blocking the process before initialization.
             socketio.sleep(0.01)
             continue
         # Only call `recv` when we're sure there's a new message since
         # it is a blocking call.
-        
         if ros_receiver.poll():
-            message = ros_receiver.recv()
+            try:
+                message = ros_receiver.recv()
+            except:
+                # Ignore message if there was an exception.
+                # TODO: We should not do this becuase we could
+                # loose critical messages.
+                rospy.loginfo("There was an exception")
+                continue
+
             if message == "CreateSender":
                 initialize_ros_sender()
             elif message == "Close":
                 cleanup()
             else:
-                socketio.emit(message["channel"], json.dumps(message["value"]))
-                print(f"Received from ROS: {message}")
+                channel = message["channel"]
+                value = message["value"]
+                socketio.emit(
+                    channel,
+                    value if type(value) == str else json.dumps(value)
+                )
         else:
             # Only throttle if there are no available messages.
             socketio.sleep(0.01)

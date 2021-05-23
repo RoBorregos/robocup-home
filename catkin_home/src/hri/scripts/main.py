@@ -1,12 +1,17 @@
+import base64
+import cv2
 import time
 import rospy
 import os
 import threading
 import subprocess as sp
 
-from hri.msg import RobotStatus
+from cv_bridge import CvBridge, CvBridgeError
 from multiprocessing.connection import Client, Listener
+from sensor_msgs.msg import Image
 from std_msgs.msg import String
+
+from hri.msg import RobotStatus
 
 # Flask server process.
 server_script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "flask_server.py")
@@ -22,6 +27,9 @@ server_receiver = None
 
 # Message receiving from flask is performed in a different thread.
 flask_messaging_thread = None
+
+# OpenCV bridge.
+bridge = CvBridge()
 
 def initialize_server_process():
     global server_process
@@ -73,6 +81,16 @@ def robot_info_receive_handler(robot_status):
             "channel": "ActiveModules",
             "value": robot_status.active_modules
         })
+
+def robot_video_feed_receive_handler(image_msg):
+    if server_sender is not None:
+        img = bridge.imgmsg_to_cv2(image_msg, desired_encoding="passthrough")
+        _, img_buffer = cv2.imencode('.jpg', img)
+        img_text = base64.b64encode(img_buffer)
+        server_sender.send({
+            "channel": "CameraFeed",
+            "value": img_text.decode("ascii")
+        })
         
     
 def cleanup():
@@ -98,6 +116,8 @@ def main():
 
     # Start receiving status messages.
     rospy.Subscriber("/robot_info", RobotStatus, robot_info_receive_handler)
+    # Start receiving video feed.
+    rospy.Subscriber("/robot_video_feed", Image, robot_video_feed_receive_handler)
     
     rospy.spin()
 
