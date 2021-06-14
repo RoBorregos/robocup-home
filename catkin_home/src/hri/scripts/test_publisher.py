@@ -48,9 +48,9 @@ def status_publisher():
             for module in robot_modules:
                 if bool(random.getrandbits(1)):
                     active_robot_modules.append(module)
-            message.active_modules = active_robot_modules
+            message.ActiveModules = active_robot_modules
             # Set system health.
-            message.system_health = [
+            message.SystemHealth = [
                 # Battery.
                 float(85 + int(random.getrandbits(4))),
                 # CPU.

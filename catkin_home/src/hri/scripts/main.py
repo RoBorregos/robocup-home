@@ -13,6 +13,15 @@ from std_msgs.msg import String
 
 from hri.msg import RobotStatus
 
+channels = [
+    "ActionQueue",
+    "SystemHealth",
+    "RobotStatus",
+    "ActiveModules",
+    "RobotMessage",
+    "RobotFace"
+]
+
 # Flask server process.
 server_script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "flask_server.py")
 server_process = None
@@ -73,14 +82,14 @@ def flask_receive_handler():
 
 def robot_info_receive_handler(robot_status):
     if server_sender is not None:
-        server_sender.send({
-            "channel": "SystemHealth",
-            "value": robot_status.system_health
-        })
-        server_sender.send({
-            "channel": "ActiveModules",
-            "value": robot_status.active_modules
-        })
+        for channel in channels:
+            try:
+                server_sender.send({
+                    "channel": channel,
+                    "value": getattr(robot_status, channel)
+                })
+            except:
+                print("Error fetching: ", channel)
 
 def robot_video_feed_receive_handler(image_msg):
     if server_sender is not None:
