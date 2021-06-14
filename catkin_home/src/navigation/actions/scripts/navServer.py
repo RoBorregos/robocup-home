@@ -1,12 +1,12 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 from __future__ import print_function
 
 import csv
 import json
+import rospy
 from math import degrees, radians
 
 import actionlib
-import rospy
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Point
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
@@ -44,11 +44,11 @@ class navigationServer(object):
         place = 0
         self.goals = {}
         with open('src/navigation/actions/data/goals.csv', 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            goal = [float(i) for i in row]
-            self.goals[a[place]] = goal
-            place=(place+1)%len(a)
+            reader = csv.reader(file)
+            for row in reader:
+                goal = [float(i) for i in row]
+                self.goals[a[place]] = goal
+                place=(place+1)%len(a)
         rospy.loginfo(self.goals)
 
     def validateGoal(self, goal):
