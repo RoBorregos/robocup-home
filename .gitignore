@@ -44,6 +44,7 @@ wrokspace.code-workspace
 ### OBJECT DETECTION ###
 /object_detection/venv/
 /object_detection/models/
+/object_detection/images/train
 
 ### Others ###
 /rasa/venv/
