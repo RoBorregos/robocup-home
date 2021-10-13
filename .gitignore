@@ -19,7 +19,6 @@
 /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/kenlm
 /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/*.egg-info
 /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/openfst*
-/catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/openfst*
 /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/swig_decoders.py
 /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig/decoders_wrap.cxx
 /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech/manifest.dev-clean
@@ -43,7 +42,9 @@ wrokspace.code-workspace
 
 ### OBJECT DETECTION ###
 /object_detection/venv/
-/object_detection/models/
+/object_detection/models/model_tf2
+/object_detection/models/dependencies/TensorFlow
+/object_detection/models/dependencies/coco
 /object_detection/images/train
 
 ### Others ###

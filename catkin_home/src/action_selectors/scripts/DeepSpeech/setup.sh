@@ -35,4 +35,4 @@ if [ $? != 0 ]; then
 fi
 
 
-echo "Install all dependencies successfully."
+echo "Installed all dependencies successfully."
