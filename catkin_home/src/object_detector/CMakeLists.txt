@@ -13,7 +13,11 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   message_generation
+  cv_bridge
+  image_transport
 )
+
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -107,7 +111,7 @@ generate_messages(
 catkin_package(
 INCLUDE_DIRS include
 #LIBRARIES object_detector
-CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs geometry_msgs
+CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs geometry_msgs cv_bridge image_transport
 #DEPENDS system_lib
 )
 
@@ -120,6 +124,7 @@ CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs geometry_msgs
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -201,7 +206,7 @@ add_dependencies(pose_estimation_node
   ${catkin_EXPORTED_TARGETS}
 )
 
-target_link_libraries(pose_estimation_node ${catkin_LIBRARIES})
+target_link_libraries(pose_estimation_node ${catkin_LIBRARIES} ${OpenCV_INCLUDE_DIRS})
 
 #############
 ## Testing ##
