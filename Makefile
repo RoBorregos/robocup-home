@@ -2,75 +2,72 @@
 #  Development Noetic
 # ----------------------------------------------------------------------
 
-#: Builds a Docker image from the current Dockerfile file
+#: Builds a Docker image with the corresponding Dockerfile file
 noetic.build:
-	@docker build -t ros:noetic -f docker/noetic/Dockerfile .
+	@docker build -t ros:home -f docker/noetic/Dockerfile .
 noetic.speech.build:
-	@docker build -t ros:noetic-speech -f docker/noetic/Dockerfile.speech .
+	@docker build -t ros:home -f docker/noetic/Dockerfile.speech .
 noetic.navigation.build:
-	@docker build -t ros:noetic-navigation -f docker/noetic/Dockerfile.navigation .
+	@docker build -t ros:home -f docker/noetic/Dockerfile.navigation .
+noetic.objectDetection.build:
+	@docker build -t ros:home -f docker/noetic/Dockerfile.objectDetection .
 
-#: Create Docker container
+#: Create Generic Docker container
 noetic.create: 
-	@docker run \
-		-it -d \
-		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
-		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
-		--network host \
-		--name ros-noetic \
-		ros:noetic
-noetic.speech.create:
-	@./docker/noetic/runSpeech.bash
-noetic.navigation.create:
-	@./docker/noetic/runNavigation.bash
+	@./docker/run_scripts/run.bash
+noetic.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash
+noetic.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash
+
+#: Create Navigation Docker container
+noetic.navigation.create: 
+	@./docker/run_scripts/run.bash IS_NAVIGATION
+noetic.navigation.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash IS_NAVIGATION
+noetic.navigation.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash IS_NAVIGATION
+
+#: Create Speech Docker container
+noetic.speech.create: 
+	@./docker/run_scripts/run.bash IS_SPEECH
+noetic.speech.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash IS_SPEECH
+noetic.speech.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash IS_SPEECH
+
+#: Create ObjectDetection Docker container
+noetic.objectDetection.create: 
+	@./docker/run_scripts/run.bash IS_OBJECT_DETECTION
+noetic.objectDetection.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash IS_OBJECT_DETECTION
+noetic.objectDetection.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash IS_OBJECT_DETECTION
 
 #: Start the container in background
 noetic.up:
-	@docker start ros-noetic
-noetic.speech.up:
-	@docker start ros-noetic-speech
-noetic.navigation.up:
-	@docker start ros-noetic-navigation
+	@xhost +
+	@docker start ros-home
 
 #: Stop the container
 noetic.down:
-	@docker stop ros-noetic
-noetic.speech.down:
-	@docker stop ros-noetic-speech
-noetic.navigation.down:
-	@docker stop ros-noetic-navigation
+	@docker stop ros-home
 
 #: Restarts the container
 noetic.restart:
-	@docker restart ros-noetic
-noetic.speech.restart:
-	@docker restart ros-noetic-speech
-noetic.navigation.restart:
-	@docker restart ros-noetic-navigation
+	@docker restart ros-home
 
-#: Shows the logs of the ros-noetic service container
+#: Shows the logs of the ros-home service container
 noetic.logs:
-	@docker logs --tail 50 ros-noetic
-noetic.speech.logs:
-	@docker logs --tail 50 ros-noetic-speech
-noetic.navigation.logs:
-	@docker logs --tail 50 ros-noetic-navigation
+	@docker logs --tail 50 ros-home
 
-#: Fires up a bash session inside the ros-noetic service container
+#: Fires up a bash session inside the ros-home service container
 noetic.shell:
-	@docker exec -it ros-noetic bash
-noetic.speech.shell:
-	@docker exec -it ros-noetic-speech bash
-noetic.navigation.shell:
-	@docker exec -it ros-noetic-navigation bash
+	@docker exec -it ros-home bash
 
-#: Remove ros-noetic container. 
+#: Remove ros-home container. 
 noetic.remove: noetic.down
-	@docker container rm ros-noetic
-noetic.speech.remove: noetic.speech.down
-	@docker container rm ros-noetic-speech
-noetic.navigation.remove: noetic.navigation.down
-	@docker container rm ros-noetic-navigation
+	@docker container rm ros-home
 
 # ----------------------------------------------------------------------
 #  General Docker

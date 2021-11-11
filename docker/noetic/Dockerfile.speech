@@ -1,6 +1,8 @@
 # Use the existing ROS-NOETIC image
 FROM osrf/ros:noetic-desktop-full
 
+LABEL maintainer="Jose Cisneros <A01283070@itesm.mx>"
+
 # Install dependencies
 RUN apt-get update -qq && \
     apt-get install -y \
@@ -10,6 +12,7 @@ RUN apt-get update -qq && \
     autoconf \
     libtool \
     python3-pip \
+    mesa-utils \
     ros-noetic-audio-common \
     ros-noetic-move-base && \
     rm -rf /var/lib/apt/lists/*
@@ -43,7 +46,7 @@ RUN apt-get update && apt-get install libopencv-dev python3-opencv -y
 
 # Python Dependencies
 COPY docker/noetic/speechDependencies.txt /speechDependencies.txt
-RUN python3 -m pip install --upgrade pip && pip3 install -r speechDependencies.txt
+COPY docker/noetic/speechDependenciesGpu.txt /speechDependenciesGpu.txt
 
 # Deepspeech Pre-Run
 RUN cd /catkin_home/src/action_selectors/scripts/DeepSpeech && python3 -m data.librispeech.librispeech --full_download False --manifest_prefix "data/librispeech/manifest"
@@ -57,3 +60,5 @@ RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;catkin_make'
 # Add ROS environment variables automatically
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 RUN echo "[ -f /catkin_home/devel/setup.bash ] && source /catkin_home/devel/setup.bash" >> ~/.bashrc
+
+ENTRYPOINT [ "/bin/bash", "-l", "-c" ]

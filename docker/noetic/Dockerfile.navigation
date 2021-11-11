@@ -1,5 +1,7 @@
-# Use the existing ROS-NOETIC image
+# TODO(Josecisneros001): Add Navigation Stack
 FROM osrf/ros:noetic-desktop-full
+
+LABEL maintainer="Jose Cisneros <A01283070@itesm.mx>"
 
 # Install dependencies
 RUN apt-get update -qq && \
@@ -10,6 +12,7 @@ RUN apt-get update -qq && \
     autoconf \
     libtool \
     python3-pip \
+    mesa-utils \
     ros-noetic-audio-common \
     ros-noetic-map-server \
     ros-noetic-move-base \
@@ -17,19 +20,12 @@ RUN apt-get update -qq && \
     ros-noetic-rosserial && \
     rm -rf /var/lib/apt/lists/*
 
-# nvidia-container-runtime
-ENV NVIDIA_VISIBLE_DEVICES \
-    ${NVIDIA_VISIBLE_DEVICES:-all}
-ENV NVIDIA_DRIVER_CAPABILITIES \
-    ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
-
-
 # Init catkin_home directoy
 RUN mkdir /catkin_home
 COPY catkin_home/ catkin_home/
 
 # Change Workdir
-WORKDIR catkin_home
+WORKDIR /catkin_home
 
 # catkin_make
 RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;catkin_make'
@@ -40,3 +36,5 @@ RUN /bin/bash -c 'mkdir -p /Arduino/libraries;cd /Arduino/libraries;. /catkin_ho
 # Add ROS environment variables automatically
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 RUN echo "[ -f /catkin_home/devel/setup.bash ] && source /catkin_home/devel/setup.bash" >> ~/.bashrc
+
+ENTRYPOINT [ "/bin/bash", "-l", "-c" ]
