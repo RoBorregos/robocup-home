@@ -1,4 +1,4 @@
-<img src="roborregos_logo.png" width="400" ><img> 
+<img src="readme_resources/roborregos_logo.png" width="400" ><img> 
 
 # RoBorregos Robocup-Home
 This repository contains the development of RoBorregos' robotic solution for [RoboCup's @HOME competition](https://athome.robocup.org/), Open Platform League (OPL), where the robot must be capable of interacting with people, manipulate objects and have intelligent responses for everyday home tasks.
@@ -8,7 +8,7 @@ See [RoboCup @HOME Rules](https://robocupathome.github.io/RuleBook/rulebook/mast
 ## Project details
 
 This project is made using:
-- [ROS Melodic](https://www.ros.org/)
+- [ROS Noetic](https://www.ros.org/)
 - [Rasa NLU](https://rasa.com/)
 - [Tensorflow](https://www.tensorflow.org/learn)
 - [PaddlePaddle](https://github.com/paddlepaddle/paddle)
@@ -16,7 +16,7 @@ This project is made using:
 - [VIA EPIA](https://www.viatech.com/en/support/eol/epia-eol/)
 - [Jetson](https://developer.nvidia.com/EMBEDDED/jetson-nano-developer-kit)
 
-<img src="SystemDesignv3_gray.png" width="1500" ><img> 
+<img src="readme_resources/SystemDesignv3_gray.png" width="1500" ><img> 
 
 For more information about the project system, structure, and development areas you can check our [Official Documentation](https://github.com/RoBorregos/Robocup-Home/wiki).
 
