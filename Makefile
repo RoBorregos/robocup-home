@@ -20,15 +20,7 @@ noetic.create:
 		--name ros-noetic \
 		ros:noetic
 noetic.speech.create:
-	@docker run \
-		-it -d \
-		--gpus all \
-		--device /dev/snd:/dev/snd \
-		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
-		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
-		--network host \
-		--name ros-noetic-speech \
-		ros:noetic-speech
+	@./docker/noetic/runSpeech.bash
 noetic.navigation.create:
 	@./docker/noetic/runNavigation.bash
 

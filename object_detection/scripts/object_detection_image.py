@@ -8,86 +8,72 @@ import numpy as np
 import tensorflow as tf
 import sys
 
-from utils import label_map_util
-from utils import visualization_utils as vis_util
+from object_detection.utils import label_map_util
+from object_detection.utils import visualization_utils as vis_util
 
-from google.colab.patches import cv2_imshow
+#from google.colab.patches import cv2_imshow
 
-# sys.path.append("..")
+# Look for object_detection directory based on absolute path to file.
+# This allows the scripts to be called from any directory.
 
-# Name of the directory containing the object detection module we're using
-MODEL_NAME = 'inference_graph'
-IMAGE_NAME = 'test_images/image9.jpeg'
+base_directory = 'object_detection'
+path_to_file = os.path.abspath(__file__) # get absolute path to current working file
+index_of_base_directory = path_to_file.find(base_directory)
+WORKING_DIR = path_to_file[0:index_of_base_directory + len(base_directory)]
 
-# Grab path to current working directory
-CWD_PATH = os.getcwd()
-
-PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,'frozen_inference_graph.pb')
-
-PATH_TO_LABELS = os.path.join(CWD_PATH,'training','labelmap.pbtxt')
-
-PATH_TO_IMAGE = os.path.join(CWD_PATH,IMAGE_NAME)
-
+MODEL_NAME = 'saved_model'
+CWD_PATH = os.path.join(WORKING_DIR, 'models', 'model_tf2')
+PATH_TO_SAVED_MODEL = os.path.join(CWD_PATH, MODEL_NAME)
+PATH_TO_LABELS = os.path.join(CWD_PATH,'label_map.pbtxt')
 NUM_CLASSES = 4
+MIN_SCORE_THRESH = 0.6
+PATH_TO_IMAGE = os.path.join(WORKING_DIR, 'test_images', 'test_image_tf2.jpg')
 
 # Load the label map.
-label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
-categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
-category_index = label_map_util.create_category_index(categories)
-
-# Load the Tensorflow model into memory.
-detection_graph = tf.Graph()
-with detection_graph.as_default():
-    od_graph_def = tf.GraphDef()
-    with tf.gfile.GFile(PATH_TO_CKPT, 'rb') as fid:
-        serialized_graph = fid.read()
-        od_graph_def.ParseFromString(serialized_graph)
-        tf.import_graph_def(od_graph_def, name='')
-
-    sess = tf.Session(graph=detection_graph)
-
-# Define input and output tensors (i.e. data) for the object detection classifier
-
-# Input tensor is the image
-image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
-
-# Output tensors are the detection boxes, scores, and classes
-# Each box represents a part of the image where a particular object was detected
-detection_boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
-
-# Each score represents level of confidence for each of the objects.
-# The score is shown on the result image, together with the class label.
-detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
-detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
-
-# Number of objects detected
-num_detections = detection_graph.get_tensor_by_name('num_detections:0')
+category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABELS, use_display_name=True)
 
 # Load image using OpenCV
 image = cv2.imread(PATH_TO_IMAGE)
-image_expanded = np.expand_dims(image, axis=0)
 
-# Perform the actual detection by running the model with the image as input
-(boxes, scores, classes, num) = sess.run(
-    [detection_boxes, detection_scores, detection_classes, num_detections],
-    feed_dict={image_tensor: image_expanded})
+# Convert CV2 image from BGR to RGB
+# Comment this line in case the model can take any order of RGB
+imageRGB = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+image_expanded = np.expand_dims(imageRGB, axis=0)
 
-# Draw the results of the detection (aka 'visulaize the results')
+# Define the inout image as a tensor
+input_tensor = tf.convert_to_tensor(image_expanded, dtype=tf.uint8)
+
+# Funcion created by TF2 based on the object detection model
+detect_fn = tf.saved_model.load(PATH_TO_SAVED_MODEL)
+
+# Run the model to get the detections dictionary
+detections = detect_fn(input_tensor)
+
+# All outputs are batches tensors.
+# Convert to numpy arrays, and take index [0] to remove the batch dimension.
+# We're only interested in the first num_detections.
+num_detections = int(detections.pop('num_detections'))
+detections = {key: value[0, :num_detections].numpy()
+            for key, value in detections.items()}
+detections['num_detections'] = num_detections
+
+# Detection_classes should be ints.
+detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
+
+# Visualize the image and detections 
+image_np_with_detections = image.copy()
 vis_util.visualize_boxes_and_labels_on_image_array(
-    image,
-    np.squeeze(boxes),
-    np.squeeze(classes).astype(np.int32),
-    np.squeeze(scores),
+    image_np_with_detections,
+    detections['detection_boxes'],
+    detections['detection_classes'],
+    detections['detection_scores'],
     category_index,
     use_normalized_coordinates=True,
-    line_thickness=8,
-    min_score_thresh=0.60)
+    max_boxes_to_draw=200,
+    min_score_thresh=MIN_SCORE_THRESH,
+    agnostic_mode=False)
 
 # Display the results image.
-cv2_imshow(image)
-
-# Press any key to close the image
+cv2.imshow('image_results', image_np_with_detections)
 cv2.waitKey(0)
-
-# Clean up
 cv2.destroyAllWindows()
