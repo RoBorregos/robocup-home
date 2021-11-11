@@ -19,7 +19,7 @@
         </include>
     </group>-->
 
-    <arg name="color_fps"      default="2" />
+    <arg name="color_fps"      default="15" />
     <include file="$(find realsense2_camera)/launch/rs_camera.launch"> 
         <arg name="color_fps"         value="$(arg color_fps)"/>
     </include>  
