@@ -1,0 +1,100 @@
+{
+  "pick_up": {
+    "cmd_priority": 1,
+    "requires_args": "True",
+    "action_client_binded": "arm_action_server",
+    "description": "Pick up an object from a surface",
+    "actions_involved": ""
+  },
+  "bring_something": {
+    "cmd_priority": 5,
+    "requires_args": "True",
+    "action_client_binded": "navigation",
+    "description": "Bring an object from a location",
+    "actions_involved": "go_to, approach, center,pick_up, put_down,"
+  },
+  "stop": {
+    "cmd_priority": 0,
+    "requires_args": "False",
+    "action_client_binded": "main_engine",
+    "description": "Stop everything",
+    "actions_involved": ""
+  },
+  "go_to": {
+    "cmd_priority": 1,
+    "requires_args": "True",
+    "action_client_binded": "navigation",
+    "description": "Go to a location",
+    "actions_involved": ""
+  },
+  "approach": {
+    "cmd_priority": 1,
+    "requires_args": "True",
+    "action_client_binded": "navigation",
+    "description": "Approach an object located inside the current room",
+    "actions_involved": ""
+  },
+  "center": {
+    "cmd_priority": 1,
+    "requires_args": "True",
+    "action_client_binded": "navigation",
+    "description": "Center the position of the robot to the location of the object",
+    "actions_involved": ""
+  },
+  "pause": {
+    "cmd_priority": 1,
+    "requires_args": "False",
+    "action_client_binded": "main_engine",
+    "description": "Pause the robot",
+    "actions_involved": ""
+  },
+  "resume": {
+    "cmd_priority": 1,
+    "requires_args": "False",
+    "action_client_binded": "main_engine",
+    "description": "Resume the robot",
+    "actions_involved": ""
+  },
+  "put_down": {
+    "cmd_priority": 1,
+    "requires_args": "True",
+    "action_client_binded": "arm_action_server",
+    "description": "Put_down the object, if a surface is given as an argument then place the object in the surface.",
+    "actions_involved": ""
+  },
+  "take_object": {
+    "cmd_priority": 1,
+    "requires_args": "False",
+    "action_client_binded": "arm_action_server",
+    "description": "Take an object from the operator giving it to the robot.",
+    "actions_involved": ""
+  },
+  "follow": {
+    "cmd_priority": 1,
+    "requires_args": "False",
+    "action_client_binded": "navigation",
+    "description": "Follow an operator.",
+    "actions_involved": "find_operator"
+  },
+  "find_operator": {
+    "cmd_priority": 1,
+    "requires_args": "False",
+    "action_client_binded": "vision",
+    "description": "Find an operator in the field of view of the robot.",
+    "actions_involved": ""
+  },
+  "clean_up": {
+    "cmd_priority": 1,
+    "requires_args": "True",
+    "action_client_binded": "arm_action_server",
+    "description": "Find unrecognized objects in a room and deposite them in the garbage.",
+    "actions_involved": ""
+  },
+  "scout_operators": {
+    "cmd_priority": 1,
+    "requires_args": "True",
+    "action_client_binded": "navigation",
+    "description": "Go around the arena asking people their names and saving their description",
+    "actions_involved": "go_to, find_operator"
+  }
+}

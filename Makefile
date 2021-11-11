@@ -1,127 +1,73 @@
 # ----------------------------------------------------------------------
-#  Development Melodic
+#  Development Noetic
 # ----------------------------------------------------------------------
 
-#: Builds a Docker image from the current Dockerfile file
-melodic.build:
-	@docker build -t ros:melodic -f docker/melodic/Dockerfile .
-melodic.speech.build:
-	@docker build -t ros:melodic-speech -f docker/melodic/Dockerfile.speech .
-melodic.speech.gpu.build:
-	@docker build -t ros:melodic-speech-gpu -f docker/melodic/Dockerfile.speech.gpu .
-melodic.navigation.build:
-	@docker build -t ros:melodic-navigation -f docker/melodic/Dockerfile.navigation .
-melodic.navigation.gpu.build:
-	@docker build -t ros:melodic-navigation-gpu -f docker/melodic/Dockerfile.navigation.gpu .
+#: Builds a Docker image with the corresponding Dockerfile file
+noetic.build:
+	@docker build -t ros:home -f docker/noetic/Dockerfile .
+noetic.speech.build:
+	@docker build -t ros:home -f docker/noetic/Dockerfile.speech .
+noetic.navigation.build:
+	@docker build -t ros:home -f docker/noetic/Dockerfile.navigation .
+noetic.objectDetection.build:
+	@docker build -t ros:home -f docker/noetic/Dockerfile.objectDetection .
 
-#: Create Docker container
-melodic.create: 
-	@docker run \
-		-it -d \
-		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
-		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
-		--network host \
-		--name ros-melodic \
-		ros:melodic
-melodic.speech.create:
-	@docker run \
-		-it -d \
-		--device /dev/snd:/dev/snd \
-		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
-		-v /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig  \
-		-v /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech  \
-		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
-		--network host \
-		--name ros-melodic-speech \
-		ros:melodic-speech
-melodic.speech.gpu.create:
-	@docker run \
-		-it -d \
-		--gpus all \
-		--device /dev/snd:/dev/snd \
-		-v ${shell pwd}/catkin_home/src:/catkin_home/src \
-		-v /catkin_home/src/action_selectors/scripts/DeepSpeech/decoders/swig  \
-		-v /catkin_home/src/action_selectors/scripts/DeepSpeech/data/librispeech  \
-		-v ${shell pwd}/catkin_home/typings:/catkin_home/typings \
-		--network host \
-		--name ros-melodic-speech-gpu \
-		ros:melodic-speech-gpu
-melodic.navigation.create:
-	@./docker/melodic/runNavigation.bash
-melodic.navigation.gpu.create:
-	@./docker/melodic/runNavigationGpu.bash
+#: Create Generic Docker container
+noetic.create: 
+	@./docker/run_scripts/run.bash
+noetic.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash
+noetic.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash
+
+#: Create Navigation Docker container
+noetic.navigation.create: 
+	@./docker/run_scripts/run.bash IS_NAVIGATION
+noetic.navigation.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash IS_NAVIGATION
+noetic.navigation.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash IS_NAVIGATION
+
+#: Create Speech Docker container
+noetic.speech.create: 
+	@./docker/run_scripts/run.bash IS_SPEECH
+noetic.speech.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash IS_SPEECH
+noetic.speech.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash IS_SPEECH
+
+#: Create ObjectDetection Docker container
+noetic.objectDetection.create: 
+	@./docker/run_scripts/run.bash IS_OBJECT_DETECTION
+noetic.objectDetection.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash IS_OBJECT_DETECTION
+noetic.objectDetection.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash IS_OBJECT_DETECTION
 
 #: Start the container in background
-melodic.up:
-	@docker start ros-melodic
-melodic.speech.up:
-	@docker start ros-melodic-speech
-melodic.speech.gpu.up:
-	@docker start ros-melodic-speech-gpu
-melodic.navigation.up:
-	@docker start ros-melodic-navigation
-melodic.navigation.gpu.up:
-	@docker start ros-melodic-navigation-gpu
+noetic.up:
+	@xhost +
+	@docker start ros-home
 
 #: Stop the container
-melodic.down:
-	@docker stop ros-melodic
-melodic.speech.down:
-	@docker stop ros-melodic-speech
-melodic.speech.gpu.down:
-	@docker stop ros-melodic-speech-gpu
-melodic.navigation.down:
-	@docker stop ros-melodic-navigation
-melodic.navigation.gpu.down:
-	@docker stop ros-melodic-navigation-gpu
+noetic.down:
+	@docker stop ros-home
 
 #: Restarts the container
-melodic.restart:
-	@docker restart ros-melodic
-melodic.speech.restart:
-	@docker restart ros-melodic-speech
-melodic.speech.gpu.restart:
-	@docker restart ros-melodic-speech-gpu
-melodic.navigation.restart:
-	@docker restart ros-melodic-navigation
-melodic.navigation.gpu.restart:
-	@docker restart ros-melodic-navigation-gpu
+noetic.restart:
+	@docker restart ros-home
 
-#: Shows the logs of the ros-melodic service container
-melodic.logs:
-	@docker logs --tail 50 ros-melodic
-melodic.speech.logs:
-	@docker logs --tail 50 ros-melodic-speech
-melodic.speech.gpu.logs:
-	@docker logs --tail 50 ros-melodic-speech-gpu
-melodic.navigation.logs:
-	@docker logs --tail 50 ros-melodic-navigation
-melodic.navigation.gpu.logs:
-	@docker logs --tail 50 ros-melodic-navigation-gpu
+#: Shows the logs of the ros-home service container
+noetic.logs:
+	@docker logs --tail 50 ros-home
 
-#: Fires up a bash session inside the ros-melodic service container
-melodic.shell:
-	@docker exec -it ros-melodic bash
-melodic.speech.shell:
-	@docker exec -it ros-melodic-speech bash
-melodic.speech.gpu.shell:
-	@docker exec -it ros-melodic-speech-gpu bash
-melodic.navigation.shell:
-	@docker exec -it ros-melodic-navigation bash
-melodic.navigation.gpu.shell:
-	@docker exec -it ros-melodic-navigation-gpu bash
+#: Fires up a bash session inside the ros-home service container
+noetic.shell:
+	@docker exec -it ros-home bash
 
-#: Remove ros-melodic container. 
-melodic.remove: melodic.down
-	@docker container rm ros-melodic
-melodic.speech.remove: melodic.speech.down
-	@docker container rm ros-melodic-speech
-melodic.speech.gpu.remove: melodic.speech.gpu.down
-	@docker container rm ros-melodic-speech-gpu
-melodic.navigation.remove: melodic.navigation.down
-	@docker container rm ros-melodic-navigation
-melodic.navigation.gpu.remove: melodic.navigation.gpu.down
-	@docker container rm ros-melodic-navigation-gpu
+#: Remove ros-home container. 
+noetic.remove: noetic.down
+	@docker container rm ros-home
 
 # ----------------------------------------------------------------------
 #  General Docker

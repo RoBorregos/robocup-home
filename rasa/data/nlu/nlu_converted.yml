@@ -1,0 +1,154 @@
+version: "2.0"
+nlu:
+- intent: bring_something
+  examples: |
+    - Bring the [soda](object) from the [living room](place)
+    - Please bring an [apple](object) from the [kitchen](place)
+    - Bring  a [banana](object) from the [studio](place) robot
+    - Go to the [bedroom](place) and bring me [coffee](object)
+    - Bring me the [bottle](object) from the [kitchen](place)
+    - Bring me the [pizza](object) from the [basement](place)
+    - Bring me the [soda](object) from the [kitchen](place)
+    - the [soda](object) from the [living room](place)
+    - a [banana](object) from the [studio](place) robot
+    - the [pizza](object) from the [basement](place)
+    - From the [kitchen](place) bring [soda](object)
+
+- intent: bring_something_secret_intent
+  examples: |
+    - Activate bring_something
+    - Do bring_something
+    - Start bring_something
+
+- intent: go_to
+  examples: |
+    - to the [kitchen](place)
+    - [attic](place)
+    - go to the [garden](place)
+    - please go to the [restroom](place)
+    - will you go to the [couch](place)
+    - to the [closet](place)
+    - Can you go to the [bathroom](place)
+  
+
+
+- intent: bring_only
+  examples: |
+    - bring the [pizza](object)
+    - please bring the [banana](object)
+    - the [soda](object)
+    - an [apple](object)
+    - [coke](object)
+    - can you please bring the [milk](object)
+    - will you bring the [tea](object)
+    - a [soup](object)
+
+- intent: store_object
+  examples: |
+   - Please store the [apple](object) in the [shelf](place)
+   - store the [pizza](object) in the [shelf](place)
+   - put the [can](object) in the [shelf](place)
+   - can you store the [potatoe](object) in the [shelf](place)
+
+- intent: bring_to
+  examples: |
+    - Please bring the [luggage](object) to the [car](place)
+    - Help me carry my [bag](object) to the [car](place)
+    - Carry my [luggage](object)
+    - please carry my [luggage](object)
+    - please help me carry my [luggage](object)
+    - can you please carry my [luggage](object)?
+    - could you carry my [bag](object)?
+    - will you carry my [bag](object) to the [car](place)?
+
+- intent: out_of_scope
+  examples: |
+    - I want to know the weather
+    - What is 2 + 2?
+    - Who's the US President?
+
+- intent: clean
+  examples: |
+    - Please clean the [room](place)
+    - Clean the [bedroom](place)
+    - tidy up the [kitchen](place)
+    - please tidy up the [garage](place)
+    - can you clean the [attic](place)
+
+- intent: farewell
+  examples: |
+    - Please bring my [red](color) [coat](object)
+    - Bring my [white](color) [coat](object)
+
+- intent: search_for_people
+  examples: |
+    - Please search for [Karla](names) location
+    - Find [Manuel](names) location
+    - I want to speak to [Fernando](names) 
+    - I want to meet [Isamel](names)
+    - Search for [Gaby](names)
+    - Please find [Karina](names)
+    - Find [Camille]
+
+- intent: introduce_myself
+  examples: |
+    - Im called [juan](names)
+    - My name is [jorge](names)
+    - [Manuel](names)
+    - [Ricardo](names)
+    - [Isamel](names)
+    - [Karina](names)
+    - I am [israel](names)
+    - [a-zA-Z\s]+$
+- intent: yes
+  examples: |
+    - yes
+    - yeah
+    - sure
+    - ok
+    - fine
+    - yes, do that
+- intent: no
+  examples: |
+    - no
+    - nope
+    - don't
+    - please no
+    - forget it
+    - cancel that
+- intent: bye
+  examples: |
+    - bye
+    - Bye
+    - Goodbye
+    - See you
+    - Ok bye
+    - Later bitch
+    - See ya later alligator
+    - Byebye
+    - Bay
+- intent: greet
+  examples: |
+    - Hey
+    - Hi
+    - Hello
+- intent: stop
+  examples: |
+    - stop
+    - exit
+    - close
+    - please end
+    - please stop
+    - stop stop
+- intent: thank
+  examples: |
+    - thanks
+    - thank you
+    - thanks mate
+    - Thanks
+    - thanks robot
+    - thanks for the help
+    - thank you for your work
+
+
+

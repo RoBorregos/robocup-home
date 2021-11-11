@@ -85,8 +85,7 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
 int main(int argc, char* argv[]){
   // This must be called before anything else ROS-related.
   ros::init(argc, argv, "AzureSpeechToText");
-  ROS_INFO_STREAM("Starting node...");
-
+  ROS_INFO_STREAM("AzureSpeechToText: Starting node...");
   if (!SpeechUtils.init()) {
     return 1;
   }
@@ -96,11 +95,11 @@ int main(int argc, char* argv[]){
   publi = nh.advertise<action_selectors::RawInput>("RawInput", 10);
   ros::Subscriber sub = nh.subscribe("UsefulAudioAzure", 5, onAudioCallback);
 
-  ROS_INFO_STREAM("*Node initiated*");
+  ROS_INFO_STREAM("*AzureSpeechToText: Node initiated*");
   
   // Don't exit the program.
   ros::spin();
-  ROS_INFO_STREAM("*Node finished*");
+  ROS_INFO_STREAM("AzureSpeechToText: *Node finished*");
 
   return 0;
 }

@@ -1,9 +1,0 @@
-kitchen
-restroom
-living room
-bedroom
-studio
-garden
-backyard
-basement
-attic
