@@ -60,7 +60,7 @@ def main():
     rospy.loginfo("*Starting Hear Node*")
 
     global FORCE_ENGINE
-    FORCE_ENGINE=rospy.get_param('~FORCE_ENGINE')
+    FORCE_ENGINE=rospy.get_param('~FORCE_ENGINE', 'online')
 
     global publisher_azure, publisher_deepspeech
     # For publishing when online to Azure node to it compute it and publish.
@@ -68,13 +68,13 @@ def main():
     # For publishing when online to Azure node to it compute it and publish.
     publisher_deepspeech = rospy.Publisher('UsefulAudioDeepSpeech', AudioData, queue_size=5)
 
-    rospy.Subscriber("UsefulAudio", AudioData, both_callback, queue_size=10)        
+    rospy.Subscriber("UsefulAudio", AudioData, both_callback)        
     
     # spin() simply keeps python from exiting until this node is stopped.
-    rospy.loginfo("*Ready to callback.*")
+    rospy.loginfo("*Hear: Ready to callback.*")
     rospy.spin()
 
-    rospy.loginfo("*Node finished*")
+    rospy.loginfo("*Hear Node finished*")
 
 if __name__ == '__main__':
     main()

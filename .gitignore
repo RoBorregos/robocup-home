@@ -47,10 +47,18 @@ wrokspace.code-workspace
 /object_detection/models/dependencies/coco
 /object_detection/images/train
 
-### Others ###
+### CONVERSATION ###
+catkin_home/src/action_selectors/scripts/FaceDetection/haarcascade_frontalface_default.xml
 /rasa/venv/
+/rasa/models/
+/rasa/results/
+out.log
+
+
+### Others ###
 *.DS_Store
 *.pyc
 .vscode/
+venv/
 
 # End 

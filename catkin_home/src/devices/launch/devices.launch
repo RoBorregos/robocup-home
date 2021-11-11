@@ -1,23 +1,26 @@
 <launch>
   <!-- TMR2021 - DEVICES -->
-  <!-- 
-  <arg name="enable_depth"   default="false"/>
-  <arg name="color_width"    default="1280" />
-  <arg name="color_height"   default="720" />
-  <arg name="color_fps"      default="15" />
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-    <arg name="enable_depth"      value="$(arg enable_depth)"/>
-    <arg name="color_width"       value="$(arg color_width)" />
-    <arg name="color_height"      value="$(arg color_height)" />
-    <arg name="color_fps"         value="$(arg color_fps)"/>
-  </include>  
-  <node name="republish_intel_rgb" type="republish" pkg="image_transport" args="raw in:=/camera/color/image_raw compressed out:=/camaras/1/" respawn="true"/>
-   -->
+  <!-- TMR2021 - SPEECH -->
   <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
   <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/>
   <node name="Say" pkg="devices" type="say.py" respawn="true" output="screen" />
-  <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
+
+  <!-- TMR2021 - VISION -->
+  <node name="CameraIndex" pkg="devices" type="CameraIndex.py"/>
+  <node name="ImageCapturer0" pkg="devices" type="ImageCapture.py" output="screen">
     <param name="RATE" value="15" />
     <param name="CAMERAID" value="0" />
+  </node>
+  <node name="ImageCapturer1" pkg="devices" type="ImageCapture.py" output="screen">
+    <param name="RATE" value="15" />
+    <param name="CAMERAID" value="1" />
+  </node>
+  <node name="ImageCapturer2" pkg="devices" type="ImageCapture.py" output="screen">
+    <param name="RATE" value="15" />
+    <param name="CAMERAID" value="2" />
+  </node>
+  <node name="ImageCapturer3" pkg="devices" type="ImageCapture.py" output="screen">
+    <param name="RATE" value="15" />
+    <param name="CAMERAID" value="3" />
   </node>
 </launch>

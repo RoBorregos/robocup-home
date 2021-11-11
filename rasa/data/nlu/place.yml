@@ -1,0 +1,13 @@
+version: "2.0"
+nlu:
+- lookup: place
+  examples: |
+    - kitchen
+    - restroom
+    - living room
+    - bedroom
+    - studio
+    - garden
+    - backyard
+    - basement
+    - attic

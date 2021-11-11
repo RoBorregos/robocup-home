@@ -10,3 +10,12 @@ resampy==0.2.2
 SoundFile==0.9.0.post1
 numpy==1.17.4
 python_speech_features
+webrtcvad==2.0.10
+# Say Dependencies
+pyttsx3==2.90
+gTTS==2.2.2
+mpyg321==1.1.0
+pexpect==4.8.0
+playsound==1.2.2
+vext
+vext.gi

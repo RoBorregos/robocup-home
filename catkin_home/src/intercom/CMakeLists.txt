@@ -52,6 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
     FILES
     action_selector_cmd.msg
     response.msg
+    bring_something_cmd.msg
  )
 
 ## Generate services in the 'srv' folder

@@ -4,6 +4,7 @@ from audio_common_msgs.msg import AudioData
 from std_msgs.msg import Bool
 import webrtcvad
 import pyaudio
+import collections
 
 class UsefulAudio(object):
     DEBUG = True
@@ -16,13 +17,14 @@ class UsefulAudio(object):
     COUNT_FOR_CHANGE = TIME_FOR_CHANGE / CHUNK_DURATION
     MIN_AUDIO_LENGTH = 0.50
     MIN_CHUNKS_AUDIO_LENGTH = MIN_AUDIO_LENGTH / CHUNK_DURATION
-
-    isTalking = False
-    currentValue = None
-    falseCount = 0
-
-    currentAudio = None
-    chunkCount = 0
+    
+    PADDING_DURATION = 0.50
+    NUM_PADDING_CHUNKS = int(PADDING_DURATION / CHUNK_DURATION)
+    
+    triggered = False
+    chunk_count = 0
+    voiced_frames = []
+    ring_buffer = collections.deque(maxlen = NUM_PADDING_CHUNKS)
 
     def __init__(self):
         self.vad = webrtcvad.Vad()
@@ -35,47 +37,66 @@ class UsefulAudio(object):
     def debug(self, text):
         if(self.DEBUG):
             rospy.loginfo(text)
-    
+
     def buildAudio(self, data):
-        if self.currentAudio == None:
-            self.currentAudio = data
+        if self.voiced_frames == None:
+            self.voiced_frames = data
         else:
-            self.currentAudio += data
-        self.chunkCount += 1
+            self.voiced_frames += data
+        self.chunk_count += 1
 
     def discardAudio(self):
-        self.currentAudio = None
-        self.chunkCount = 0
+        self.ring_buffer.clear()
+        self.voiced_frames = None
+        self.chunk_count = 0
 
     def publishAudio(self):
-        if self.chunkCount > self.MIN_CHUNKS_AUDIO_LENGTH:
-            self.publisher.publish(AudioData(self.currentAudio))
+        if self.chunk_count > self.MIN_CHUNKS_AUDIO_LENGTH:
+            self.publisher.publish(AudioData(self.voiced_frames))
         self.discardAudio()
 
     def callbackActive(self, msg):
         self.inputAudioActive = msg.data
+
+    def vad_collector(self, chunk):
+        is_speech = self.vad.is_speech(chunk, self.RATE)
+
+        if not self.triggered:
+            self.ring_buffer.append((chunk, is_speech))
+            num_voiced = len([f for f, speech in self.ring_buffer if speech])
+            
+            # If we're NOTTRIGGERED and more than 90% of the frames in
+            # the ring buffer are voiced frames, then enter the
+            # TRIGGERED state.
+            if num_voiced > 0.75 * self.ring_buffer.maxlen:
+                self.triggered = True
+                print("Start talking...")
+                # We want to publish all the audio we see from now until
+                # we are NOTTRIGGERED, but we have to start with the
+                # audio that's already in the ring buffer.
+                for f, _ in self.ring_buffer:
+                    self.buildAudio(f)
+                self.ring_buffer.clear()
+        else:
+            # We're in the TRIGGERED state, so collect the audio data
+            # and add it to the ring buffer.
+            self.buildAudio(chunk)
+            self.ring_buffer.append((chunk, is_speech))
+            num_unvoiced = len([f for f, speech in self.ring_buffer if not speech])
+            # If more than 90% of the frames in the ring buffer are
+            # unvoiced, then enter NOTTRIGGERED and publish whatever
+            # audio we've collected.
+            if num_unvoiced > 0.75 * self.ring_buffer.maxlen:
+                print("Stop talking...")
+                self.triggered = False
+                self.publishAudio()
 
     def callback(self, data):
         if self.inputAudioActive == False:
             self.discardAudio()
             return
         
-        currentValue = self.vad.is_speech(data.data, self.RATE)
-        if currentValue == True:
-            if self.isTalking == False:
-                self.debug("Start Talking...")
-            self.isTalking = True
-            self.falseCount = 0
-        elif self.isTalking == True and self.falseCount + 1 >= self.COUNT_FOR_CHANGE:
-            self.publishAudio()
-            self.isTalking = False
-            self.falseCount = 0
-            self.debug("Stop Talking...")
-        else:
-            self.falseCount += 1
-        
-        if self.isTalking == True:
-            self.buildAudio(data.data)
+        self.vad_collector(data.data)
 
 
 def main():
