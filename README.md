@@ -14,6 +14,7 @@ See [RoboCup @HOME Rules](https://robocupathome.github.io/RuleBook/rulebook/mast
    ```bash
    $ git clone --recurse-submodules https://github.com/RoBorregos/Robocup-Home.git
    ```
+2. [Docker Setup If needed](https://github.com/RoBorregos/Robocup-Home/wiki/Docker-Usage)
 
 ## Project details
 
@@ -34,7 +35,7 @@ For more information about the project system, structure, and development areas 
 
 | Name                    | Email                                                               | Github                                                       | Role      |
 | ----------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ | --------- |
-| José Cisneros | [joseacisnerosm@gmail.com](mailto:joseacisnerosm@gmail.com) | [@Josecisneros001](https://github.com/Josecisneros001) | PM Software, Speech & Base Control|
+| José Cisneros | [joseacisnerosm@gmail.com](mailto:joseacisnerosm@gmail.com) | [@Josecisneros001](https://github.com/Josecisneros001) | PM Software, Integration & Speech|
 | Aldo Samaniego | [aldojesussam0@gmail.com](mailto:aldojesussam0@gmail.com) | [@AldoSamaniego](https://github.com/AldoSamaniego) | PM Mechatronics & Power Supply Electronics|
 | Aurora Tijerina | [auro.tj@gmail.com](mailto:auro.tj@gmail.com) | [@AuroTB](https://github.com/aurotb) | Navigation & Integration |
 | Ricardo Chapa | [ricardochaparomero@gmail.com](mailto:ricardochaparomero@gmail.com) | [@RicardoChapaRomero](https://github.com/RicardoChapaRomero) | Object Detection |
