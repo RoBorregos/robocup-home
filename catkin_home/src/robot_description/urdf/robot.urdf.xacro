@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot name="robot_description" 
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find robot_description)/urdf/materials.xacro" />
+  <xacro:include filename="$(find robot_description)/urdf/robot.gazebo.xacro" />
+
+  <virtual_joint name="world_joint" type="planar" parent_frame="odom" child_link="base_footprint"/>
+
+  <link name="base_footprint"></link> 
+
+  <joint name="base_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+  </joint>
+
+  <!-- 
+    TODO: SPLIT base_link -> base, lidar, camara, arm.
+    - Check Model Coordinate System 
+  -->
+
+  <link name="base_link">
+    <pose>0 0 0.5 0 0 0</pose>
+    
+    <inertial>
+      <mass
+        value="10" />
+      <origin xyz="0 0 0.04" rpy=" 0 0 0"/>
+      <inertia 
+      ixx="0.01" ixy="0.01" ixz="0" 
+      iyy="0.01" iyz="0.01" 
+      izz="0.01" 
+      />
+    </inertial>
+
+    <visual>
+      <origin
+        xyz="0.2 0.15 0.09"
+        rpy="1.5708 1.5708 3.14159" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/base_all.STL" />
+      </geometry>
+      <material name="White"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0.02" rpy="0 0 0"/>
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Orbbec Astra RGBD Camera -->
+  <joint name="astra_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="0.19 0.01 0.40" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <link name="camera_link">
+    <collision>
+      <origin xyz="0.02 0 0" rpy="0 0 0"/>
+      <geometry>0
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="-0.01 0 -0.03" rpy="1.5707 0 1.5707"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/astra.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Black"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+
+  <joint name="camera_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    <parent link="camera_link"/>
+    <child link="camera_rgb_frame"/>
+  </joint>
+
+  <link name="camera_rgb_frame">
+  </link>
+
+  <joint name="camera_depth_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    <parent link="camera_link"/>
+    <child link="camera_depth_frame"/>
+  </joint>
+
+  <link name="camera_depth_frame">
+  </link>
+
+  <!-- rplidar Laser -->
+  <joint name="rplidar_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="0.19 0.01 0.20" rpy="0 0 3.14"/>
+    <parent link="base_link"/>
+    <child link="base_scan"/>
+  </joint>
+
+  <link name="base_scan">
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5707 0 4.71"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rplidar.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5707 0 4.71"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rplidar.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Black"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="1.5707 0 4.71"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+
+</robot>

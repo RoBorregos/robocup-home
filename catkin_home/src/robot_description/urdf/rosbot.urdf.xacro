@@ -1,0 +1,367 @@
+<?xml version='1.0'?>
+
+<robot name="rosbot" 
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="robot_namespace" default=""/>
+
+  <xacro:property name="cameraSize" value="0.05"/>
+  <xacro:property name="cameraMass" value="0.1"/>
+
+  <xacro:include filename="$(find robot_description)/urdf/rosbot_common.xacro" />
+  <xacro:include filename="$(find robot_description)/urdf/rosbot.gazebo.xacro" />
+
+  <virtual_joint name="world_joint" type="planar" parent_frame="odom" child_link="base_footprint"/>
+
+  <link name="base_footprint"></link> 
+
+  <joint name="base_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+  </joint>
+
+  <link name='base_link'>
+    <pose>0 0 0.1 0 0 0</pose>
+
+    <inertial>
+      <mass value="5"/>
+      <origin xyz="0 0 0.04" rpy=" 0 0 0"/>
+      <inertia 
+      ixx="0.01" ixy="0.01" ixz="0" 
+      iyy="0.01" iyz="0.01" 
+      izz="0.01" 
+      />
+    </inertial>
+  
+
+    <collision>
+      <origin xyz="0 0 0.02" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.20 0.15 0.04"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 -0.02" rpy=" 1.5707 0 1.5707"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/box.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="White"/>
+    </visual>
+
+  </link>
+
+  <joint name="top_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="top"/>
+  </joint>
+
+  <link name='top'>
+    <pose>0 0 0 0 0 0</pose>
+
+    <inertial>
+      <mass value="0.01"/>
+      <origin xyz="0 0 0.055" rpy=" 0 0 0"/>
+      <inertia 
+      ixx="0.0" ixy="0" ixz="0" 
+      iyy="0.0" iyz="0" 
+      izz="0.0" 
+      />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.055" rpy=" 1.5707 0 1.5707"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/upper.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Red"/>
+    </visual>
+  </link>
+
+  <link name="front_left_wheel">
+    <collision>
+      <origin xyz="0 -0.014 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder length="0.036" radius="0.04"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>10</mu>
+            <mu2>10</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 1.5707"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/wheel.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Black"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <mass value="0.5"/>
+      <inertia 
+      ixx="0.001" ixy="0.0" ixz="0.0" 
+      iyy="0.001" iyz="0.0" 
+      izz="0.001"/>
+    </inertial>
+  </link>
+
+  <link name="front_right_wheel">
+    <collision>
+      <origin xyz="0 0.014 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder length="0.036" radius="0.04"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>10</mu>
+            <mu2>10</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 -1.5707"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/wheel.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Black"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <mass value="0.5"/>
+      <inertia 
+      ixx="0.001" ixy="0.0" ixz="0.0" 
+      iyy="0.001" iyz="0.0" 
+      izz="0.001"/>
+    </inertial>
+  </link>
+
+  <link name="rear_left_wheel">
+    <collision>
+      <origin xyz="0 -0.014 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder length="0.036" radius="0.04"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>10</mu>
+            <mu2>10</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 1.5707"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/wheel.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Black"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <mass value="0.5"/>
+      <inertia 
+      ixx="0.001" ixy="0.0" ixz="0.0" 
+      iyy="0.001" iyz="0.0" 
+      izz="0.001"/>
+    </inertial>
+  </link>
+
+  <link name="rear_right_wheel">
+    <collision>
+      <origin xyz="0 0.014 0" rpy="${pi/2} 0 0"/>
+      <geometry>
+        <cylinder length="0.036" radius="0.04"/>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>10</mu>
+            <mu2>10</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 -1.5707"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/wheel.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Black"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+      <mass value="0.5"/>
+      <inertia 
+      ixx="0.001" ixy="0.0" ixz="0.0" 
+      iyy="0.001" iyz="0.0" 
+      izz="0.001"/>
+    </inertial>
+  </link>
+
+  <joint type="continuous" name="front_left_wheel_hinge">
+    <origin xyz="0.05 0.11 0" rpy="0 0 0"/>
+    <child link="front_left_wheel"/>
+    <parent link="base_link"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="1" velocity="10"/>
+    <joint_properties damping="5.0" friction="1.0"/>
+  </joint>
+
+  <transmission name="front_left_wheel_trans" type="SimpleTransmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="front_left_wheel_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="front_left_wheel_hinge">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <joint type="continuous" name="front_right_wheel_hinge">
+    <origin xyz="0.05 -0.11 0" rpy="0 0 0"/>
+    <child link="front_right_wheel"/>
+    <parent link="base_link"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="1" velocity="10"/>
+    <joint_properties damping="5.0" friction="1.0"/>
+  </joint>
+
+  <transmission name="front_right_wheel_trans" type="SimpleTransmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="front_right_wheel_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="front_right_wheel_hinge">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <joint type="continuous" name="rear_left_wheel_hinge">
+    <origin xyz="-0.055 0.11 0" rpy="0 0 0"/>
+    <child link="rear_left_wheel"/>
+    <parent link="base_link"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="1" velocity="10"/>
+    <joint_properties damping="5.0" friction="1.0"/>
+  </joint>
+
+  <transmission name="rear_left_wheel_trans" type="SimpleTransmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="rear_left_wheel_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="rear_left_wheel_hinge">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <joint type="continuous" name="rear_right_wheel_hinge">
+    <origin xyz="-0.055 -0.11 0" rpy="0 0 0"/>
+    <child link="rear_right_wheel"/>
+    <parent link="base_link"/>
+    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <limit effort="1" velocity="10"/>
+    <joint_properties damping="5.0" friction="1.0"/>
+  </joint>
+
+  <transmission name="rear_right_wheel_trans" type="SimpleTransmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="rear_right_wheel_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="rear_right_wheel_hinge">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+  </transmission>
+
+  <!-- Orbbec Astra RGBD Camera -->
+  <joint name="astra_joint" type="fixed">
+    <axis xyz="0 0 0" />
+    <origin xyz="-0.03 0 0.18" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <link name="camera_link">
+    <collision>
+      <origin xyz="0.02 0 0" rpy="0 0 0"/>
+      <geometry>0
+        <box size="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="-0.01 0 -0.03" rpy="1.5707 0 1.5707"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/astra.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Black"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+
+  <joint name="camera_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    <parent link="camera_link"/>
+    <child link="camera_rgb_frame"/>
+  </joint>
+
+  <link name="camera_rgb_frame">
+  </link>
+
+  <joint name="camera_depth_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    <parent link="camera_link"/>
+    <child link="camera_depth_frame"/>
+  </joint>
+
+  <link name="camera_depth_frame">
+  </link>
+
+  <!-- rplidar Laser -->
+  <joint name="rplidar_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0.02 0 0.058" rpy="0 0 3.14"/>
+    <parent link="base_link"/>
+    <child link="base_scan"/>
+  </joint>
+
+  <link name="base_scan">
+    <collision>
+      <origin xyz="0 0 0" rpy="1.5707 0 4.71"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/rplidar.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="1.5707 0 4.71"/>
+      <geometry>
+        <mesh filename="package://robot_description/meshes/rosbot/rplidar.stl" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="Black"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="1.5707 0 4.71"/>
+      <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0" />
+    </inertial>
+  </link>
+
+</robot>
