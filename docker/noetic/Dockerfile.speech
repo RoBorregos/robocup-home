@@ -13,6 +13,7 @@ RUN apt-get update -qq && \
     libtool \
     python3-pip \
     mesa-utils \
+    --no-install-recommends terminator \
     ros-noetic-audio-common \
     ros-noetic-move-base && \
     rm -rf /var/lib/apt/lists/*
@@ -52,7 +53,7 @@ COPY docker/noetic/speechDependenciesGpu.txt /speechDependenciesGpu.txt
 RUN cd /catkin_home/src/action_selectors/scripts/DeepSpeech && python3 -m data.librispeech.librispeech --full_download False --manifest_prefix "data/librispeech/manifest"
 
 # Change Workdir
-WORKDIR catkin_home
+WORKDIR /catkin_home
 
 # catkin_make
 RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;catkin_make'

@@ -15,6 +15,7 @@ RUN apt-get update -qq && \
     libtool \
     python3-pip \
     mesa-utils \
+    --no-install-recommends terminator \
     ros-noetic-audio-common \
     ros-noetic-move-base && \
     rm -rf /var/lib/apt/lists/*

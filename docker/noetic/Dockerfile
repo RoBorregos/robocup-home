@@ -13,6 +13,7 @@ RUN apt-get update -qq && \
     libtool \
     python3-pip \
     mesa-utils \
+    --no-install-recommends terminator \
     ros-noetic-audio-common \
     ros-noetic-map-server \
     ros-noetic-move-base \
@@ -25,13 +26,16 @@ RUN mkdir /catkin_home
 COPY catkin_home/ catkin_home/
 
 # Change Workdir
-WORKDIR catkin_home
+WORKDIR /catkin_home
 
 # catkin_make
 RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;catkin_make'
 
 # Add ROS environment variables automatically
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-RUN echo "[ -f /$REPO_WS/devel/setup.bash ] && source /$REPO_WS/devel/setup.bash" >> ~/.bashrc
+RUN echo "[ -f /catkin_home/devel/setup.bash ] && source /catkin_home/devel/setup.bash" >> ~/.bashrc
+RUN echo "export GAZEBO_MODEL_PATH=/catkin_home/src/simulation/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
+RUN echo "export GAZEBO_RESOURCE_PATH=/catkin_home/src/simulation:$GAZEBO_RESOURCE_PATH" >> ~/.bashrc
+
 
 ENTRYPOINT [ "/bin/bash", "-l", "-c" ]
