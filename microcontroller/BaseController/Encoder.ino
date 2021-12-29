@@ -1,19 +1,16 @@
 #include "Encoder.h"
 //////////////////////////////////Main Function//////////////////////////////////////
 void Encoder::handleEncoder(Motor &motor) {
-  motor.setPidTicks(motor.getPidTicks() + 1);
   if(motor.getCurrentState() == MotorState::Forward) {
-    motor.setOdomTicks(motor.getOdomTicks() + 1);
+    motor.setEncoderTicks(motor.getEncoderTicks() + 1);
   }
   else {
-    motor.setOdomTicks(motor.getOdomTicks() - 1);
+    motor.setEncoderTicks(motor.getEncoderTicks() - 1);
   }
 }
 
 //////////////////////////////////Motor Functions//////////////////////////////////////
-// TODO(Josecisneros001): Check if there is a way to avoid the use of global variables 
-// in this static functions.
-// Robot* is declared in base_control.ino. It is used as a global variable to use it in
+// Robot* is declared in BaseController.ino. It is used as a global variable to use it in
 // the static functions that are required by the attachInterrupts of the encoders.
 void Encoder::backLeftEncoder() {
   handleEncoder(robot->back_left_motor_);

@@ -1,8 +1,7 @@
 #include <ros.h>
 #include "BNO.h"
 #include "Movement.h"
-#include "Odometry.h"
-#include "Plot.h"
+#include "RosBridge.h"
 
 Movement *robot = nullptr;
 
@@ -22,13 +21,10 @@ void setup() {
     robot->initEncoders();
     nh.loginfo("Movement Initialization completed.");
 
-    Odometry odom(robot,&nh);
-    nh.loginfo("Odometry Initialization completed.");
+    RosBridge rosbridge(robot, &nh);
+    nh.loginfo("RosBridge Initialization completed.");
 
-    Plot plot(robot);
-    nh.loginfo("Plot Initialization completed.");
-
-    odom.run();
+    rosbridge.run();
 }
 
 void loop() {   

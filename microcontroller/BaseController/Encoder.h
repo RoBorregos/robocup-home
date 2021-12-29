@@ -24,4 +24,5 @@ namespace Encoder{
     // Call main function for front right motor.
     void frontRightEncoder();
 };
+
 #endif

@@ -37,4 +37,5 @@ class BNO {
     Adafruit_BNO055 bno_;
     int bno_set_point_ = 0;
 };
+
 #endif

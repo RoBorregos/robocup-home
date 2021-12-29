@@ -33,7 +33,6 @@ int BNO::getCurrentXAngle() {
   return angle;
 }
 
-// TODO(Josecisneros001): Check how getEvent could be optimized.
 double BNO::getAngleX() {
   sensors_event_t event;
   bno_.getEvent(&event);
