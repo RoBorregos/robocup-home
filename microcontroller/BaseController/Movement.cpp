@@ -31,35 +31,42 @@ void Movement::initEncoders() {
 }
 
 //////////////////////////////////VELOCITY//////////////////////////////////////
-double Movement::convertToPWM(float value, const float maxValue) {
-  value = constrain(value, -1.0 * maxValue, maxValue);
-  double pwmValue = map(value, -1.0 * maxValue, maxValue, -1.0 * kMaxPWM, kMaxPWM);
-
-  // Enforce deadzone around 0.
-  if(abs(pwmValue) <= kDeadZone) {
-    pwmValue = 0;
-  }
-  
-  return pwmValue;
-}
-
 void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z) {
-  double x = convertToPWM(linear_x, Movement::kLinearXMaxVelocity);
-  double y = convertToPWM(linear_y, Movement::kLinearYMaxVelocity);
-  double z = convertToPWM(angular_z, Movement::kAngularZMaxVelocity);
+  double x = constrain(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
+  double y = constrain(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
+  double z = constrain(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
+  double kMotorMaxV = Motor::kMaxVelocity;
 
-	double sum = abs(x) + abs(y) + abs(z);
+	double front_left = x - y - z;
+  double front_right = x + y + z;
+  double back_left = x + y - z;
+  double back_right = x - y + z;
+
+  // Weighted sum if out of range.
+  if (front_left > kMotorMaxV || front_left < kMotorMaxV) {
+    front_left = (x * kMotorMaxV / front_left) - (y * kMotorMaxV / front_left) - (z * kMotorMaxV / front_left);
+  }
+  if (front_right > kMotorMaxV || front_right < kMotorMaxV) {
+    front_right = (x * kMotorMaxV / front_right) + (y * kMotorMaxV / front_right) + (z * kMotorMaxV / front_right);
+  }
+  if (back_left > kMotorMaxV || back_left < kMotorMaxV) {
+    back_left = (x * kMotorMaxV / back_left) + (y * kMotorMaxV / back_left) - (z * kMotorMaxV / back_left);
+  }
+  if (back_right > kMotorMaxV || back_right < kMotorMaxV) {
+    back_right = (x * kMotorMaxV / back_right) - (y * kMotorMaxV / back_right) + (z * kMotorMaxV / back_right);
+  }
 	
-	if(sum > kMaxPWM) {
-		x = (x * kMaxPWM / sum);
-		y = (y * kMaxPWM / sum);
-		z = (z * kMaxPWM / sum);
-	}
-	
-	front_left_motor_.setMotorSpeed(x - y - z);
-	front_right_motor_.setMotorSpeed(x + y + z);
-	back_left_motor_.setMotorSpeed(x + y - z);
-	back_right_motor_.setMotorSpeed(x - y + z);
+  if (kUsingPID) {
+    front_left_motor_.setMotorSpeedPID(front_left);
+    front_right_motor_.setMotorSpeedPID(front_right);
+    back_left_motor_.setMotorSpeedPID(back_left);
+    back_right_motor_.setMotorSpeedPID(back_right);
+  } else {
+    front_left_motor_.setMotorSpeed(front_left);
+    front_right_motor_.setMotorSpeed(front_right);
+    back_left_motor_.setMotorSpeed(back_left);
+    back_right_motor_.setMotorSpeed(back_right);
+  }
 }
 
 void Movement::stop() {
@@ -69,41 +76,14 @@ void Movement::stop() {
   back_right_motor_.stop();
 }
 
-void Movement::getEncoderCounts(float *xytCounts) {
-	int new_encoder_counts[Movement::kCountMotors];
-	new_encoder_counts[0] = front_left_motor_.getEncoderTicks();
-	new_encoder_counts[1] = front_right_motor_.getEncoderTicks();
-	new_encoder_counts[2] = back_left_motor_.getEncoderTicks();
-	new_encoder_counts[3] = back_right_motor_.getEncoderTicks();
-	
-	// find deltas
-	int delta_encoder_counts[Movement::kCountMotors];
-	for(int i = 0; i < Movement::kCountMotors; ++i) {
-		// check for overflow
-		if(abs(last_encoder_counts_[i]) > kCountOverflow && 
-           abs(new_encoder_counts[i]) > kCountOverflow && 
-           sign(last_encoder_counts_[i]) != sign(new_encoder_counts[i])) {
+void Movement::getEncoderCounts(int *delta_encoder_counts) {
+	delta_encoder_counts[0] = front_left_motor_.getEncoderTicks();
+	delta_encoder_counts[1] = front_right_motor_.getEncoderTicks();
+	delta_encoder_counts[2] = back_left_motor_.getEncoderTicks();
+	delta_encoder_counts[3] = back_right_motor_.getEncoderTicks();
 
-			if(sign(last_encoder_counts_[i]) > 0) {
-				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] + kIntMax;
-            } else {
-				delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i] - kIntMax;
-            }
-
-		} else {
-            delta_encoder_counts[i] = new_encoder_counts[i] - last_encoder_counts_[i];
-        } 
-		
-		if(abs(delta_encoder_counts[i]) > kCountReset) {
-            delta_encoder_counts[i] = 0;
-        } 
-		
-		last_encoder_counts_[i] = new_encoder_counts[i];
-	}
-  
-  // convert the motor counts into x, y, theta counts
-	xytCounts[0] = (delta_encoder_counts[0] + delta_encoder_counts[1] + delta_encoder_counts[2] + delta_encoder_counts[3]) / Movement::kCountMotors;
-	xytCounts[1] = (0 - delta_encoder_counts[0] + delta_encoder_counts[1] + delta_encoder_counts[2] - delta_encoder_counts[3]) / Movement::kCountMotors;
-	xytCounts[2] = (0 - delta_encoder_counts[0] + delta_encoder_counts[1] - delta_encoder_counts[2] + delta_encoder_counts[3]) / Movement::kCountMotors;
-
+  front_left_motor_.setEncoderTicks(0);
+  front_right_motor_.setEncoderTicks(0);
+  back_left_motor_.setEncoderTicks(0);
+  back_right_motor_.setEncoderTicks(0);
 }

@@ -1,11 +1,12 @@
 #include "Encoder.h"
 //////////////////////////////////Main Function//////////////////////////////////////
 void Encoder::handleEncoder(Motor &motor) {
+  motor.deltaPidTicks(1);
   if(motor.getCurrentState() == MotorState::Forward) {
-    motor.setEncoderTicks(motor.getEncoderTicks() + 1);
+    motor.deltaEncoderTicks(1);
   }
   else {
-    motor.setEncoderTicks(motor.getEncoderTicks() - 1);
+    motor.deltaEncoderTicks(-1);
   }
 }
 

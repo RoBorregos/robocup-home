@@ -52,8 +52,10 @@ class RosBridge{
         static constexpr uint16_t kWatchdogPeriod = 500;
         
         // Publisher.
-        ros::Publisher encoders_publisher_;
-        std_msgs::Float32MultiArray enc_msg_;
+        ros::Publisher front_encoder_publisher_;
+        ros::Publisher back_encoder_publisher_;
+        base_control::StampedEncoders front_encoders_msg_;
+        base_control::StampedEncoders back_encoders_msg_;
         
         static constexpr uint8_t kOdomPeriod = 40;
 

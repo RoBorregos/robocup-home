@@ -17,11 +17,7 @@ class Movement {
   private:
   
     // Constants
-    static constexpr double kMaxPWM = 255;
     static constexpr uint8_t kCountMotors = 4;
-    static constexpr uint16_t kIntMax = 65535;
-    static constexpr uint16_t kCountReset = 250;
-    static constexpr uint16_t kCountOverflow = 16374;
 
   public:
   
@@ -45,10 +41,7 @@ class Movement {
     void changePwm(const uint8_t pwm);
 
 
-    //////////////////////////////////VELOCITY//////////////////////////////////////
-    // Change Range from Velocity to PWM.
-    double convertToPWM(float value, const float maxValue);
-    
+    //////////////////////////////////VELOCITY//////////////////////////////////////    
     // Received a Velocity Command.
     void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
     
@@ -56,7 +49,7 @@ class Movement {
     void stop();
 
     // Get Encoder Counts in x, y, theta.
-    void getEncoderCounts(float *xytCounts);
+    void getEncoderCounts(int *delta_encoder_counts);
     
   private:
 
@@ -84,13 +77,15 @@ class Movement {
     BNO *bno_;
 
     // Velocity limits based on Motor::kMaxVelocity and Mechanic limitations.
-    static constexpr double kDeadZone = 100;
-    static constexpr double kLinearXMaxVelocity = 0.19;
-    static constexpr double kLinearYMaxVelocity = 0.19;
-    static constexpr double kAngularZMaxVelocity = 0.19;
+    static constexpr double kLinearXMaxVelocity = 0.20;
+    static constexpr double kLinearYMaxVelocity = 0.20;
+    static constexpr double kAngularZMaxVelocity = 0.20;
 
     // Encoders
     int last_encoder_counts_[Movement::kCountMotors];
+
+    // Constants
+    static constexpr bool kUsingPID = true;
         
 };
 

@@ -1,12 +1,15 @@
-#include <geometry_msgs/Quaternion.h>
+// This script converts "encoders" messages into proper odom messages.
+
 #include <math.h>
-#include <nav_msgs/Odometry.h>
 #include <ros/console.h>
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
 
+#include <nav_msgs/Odometry.h>
 #include "base_control/StampedEncoders.h"
+#include <geometry_msgs/Quaternion.h>
+
 
 // Define Velocity struct for clarity in the code.
 struct Velocity {
