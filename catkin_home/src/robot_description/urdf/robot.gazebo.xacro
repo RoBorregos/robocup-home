@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot name="robot_sim" xmlns:xacro="http://ros.org/wiki/xacro">
-  <!-- <gazebo>
+  
+  <!-- Differential Plugin -->
+  <gazebo>
     <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
       <updateRate>10.0</updateRate>
-      <robotBaseFrame>/base_footprint</robotBaseFrame>
-      <wheelSeparation>0.20</wheelSeparation>
-      <wheelDiameter>0.08</wheelDiameter>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
+      <!-- <wheelSeparation>0.20</wheelSeparation> -->
+      <wheelDiameter>0.1</wheelDiameter>
       <torque>5</torque>
-      <leftFrontJoint>front_left_wheel_hinge</leftFrontJoint>
-      <rightFrontJoint>front_right_wheel_hinge</rightFrontJoint>
-      <leftRearJoint>rear_left_wheel_hinge</leftRearJoint>
-      <rightRearJoint>rear_right_wheel_hinge</rightRearJoint>
+      <leftFrontJoint>R2</leftFrontJoint>
+      <rightFrontJoint>R1</rightFrontJoint>
+      <leftRearJoint>R3</leftRearJoint>
+      <rightRearJoint>R4</rightRearJoint>
       <topicName>cmd_vel</topicName>
       <commandTopic>cmd_vel</commandTopic>
       <broadcastTF>true</broadcastTF>
@@ -20,7 +22,7 @@
       <covariance_y>0.000100</covariance_y>
       <covariance_yaw>0.010000</covariance_yaw>
     </plugin>
-  </gazebo> -->
+  </gazebo>
 
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
@@ -28,7 +30,31 @@
     </plugin>
   </gazebo>
 
+  <!-- Mechanum Plugin -->
+  <!-- <gazebo>
+    <plugin name="nexus_ros_force_based_move" filename="libnexus_ros_force_based_move.so">  
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <odometryRate>25.0</odometryRate>
+      <robotBaseFrame>base_footprint</robotBaseFrame>
+      <cmdVelTimeOut>0.25</cmdVelTimeOut>
+      <publishOdometryTf>1</publishOdometryTf>
+      <yaw_velocity_p_gain>1.0</yaw_velocity_p_gain>
+      <x_velocity_p_gain>15.0</x_velocity_p_gain>
+      <y_velocity_p_gain>15.0</y_velocity_p_gain>
+      <max_x_velocity>0.6</max_x_velocity>
+      <max_y_velocity>0.6</max_y_velocity>
+      <max_yaw_velocity>0.5</max_yaw_velocity>
+    </plugin>
+  </gazebo> -->
+
   <gazebo reference="base_footprint">
+    <material>Gazebo/White</material>
+    <gravity>true</gravity>
+  </gazebo>
+
+  <gazebo reference="base_link">
     <material>Gazebo/White</material>
   </gazebo>
 
@@ -36,29 +62,26 @@
     <material>Gazebo/Black</material>
   </gazebo>
 
-  <gazebo reference="camera_link">
+  <gazebo reference="R1">
     <material>Gazebo/Black</material>
   </gazebo>
 
-  <!-- <gazebo reference="front_left_wheel">
+  <gazebo reference="R2">
     <material>Gazebo/Black</material>
   </gazebo>
 
-  <gazebo reference="front_right_wheel">
+  <gazebo reference="R3">
     <material>Gazebo/Black</material>
   </gazebo>
 
-  <gazebo reference="rear_left_wheel">
+  <gazebo reference="R4">
     <material>Gazebo/Black</material>
   </gazebo>
 
-  <gazebo reference="rear_right_wheel">
+  <!-- astra camera -->
+
+  <gazebo reference="neck_link">
     <material>Gazebo/Black</material>
-  </gazebo> -->
-
-  <!-- astra -->
-
-  <gazebo reference="camera_link">
     <sensor type="depth" name="openni_camera_camera">
       <always_on>1</always_on>
       <visualize>true</visualize>
@@ -241,5 +264,25 @@
       </plugin>
     </sensor>
   </gazebo> -->
+
+
+  <gazebo reference="arm_elevator">
+    <material>Gazebo/White</material>
+  </gazebo>
+  <gazebo reference="arm1">
+    <material>Gazebo/White</material>
+  </gazebo>
+  <gazebo reference="arm2">
+    <material>Gazebo/White</material>
+  </gazebo>
+  <gazebo reference="arm3">
+    <material>Gazebo/White</material>
+  </gazebo>
+  <gazebo reference="gripper_left">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="gripper_right">
+    <material>Gazebo/Black</material>
+  </gazebo>
 
 </robot>

@@ -6,7 +6,7 @@
     default="False" />
   <param
     name="robot_description"
-    textfile="$(find robot_description)/urdf/robot_description.urdf.xacro" />
+    textfile="$(find robot_description)/urdf/robot.urdf.xacro" />
   <param
     name="use_gui"
     value="$(arg gui)" />
@@ -18,4 +18,9 @@
     name="robot_state_publisher"
     pkg="robot_state_publisher"
     type="robot_state_publisher" />
+  <node
+    name="rviz"
+    pkg="rviz"
+    type="rviz"
+    args="-d $(find robot_description)/rviz/urdf.rviz" />
 </launch>
