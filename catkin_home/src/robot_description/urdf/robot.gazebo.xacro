@@ -1,38 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<robot name="robot_sim" xmlns:xacro="http://ros.org/wiki/xacro">
-  
-  <!-- Differential Plugin -->
-  <gazebo>
-    <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
-      <updateRate>10.0</updateRate>
-      <robotBaseFrame>base_footprint</robotBaseFrame>
-      <!-- <wheelSeparation>0.20</wheelSeparation> -->
-      <wheelDiameter>0.1</wheelDiameter>
-      <torque>5</torque>
-      <leftFrontJoint>R2</leftFrontJoint>
-      <rightFrontJoint>R1</rightFrontJoint>
-      <leftRearJoint>R3</leftRearJoint>
-      <rightRearJoint>R4</rightRearJoint>
-      <topicName>cmd_vel</topicName>
-      <commandTopic>cmd_vel</commandTopic>
-      <broadcastTF>true</broadcastTF>
-      <odometryTopic>odom</odometryTopic>
-      <odometryFrame>/odom</odometryFrame>
-      <covariance_x>0.000100</covariance_x>
-      <covariance_y>0.000100</covariance_y>
-      <covariance_yaw>0.010000</covariance_yaw>
-    </plugin>
-  </gazebo>
-
-  <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <legacyModeNS>true</legacyModeNS>
-    </plugin>
-  </gazebo>
+<robot name="robot_description" xmlns:xacro="http://ros.org/wiki/xacro">
 
   <!-- Mechanum Plugin -->
-  <!-- <gazebo>
-    <plugin name="nexus_ros_force_based_move" filename="libnexus_ros_force_based_move.so">  
+  <gazebo>
+    <plugin name="nexus_ros_force_based_move" filename="libnexus_ros_force_based_move.so">
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
@@ -47,7 +18,7 @@
       <max_y_velocity>0.6</max_y_velocity>
       <max_yaw_velocity>0.5</max_yaw_velocity>
     </plugin>
-  </gazebo> -->
+  </gazebo>
 
   <gazebo reference="base_footprint">
     <material>Gazebo/White</material>
@@ -79,7 +50,6 @@
   </gazebo>
 
   <!-- astra camera -->
-
   <gazebo reference="neck_link">
     <material>Gazebo/Black</material>
     <sensor type="depth" name="openni_camera_camera">
@@ -266,22 +236,22 @@
   </gazebo> -->
 
 
-  <gazebo reference="arm_elevator">
+  <gazebo reference="Elevador">
     <material>Gazebo/White</material>
   </gazebo>
-  <gazebo reference="arm1">
+  <gazebo reference="Brazo_1">
     <material>Gazebo/White</material>
   </gazebo>
-  <gazebo reference="arm2">
+  <gazebo reference="Brazo_2">
     <material>Gazebo/White</material>
   </gazebo>
-  <gazebo reference="arm3">
+  <gazebo reference="Pinza">
     <material>Gazebo/White</material>
   </gazebo>
-  <gazebo reference="gripper_left">
+  <gazebo reference="Garra_D">
     <material>Gazebo/Black</material>
   </gazebo>
-  <gazebo reference="gripper_right">
+  <gazebo reference="Garra_I">
     <material>Gazebo/Black</material>
   </gazebo>
 

@@ -1,3 +1,0 @@
-- STL solo el link seleccionado.
-- Gripper STL missing.
-- Joint BR1-BR2 esta a ELEV_PRISM envez de elev_revolute

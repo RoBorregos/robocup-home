@@ -60,10 +60,50 @@ Visualization Manager:
       Enabled: true
       Links:
         All Links Enabled: true
+        Brazo_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Brazo_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Cuello:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Elevador:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
+        Garra_D:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Garra_I:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Lidar:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         Link Tree Style: Links in Alphabetic Order
+        Pinza:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         R1:
           Alpha: 1
           Show Axes: false
@@ -84,59 +124,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        arm1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        arm2:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        arm3:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        arm_elevator:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
         base_footprint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
         base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        base_scan:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        camera_depth_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_rgb_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        gripper_left:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        gripper_right:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        neck_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -175,7 +167,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.6944900155067444
+      Distance: 3.7465977668762207
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -183,17 +175,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.19245389103889465
-        Y: 0.36814236640930176
-        Z: 0.33387401700019836
+        X: 0.13591895997524261
+        Y: 0.25224918127059937
+        Z: 0.5983374118804932
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.08039829134941101
+      Pitch: 0.8153977394104004
       Target Frame: <Fixed Frame>
-      Yaw: 1.8453978300094604
+      Yaw: 1.9003981351852417
     Saved: ~
 Window Geometry:
   Displays:
