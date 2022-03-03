@@ -49,8 +49,12 @@
     <material>Gazebo/Black</material>
   </gazebo>
 
-  <!-- astra camera -->
   <gazebo reference="neck_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- astra camera -->
+  <gazebo reference="camera">
     <material>Gazebo/Black</material>
     <sensor type="depth" name="openni_camera_camera">
       <always_on>1</always_on>

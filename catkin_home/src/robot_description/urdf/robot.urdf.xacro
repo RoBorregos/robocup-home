@@ -656,17 +656,17 @@
   <link name="neck_link">
     <inertial>
       <origin
-        xyz="0.0647261774483371 0.0186554769619905 -0.000995943661880272"
+        xyz="0.0470517349686886 0.0123919567767552 -0.00720656108065509"
         rpy="0 0 0" />
       <mass
-        value="0.057112807286796" />
+        value="0.0123607422626627" />
       <inertia
-        ixx="3.10982316541205E-05"
-        ixy="-2.11505936581601E-06"
-        ixz="2.9733163075116E-07"
-        iyy="1.01242984131521E-05"
-        iyz="-6.49412945412217E-08"
-        izz="3.6285611573039E-05" />
+        ixx="3.82073961685766E-06"
+        ixy="-2.35941568160262E-06"
+        ixz="2.98718036301739E-07"
+        iyy="6.17958376424488E-06"
+        iyz="-6.2747610746023E-08"
+        izz="8.92356852920518E-06" />
     </inertial>
     <visual>
       <origin
@@ -709,21 +709,73 @@
       velocity="0" />
   </joint>
 
-  <!-- Camera Rgb -->
+  <!-- Camera -->
+  <link name="camera">
+    <inertial>
+      <origin
+        xyz="0.069607946372356 0.0203854936510277 0.000719459986366688"
+        rpy="0 0 0" />
+      <mass
+        value="0.0447520630064878" />
+      <inertia
+        ixx="2.72774898672935E-05"
+        ixy="2.4435672012364E-07"
+        ixz="-1.38631264252966E-09"
+        iyy="3.94471446072863E-06"
+        iyz="-2.1932086349915E-09"
+        izz="2.73620409048763E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Camara.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Camara.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="camera_joint" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0.8 0" />
+    <parent
+      link="neck_link" />
+    <child
+      link="camera" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+
+  <!-- Camera Rgb Frame -->
   <link name="camera_rgb_frame">
   </link>
   <joint name="camera_optical_joint" type="fixed">
     <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
-    <parent link="neck_link"/>
+    <parent link="camera"/>
     <child link="camera_rgb_frame"/>
   </joint>
 
-  <!-- Camera Depth -->
+  <!-- Camera Depth Frame -->
   <link name="camera_depth_frame">
   </link>
   <joint name="camera_depth_joint" type="fixed">
     <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
-    <parent link="neck_link"/>
+    <parent link="camera"/>
     <child link="camera_depth_frame"/>
   </joint>
 
