@@ -48,6 +48,11 @@ RUN apt-get update && apt-get install libopencv-dev python3-opencv -y
 COPY docker/noetic/speechDependencies.txt /speechDependencies.txt
 COPY docker/noetic/speechDependenciesGpu.txt /speechDependenciesGpu.txt
 
+
+# Dependencies to avoid errors
+RUN pip install soundfile
+RUN pip install paddlepaddle
+
 # Deepspeech Pre-Run
 RUN cd /catkin_home/src/action_selectors/scripts/DeepSpeech && python3 -m data.librispeech.librispeech --full_download False --manifest_prefix "data/librispeech/manifest"
 
