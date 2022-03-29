@@ -53,7 +53,8 @@
     <material>Gazebo/Black</material>
   </gazebo>
 
-  <!-- astra camera -->
+  <!-- TODO: @josecisneros001, Fix Frames. -->
+  <!-- camera -->
   <gazebo reference="camera">
     <material>Gazebo/Black</material>
     <sensor type="depth" name="openni_camera_camera">

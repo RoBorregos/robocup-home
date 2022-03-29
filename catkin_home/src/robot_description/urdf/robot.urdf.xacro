@@ -761,11 +761,12 @@
       xyz="0 0 0" />
   </joint>
 
+  <!-- TODO: @josecisneros001, Fix URDF Camara Joint, No need of x transition. -->
   <!-- Camera Rgb Frame -->
   <link name="camera_rgb_frame">
   </link>
   <joint name="camera_optical_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+    <origin xyz="0.1 0 0" rpy="-1.5707 0 -1.5707"/>
     <parent link="camera"/>
     <child link="camera_rgb_frame"/>
   </joint>
@@ -774,7 +775,7 @@
   <link name="camera_depth_frame">
   </link>
   <joint name="camera_depth_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="-1.5707 0 -1.5707"/>
+    <origin xyz="0.1 0 0" rpy="-1.5707 0 -1.5707"/>
     <parent link="camera"/>
     <child link="camera_depth_frame"/>
   </joint>
