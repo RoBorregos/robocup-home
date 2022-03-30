@@ -49,7 +49,6 @@ void Motor::initEncoders() {
 
 //////////////////////////////////Motor State//////////////////////////////////////
 void Motor::forward() {
-  
   analogWrite(analog_one_, pwm_);
 
   if(current_state_ == MotorState::Forward) {
@@ -65,7 +64,6 @@ void Motor::forward() {
 }
 
 void Motor::backward() {
-
   analogWrite(analog_one_, pwm_);
   
   if(current_state_ == MotorState::Backward) {
@@ -96,11 +94,25 @@ void Motor::stop() {
 }
 
 //////////////////////////////////Velocity//////////////////////////////////////
+double mapD(double x, double in_min, double in_max, double out_min, double out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+double constrainD(double x, double min_, double max_) {
+  if (x < min_) {
+    return min_;
+  }
+  if (x > max_) {
+    return max_;
+  }
+  return x;
+}
+
 double Motor::approxSpeedToPWM(double target_speed) {
   target_speed = fabs(target_speed);
-  target_speed = constrain(target_speed, 0, kMaxVelocity);
-  double pwmValue = map(target_speed, 0, kMaxVelocity, 0, kMaxPWM);
-
+  target_speed = constrainD(target_speed, 0, kRPM);
+  double pwmValue = mapD(target_speed, 0, kRPM, 0, kMaxPWM);
+  
   // Enforce deadzone around 0.
   if(pwmValue <= kPwmDeadZone) {
     pwmValue = 0;
@@ -115,7 +127,7 @@ double Motor::approxSpeedToPWM(double target_speed) {
 }
 
 void Motor::setMotorSpeed(const double target_speed) {
-  int speed_sign = min(1, max(-1, target_speed));
+  int speed_sign = min(1, max(-1, target_speed * 1000));
   target_speed_ = fabs(target_speed);
   pwm_ = approxSpeedToPWM(target_speed);
 
@@ -133,7 +145,7 @@ void Motor::setMotorSpeed(const double target_speed) {
 }
 
 void Motor::setMotorSpeedPID(const double target_speed) {
-  int speed_sign = min(1, max(-1, target_speed));
+  int speed_sign = min(1, max(-1, target_speed * 1000));
   target_speed_ = fabs(target_speed);
   double tmp_pwm = pwm_;
 

@@ -44,11 +44,11 @@ class Motor {
     // Calculate PWM equivalent to a target speed
     double approxSpeedToPWM(const double target_speed);
     
-    // Change Speed of a motor. (PWM and Direction)
-    void setMotorSpeed(const double pwm);
+    // Change Speed of a motor. (RPM and Direction)
+    void setMotorSpeed(const double rpm);
     
     // Change Speed of a motor using PID controller.
-    void setMotorSpeedPID(const double speed);
+    void setMotorSpeedPID(const double rpm);
     
     // Calculate target Rps according to a velocity in meters per second.
     double getTargetRps(const double velocity);
@@ -101,7 +101,7 @@ class Motor {
     static constexpr double kMaxVelocity = kRPS * M_PI * kWheelDiameter;
   private:  
     static constexpr double kPwmDeadZone = 50;
-    static constexpr double kMinPwmForMovement = 120;
+    static constexpr double kMinPwmForMovement = 100;
     static constexpr double kMaxPWM = 255;
     
     // Pins.

@@ -2,7 +2,7 @@
 
 //////////////////////////////////Constructor//////////////////////////////////////
 RosBridge::RosBridge(Movement *move_all, ros::NodeHandle *nh) : move_all_(move_all), nh_(nh), 
-velocity_subscriber_("/base_control/cmd_vel",&RosBridge::cmdVelocityCallback, this),
+velocity_subscriber_("/cmd_vel",&RosBridge::cmdVelocityCallback, this),
 front_encoder_publisher_("/base_control/front/encoders", &front_encoders_msg_),
 back_encoder_publisher_("/base_control/back/encoders", &back_encoders_msg_) {
 

@@ -1,0 +1,41 @@
+<launch>
+    <!-- Run the arduino serial communication node. --> 
+    <node 
+        pkg="rosserial_python" 
+        type="serial_node.py" 
+        name="rosserial" 
+        output="screen"
+    >
+        <param 
+            name="port" 
+            value="/dev/ttyUSB1"
+        />
+        <param 
+            name="baud" 
+            value="57600" 
+        />
+    </node>
+    <!-- Run the odometry calculator node. --> 
+    <node
+        pkg="base_control"
+        name="base_odom"
+        type="base_odom"
+    />
+    <!-- Send CmdVel Node. --> 
+    <node
+        pkg="teleop_twist_keyboard"
+        type="teleop_twist_keyboard.py"
+        name="teleop"
+        output="screen"
+    />
+    <!-- Run rviz simulation. --> 
+    <!-- <include 
+        file="$(find robot_description)/launch/display.launch" 
+    />
+    <node 
+        type="rviz" 
+        name="rviz" 
+        pkg="rviz" 
+        args="-d $(find base_control)/rviz/base_control.rviz" 
+    /> -->
+ </launch>

@@ -2,9 +2,10 @@
 
 //////////////////////////////////Constructor//////////////////////////////////////
 Movement::Movement(BNO *bno, ros::NodeHandle *nh) : bno_(bno), nh_(nh) {
+  kinematics_ = Kinematics(MOTOR_MAX_RPM, WHEEL_DIAMETER, FR_WHEEL_DISTANCE, LR_WHEEL_DISTANCE, PWM_BITS, IS_OMNI);
 
-  back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[0], 
-                            kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, 
+  back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[1], 
+                            kDigitalPinsBackLeftMotor[0], kAnalogPinBackLeftMotor, 
                             kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
   front_left_motor_ = Motor(MotorId::FrontLeft, kDigitalPinsFrontLeftMotor[0], 
                             kDigitalPinsFrontLeftMotor[1], kAnalogPinFrontLeftMotor, 
@@ -31,41 +32,51 @@ void Movement::initEncoders() {
 }
 
 //////////////////////////////////VELOCITY//////////////////////////////////////
+double constrainDa(double x, double min_, double max_) {
+  if (x < min_) {
+    return min_;
+  }
+  if (x > max_) {
+    return max_;
+  }
+  return x;
+}
+
 void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z) {
-  double x = constrain(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
-  double y = constrain(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
-  double z = constrain(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
-  double kMotorMaxV = Motor::kMaxVelocity;
+  double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
+  double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
+  double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
+  
+  Kinematics::output rpm = kinematics_.getRPM(x, y, z);
 
-	double front_left = x - y - z;
-  double front_right = x + y + z;
-  double back_left = x + y - z;
-  double back_right = x - y + z;
-
-  // Weighted sum if out of range.
-  if (front_left > kMotorMaxV || front_left < kMotorMaxV) {
-    front_left = (x * kMotorMaxV / front_left) - (y * kMotorMaxV / front_left) - (z * kMotorMaxV / front_left);
-  }
-  if (front_right > kMotorMaxV || front_right < kMotorMaxV) {
-    front_right = (x * kMotorMaxV / front_right) + (y * kMotorMaxV / front_right) + (z * kMotorMaxV / front_right);
-  }
-  if (back_left > kMotorMaxV || back_left < kMotorMaxV) {
-    back_left = (x * kMotorMaxV / back_left) + (y * kMotorMaxV / back_left) - (z * kMotorMaxV / back_left);
-  }
-  if (back_right > kMotorMaxV || back_right < kMotorMaxV) {
-    back_right = (x * kMotorMaxV / back_right) - (y * kMotorMaxV / back_right) + (z * kMotorMaxV / back_right);
-  }
-	
   if (kUsingPID) {
-    front_left_motor_.setMotorSpeedPID(front_left);
-    front_right_motor_.setMotorSpeedPID(front_right);
-    back_left_motor_.setMotorSpeedPID(back_left);
-    back_right_motor_.setMotorSpeedPID(back_right);
+    front_left_motor_.setMotorSpeedPID(rpm.motor1);
+    front_right_motor_.setMotorSpeedPID(rpm.motor2);
+    back_left_motor_.setMotorSpeedPID(rpm.motor3);
+    back_right_motor_.setMotorSpeedPID(rpm.motor4);
   } else {
-    front_left_motor_.setMotorSpeed(front_left);
-    front_right_motor_.setMotorSpeed(front_right);
-    back_left_motor_.setMotorSpeed(back_left);
-    back_right_motor_.setMotorSpeed(back_right);
+    char log_msg[20];
+    char result[8]; // Buffer big enough for 7-character float
+    dtostrf(rpm.motor1, 6, 2, result);
+    sprintf(log_msg,"M1 RPM :%s", result);
+    nh_->loginfo(log_msg);
+
+    dtostrf(rpm.motor2, 6, 2, result);
+    sprintf(log_msg,"M2 RPM :%s", result);
+    nh_->loginfo(log_msg);
+
+    dtostrf(rpm.motor3, 6, 2, result);
+    sprintf(log_msg,"M3 RPM :%s", result);
+    nh_->loginfo(log_msg);
+
+    dtostrf(rpm.motor4, 6, 2, result);
+    sprintf(log_msg,"M4 RPM :%s", result);
+    nh_->loginfo(log_msg);
+  
+    front_left_motor_.setMotorSpeed(rpm.motor1);
+    front_right_motor_.setMotorSpeed(rpm.motor2);
+    back_left_motor_.setMotorSpeed(rpm.motor3);
+    back_right_motor_.setMotorSpeed(rpm.motor4);
   }
 }
 

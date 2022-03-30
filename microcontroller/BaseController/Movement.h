@@ -9,6 +9,7 @@
 #include <Arduino.h>
 
 #include "BNO.h"
+#include "Kinematics.h"
 #include "Motor.h"
 
 inline int sign(int a) { return min(1, max(-1, a)); };
@@ -50,9 +51,6 @@ class Movement {
 
     // Get Encoder Counts in x, y, theta.
     void getEncoderCounts(int *delta_encoder_counts);
-    
-  private:
-
     // Pins,
     static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {14, 15};
     static constexpr uint8_t kAnalogPinFrontLeftMotor = 11;
@@ -70,6 +68,7 @@ class Movement {
     static constexpr uint8_t kAnalogPinBackRightMotor = 8;
     static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {18, 29};
 
+  private:
     // ROS
     ros::NodeHandle * nh_;
 
@@ -85,7 +84,16 @@ class Movement {
     int last_encoder_counts_[Movement::kCountMotors];
 
     // Constants
-    static constexpr bool kUsingPID = true;
+    static constexpr bool kUsingPID = false;
+
+    // Kinematics
+    Kinematics kinematics_;
+    static constexpr uint8_t MOTOR_MAX_RPM = 40;        // Motor's maximum rpm.
+    static constexpr double WHEEL_DIAMETER = 0.1;       // Robot's wheel diameter expressed in meters.
+    static constexpr double FR_WHEEL_DISTANCE = 0.50;   // Distance between front wheel and rear wheel.
+    static constexpr double LR_WHEEL_DISTANCE = 0.40;   // Distance between left wheel and right wheel.
+    static constexpr uint8_t PWM_BITS = 8;              // Microcontroller's PWM pin resolution.
+    static constexpr uint8_t IS_OMNI = false;           // Omni Wheels
         
 };
 
