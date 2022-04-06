@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 SHELL := /bin/bash
 
-#: Create virtualenv test
+#: Create virtualenv 
 setup:
 	( \
 			virtualenv -p python3 venv \
