@@ -99,13 +99,15 @@ cat << EOF
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-Install python dependencies inside container.
+IF GPU:
+pip3 uninstall paddlepaddle
+pip3 install paddlepaddle-gpu==1.2.1.post97
 
-GPU
-python3 -m pip install --upgrade pip && pip3 install -r speechDependenciesGpu.txt
-
-Without-GPU
-python3 -m pip install --upgrade pip && pip3 install -r speechDependencies.txt
+Deepspeech - Download Models:
+cd ./catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm/
+./download_lm.sh
+cd ./catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/
+./download_model.sh
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

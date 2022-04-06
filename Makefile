@@ -7,6 +7,9 @@ noetic.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile .
 noetic.speech.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.speech .
+noetic.speech.prod.build:
+	@docker login ghcr.io
+	@docker build -t ros:home -f docker/noetic/Dockerfile.speech.prod .
 noetic.navigation.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.navigation .
 noetic.objectDetection.build:
