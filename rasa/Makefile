@@ -3,6 +3,13 @@
 # ----------------------------------------------------------------------
 SHELL := /bin/bash
 
+#: Create virtualenv
+setup:
+	( \
+			virtualenv -p python3 venv \
+	)
+
+#: Install all in virtualenv
 install:
 	( \
 			source venv/bin/activate; \
