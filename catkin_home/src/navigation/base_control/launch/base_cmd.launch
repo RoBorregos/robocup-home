@@ -29,7 +29,7 @@
         output="screen"
     />
     <!-- Run rviz simulation. --> 
-    <!-- <include 
+    <include 
         file="$(find robot_description)/launch/display.launch" 
     />
     <node 
@@ -37,5 +37,5 @@
         name="rviz" 
         pkg="rviz" 
         args="-d $(find base_control)/rviz/base_control.rviz" 
-    /> -->
+    />
  </launch>
