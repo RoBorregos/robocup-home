@@ -1,39 +1,19 @@
 <launch>
-  <arg name="x_pos" default="-2.7"/>
-  <arg name="y_pos" default="1.47"/>
+  <arg name="world_name" value="$(find simulation)/worlds/house.world"/>
+  <arg name="x_pos" default="-0.01"/>
+  <arg name="y_pos" default="-0.98"/>
   <arg name="z_pos" default="0.1"/>
   <arg name="roll_pos" default="0.00"/>
   <arg name="pitch_pos" default="0.00"/>
   <arg name="yaw_pos" default="1.57"/>
 
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find simulation)/worlds/house_obj.world"/>
-    <arg name="paused" value="false"/>
-    <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="true"/>
-    <arg name="headless" value="false"/>
-    <arg name="debug" value="false"/>
+  <include file="$(find robot_description)/launch/gazebo.launch">
+    <arg name="world_name" value="$(arg world_name)"/>
+    <arg name="x_pos" value="$(arg x_pos)"/>
+    <arg name="y_pos" value="$(arg y_pos)"/>
+    <arg name="z_pos" value="$(arg z_pos)"/>
+    <arg name="roll_pos" value="$(arg roll_pos)" />
+    <arg name="pitch_pos" value="$(arg pitch_pos)" />
+    <arg name="yaw_pos" value="$(arg yaw_pos)" />
   </include>
-
-  <param
-    name="robot_description"
-    command="$(find xacro)/xacro $(find robot_description)/urdf/robot.urdf.xacro" />
-  <node
-    pkg="gazebo_ros"
-    type="spawn_model"
-    name="spawn_urdf"
-    args="-urdf -model robot_description -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -R $(arg roll_pos) -P $(arg pitch_pos) -Y $(arg yaw_pos) -param robot_description"
-  />
-  <node
-    name="fake_joint_calibration"
-    pkg="rostopic"
-    type="rostopic"
-    args="pub /calibrated std_msgs/Bool true" />
-
-<!-- 
-  TODO: @josecisneros001 Fix Spawn node "crashing" alert (it is working). 
-   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
-    <param name="publish_frequency" type="double" value="50.0" />
-  </node>
--->
 </launch>
