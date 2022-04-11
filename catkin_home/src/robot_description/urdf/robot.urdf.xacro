@@ -307,7 +307,7 @@
   <joint name="Chasis-Elevador" type="revolute">
     <origin
       xyz="0 0 -0.0462248000000028"
-      rpy="0 0 0" />
+      rpy="0 0 1.57" />
     <parent
       link="base_link" />
     <child
