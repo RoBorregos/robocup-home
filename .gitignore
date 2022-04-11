@@ -1,4 +1,5 @@
 #Folders and files to ignore
+__ignore__/
 
 ### ROS ###
 /catkin_home/devel/
