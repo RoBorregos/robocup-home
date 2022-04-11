@@ -1,6 +1,6 @@
 <launch>
     <!-- ObjectDetection -->
-    <arg name="SOURCE" default="/camaras/0" />
+    <arg name="SOURCE" default="/camera/rgb/image_raw/compressed" />
     <arg name="ROS_INPUT" default="True" />
     <arg name="USE_ACTIVE_FLAG" default="False" />
     <arg name="VERBOSE" default="True" />

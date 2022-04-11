@@ -31,7 +31,6 @@ ARGS= {
     "USE_ACTIVE_FLAG": True,
     "MODELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/",
     "LABELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/label_map.pbtxt",
-    "CONFIDENCE": 0.6,
     "MIN_SCORE_THRESH": 0.6,
     "VERBOSE": True,
 }
