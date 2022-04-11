@@ -1,26 +1,13 @@
 <launch>
-    <!-- Devices -->
-    <arg name="VERBOSE" default="True"/>
-    <node name="get_objects_and_coordinates" pkg="object_detector" type="get_objects_and_coordinates.py" respawn="true" output="screen" />
-
-
-    <!--<arg name="camera" default="camera" />
-    These 'arg' tags are just place-holders for passing values from test files.
-    The recommended way is to pass the values directly into the 'param' tags.
-    <arg name="depth_fps" default="2" />
-    <arg name="color_fps" default="2" />
-    
-    <param name="$(arg camera)/driver/depth_fps" type="int"  value="$(arg depth_fps)" />
-    <param name="$(arg camera)/driver/color_fps" type="int"  value="$(arg color_fps)" />
-    Refer to http://wiki.ros.org/realsense_camera for list of supported parameters
-    <group ns="$(arg camera)">
-        <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-            <arg name="camera"       value="$(arg camera)" />
-        </include>
-    </group>-->
-
-    <arg name="color_fps"      default="15" />
-    <include file="$(find realsense2_camera)/launch/rs_camera.launch"> 
-        <arg name="color_fps"         value="$(arg color_fps)"/>
-    </include>  
+    <!-- ObjectDetection -->
+    <arg name="SOURCE" default="/camaras/0" />
+    <arg name="ROS_INPUT" default="True" />
+    <arg name="USE_ACTIVE_FLAG" default="False" />
+    <arg name="VERBOSE" default="True" />
+    <node name="detection2d" pkg="object_detector" type="detection2d.py" respawn="true" output="screen">
+        <param name="SOURCE" value="$(arg SOURCE)" />
+        <param name="ROS_INPUT" value="$(arg ROS_INPUT)" />
+        <param name="USE_ACTIVE_FLAG" value="$(arg USE_ACTIVE_FLAG)" />
+        <param name="VERBOSE" value="$(arg VERBOSE)" />
+    </node>
 </launch>
