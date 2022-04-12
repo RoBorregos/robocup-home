@@ -34,8 +34,6 @@ struct ObjectParams
   shape_msgs::Mesh mesh;
   /* Center point of the Cluster. */
   geometry_msgs::Pose center;
-  /* Height of the Cluster. */
-  double height;
 };
 
 struct PlaneParams
@@ -51,9 +49,6 @@ struct PlaneParams
   /* Height of the plane. */
   double height;
 };
-
-const float can_height = 0.109;
-const float can_radius = 0.075 / 2;
 
 class Detect3D
 {
@@ -252,57 +247,18 @@ public:
       @param cloud - point cloud containing just the object. */
   void extractObjectDetails(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, ObjectParams& object_found)
   {
-    double max_angle_y = -std::numeric_limits<double>::infinity();
-    double min_angle_y = std::numeric_limits<double>::infinity();
-
-    double lowest_point[3] = { 0.0, 0.0, 0.0 };
-    double highest_point[3] = { 0.0, 0.0, 0.0 };
+    pcl::PointXYZ centroid;
+    pcl::computeCentroid(*cloud, centroid);
     
-    /*
-      Consider a point inside the point cloud and imagine that point is formed on a XY plane where the perpendicular
-      distance from the plane to the camera is Z.
-      The perpendicular drawn from the camera to the plane hits at center of the XY plane.
-      We have the x and y coordinate of the point which is formed on the XY plane.
-      X is the horizontal axis and Y is the vertical axis.
-      C is the center of the plane which is Z meter away from the center of camera and A is any point on the plane.
-      Now we know Z is the perpendicular distance from the point to the camera.
-      If you need to find the  actual distance d from the point to the camera, you should calculate the hypotenuse-
-      hypot(point.z, point.x);
-      angle the point made horizontally atan2(point.z,point.x);
-      angle the point made Vertically atan2(point.z, point.y);
-    */
-    for (auto const point : cloud->points)
-    {
-      const double angle = atan2(point.z, point.y);
-      // Find the coordinates of the highest point.
-      if (angle < min_angle_y)
-      {
-        min_angle_y = angle;
-        lowest_point[0] = point.x;
-        lowest_point[1] = point.y;
-        lowest_point[2] = point.z;
-      }
-      // Find the coordinates of the lowest point.
-      else if (angle > max_angle_y)
-      {
-        max_angle_y = angle;
-        highest_point[0] = point.x;
-        highest_point[1] = point.y;
-        highest_point[2] = point.z;
-      }
-    }
-    // Store the object pose.
-    object_found.center.position.x = (highest_point[0] + lowest_point[0]) / 2;
-    object_found.center.position.y = (highest_point[1] + lowest_point[1]) / 2;
-    object_found.center.position.z = (highest_point[2] + lowest_point[2]) / 2;
+    // Store the object centroid.
+    object_found.center.position.x = centroid.x;
+    object_found.center.position.y = centroid.y;
+    object_found.center.position.z = centroid.z;
 
-    // Store the height of object.
-    object_found.height =
-        sqrt(pow((lowest_point[0] - highest_point[0]), 2) + pow((lowest_point[1] - highest_point[1]), 2) +
-             pow((lowest_point[2] - highest_point[2]), 2));
-    
-    // Store cluster;
+    // Store cluster.
     object_found.cluster = cloud;
+    
+    // Store mesh.
     reconstructMesh(cloud, object_found.mesh);
   }
 
