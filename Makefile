@@ -14,6 +14,9 @@ noetic.navigation.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.navigation .
 noetic.objectDetection.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.objectDetection .
+noetic.objectDetection.prod.build:
+	@docker login ghcr.io
+	@docker build -t ros:home -f docker/noetic/Dockerfile.objectDetection.prod .
 
 #: Create Generic Docker container
 noetic.create: 
@@ -46,6 +49,14 @@ noetic.objectDetection.create.intel:
 	@./docker/run_scripts/runIntelGpu.bash IS_OBJECT_DETECTION
 noetic.objectDetection.create.nvidia: 
 	@./docker/run_scripts/runNvidiaGpu.bash IS_OBJECT_DETECTION
+
+#: Create ObjectDetection Prod Docker container
+noetic.objectDetection.prod.create: 
+	@./docker/run_scripts/run.bash IS_OBJECT_DETECTION_PROD
+noetic.objectDetection.prod.create.intel: 
+	@./docker/run_scripts/runIntelGpu.bash IS_OBJECT_DETECTION_PROD
+noetic.objectDetection.prod.create.nvidia: 
+	@./docker/run_scripts/runNvidiaGpu.bash IS_OBJECT_DETECTION_PROD
 
 #: Start the container in background
 noetic.up:

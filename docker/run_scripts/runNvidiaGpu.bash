@@ -18,7 +18,7 @@ if [[ "$@" == *"--net "* ]]; then
 fi
 
 # Settings required for having nvidia GPU acceleration inside the docker
-DOCKER_GPU_ARGS="--env DISPLAY --env QT_X11_NO_MITSHM=1 --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw --env NVIDIA_VISIBLE_DEVICES=all --env NVIDIA_DRIVER_CAPABILITIES=graphics"
+DOCKER_GPU_ARGS="--env DISPLAY --env QT_X11_NO_MITSHM=1 --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw --env NVIDIA_VISIBLE_DEVICES=all --env NVIDIA_DRIVER_CAPABILITIES=compute,utility"
 
 dpkg -l | grep nvidia-container-toolkit &> /dev/null
 HAS_NVIDIA_TOOLKIT=$?
@@ -43,7 +43,7 @@ ADDITIONAL_COMMANDS=""
 if [ $# -eq 1 ]; then
     if [ "$1" == "IS_NAVIGATION" ]; then
         ADDITIONAL_COMMANDS="--device='/dev/ttyUSB0'"
-    elif [ "$1" == "IS_OBJECT_DETECTION" ]; then
+    elif [[ "$1" == "IS_OBJECT_DETECTION" || "$1" == "IS_OBJECT_DETECTION_PROD" ]]; then
         ADDITIONAL_COMMANDS="--volume /dev/video0:/dev/video0
             --volume $PWD/object_detection:/object_detection"
     elif [ "$1" == "IS_SPEECH" ]; then
@@ -87,7 +87,7 @@ Create conda environment and Download Models if necessary.
 
 Execute inside container: 
 
-cd object_detection && ./object_detection_setup.sh && echo 'conda activate object_detection_env' >> ~/.bashrc
+cd /object_detection && ./object_detection_setup.sh && echo 'conda activate object_detection_env' >> ~/.bashrc
 
 *Remember to activate object_detection_env environment
 conda activate object_detection_env

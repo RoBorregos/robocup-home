@@ -48,6 +48,8 @@ wrokspace.code-workspace
 /object_detection/models/dependencies/coco
 /object_detection/images/train
 __ignore__/*
+catkin_home/src/object_detector/models
+catkin_home/src/object_detector/resources
 
 ### CONVERSATION ###
 catkin_home/src/action_selectors/scripts/FaceDetection/haarcascade_frontalface_default.xml
