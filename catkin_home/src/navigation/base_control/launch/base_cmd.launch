@@ -8,7 +8,11 @@
     >
         <param 
             name="port" 
+<<<<<<< Updated upstream
             value="/dev/ttyUSB1"
+=======
+            value="/dev/ttyUSB0"
+>>>>>>> Stashed changes
         />
         <param 
             name="baud" 
