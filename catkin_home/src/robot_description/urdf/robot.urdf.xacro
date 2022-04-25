@@ -316,9 +316,9 @@
       xyz="0 0 1" />
     <limit
       lower="0"
-      upper="0"
-      effort="0"
-      velocity="0" />
+      upper="1.57"
+      effort="39.0"
+      velocity="4.0" />
   </joint>
 
   <!-- Arm -->
@@ -373,9 +373,9 @@
       xyz="0 0 -1" />
     <limit
       lower="0"
-      upper="0"
-      effort="0"
-      velocity="0" />
+      upper="1.2"
+      effort="39.0"
+      velocity="4.0" />
   </joint>
   <link name="Brazo_2">
     <inertial>
@@ -428,9 +428,9 @@
       xyz="0 0 1" />
     <limit
       lower="0"
-      upper="0"
-      effort="0"
-      velocity="0" />
+      upper="1.57"
+      effort="39.0"
+      velocity="4.0" />
   </joint>
 
   <!-- Gripper -->
@@ -485,9 +485,9 @@
       xyz="0 0 1" />
     <limit
       lower="0"
-      upper="0"
-      effort="0"
-      velocity="0" />
+      upper="1.57"
+      effort="39.0"
+      velocity="4.0" />
   </joint>
   <link name="Garra_D">
     <inertial>
@@ -541,8 +541,8 @@
     <limit
       lower="0"
       upper="0.61087"
-      effort="0"
-      velocity="0" />
+      effort="39.0"
+      velocity="4.0" />
   </joint>
   <link name="Garra_I">
     <inertial>
@@ -596,8 +596,8 @@
     <limit
       lower="-0.017039"
       upper="0.76836"
-      effort="0"
-      velocity="0" />
+      effort="39.0"
+      velocity="4.0" />
   </joint>
 
   <!-- LIDAR -->
@@ -704,7 +704,7 @@
       xyz="0 1 0" />
     <limit
       lower="0"
-      upper="0"
+      upper="1.57"
       effort="0"
       velocity="0" />
   </joint>
