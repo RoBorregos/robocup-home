@@ -1,0 +1,37 @@
+controller_list:
+  - name: arm_torso_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: True
+    joints:
+      - Chasis_Elevador
+      - Elevador_Brazo_1
+      - Elevador_Brazo_2
+      - Brazo_2_Pinza
+  - name: torso_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: True
+    joints:
+      - Elevador_Brazo_1
+  - name: arm_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: True
+    joints:
+      - Chasis_Elevador
+      - Elevador_Brazo_2
+      - Brazo_2_Pinza
+  - name: gripper_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: True
+    joints:
+      - Pinza_Garra_D
+      - Pinza_Garra_I
+  - name: neck_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: True
+    joints:
+      - neck_joint

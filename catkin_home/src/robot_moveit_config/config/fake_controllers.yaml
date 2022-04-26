@@ -1,0 +1,38 @@
+controller_list:
+  - name: fake_arm_torso_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - Chasis_Elevador
+      - Elevador_Brazo_1
+      - Elevador_Brazo_2
+      - Brazo_2_Pinza
+  - name: fake_torso_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - Elevador_Brazo_1
+  - name: fake_arm_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - Chasis_Elevador
+      - Elevador_Brazo_2
+      - Brazo_2_Pinza
+  - name: fake_gripper_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - Pinza_Garra_D
+      - Pinza_Garra_I
+  - name: fake_neck_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - neck_joint
+initial:  # Define initial robot poses per group
+  - group: arm_torso
+    pose: default
+  - group: torso
+    pose: default
+  - group: arm
+    pose: default
+  - group: gripper
+    pose: open
+  - group: neck
+    pose: default

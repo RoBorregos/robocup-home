@@ -1,0 +1,86 @@
+arm_torso_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - Chasis_Elevador
+    - Elevador_Brazo_1
+    - Elevador_Brazo_2
+    - Brazo_2_Pinza
+  gains:
+    Chasis_Elevador:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    Elevador_Brazo_1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    Elevador_Brazo_2:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    Brazo_2_Pinza:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+torso_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - Elevador_Brazo_1
+  gains:
+    Elevador_Brazo_1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+arm_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - Chasis_Elevador
+    - Elevador_Brazo_2
+    - Brazo_2_Pinza
+  gains:
+    Chasis_Elevador:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    Elevador_Brazo_2:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    Brazo_2_Pinza:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+gripper_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - Pinza_Garra_D
+    - Pinza_Garra_I
+  gains:
+    Pinza_Garra_D:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    Pinza_Garra_I:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+neck_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - neck_joint
+  gains:
+    neck_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1

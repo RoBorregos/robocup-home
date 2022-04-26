@@ -96,7 +96,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-R1" type="continuous">
+  <joint name="Chasis_R1" type="continuous">
     <origin
       xyz="0.13960999018429 -0.224000012165135 -0.0268998000000014"
       rpy="0 0 0" />
@@ -148,7 +148,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-R2" type="continuous">
+  <joint name="Chasis_R2" type="continuous">
     <origin
       xyz="0.13960999018429 0.223999987834865 -0.0268998000000016"
       rpy="0 0 0" />
@@ -200,7 +200,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-R3" type="continuous">
+  <joint name="Chasis_R3" type="continuous">
     <origin
       xyz="-0.29339000981571 -0.224000012165135 -0.0263997999996424"
       rpy="0 0 0" />
@@ -252,7 +252,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-R4" type="continuous">
+  <joint name="Chasis_R4" type="continuous">
     <origin
       xyz="-0.29339000981571 0.223999987834865 -0.0268998000000015"
       rpy="0 0 0" />
@@ -304,10 +304,10 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-Elevador" type="revolute">
+  <joint name="Chasis_Elevador" type="revolute">
     <origin
       xyz="0 0 -0.0462248000000028"
-      rpy="0 0 1.57" />
+      rpy="0 0 0" />
     <parent
       link="base_link" />
     <child
@@ -315,7 +315,7 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
+      lower="-1.57"
       upper="1.57"
       effort="39.0"
       velocity="4.0" />
@@ -361,7 +361,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Elevador-Brazo_1" type="prismatic">
+  <joint name="Elevador_Brazo_1" type="prismatic">
     <origin
       xyz="0 0 1.09559517536383"
       rpy="0 0 0" />
@@ -372,8 +372,8 @@
     <axis
       xyz="0 0 -1" />
     <limit
-      lower="0"
-      upper="1.2"
+      lower="-0.3"
+      upper="0.8"
       effort="39.0"
       velocity="4.0" />
   </joint>
@@ -416,7 +416,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Elevador-Brazo_2" type="revolute">
+  <joint name="Elevador_Brazo_2" type="revolute">
     <origin
       xyz="0.229569270853049 0.0439197092955038 0.00475000000002312"
       rpy="0 0 0" />
@@ -427,7 +427,7 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
+      lower="-1.57"
       upper="1.57"
       effort="39.0"
       velocity="4.0" />
@@ -473,7 +473,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Brazo_2-Pinza" type="revolute">
+  <joint name="Brazo_2_Pinza" type="revolute">
     <origin
       xyz="0.134775790545599 0.0253548131501961 -0.0561933909574026"
       rpy="0 0 0" />
@@ -484,7 +484,7 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
+      lower="-1.57"
       upper="1.57"
       effort="39.0"
       velocity="4.0" />
@@ -528,7 +528,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Pinza-Garra_D" type="revolute">
+  <joint name="Pinza_Garra_D" type="revolute">
     <origin
       xyz="0.071320629609374 -0.0304040623161534 -0.0115566090426307"
       rpy="0 0 0" />
@@ -539,8 +539,8 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
-      upper="0.61087"
+      lower="-0.76836"
+      upper="0.76836"
       effort="39.0"
       velocity="4.0" />
   </joint>
@@ -583,7 +583,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Pinza-Garra_I" type="revolute">
+  <joint name="Pinza_Garra_I" type="revolute">
     <origin
       xyz="0.0667460022512851 0.0394462976294805 -0.0115566090426305"
       rpy="0 0 0" />
@@ -594,7 +594,7 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-0.017039"
+      lower="-0.76836"
       upper="0.76836"
       effort="39.0"
       velocity="4.0" />
@@ -703,8 +703,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="1.57"
+      lower="-0.8"
+      upper="0.5"
       effort="0"
       velocity="0" />
   </joint>
