@@ -18,11 +18,6 @@
     <group name="torso">
         <joint name="Elevador_Brazo_1"/>
     </group>
-    <group name="arm">
-        <joint name="Chasis_Elevador"/>
-        <joint name="Elevador_Brazo_2"/>
-        <joint name="Brazo_2_Pinza"/>
-    </group>
     <group name="gripper">
         <joint name="Pinza_Garra_D"/>
         <joint name="Pinza_Garra_I"/>
@@ -40,11 +35,6 @@
     <group_state name="default" group="torso">
         <joint name="Elevador_Brazo_1" value="0"/>
     </group_state>
-    <group_state name="default" group="arm">
-        <joint name="Brazo_2_Pinza" value="0"/>
-        <joint name="Chasis_Elevador" value="0"/>
-        <joint name="Elevador_Brazo_2" value="0"/>
-    </group_state>
     <group_state name="open" group="gripper">
         <joint name="Pinza_Garra_D" value="0"/>
         <joint name="Pinza_Garra_I" value="0"/>
@@ -60,11 +50,6 @@
         <joint name="Brazo_2_Pinza" value="1.57"/>
         <joint name="Chasis_Elevador" value="1.3271"/>
         <joint name="Elevador_Brazo_1" value="-0.2088"/>
-        <joint name="Elevador_Brazo_2" value="-1.57"/>
-    </group_state>
-    <group_state name="rest" group="arm">
-        <joint name="Brazo_2_Pinza" value="1.57"/>
-        <joint name="Chasis_Elevador" value="1.3271"/>
         <joint name="Elevador_Brazo_2" value="-1.57"/>
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
