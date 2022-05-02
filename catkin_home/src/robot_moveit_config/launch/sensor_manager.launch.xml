@@ -6,7 +6,8 @@
   <rosparam command="load" file="$(find robot_moveit_config)/config/sensors_3d.yaml" />
 
   <!-- Params for the octomap monitor -->
-  <param name="octomap_frame" type="string" value="odom" />
+  <!-- ToDO: Change frame to odom - Nav Integration. -->
+  <param name="octomap_frame" type="string" value="base_footprint" /> 
   <param name="octomap_resolution" type="double" value="0.021" />
   <param name="max_range" type="double" value="5.0" />
 

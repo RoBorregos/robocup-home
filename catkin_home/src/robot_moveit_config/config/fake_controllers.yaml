@@ -6,6 +6,7 @@ controller_list:
       - Elevador_Brazo_1
       - Elevador_Brazo_2
       - Brazo_2_Pinza
+      - BASE_PINZA_joint
   - name: fake_torso_controller
     type: $(arg fake_execution_type)
     joints:

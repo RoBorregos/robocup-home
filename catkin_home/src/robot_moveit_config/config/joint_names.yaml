@@ -1,0 +1,1 @@
+controller_joint_names: [Chasis_Elevador, Elevador_Brazo_1, Elevador_Brazo_2, Brazo_2_Pinza, BASE_PINZA_joint, Pinza_Garra_D, Pinza_Garra_I, neck_joint]

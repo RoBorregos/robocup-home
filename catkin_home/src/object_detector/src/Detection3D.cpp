@@ -89,7 +89,7 @@ public:
       return;
     }
 
-    boost::shared_ptr<sensor_msgs::PointCloud2 const> input_cloud = ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/xtion/depth_registered/points", nh_);
+    boost::shared_ptr<sensor_msgs::PointCloud2 const> input_cloud = ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/camera/depth/points", nh_);
     Detect3D::cloudCB(input_cloud);
     as_.setSucceeded(result_);
   }
@@ -416,6 +416,7 @@ public:
 
     std::vector<ObjectParams> objects(clustersFound);
     for(int i=0;i < clustersFound; i++) {
+      pcl::io::savePCDFile("pcl_object_"+i+".pcd", *clusters[i]);
       extractObjectDetails(clusters[i], objects[i]);
       addObject(i, objects[i]);
     }

@@ -47,17 +47,17 @@
   <group ns="move_group/planning_pipelines">
 
     <!-- OMPL -->
-    <include file="$(dirname)/planning_pipeline.launch.xml">
+    <include file="$(dirname)/planning_pipeline.launch.xml" if="$(eval arg('pipeline') == 'ompl')">
       <arg name="pipeline" value="ompl" />
     </include>
 
     <!-- CHOMP -->
-    <include file="$(dirname)/planning_pipeline.launch.xml">
+    <include file="$(dirname)/planning_pipeline.launch.xml" if="$(eval arg('pipeline') == 'chomp')">
       <arg name="pipeline" value="chomp" />
     </include>
 
     <!-- Pilz Industrial Motion -->
-    <include file="$(dirname)/planning_pipeline.launch.xml">
+    <include file="$(dirname)/planning_pipeline.launch.xml" if="$(eval arg('pipeline') == 'pilz_industrial_motion_planner')">>
       <arg name="pipeline" value="pilz_industrial_motion_planner" />
     </include>
 

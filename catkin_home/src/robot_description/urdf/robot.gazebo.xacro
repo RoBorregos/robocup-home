@@ -51,6 +51,8 @@
 
   <gazebo reference="neck_link">
     <material>Gazebo/Black</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
   </gazebo>
 
   <!-- camera -->
@@ -249,11 +251,43 @@
   <gazebo reference="Pinza">
     <material>Gazebo/White</material>
   </gazebo>
+  <gazebo reference="BASE_PINZA">
+    <material>Gazebo/White</material>
+  </gazebo>
   <gazebo reference="Garra_D">
     <material>Gazebo/Black</material>
   </gazebo>
   <gazebo reference="Garra_I">
     <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Arm Motors Plugin -->
+  <xacro:macro name="gazebo-joint" params="joint">
+    <transmission name="${joint}_transmission">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${joint}">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${joint}_motor">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+  <xacro:gazebo-joint joint="Chasis_Elevador" />
+  <xacro:gazebo-joint joint="Elevador_Brazo_1" />
+  <xacro:gazebo-joint joint="Elevador_Brazo_2" />
+  <xacro:gazebo-joint joint="Brazo_2_Pinza" />
+  <xacro:gazebo-joint joint="BASE_PINZA_joint" />
+  <xacro:gazebo-joint joint="Pinza_Garra_D" />
+  <xacro:gazebo-joint joint="Pinza_Garra_I" />
+  <xacro:gazebo-joint joint="neck_joint" />
+  <xacro:gazebo-joint joint="Chasis_R1" />
+  <xacro:gazebo-joint joint="Chasis_R2" />
+  <xacro:gazebo-joint joint="Chasis_R3" />
+  <xacro:gazebo-joint joint="Chasis_R4" />
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
   </gazebo>
 
 </robot>

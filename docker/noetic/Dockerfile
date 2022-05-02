@@ -22,6 +22,8 @@ RUN apt-get update -qq && \
     ros-noetic-moveit-core \
     ros-noetic-moveit-msgs \
     ros-noetic-rosserial-arduino \
+    ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
     ros-noetic-rosserial && \
     rm -rf /var/lib/apt/lists/*
 

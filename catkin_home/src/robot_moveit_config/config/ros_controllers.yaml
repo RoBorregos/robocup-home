@@ -13,9 +13,14 @@ hardware_interface:
         - Elevador_Brazo_1
         - Elevador_Brazo_2
         - Brazo_2_Pinza
+        - BASE_PINZA_joint
         - Pinza_Garra_D
         - Pinza_Garra_I
         - neck_joint
+        - R1
+        - R2
+        - R3
+        - R4
     sim_control_mode: 1  # 0: position, 1: velocity
 # Publish all joint states -----------------------------------
 joint_state_controller:
@@ -23,12 +28,13 @@ joint_state_controller:
   publish_rate: 50
 # Position Controllers ---------------------------------------
 arm_torso_controller:
-  type: effort_controllers/JointPositionController
+  type: effort_controllers/JointTrajectoryController
   joints:
     - Chasis_Elevador
     - Elevador_Brazo_1
     - Elevador_Brazo_2
     - Brazo_2_Pinza
+    - BASE_PINZA_joint
   gains:
     Chasis_Elevador:
       p: 100
@@ -50,8 +56,13 @@ arm_torso_controller:
       d: 1
       i: 1
       i_clamp: 1
+    BASE_PINZA_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
 torso_controller:
-  type: effort_controllers/JointPositionController
+  type: effort_controllers/JointTrajectoryController
   joints:
     - Elevador_Brazo_1
   gains:
@@ -61,7 +72,7 @@ torso_controller:
       i: 1
       i_clamp: 1
 gripper_controller:
-  type: effort_controllers/JointPositionController
+  type: effort_controllers/JointTrajectoryController
   joints:
     - Pinza_Garra_D
     - Pinza_Garra_I
@@ -77,7 +88,7 @@ gripper_controller:
       i: 1
       i_clamp: 1
 neck_controller:
-  type: effort_controllers/JointPositionController
+  type: effort_controllers/JointTrajectoryController
   joints:
     - neck_joint
   gains:
@@ -96,6 +107,7 @@ controller_list:
       - Elevador_Brazo_1
       - Elevador_Brazo_2
       - Brazo_2_Pinza
+      - BASE_PINZA_joint
   - name: torso_controller
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory

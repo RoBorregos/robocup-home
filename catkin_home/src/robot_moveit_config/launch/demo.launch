@@ -60,6 +60,9 @@
     <arg name="rviz_config" value="$(dirname)/moveit.rviz"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>
+  <group unless="$(eval arg('moveit_controller_manager') == 'fake')">
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  </group>
 
   <!-- If database loading was enabled, start mongodb as well -->
   <include file="$(dirname)/default_warehouse_db.launch" if="$(arg db)">

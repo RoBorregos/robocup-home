@@ -307,7 +307,7 @@
   <joint name="Chasis_Elevador" type="revolute">
     <origin
       xyz="0 0 -0.0462248000000028"
-      rpy="0 0 0" />
+      rpy="0 0 1.57" />
     <parent
       link="base_link" />
     <child
@@ -315,11 +315,11 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="-1.57"
-      upper="1.57"
+      lower="-3.14"
+      upper="0"
       effort="39.0"
       velocity="4.0" />
-    <!-- <dynamics damping="1.0"/> -->
+    <dynamics damping="0.7" friction="100.0"/>
   </joint>
 
   <!-- Arm -->
@@ -377,7 +377,7 @@
       upper="0.8"
       effort="39.0"
       velocity="4.0" />
-    <!-- <dynamics damping="1.0"/> -->
+    <dynamics damping="0.7" friction="100.0"/>
   </joint>
   <link name="Brazo_2">
     <inertial>
@@ -433,7 +433,7 @@
       upper="1.57"
       effort="39.0"
       velocity="4.0" />
-    <!-- <dynamics damping="1.0"/> -->
+    <dynamics damping="0.7" friction="100.0"/>
   </joint>
 
   <!-- Gripper -->
@@ -491,7 +491,7 @@
       upper="1.57"
       effort="39.0"
       velocity="4.0" />
-    <!-- <dynamics damping="1.0"/> -->
+    <dynamics damping="0.7" friction="100.0"/>
   </joint>
   <link name="BASE_PINZA">
     <inertial>
@@ -547,6 +547,7 @@
       upper="0.5"
       effort="39.0"
       velocity="4.0" />
+    <dynamics damping="0.7" friction="100.0"/>
   </joint>
   <link name="Garra_D">
     <inertial>
@@ -602,7 +603,7 @@
       upper="0.19"
       effort="39.0"
       velocity="4.0" />
-    <!-- <dynamics damping="1.0"/> -->
+    <dynamics damping="0.7" friction="100.0"/>
   </joint>
   <link name="Garra_I">
     <inertial>
@@ -658,7 +659,7 @@
       upper="0.29"
       effort="39.0"
       velocity="4.0" />
-    <!-- <dynamics damping="1.0"/> -->
+    <dynamics damping="0.7" friction="100.0"/>
   </joint>
 
   <!-- LIDAR -->
@@ -766,9 +767,9 @@
     <limit
       lower="-0.8"
       upper="0.5"
-      effort="0"
-      velocity="0" />
-    <!-- <dynamics damping="0.1"/> -->
+      effort="80.0"
+      velocity="4.0" />
+    <dynamics damping="0.7" friction="100"/>
   </joint>
 
   <!-- Camera -->
