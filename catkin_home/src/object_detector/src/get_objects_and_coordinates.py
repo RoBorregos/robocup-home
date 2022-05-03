@@ -326,6 +326,6 @@ if __name__ == '__main__':
     rospy.init_node('get_objects_and_coordinates', anonymous=True)
     print('Node: get_objects_and_coordinates initialized!')
     #image_subscriber = rospy.Subscriber("/camera/color/image_raw/compressed" , CompressedImage, callback)
-    image_subscriber = rospy.Subscriber("/camaras/2" , CompressedImage, callback)
+    image_subscriber = rospy.Subscriber("/camera/color/image_raw/compressed" , CompressedImage, callback)
     rospy.spin()
     cv2.destroyAllWindows()

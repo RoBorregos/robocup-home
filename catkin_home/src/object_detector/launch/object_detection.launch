@@ -1,7 +1,8 @@
 <launch>
     <!-- Devices -->
     <arg name="VERBOSE" default="True"/>
-    <node name="get_objects_and_coordinates" pkg="object_detector" type="get_objects_and_coordinates.py" respawn="true" output="screen" />
+    <!--<node name="get_objects_and_coordinates" pkg="object_detector" type="get_objects_and_coordinates.py" respawn="true" output="screen" />-->
+    <node name="pose_estimation_node" pkg="object_detector" type="pose_estimation_node" respawn="true" output="screen"/>
 
 
     <!--<arg name="camera" default="camera" />
@@ -20,7 +21,26 @@
     </group>-->
 
     <arg name="color_fps"      default="15" />
+    <arg name="color_w"        default="640" />
+    <arg name="color_h"        default="480" />
+    <arg name="depth_fps"      default="60" />
+    <arg name="depth_w"        default="640" />
+    <arg name="depth_h"        default="480" />
+    <arg name="filter"      default="pointcloud" />
+    <arg name="initial_res" default="true"/>
+    <arg name="infra" default = "false"/>
+    <arg name="reconnect_t" default="1"/>
     <include file="$(find realsense2_camera)/launch/rs_camera.launch"> 
         <arg name="color_fps"         value="$(arg color_fps)"/>
+        <arg name="color_width"       value="$(arg color_w)"/>
+        <arg name="color_height"       value="$(arg color_h)"/>
+        <arg name="depth_fps"         value="$(arg depth_fps)"/>
+        <arg name="depth_width"       value="$(arg depth_w)"/>
+        <arg name="depth_height"       value="$(arg depth_h)"/>
+        <arg name="filters"           value="$(arg filter)"/>
+        <arg name="initial_reset"     value="$(arg initial_res)"/>
+        <arg name="enable_infra1"     value="$(arg infra)"/>
+        <arg name="enable_infra2"     value="$(arg infra)"/>
+        <arg name="reconnect_timeout" value="$(arg reconnect_t)"/>
     </include>  
 </launch>

@@ -15,6 +15,8 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   cv_bridge
   image_transport
+  pcl_conversions
+  pcl_ros
 )
 
 find_package(OpenCV REQUIRED)
@@ -111,7 +113,7 @@ generate_messages(
 catkin_package(
 INCLUDE_DIRS include
 #LIBRARIES object_detector
-CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs geometry_msgs cv_bridge image_transport
+CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs geometry_msgs cv_bridge image_transport pcl_conversions pcl_ros
 #DEPENDS system_lib
 )
 
