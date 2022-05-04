@@ -1,4 +1,21 @@
 <launch>
+    <!-- Run the map server --> 
+    <arg 
+        name="map_file" 
+        default="$(find nav_main)/maps/TMR_2019.yaml"
+    />
+    <node 
+        name="map_server" 
+        pkg="map_server" 
+        type="map_server" 
+        args="$(arg map_file)" 
+    />
+    <node 
+        pkg="tf" 
+        type="static_transform_publisher" 
+        name="odom_broadcaster" 
+        args="0 0 0 0 0 0 1 map odom 20" 
+    />
     <!-- Run the arduino serial communication node. --> 
     <node 
         pkg="rosserial_python" 
@@ -8,11 +25,7 @@
     >
         <param 
             name="port" 
-<<<<<<< Updated upstream
-            value="/dev/ttyUSB1"
-=======
             value="/dev/ttyUSB0"
->>>>>>> Stashed changes
         />
         <param 
             name="baud" 
@@ -25,6 +38,12 @@
         name="base_odom"
         type="base_odom"
     />
+    <!-- Run the plotter. --> 
+    <node
+        pkg="base_control"
+        name="multiplePlots.py"
+        type="multiplePlots"
+    />
     <!-- Send CmdVel Node. --> 
     <node
         pkg="teleop_twist_keyboard"
@@ -36,10 +55,10 @@
     <include 
         file="$(find robot_description)/launch/display.launch" 
     />
-    <node 
+    <!--<node 
         type="rviz" 
         name="rviz" 
         pkg="rviz" 
         args="-d $(find base_control)/rviz/base_control.rviz" 
-    />
+    />-->
  </launch>

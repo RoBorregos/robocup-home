@@ -52,7 +52,7 @@ class Movement {
     // Get Encoder Counts in x, y, theta.
     void getEncoderCounts(int *delta_encoder_counts);
     // Pins,
-    static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {14, 15};
+    static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {15, 14};
     static constexpr uint8_t kAnalogPinFrontLeftMotor = 11;
     static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {3, 25};
 
@@ -60,7 +60,7 @@ class Movement {
     static constexpr uint8_t kAnalogPinBackLeftMotor = 6;
     static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2, 37};
 
-    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {27,26};
+    static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {26,27};
     static constexpr uint8_t kAnalogPinFrontRightMotor = 7;
     static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {19, 33};
 

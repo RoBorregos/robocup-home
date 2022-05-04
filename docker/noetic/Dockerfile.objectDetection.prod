@@ -1,0 +1,12 @@
+# Use the existing object detection image
+FROM ghcr.io/roborregos/robocup-home:objdetection
+
+LABEL maintainer="Jose Cisneros <A01283070@itesm.mx>"
+
+# Change Workdir
+WORKDIR /catkin_home
+
+# catkin_make
+RUN /bin/bash -c 'cd /catkin_home && . /opt/ros/noetic/setup.bash;catkin_make'
+
+ENTRYPOINT [ "/bin/bash", "-l", "-c" ]

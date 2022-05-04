@@ -47,14 +47,21 @@
         name="cmd_vel_simulation"
         type="cmd_vel.py"
     />
+    <!-- Send CmdVel Node. --> 
+    <node
+        pkg="teleop_twist_keyboard"
+        type="teleop_twist_keyboard.py"
+        name="teleop"
+        output="screen"
+    />
     <!-- Run rviz simulation. --> 
     <include 
         file="$(find robot_description)/launch/display.launch" 
     />
-    <node 
+    <!--<node 
         type="rviz" 
         name="rviz" 
         pkg="rviz" 
         args="-d $(find base_control)/rviz/base_control.rviz" 
-    />
+    />-->
  </launch>

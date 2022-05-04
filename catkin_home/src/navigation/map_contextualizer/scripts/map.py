@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+from unicodedata import name
 import rospy
 from geometry_msgs.msg import PoseWithCovarianceStamped
 import json
