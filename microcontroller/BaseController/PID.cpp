@@ -20,13 +20,6 @@ void PID::compute(const double setpoint, double &input, double &output, int &res
   }
   
   input = (reset_variable / pulses_per_rev) * count_time_samples_in_one_second;
-//  Serial.print("Input: ");
-//  Serial.print(input);
-//  Serial.print(", reset_var: ");
-//  Serial.print(reset_variable);
-//  Serial.print(", setpoint: ");
-//  Serial.print(setpoint);
-//  Serial.println();
   reset_variable = 0;
   
   const double error = setpoint - input;

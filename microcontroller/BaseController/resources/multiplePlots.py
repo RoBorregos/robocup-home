@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-
+"""
+It doesn't always work on the first run, if you notice 
+inconsistency, stop the program and run it again until 
+you see target speed (last data) working correctly.
+"""
 from threading import Thread
 import serial
 import time
@@ -12,7 +16,7 @@ import pandas as pd
 
 
 class serialPlot:
-    def __init__(self, serialPort='/dev/ttyUSB0', serialBaud=38400, plotLength=100, dataNumBytes=4, numPlots=1):
+    def __init__(self, serialPort='/dev/ttyUSB0', serialBaud=38400, plotLength=100, dataNumBytes=2, numPlots=5):
         self.port = serialPort
         self.baud = serialBaud
         self.plotMaxLength = plotLength
@@ -86,24 +90,24 @@ def main():
     baudRate = 38400
     maxPlotLength = 100     # number of points in x-axis of real time plot
     dataNumBytes = 4        # number of bytes of 1 data point
-    numPlots = 4          # number of plots in 1 graph
+    numPlots = 5          # number of plots in 1 graph
     s = serialPlot(portName, baudRate, maxPlotLength, dataNumBytes, numPlots)   # initializes all required variables
     s.readSerialStart()                                               # starts background thread
 
     # plotting starts below
-    pltInterval = 100    # Period at which the plot animation updates [ms]
+    pltInterval = 35    # Period at which the plot animation updates [ms]
     xmin = 0
     xmax = maxPlotLength
-    ymin = -(0)
-    ymax = 10
+    ymin = 0
+    ymax = 0.7
     fig = plt.figure(figsize=(10, 8))
     ax = plt.axes(xlim=(xmin, xmax), ylim=(float(ymin - (ymax - ymin) / 10), float(ymax + (ymax - ymin) / 10)))
     ax.set_title("Motor PID graph")
     ax.set_xlabel("Time")
     ax.set_ylabel("Velocity")
 
-    lineLabel = ['Target1', 'Current1', 'Target2', 'Current2']
-    style = ['r-', 'c-', 'b-', 'k-']  # linestyles for the different plots
+    lineLabel = ['CurrentBL', 'CurrentFL', 'CurrentFR', 'CurrentBR', 'Target']
+    style = ['r-', 'm-', 'b-', 'g-', 'k-']  # linestyles for the different plots
     timeText = ax.text(0.70, 0.95, '', transform=ax.transAxes)
     lines = []
     lineValueText = []

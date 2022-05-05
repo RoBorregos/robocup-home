@@ -19,13 +19,11 @@ void setup() {
     
     Plot myPlot(robot);
     while(1){
-      robot->back_left_motor_.setMotorSpeedPID(0.21);
-      robot->front_left_motor_.setMotorSpeedPID(0.21);
-      robot->back_right_motor_.setMotorSpeedPID(0.21);
-      robot->front_right_motor_.setMotorSpeedPID(0.21);
+      robot->back_left_motor_.setMotorSpeedPID(0.15);
+      robot->front_left_motor_.setMotorSpeedPID(0.15);
+      robot->back_right_motor_.setMotorSpeedPID(0.15);
+      robot->front_right_motor_.setMotorSpeedPID(0.15);
       myPlot.PlotTargetandCurrent();
-      //myPlot.PlotMotorSpeed();
-      
     }
     return;
     

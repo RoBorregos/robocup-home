@@ -55,6 +55,9 @@ class Motor {
 
     // Calculate Revolutions per second equivalent to meters per second.
     double MsToRps(const double ms);
+
+    // Calculate meters per second equivalent to Revolutions per second.
+    double RpsToMs(const double rps);
     
     // Calculate target Ticks according to a velocity  in meters per second.
     double getTargetTicks(const double velocity);
