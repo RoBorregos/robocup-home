@@ -7,7 +7,7 @@
 Movement *robot = nullptr;
 
 void setup() {
-    Serial.begin(38400);
+    Serial.begin(9600);
     
     BNO bno;
     ros::NodeHandle nh; 
@@ -19,12 +19,13 @@ void setup() {
     
     Plot myPlot(robot);
     while(1){
-      robot->back_left_motor_.setMotorSpeedPID(0.15);
-      robot->front_left_motor_.setMotorSpeedPID(0.15);
-      robot->back_right_motor_.setMotorSpeedPID(0.15);
-      robot->front_right_motor_.setMotorSpeedPID(0.15);
+      robot->back_left_motor_.setMotorSpeedPID(0.17);
+      robot->front_left_motor_.setMotorSpeedPID(0.17);
+      robot->back_right_motor_.setMotorSpeedPID(0.17);
+      robot->front_right_motor_.setMotorSpeedPID(0.17);
       myPlot.PlotTargetandCurrent();
     }
+    
     return;
     
     /*
@@ -72,7 +73,6 @@ void setup() {
 
     rosbridge.run();
     */
-    
 }
 
 void loop() {   

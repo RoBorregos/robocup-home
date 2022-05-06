@@ -54,11 +54,11 @@ class Movement {
     // Pins,
     static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {15, 14};
     static constexpr uint8_t kAnalogPinFrontLeftMotor = 11;
-    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {3, 25};
+    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {2, 25};
 
     static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {22, 23};
     static constexpr uint8_t kAnalogPinBackLeftMotor = 6;
-    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2, 37};
+    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {3, 37};
 
     static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {26,27};
     static constexpr uint8_t kAnalogPinFrontRightMotor = 7;
