@@ -271,7 +271,7 @@
         xyz="0.0001208 9.8409E-05 0.93651"
         rpy="0 0 0" />
       <mass
-        value="1.5237" />
+        value="1.1237" />
       <inertia
         ixx="0.12507"
         ixy="3.5515E-06"
@@ -319,7 +319,7 @@
       upper="0"
       effort="39.0"
       velocity="4.0" />
-    <dynamics damping="0.7" friction="100.0"/>
+    <dynamics damping="0.7" friction="1"/>
   </joint>
 
   <!-- Arm -->
@@ -329,7 +329,7 @@
         xyz="0.080562 -0.0080834 0.035765"
         rpy="0 0 0" />
       <mass
-        value="0.77399" />
+        value="0.17399" />
       <inertia
         ixx="0.00069468"
         ixy="7.7994E-05"
@@ -375,9 +375,9 @@
     <limit
       lower="-0.3"
       upper="0.8"
-      effort="39.0"
-      velocity="4.0" />
-    <dynamics damping="0.7" friction="100.0"/>
+      effort="80.0"
+      velocity="3.0" />
+    <dynamics damping="0.7" friction="10" />
   </joint>
   <link name="Brazo_2">
     <inertial>
@@ -385,7 +385,7 @@
         xyz="0.0613443977261393 -0.00158504415996192 -0.0279323913726532"
         rpy="0 0 0" />
       <mass
-        value="0.437735318876537" />
+        value="0.237735318876537" />
       <inertia
         ixx="0.000221898875336565"
         ixy="2.20105438729185E-05"
@@ -433,7 +433,7 @@
       upper="1.57"
       effort="39.0"
       velocity="4.0" />
-    <dynamics damping="0.7" friction="100.0"/>
+    <dynamics damping="0.7" friction="1"/>
   </joint>
 
   <!-- Gripper -->
@@ -491,7 +491,7 @@
       upper="1.57"
       effort="39.0"
       velocity="4.0" />
-    <dynamics damping="0.7" friction="100.0"/>
+    <dynamics damping="0.7" friction="1"/>/>
   </joint>
   <link name="BASE_PINZA">
     <inertial>
@@ -547,7 +547,7 @@
       upper="0.5"
       effort="39.0"
       velocity="4.0" />
-    <dynamics damping="0.7" friction="100.0"/>
+    <dynamics damping="0.7" friction="1"/>
   </joint>
   <link name="Garra_D">
     <inertial>
@@ -603,7 +603,7 @@
       upper="0.19"
       effort="39.0"
       velocity="4.0" />
-    <dynamics damping="0.7" friction="100.0"/>
+    <dynamics damping="0.7" friction="1"/>
   </joint>
   <link name="Garra_I">
     <inertial>
@@ -659,7 +659,7 @@
       upper="0.29"
       effort="39.0"
       velocity="4.0" />
-    <dynamics damping="0.7" friction="100.0"/>
+    <dynamics damping="0.7" friction="1"/>
   </joint>
 
   <!-- LIDAR -->
@@ -721,7 +721,7 @@
         xyz="0.0470517349686886 0.0123919567767552 -0.00720656108065509"
         rpy="0 0 0" />
       <mass
-        value="0.0123607422626627" />
+        value="0.123607422626627" />
       <inertia
         ixx="3.82073961685766E-06"
         ixy="-2.35941568160262E-06"
@@ -767,9 +767,9 @@
     <limit
       lower="-0.8"
       upper="0.5"
-      effort="80.0"
+      effort="40.0"
       velocity="4.0" />
-    <dynamics damping="0.7" friction="100"/>
+    <dynamics damping="0.7" friction="1"/>
   </joint>
 
   <!-- Camera -->

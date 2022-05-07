@@ -238,28 +238,30 @@
     </sensor>
   </gazebo> -->
 
+  <xacro:macro name="arm_gazebo" params="link">
+      <gazebo reference="${link}">
+          <material>Gazebo/White</material>
+          <mu1>0.2</mu1>
+          <mu2>0.2</mu2>
+      </gazebo>
+  </xacro:macro>
+  <xacro:macro name="gripper_gazebo" params="link">
+      <gazebo reference="${link}">
+          <material>Gazebo/Black</material>
+          <mu1>0.2</mu1>
+          <mu2>0.2</mu2>
+      </gazebo>
+  </xacro:macro>
 
   <gazebo reference="Elevador">
-    <material>Gazebo/White</material>
+      <material>Gazebo/White</material>
   </gazebo>
-  <gazebo reference="Brazo_1">
-    <material>Gazebo/White</material>
-  </gazebo>
-  <gazebo reference="Brazo_2">
-    <material>Gazebo/White</material>
-  </gazebo>
-  <gazebo reference="Pinza">
-    <material>Gazebo/White</material>
-  </gazebo>
-  <gazebo reference="BASE_PINZA">
-    <material>Gazebo/White</material>
-  </gazebo>
-  <gazebo reference="Garra_D">
-    <material>Gazebo/Black</material>
-  </gazebo>
-  <gazebo reference="Garra_I">
-    <material>Gazebo/Black</material>
-  </gazebo>
+  <xacro:arm_gazebo link="Brazo_1"/>
+  <xacro:arm_gazebo link="Brazo_2"/>
+  <xacro:arm_gazebo link="Pinza"/>
+  <xacro:arm_gazebo link="BASE_PINZA"/>
+  <xacro:gripper_gazebo link="Garra_D"/>
+  <xacro:gripper_gazebo link="Garra_I"/>
 
   <!-- Arm Motors Plugin -->
   <xacro:macro name="gazebo-joint" params="joint">
@@ -269,7 +271,6 @@
         <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
       <actuator name="${joint}_motor">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>

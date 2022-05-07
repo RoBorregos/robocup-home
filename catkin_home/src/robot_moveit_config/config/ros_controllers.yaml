@@ -42,8 +42,8 @@ arm_torso_controller:
       i: 1
       i_clamp: 1
     Elevador_Brazo_1:
-      p: 100
-      d: 1
+      p: 1000
+      d: 25
       i: 1
       i_clamp: 1
     Elevador_Brazo_2:
