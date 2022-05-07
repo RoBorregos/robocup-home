@@ -375,9 +375,9 @@
     <limit
       lower="-0.3"
       upper="0.8"
-      effort="80.0"
+      effort="800.0"
       velocity="3.0" />
-    <dynamics damping="0.7" friction="10" />
+    <dynamics damping="0.7" friction="100" />
   </joint>
   <link name="Brazo_2">
     <inertial>
@@ -602,7 +602,7 @@
       lower="-0.29"
       upper="0.19"
       effort="39.0"
-      velocity="4.0" />
+      velocity="3.0" />
     <dynamics damping="0.7" friction="1"/>
   </joint>
   <link name="Garra_I">
@@ -658,7 +658,7 @@
       lower="-0.29"
       upper="0.29"
       effort="39.0"
-      velocity="4.0" />
+      velocity="3.0" />
     <dynamics damping="0.7" friction="1"/>
   </joint>
 
@@ -721,7 +721,7 @@
         xyz="0.0470517349686886 0.0123919567767552 -0.00720656108065509"
         rpy="0 0 0" />
       <mass
-        value="0.123607422626627" />
+        value="0.0723607422626627" />
       <inertia
         ixx="3.82073961685766E-06"
         ixy="-2.35941568160262E-06"
@@ -768,8 +768,8 @@
       lower="-0.8"
       upper="0.5"
       effort="40.0"
-      velocity="4.0" />
-    <dynamics damping="0.7" friction="1"/>
+      velocity="2.0" />
+    <dynamics damping="0.7" friction="2"/>
   </joint>
 
   <!-- Camera -->

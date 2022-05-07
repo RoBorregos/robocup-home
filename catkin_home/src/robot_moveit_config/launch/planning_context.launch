@@ -23,4 +23,11 @@
 
   </group>
 
+  <!-- Load padding -->
+  <group ns="move_group">
+    <group ns="$(arg robot_description)_planning">
+      <rosparam command="load" file="$(find robot_moveit_config)/config/padding.yaml" />
+    </group>
+  </group>
+
 </launch>

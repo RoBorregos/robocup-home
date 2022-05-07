@@ -35,18 +35,26 @@
 
   <gazebo reference="R1">
     <material>Gazebo/Black</material>
+    <mu1>10</mu1>
+    <mu2>10</mu2>
   </gazebo>
 
   <gazebo reference="R2">
     <material>Gazebo/Black</material>
+    <mu1>10</mu1>
+    <mu2>10</mu2>
   </gazebo>
 
   <gazebo reference="R3">
     <material>Gazebo/Black</material>
+    <mu1>10</mu1>
+    <mu2>10</mu2>
   </gazebo>
 
   <gazebo reference="R4">
     <material>Gazebo/Black</material>
+    <mu1>10</mu1>
+    <mu2>10</mu2>
   </gazebo>
 
   <gazebo reference="neck_link">
