@@ -9,6 +9,10 @@ stories:
     entities:
     - object: banana
     - place: kitchen
+  - slot_was_set:
+    - object: banana
+  - slot_was_set:
+    - place: kitchen
   - action: utter_understood
   - action: utter_command
   - action: action_bring_something
@@ -18,6 +22,10 @@ stories:
   - intent: bring_something
     entities:
     - object: bottle
+    - place: kitchen
+  - slot_was_set:
+    - object: bottle
+  - slot_was_set:
     - place: kitchen
   - action: utter_understood
   - action: utter_command
