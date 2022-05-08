@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <sensor_msgs/point_cloud2_iterator.h>
 #include <shape_msgs/Mesh.h>
 #include <shape_msgs/MeshTriangle.h>
 #include <geometry_msgs/Point.h>
@@ -14,7 +15,6 @@
 #include <pcl/point_types.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/surface/mls.h>
-#include <pcl/surface/impl/mls.hpp>
 #include <pcl/surface/convex_hull.h>
 
 #include <actionlib/server/simple_action_server.h>
@@ -23,6 +23,7 @@
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit_msgs/CollisionObject.h>
 
+#include <geometry_msgs/PoseArray.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
 
@@ -43,7 +44,7 @@ struct PlaneParams
   /* Center point of the plane. */
   double center_pt[3];
   /* World Z Value. */
-  double real_z;
+  double world_z;
   /* Width of the plane. */
   double width;
   /* Height of the plane. */
@@ -58,13 +59,15 @@ class Detect3D
   actionlib::SimpleActionServer<object_detector::DetectObjects3DAction> as_;
   object_detector::DetectObjects3DFeedback feedback_;
   object_detector::DetectObjects3DResult result_;
-
+  ros::Publisher pose_pub_;
+  geometry_msgs::PoseArray pose_pub_msg_;
 public:
   Detect3D() :
     listener_(buffer_),
     as_(nh_, name, boost::bind(&Detect3D::handleActionServer, this, _1), false)
   {
     as_.start();
+    pose_pub_ = nh_.advertise<geometry_msgs::PoseArray>("/test/objectposes", 10);
     ROS_INFO_STREAM("Action Server Detect3D - Initialized");
   }
 
@@ -81,6 +84,7 @@ public:
     result_.z_plane = 0;
     result_.width_plane = 0;
     result_.height_plane = 0;
+    pose_pub_msg_.poses.clear();
 
     if (as_.isPreemptRequested() || !ros::ok())
     {
@@ -92,33 +96,46 @@ public:
     boost::shared_ptr<sensor_msgs::PointCloud2 const> input_cloud = ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/camera/depth/points", nh_);
     Detect3D::cloudCB(input_cloud);
     as_.setSucceeded(result_);
+    pose_pub_.publish(pose_pub_msg_);
   }
 
   /** \brief Given the parameters of the object add it to the planning scene. */
-  void addObject(const int id, const ObjectParams& object_found)
+  void addObject(const int id, const ObjectParams& object_found, const PlaneParams &table_params)
   {
     // Adding Object to Planning Scene
     moveit_msgs::CollisionObject collision_object;
-    collision_object.header.frame_id = "camera_depth_frame";
+    collision_object.header.frame_id = "map";
     collision_object.id = "object-" + std::to_string(id);
 
+    geometry_msgs::PoseStamped object_pose;
+    object_pose.header.stamp = ros::Time::now();
+    object_pose.header.frame_id = "camera_depth_frame";
+    object_pose.pose = object_found.center;
+
+    geometry_msgs::TransformStamped tf_to_map;
+    tf_to_map = buffer_.lookupTransform("map", object_pose.header.frame_id, ros::Time(0), ros::Duration(1.0) );
+    tf2::doTransform(object_pose, object_pose, tf_to_map);
+
     collision_object.meshes.push_back(object_found.mesh);
-    collision_object.mesh_poses.push_back(object_found.center);
+    collision_object.mesh_poses.push_back(object_pose.pose);
     collision_object.operation = collision_object.ADD;
     planning_scene_interface_.applyCollisionObject(collision_object);
 
-    geometry_msgs::PoseStamped object_pose_stamped;
-    object_pose_stamped.header.stamp = ros::Time::now();
-    object_pose_stamped.header.frame_id = collision_object.header.frame_id;
-    object_pose_stamped.pose = object_found.center;
-    result_.objects_poses.push_back(object_pose_stamped);
+    // Add object only if above plane.
+    // if (object_pose.pose.position.z < table_params.world_z) {
+    //   return;
+    // }
+
+    result_.objects_found++;
+    pose_pub_msg_.header = object_pose.header;
+    pose_pub_msg_.poses.push_back(object_pose.pose);
+    result_.objects_poses.push_back(object_pose);
     result_.objects_names.push_back(collision_object.id);
   }
 
   /** \brief Given the parameters of the plane add it to the planning scene. */
-  bool addPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const pcl::ModelCoefficients::Ptr& coefficients_plane)
+  bool addPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const pcl::ModelCoefficients::Ptr& coefficients_plane, bool addToMoveit, PlaneParams &plane_params)
   {
-    PlaneParams plane_params;
     plane_params.direction_vec[0] = coefficients_plane->values[0];
     plane_params.direction_vec[1] = coefficients_plane->values[1];
     plane_params.direction_vec[2] = coefficients_plane->values[2];
@@ -149,14 +166,12 @@ public:
     plane_pose.pose.orientation.y = 0.0;
     plane_pose.pose.orientation.z = 0.0;
     plane_pose.pose.orientation.w = 1;
-
-    geometry_msgs::PoseStamped pose_transformed;
     
     geometry_msgs::TransformStamped tf_to_map;
     tf_to_map = buffer_.lookupTransform("map", plane_pose.header.frame_id, ros::Time(0), ros::Duration(1.0) );
     tf2::doTransform(plane_pose, plane_pose, tf_to_map);
 
-    plane_pose.pose.position.z = plane_params.real_z - solid_primitive.dimensions[2] / 2;
+    plane_pose.pose.position.z = plane_params.world_z - 0.04;
     ROS_INFO_STREAM("Plane Detected at z:" << plane_pose.pose.position.z);
     plane_pose.pose.orientation.x = 0.0;
     plane_pose.pose.orientation.y = 0.0;
@@ -169,10 +184,12 @@ public:
     }
 
     // Add Plane as Collision Object.
-    collision_object.primitives.push_back(solid_primitive);
-    collision_object.primitive_poses.push_back(plane_pose.pose);
-    collision_object.operation = collision_object.ADD;
-    planning_scene_interface_.applyCollisionObject(collision_object);
+    if (addToMoveit) {
+      collision_object.primitives.push_back(solid_primitive);
+      collision_object.primitive_poses.push_back(plane_pose.pose);
+      collision_object.operation = collision_object.ADD;
+      planning_scene_interface_.applyCollisionObject(collision_object);
+    }
 
     result_.x_plane = plane_pose.pose.position.x;
     result_.y_plane = plane_pose.pose.position.y;
@@ -190,9 +207,54 @@ public:
     out.z = in.z;
   }
 
+  /** \brief Given pcl Polygon Mesh convert it to ros Mesh shape_msg.
+      @param polygon_mesh_ptr - Polygon Mesh Pointer. */
+  bool convertPolygonMeshToRosMesh(const pcl::PolygonMesh::Ptr polygon_mesh_ptr, shape_msgs::Mesh::Ptr ros_mesh_ptr) {
+    ROS_INFO("Conversion from PCL PolygonMesh to ROS Mesh started.");
+
+    pcl_msgs::PolygonMesh pcl_msg_mesh;
+
+    pcl_conversions::fromPCL(*polygon_mesh_ptr, pcl_msg_mesh);
+
+    sensor_msgs::PointCloud2Modifier pcd_modifier(pcl_msg_mesh.cloud);
+
+    size_t size = pcd_modifier.size();
+
+    ros_mesh_ptr->vertices.resize(size);
+
+    ROS_INFO_STREAM("polys: " << pcl_msg_mesh.polygons.size()
+                              << " vertices: " << pcd_modifier.size());
+
+    sensor_msgs::PointCloud2ConstIterator<float> pt_iter(pcl_msg_mesh.cloud, "x");
+
+    for (size_t i = 0u; i < size; i++, ++pt_iter) {
+      ros_mesh_ptr->vertices[i].x = pt_iter[0];
+      ros_mesh_ptr->vertices[i].y = pt_iter[1];
+      ros_mesh_ptr->vertices[i].z = pt_iter[2];
+    }
+
+    ROS_INFO_STREAM("Updated vertices");
+
+    ros_mesh_ptr->triangles.resize(polygon_mesh_ptr->polygons.size());
+
+    for (size_t i = 0u; i < polygon_mesh_ptr->polygons.size(); ++i) {
+      if (polygon_mesh_ptr->polygons[i].vertices.size() < 3u) {
+        ROS_WARN_STREAM("Not enough points in polygon. Ignoring it.");
+        continue;
+      }
+
+      for (size_t j = 0u; j < 3u; ++j) {
+        ros_mesh_ptr->triangles[i].vertex_indices[j] =
+            polygon_mesh_ptr->polygons[i].vertices[j];
+      }
+    }
+    ROS_INFO("Conversion from PCL PolygonMesh to ROS Mesh ended.");
+    return true;
+  }
+
   /** \brief Given the pointcloud containing just the object, reconstruct a mesh from it.
       @param cloud - point cloud containing just the object. */
-  void reconstructMesh(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, shape_msgs::Mesh &mesh)
+  void reconstructMesh(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, shape_msgs::Mesh &mesh, int id)
   {
     pcl::PointCloud<pcl::PointXYZ> output_cloud;
     std::vector<pcl::Vertices> triangles;
@@ -208,23 +270,34 @@ public:
     pcl::PointCloud<pcl::PointNormal>::Ptr mls_normals(new pcl::PointCloud<pcl::PointNormal>);
     pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointNormal> mls;
 
+    mls.setComputeNormals (true);
     mls.setInputCloud(cloud);
     mls.setIndices(indices);
-    mls.setPolynomialFit(true);
+    mls.setPolynomialOrder (2);
     mls.setSearchMethod(tree);
     mls.setSearchRadius(0.03);
     
     mls.process(*mls_normals);
     
+    mls_points->resize(mls_normals->size());
+    for (size_t i = 0; i < mls_normals->points.size(); ++i) {
+        mls_points->points[i].x = mls_normals->points[i].x;
+        mls_points->points[i].y = mls_normals->points[i].y;
+        mls_points->points[i].z = mls_normals->points[i].z;
+    }
+
     pcl::ConvexHull<pcl::PointXYZ> ch;
     
     ch.setInputCloud(mls_points);
     ch.reconstruct(output_cloud, triangles);
 
+    pcl::io::savePCDFile("pcl_objectmesh_"+std::to_string(id)+".pcd", output_cloud);
+
     mesh.vertices.resize(output_cloud.points.size());
     for(size_t i=0; i<output_cloud.points.size(); i++)
      toPoint(output_cloud.points[i], mesh.vertices[i]);
  
+    ROS_INFO("CH Cloud %ld size", output_cloud.points.size());
     ROS_INFO("Found %ld polygons", triangles.size());
     BOOST_FOREACH(const pcl::Vertices polygon, triangles)
     {
@@ -238,28 +311,32 @@ public:
       boost::array<uint32_t, 3> xyz = {{polygon.vertices[0], polygon.vertices[1], polygon.vertices[2]}};
       triangle.vertex_indices = xyz;
   
-      mesh.triangles.push_back(shape_msgs::MeshTriangle());
+      mesh.triangles.push_back(triangle);
     }
   }
 
   /** \brief Given the pointcloud containing just the object,
       compute its center point, its height and its mesh and store in object_found.
       @param cloud - point cloud containing just the object. */
-  void extractObjectDetails(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, ObjectParams& object_found)
+  void extractObjectDetails(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, ObjectParams& object_found, int id)
   {
     pcl::PointXYZ centroid;
     pcl::computeCentroid(*cloud, centroid);
-    
+
     // Store the object centroid.
     object_found.center.position.x = centroid.x;
     object_found.center.position.y = centroid.y;
     object_found.center.position.z = centroid.z;
+    object_found.center.orientation.x = 0.0;
+    object_found.center.orientation.y = 0.0;
+    object_found.center.orientation.z = 0.0;
+    object_found.center.orientation.w = 1.0;
 
     // Store cluster.
     object_found.cluster = cloud;
     
     // Store mesh.
-    reconstructMesh(cloud, object_found.mesh);
+    reconstructMesh(cloud, object_found.mesh, id);
   }
 
   /** \brief Given the pointcloud containing just the plane,
@@ -292,7 +369,6 @@ public:
     plane_found.width = std::abs(max_y_ - min_y_) + 0.15;
 
     // Get Z Value Referenced To Map
-    geometry_msgs::PoseStamped pose_transformed;
     geometry_msgs::TransformStamped tf_to_map;
 
     geometry_msgs::PoseStamped plane_pose;
@@ -308,7 +384,7 @@ public:
 
     tf_to_map = buffer_.lookupTransform("map", plane_pose.header.frame_id, ros::Time(0), ros::Duration(1.0) );
     tf2::doTransform(plane_pose, plane_pose, tf_to_map);
-    plane_found.real_z  = plane_pose.pose.position.z;
+    plane_found.world_z  = plane_pose.pose.position.z;
   }
 
   /** \brief Given a pointcloud extract the ROI defined by the user.
@@ -354,7 +430,7 @@ public:
   /** \brief Given the pointcloud remove the biggest plane from the pointcloud. Return True if its the table.
       @param cloud - Pointcloud.
       @param inliers_plane - Indices representing the plane. (output) */
-  bool removeBiggestPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const pcl::PointIndices::Ptr& inliers_plane)
+  bool removeBiggestPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const pcl::PointIndices::Ptr& inliers_plane, PlaneParams &plane_params)
   {
     // Do Plane Segmentation
     pcl::SACSegmentation<pcl::PointXYZ> segmentor;
@@ -384,9 +460,11 @@ public:
     extract_indices.filter(*cloud);
 
     bool isTheTable = false;
-    isTheTable = addPlane(planeCloud, coefficients_plane);
+
+    isTheTable = addPlane(planeCloud, coefficients_plane, false, plane_params);
     if (isTheTable) {
       pcl::io::savePCDFile("pcl_table.pcd", *planeCloud);
+      pcl::io::savePCDFile("pcl_no_table.pcd", *cloud);
     }
     return isTheTable;
   }
@@ -404,26 +482,31 @@ public:
 
     // Detect and Remove the table on which the object is resting.
     bool tableRemoved = false;
+    PlaneParams table_params;
     while(!tableRemoved && !cloud->points.empty()) {
-      tableRemoved = removeBiggestPlane(cloud, inliers_plane);
+      tableRemoved = removeBiggestPlane(cloud, inliers_plane, table_params);
       extractNormals(cloud_normals, inliers_plane);
+    }
+
+    if (cloud->points.empty()) {
+      return;
     }
 
     /* Extract all objects from PointCloud using Clustering. */
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
-    getClusters(cloud, 0.05, clusters);
+    getClusters(cloud, clusters);
     int clustersFound = clusters.size();
 
     std::vector<ObjectParams> objects(clustersFound);
     for(int i=0;i < clustersFound; i++) {
-      pcl::io::savePCDFile("pcl_object_"+i+".pcd", *clusters[i]);
-      extractObjectDetails(clusters[i], objects[i]);
-      addObject(i, objects[i]);
+      pcl::io::savePCDFile("pcl_object_"+std::to_string(i)+".pcd", *clusters[i]);
+      extractObjectDetails(clusters[i], objects[i], i);
+      addObject(i, objects[i], table_params);
     }
   }
 
   /** \brief Find all clusters in a pointcloud.*/
-  void getClusters(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, double tolerance, std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> &clusters) {
+  void getClusters(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> &clusters) {
     // Creating the KdTree object for the search method of the extraction
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
     tree->setInputCloud(cloud);
@@ -431,9 +514,9 @@ public:
     //Set parameters for the clustering
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance(tolerance);
-    ec.setMinClusterSize(2);
-    ec.setMaxClusterSize(5000);
+    ec.setClusterTolerance(0.04); // 4cm
+    ec.setMinClusterSize(100);
+    ec.setMaxClusterSize(30000);
     ec.setSearchMethod(tree);
     ec.setInputCloud(cloud);
     ec.extract(cluster_indices);
