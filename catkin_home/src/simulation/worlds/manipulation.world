@@ -164,7 +164,7 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>0.016517 -0.023849 0 0 -0 0</pose>
+      <pose>0.043492 -0.012817 0 0 -0 0</pose>
     </model>
     <model name='coke_can'>
       <link name='link'>
@@ -221,56 +221,96 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>0.017875 -0.208966 0 0 -0 0</pose>
+      <pose>0.060462 -0.188362 0 0 -0 0</pose>
     </model>
-    <model name='coke_can_clone'>
-      <link name='link'>
-        <inertial>
-          <pose>0 0 0.06 0 -0 0</pose>
-          <mass>0.39</mass>
-          <inertia>
-            <ixx>0.00055575</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.00055575</iyy>
-            <iyz>0</iyz>
-            <izz>0.0001755</izz>
-          </inertia>
-        </inertial>
-        <collision name='collision'>
-          <pose>0.003937 0.004724 -0.18 0 -0 0</pose>
+    <model name='Nestle_Nesquik_Chocolate_Powder_Flavored_Milk_Additive_109_Oz_Canister'>
+      <link name='link_0'>
+        <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>model://coke_can/meshes/coke_can.dae</uri>
+              <uri>model://nestle_nesquik_chocolate_powder_flavored_milk_additive_109_oz_canister/meshes/model.obj</uri>
             </mesh>
           </geometry>
+        </visual>
+        <collision name='collision_0'>
+          <geometry>
+            <mesh>
+              <uri>model://nestle_nesquik_chocolate_powder_flavored_milk_additive_109_oz_canister/meshes/model.obj</uri>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
           <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
             <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-              </ode>
               <torsional>
                 <ode/>
               </torsional>
+              <ode/>
             </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <inertial>
+          <pose>0 0 0 0 -0 0</pose>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+          <mass>1</mass>
+        </inertial>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+      <pose>0.27798 -0.285288 0 0 -0 0</pose>
+    </model>
+    <model name='master_chef_can'>
+      <link name='link'>
+        <pose>0 0 0.07 0 -0 0</pose>
+        <inertial>
+          <mass>0.39</mass>
+          <inertia>
+            <ixx>0.00058</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.00058</iyy>
+            <iyz>0</iyz>
+            <izz>0.00019</izz>
+          </inertia>
+          <pose>0 0 0 0 -0 0</pose>
+        </inertial>
+        <collision name='collision'>
+          <pose>0 0 -0.005 0 -0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.05</radius>
+              <length>0.14</length>
+            </cylinder>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
             <contact>
-              <ode>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <min_depth>0.001</min_depth>
-                <max_vel>0.1</max_vel>
-              </ode>
+              <ode/>
             </contact>
             <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
           </surface>
-          <max_contacts>10</max_contacts>
         </collision>
         <visual name='visual'>
-          <pose>0.003937 0.004724 -0.18 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>model://coke_can/meshes/coke_can.dae</uri>
+              <uri>model://master_chef_can/textured.obj</uri>
             </mesh>
           </geometry>
         </visual>
@@ -278,108 +318,41 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose>0.216377 -0.345784 0.77236 -0.03631 -0.002687 0.032824</pose>
-    </model>
-    <model name='coke_can_clone_clone'>
-      <link name='link'>
-        <inertial>
-          <pose>0 0 0.06 0 -0 0</pose>
-          <mass>0.39</mass>
-          <inertia>
-            <ixx>0.00055575</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.00055575</iyy>
-            <iyz>0</iyz>
-            <izz>0.0001755</izz>
-          </inertia>
-        </inertial>
-        <collision name='collision'>
-          <pose>0.003937 0.004724 -0.18 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://coke_can/meshes/coke_can.dae</uri>
-            </mesh>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <contact>
-              <ode>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <min_depth>0.001</min_depth>
-                <max_vel>0.1</max_vel>
-              </ode>
-            </contact>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='visual'>
-          <pose>0.003937 0.004724 -0.18 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://coke_can/meshes/coke_can.dae</uri>
-            </mesh>
-          </geometry>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <pose>-0.141333 -0.256354 0.77235 -0.035719 -0.003386 0.032717</pose>
+      <pose>-0.097439 -0.237067 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>113 119000000</sim_time>
-      <real_time>114 174551617</real_time>
-      <wall_time>1649657506 233531565</wall_time>
-      <iterations>113119</iterations>
+      <sim_time>139 755000000</sim_time>
+      <real_time>140 129023690</real_time>
+      <wall_time>1652078160 649560500</wall_time>
+      <iterations>139755</iterations>
+      <model name='Nestle_Nesquik_Chocolate_Powder_Flavored_Milk_Additive_109_Oz_Canister'>
+        <pose>0.228285 -0.27094 0.774852 -0.004522 0.001847 1.51733</pose>
+        <scale>1 1 1</scale>
+        <link name='link_0'>
+          <pose>0.228285 -0.27094 0.774852 -0.004522 0.001847 1.51733</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 -9.8 0 -0 0</acceleration>
+          <wrench>0 0 -9.8 0 -0 0</wrench>
+        </link>
+      </model>
       <model name='cafe_table'>
-        <pose>0.016517 -0.023849 0 0 -0 0</pose>
+        <pose>0.043492 -0.012817 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose>0.016517 -0.023849 0 0 -0 0</pose>
+          <pose>0.043492 -0.012817 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='coke_can'>
-        <pose>0.007294 -0.366601 0.77235 -0.036204 -0.004264 0.032347</pose>
+        <pose>0.034887 -0.259983 0.771501 0.005957 0.006025 -5.5e-05</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose>0.007294 -0.366601 0.77235 -0.036204 -0.004264 0.032347</pose>
+          <pose>0.034887 -0.259983 0.771501 0.005957 0.006025 -5.5e-05</pose>
           <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>-0.209124 -0.663906 -0.054842 2.15754 0.531715 2.88337</acceleration>
-          <wrench>-0.081558 -0.258923 -0.021388 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='coke_can_clone'>
-        <pose>0.203424 -0.284428 0.771692 0.024319 0.000236 0.033645</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose>0.203424 -0.284428 0.771692 0.024319 0.000236 0.033645</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>-0.000151 -6.3e-05 -1.1e-05 0.001126 -0.002608 -0.0002</acceleration>
-          <wrench>-5.9e-05 -2.5e-05 -4e-06 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='coke_can_clone_clone'>
-        <pose>-0.141332 -0.256356 0.77235 -0.036167 -0.004268 0.032346</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose>-0.141332 -0.256356 0.77235 -0.036167 -0.004268 0.032346</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0.033528 0.054706 0.001485 -0.954129 0.586253 0.065513</acceleration>
-          <wrench>0.013076 0.021335 0.000579 0 -0 0</wrench>
+          <acceleration>1.1e-05 -2.3e-05 1e-06 0.000405 0.000196 2.6e-05</acceleration>
+          <wrench>4e-06 -9e-06 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='ground_plane'>
@@ -392,13 +365,23 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
+      <model name='master_chef_can'>
+        <pose>-0.183766 -0.279004 0.780001 7e-06 2.1e-05 0.00028</pose>
+        <scale>1 1 1</scale>
+        <link name='link'>
+          <pose>-0.183764 -0.279004 0.850001 7e-06 2.1e-05 0.00028</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0.000102 -1.4e-05 19.5998 -1.9e-05 0.001391 0.00029</acceleration>
+          <wrench>4e-05 -5e-06 7.64393 0 -0 0</wrench>
+        </link>
+      </model>
       <light name='sun'>
         <pose>0 0 10 0 -0 0</pose>
       </light>
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose>1.19668 -3.25137 3.70534 0 0.927643 1.78819</pose>
+        <pose>0.132692 -2.07386 2.44907 0 0.735643 1.51219</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
