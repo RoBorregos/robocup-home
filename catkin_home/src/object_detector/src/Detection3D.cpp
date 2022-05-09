@@ -5,17 +5,20 @@
 #include <shape_msgs/MeshTriangle.h>
 #include <geometry_msgs/Point.h>
 #include <pcl/io/auto_io.h>
+#include <pcl/io/obj_io.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/PolygonMesh.h>
+#include <pcl/surface/organized_fast_mesh.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
-#include <pcl/io/vtk_io.h>
 #include <pcl/point_types.h>
 #include <pcl/kdtree/kdtree_flann.h>
-#include <pcl/surface/mls.h>
-#include <pcl/surface/convex_hull.h>
+#include <pcl/surface/gp3.h>
+
 
 #include <actionlib/server/simple_action_server.h>
 #include <object_detector/DetectObjects3DAction.h>
@@ -32,7 +35,7 @@ struct ObjectParams
   /* PointCloud Cluster. */
   pcl::PointCloud<pcl::PointXYZ>::Ptr cluster;
   /* Mesh. */
-  shape_msgs::Mesh mesh;
+  shape_msgs::Mesh::Ptr mesh;
   /* Center point of the Cluster. */
   geometry_msgs::Pose center;
 };
@@ -110,21 +113,22 @@ public:
     geometry_msgs::PoseStamped object_pose;
     object_pose.header.stamp = ros::Time::now();
     object_pose.header.frame_id = "camera_depth_frame";
-    object_pose.pose = object_found.center;
+    object_pose.pose.position = object_found.center.position;
+    object_pose.pose.orientation = object_found.center.orientation;
 
     geometry_msgs::TransformStamped tf_to_map;
     tf_to_map = buffer_.lookupTransform("map", object_pose.header.frame_id, ros::Time(0), ros::Duration(1.0) );
     tf2::doTransform(object_pose, object_pose, tf_to_map);
 
-    collision_object.meshes.push_back(object_found.mesh);
+    // Add object only if is above table.
+    if (object_pose.pose.position.z < table_params.world_z) {
+      return;
+    }
+
+    collision_object.meshes.push_back(*object_found.mesh);
     collision_object.mesh_poses.push_back(object_pose.pose);
     collision_object.operation = collision_object.ADD;
     planning_scene_interface_.applyCollisionObject(collision_object);
-
-    // Add object only if above plane.
-    // if (object_pose.pose.position.z < table_params.world_z) {
-    //   return;
-    // }
 
     result_.objects_found++;
     pose_pub_msg_.header = object_pose.header;
@@ -207,7 +211,7 @@ public:
     out.z = in.z;
   }
 
-  /** \brief Given pcl Polygon Mesh convert it to ros Mesh shape_msg.
+  /** \brief Given pcl Polygon Mesh convert it to ros Mesh.
       @param polygon_mesh_ptr - Polygon Mesh Pointer. */
   bool convertPolygonMeshToRosMesh(const pcl::PolygonMesh::Ptr polygon_mesh_ptr, shape_msgs::Mesh::Ptr ros_mesh_ptr) {
     ROS_INFO("Conversion from PCL PolygonMesh to ROS Mesh started.");
@@ -254,65 +258,44 @@ public:
 
   /** \brief Given the pointcloud containing just the object, reconstruct a mesh from it.
       @param cloud - point cloud containing just the object. */
-  void reconstructMesh(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, shape_msgs::Mesh &mesh, int id)
+  void reconstructMesh(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud, shape_msgs::Mesh::Ptr &mesh, int id)
   {
-    pcl::PointCloud<pcl::PointXYZ> output_cloud;
-    std::vector<pcl::Vertices> triangles;
-
-    boost::shared_ptr<std::vector<int>> indices(new std::vector<int>);
-    indices->resize(cloud->points.size ());
-    for (size_t i = 0; i < indices->size (); ++i) { (*indices)[i] = i; }
-
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
     tree->setInputCloud(cloud);
+    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;
+    pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
+    n.setInputCloud(cloud);
+    n.setSearchMethod(tree);
+    n.setKSearch(20);
+    n.compute(*normals);
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr mls_points(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointNormal>::Ptr mls_normals(new pcl::PointCloud<pcl::PointNormal>);
-    pcl::MovingLeastSquares<pcl::PointXYZ, pcl::PointNormal> mls;
+    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointNormal>);
+    pcl::concatenateFields(*cloud, *normals, *cloud_with_normals);
 
-    mls.setComputeNormals (true);
-    mls.setInputCloud(cloud);
-    mls.setIndices(indices);
-    mls.setPolynomialOrder (2);
-    mls.setSearchMethod(tree);
-    mls.setSearchRadius(0.03);
-    
-    mls.process(*mls_normals);
-    
-    mls_points->resize(mls_normals->size());
-    for (size_t i = 0; i < mls_normals->points.size(); ++i) {
-        mls_points->points[i].x = mls_normals->points[i].x;
-        mls_points->points[i].y = mls_normals->points[i].y;
-        mls_points->points[i].z = mls_normals->points[i].z;
-    }
+    pcl::search::KdTree<pcl::PointNormal>::Ptr tree2(new pcl::search::KdTree<pcl::PointNormal>);
+    tree2->setInputCloud(cloud_with_normals);
 
-    pcl::ConvexHull<pcl::PointXYZ> ch;
-    
-    ch.setInputCloud(mls_points);
-    ch.reconstruct(output_cloud, triangles);
+    // Initialize objects
+    pcl::GreedyProjectionTriangulation<pcl::PointNormal> gp3;
+    pcl::PolygonMesh::Ptr triangles(new pcl::PolygonMesh);
 
-    pcl::io::savePCDFile("pcl_objectmesh_"+std::to_string(id)+".pcd", output_cloud);
+    // Set the maximum distance between connected points (maximum edge length)
+    gp3.setSearchRadius(0.02); // 2cm
 
-    mesh.vertices.resize(output_cloud.points.size());
-    for(size_t i=0; i<output_cloud.points.size(); i++)
-     toPoint(output_cloud.points[i], mesh.vertices[i]);
- 
-    ROS_INFO("CH Cloud %ld size", output_cloud.points.size());
-    ROS_INFO("Found %ld polygons", triangles.size());
-    BOOST_FOREACH(const pcl::Vertices polygon, triangles)
-    {
-      if(polygon.vertices.size() < 3)
-      {
-        ROS_WARN("Not enough points in polygon. Ignoring it.");
-        continue;
-      }
-  
-      shape_msgs::MeshTriangle triangle = shape_msgs::MeshTriangle();
-      boost::array<uint32_t, 3> xyz = {{polygon.vertices[0], polygon.vertices[1], polygon.vertices[2]}};
-      triangle.vertex_indices = xyz;
-  
-      mesh.triangles.push_back(triangle);
-    }
+    // Set typical values for the parameters
+    gp3.setMu(2.5);
+    gp3.setMaximumNearestNeighbors(100);
+    gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
+    gp3.setMinimumAngle(M_PI/18); // 10 degrees
+    gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp3.setNormalConsistency(false);
+
+    // Get result
+    gp3.setInputCloud(cloud_with_normals);
+    gp3.setSearchMethod(tree2);
+    gp3.reconstruct(*triangles);
+
+    convertPolygonMeshToRosMesh(triangles, mesh);
   }
 
   /** \brief Given the pointcloud containing just the object,
@@ -332,7 +315,13 @@ public:
     object_found.center.orientation.z = 0.0;
     object_found.center.orientation.w = 1.0;
 
-    // Store cluster.
+    // Change point cloud origin to object centroid and save it.
+    for (auto &point : cloud->points)
+    {
+      point.x = point.x - centroid.x;
+      point.y = point.y - centroid.y;
+      point.z = point.z - centroid.z;
+    }
     object_found.cluster = cloud;
     
     // Store mesh.
@@ -499,6 +488,7 @@ public:
 
     std::vector<ObjectParams> objects(clustersFound);
     for(int i=0;i < clustersFound; i++) {
+      objects[i].mesh.reset(new shape_msgs::Mesh);
       pcl::io::savePCDFile("pcl_object_"+std::to_string(i)+".pcd", *clusters[i]);
       extractObjectDetails(clusters[i], objects[i], i);
       addObject(i, objects[i], table_params);
