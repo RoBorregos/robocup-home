@@ -1,4 +1,5 @@
 <launch>
+  <arg name="model" default="$(optenv ROBOT_MODEL robot)" doc="model type [robot, robot_nav]"/>
   <arg name="world_name" default="worlds/empty.world"/>
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(arg world_name)"/>
@@ -17,7 +18,7 @@
   <arg name="yaw_pos" default="0.0"/>
   <param
     name="robot_description"
-    command="$(find xacro)/xacro $(find robot_description)/urdf/robot.urdf.xacro" />
+    command="$(find xacro)/xacro $(find robot_description)/urdf/$(arg model).urdf.xacro" />
   <node
     pkg="gazebo_ros"
     type="spawn_model"
