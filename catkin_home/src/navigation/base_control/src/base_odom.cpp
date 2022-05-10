@@ -63,7 +63,7 @@ void reCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
 void initializeOdometryMessage(nav_msgs::Odometry &odom){
     // Define frame constants.
     odom.header.frame_id = "odom";
-    odom.child_frame_id = "base_link";
+    odom.child_frame_id = "base_footprint";
     
     // Define postiion constants.
     odom.pose.pose.position.z = 0.0;
@@ -94,7 +94,7 @@ void initializeOdometryMessage(nav_msgs::Odometry &odom){
 void initializeOdometryTransform(geometry_msgs::TransformStamped &odom_trans){
     // Define frame constants.
     odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "base_link";
+    odom_trans.child_frame_id = "base_footprint";
     
     // Define postiion constants.
     odom_trans.transform.translation.z = 0.0;
@@ -112,6 +112,12 @@ void computeRobotVelocity(Velocity &robot_velocity){
     robot_velocity.x = (v_fl + v_fr + v_bl + v_br) / 4.0;
     robot_velocity.y = (v_fl - v_fr - v_bl + v_br) / 4.0;
     robot_velocity.th = (-v_fl + v_fr - v_bl + v_br) / (4.0 * robot_constant);
+
+    // Compute the overall velocity of the robot.
+    //robot_velocity.x = (v_fl + v_fr + v_bl + v_br) *(wheel_radius/ 4.0;
+    //robot_velocity.y = (-v_fl + v_fr + v_bl - v_br) *(wheel_radius/ 4.0;
+    //robot_velocity.th = (-v_fl + v_fr - v_bl + v_br) *(wheel_radius / (4.0 * robot_constant);
+
 }
 
 // Function to compute robot displacement.

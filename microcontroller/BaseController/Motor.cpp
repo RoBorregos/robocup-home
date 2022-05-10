@@ -177,6 +177,10 @@ double Motor::MsToRps(const double ms) {
   return  (ms / ( M_PI * kWheelDiameter));
 }
 
+double Motor::RpsToMs(const double rps) {
+  return  (M_PI * kWheelDiameter * rps);
+}
+
 void Motor::changePwm(const uint8_t pwm) {
   pwm_ = pwm;
   switch(current_state_) {
@@ -215,7 +219,8 @@ int Motor::getPidTicks() {
 }
 
 double Motor::getCurrentSpeed() {
-  return current_speed_;
+  return (RpsToMs(current_speed_));
+  //return current_speed_;
 }
 
 double Motor::getTargetSpeed() {

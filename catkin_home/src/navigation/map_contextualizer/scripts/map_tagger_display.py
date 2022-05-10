@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """ Map tagger display script.
 
 Displays the map information given by the /tagged_map topic by
@@ -11,12 +11,12 @@ Global app states:
 2:  Add object area
 """
 
+import tf2_ros
 import roslib; roslib.load_manifest('visualization_marker_tutorials')
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
 from geometry_msgs.msg import Point
 import rospy
-import tf
 from std_msgs.msg import Int16
 from map_contextualizer.msg import MapDisplayState
 from map_contextualizer.msg import MapContext
@@ -190,13 +190,13 @@ if __name__ == '__main__':
     rospy.Subscriber("/map_tagger_state", MapDisplayState, changeState)
     topic = 'goal_visualization_array'
     publisher = rospy.Publisher(topic, MarkerArray)
-    br = tf.TransformBroadcaster()
+    br = tf2_ros.TransformBroadcaster()
     rospy.init_node('map_displayer')
 
     # global path
     while not rospy.is_shutdown():
         counter=0
         updateMarkers()
-        global markerArray
+        #global markerArray
         publisher.publish(markerArray)
         rospy.sleep(0.01)
