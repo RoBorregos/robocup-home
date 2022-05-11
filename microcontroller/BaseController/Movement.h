@@ -12,6 +12,8 @@
 #include "Kinematics.h"
 #include "Motor.h"
 
+#define PI 3.1415926535897932384626433832795
+
 inline int sign(int a) { return min(1, max(-1, a)); };
 
 class Movement {
@@ -45,6 +47,9 @@ class Movement {
     //////////////////////////////////VELOCITY//////////////////////////////////////    
     // Received a Velocity Command.
     void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
+
+    // Calculate meters per second equivalent to Revolutions per minute.
+    double RpmToMs(const double rpm);
     
     // Stop robot.
     void stop();
@@ -84,7 +89,7 @@ class Movement {
     int last_encoder_counts_[Movement::kCountMotors];
 
     // Constants
-    static constexpr bool kUsingPID = false;
+    static constexpr bool kUsingPID = true;
 
     // Kinematics
     Kinematics kinematics_;

@@ -16,7 +16,7 @@ import pandas as pd
 
 
 class serialPlot:
-    def __init__(self, serialPort='/dev/ttyUSB0', serialBaud=9600, plotLength=100, dataNumBytes=4, numPlots=5):
+    def __init__(self, serialPort='/dev/ttyUSB0', serialBaud=57600, plotLength=100, dataNumBytes=4, numPlots=5):
         self.port = serialPort
         self.baud = serialBaud
         self.plotMaxLength = plotLength
@@ -87,7 +87,7 @@ class serialPlot:
 def main():
     # portName = 'COM5'
     portName = '/dev/ttyUSB0'
-    baudRate = 9600
+    baudRate = 57600
     maxPlotLength = 100     # number of points in x-axis of real time plot
     dataNumBytes = 4        # number of bytes of 1 data point
     numPlots = 5          # number of plots in 1 graph

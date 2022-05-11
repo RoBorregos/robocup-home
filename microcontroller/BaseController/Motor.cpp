@@ -181,6 +181,10 @@ double Motor::RpsToMs(const double rps) {
   return  (M_PI * kWheelDiameter * rps);
 }
 
+double Motor::RpmToMs(const double rpm) {
+  return  (RpsToMs(rpm)/60);
+}
+
 void Motor::changePwm(const uint8_t pwm) {
   pwm_ = pwm;
   switch(current_state_) {
