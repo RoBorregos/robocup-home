@@ -12,12 +12,16 @@ import threading
 import imutils
 import time
 from imutils.video import FPS
-from sensor_msgs.msg import CompressedImage
-from geometry_msgs.msg import Pose
+from sensor_msgs.msg import CompressedImage, Image, CameraInfo
+from cv_bridge import CvBridge, CvBridgeError
+from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
 from object_detector.msg import objectDetection, objectDetectionArray
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
+import sys
+sys.path.append(str(pathlib.Path(__file__).parent) + '/../include')
+from vision_utils import *
 
 SOURCES = {
     "VIDEO": str(pathlib.Path(__file__).parent) + "/../resources/test.mp4",
@@ -29,6 +33,9 @@ ARGS= {
     "SOURCE": SOURCES["VIDEO"],
     "ROS_INPUT": False,
     "USE_ACTIVE_FLAG": True,
+    "DEPTH_ACTIVE": False,
+    "DEPTH_INPUT": "/camera/depth/image_raw",
+    "CAMERA_INFO": "/camera/rgb/camera_info",
     "MODELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/",
     "LABELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/label_map.pbtxt",
     "MIN_SCORE_THRESH": 0.6,
@@ -38,6 +45,10 @@ ARGS= {
 class CamaraProcessing:
 
     def __init__(self):
+        self.bridge = CvBridge()
+        self.depth_image = []
+        self.cv_image_rgb_info = CameraInfo()
+
         # Load Models
         print("[INFO] Loading models...")
         
@@ -78,7 +89,10 @@ class CamaraProcessing:
 
     def handleSource(self):
         if ARGS["ROS_INPUT"]:
-            self.subscriber = rospy.Subscriber(ARGS["SOURCE"], CompressedImage, self.imageRosCallback)
+            self.subscriber = rospy.Subscriber(ARGS["SOURCE"], Image, self.imageRosCallback)
+            if ARGS["DEPTH_ACTIVE"]:
+                self.subscriberDepth = rospy.Subscriber(ARGS["DEPTH_INPUT"], Image, self.depthImageRosCallback)
+                self.subscriberInfo = rospy.Subscriber(ARGS["CAMERA_INFO"], CameraInfo, self.infoImageRosCallback)
         else:
             cThread = threading.Thread(target=self.cameraThread, daemon=True)
             cThread.start()
@@ -100,10 +114,21 @@ class CamaraProcessing:
             pass
         cap.release()
 
-    def imageRosCallback(self, msg):
-        np_arr = np.frombuffer(msg.data, np.uint8)
-        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-        self.imageCallback(frame)
+    def imageRosCallback(self, data):
+        try:
+            self.imageCallback(self.bridge.imgmsg_to_cv2(data, "bgr8"))
+        except CvBridgeError as e:
+            print(e)
+    
+    def depthImageRosCallback(self, data):
+        try:
+            self.depth_image = self.bridge.imgmsg_to_cv2(data, "32FC1")
+        except CvBridgeError as e:
+            print(e)
+    
+    def infoImageRosCallback(self, data):
+        self.cv_image_rgb_info = data
+        self.subscriberInfo.unregister()
 
     def imageCallback(self, img):
         """
@@ -167,9 +192,9 @@ class CamaraProcessing:
 
     def compute_result(self, frame):
         (boxes, scores, classes, detections) = self.run_inference_on_image(frame)
-        return self.get_objects(boxes, scores, classes, frame.shape[0], frame.shape[1]), detections, frame, self.category_index
+        return self.get_objects(boxes, scores, classes, frame.shape[0], frame.shape[1], frame), detections, frame, self.category_index
 
-    def get_objects(self, boxes, scores, classes, height, width):
+    def get_objects(self, boxes, scores, classes, height, width, frame):
         """
         This function creates the output array of the detected objects with its coordinates.
         """
@@ -181,12 +206,25 @@ class CamaraProcessing:
                     # in case it detects more that one of each object, grabs the one with higher score
                     if objects[value]['score'] > scores[index]:
                         continue
+                
+                point3D = Point()
+                point3D.x = 0
+                point3D.y = 0
+                point3D.z = 0
+                point2D = get2DCentroid(boxes[index] , frame)
+                if ARGS["DEPTH_ACTIVE"]:
+                    depth = get_depth(frame, self.depth_image, point2D)
+                    point3D_ = deproject_pixel_to_point(self.cv_image_rgb_info, point2D, depth)
+                    point3D.x = point3D_[0]
+                    point3D.y = point3D_[1]
+                    point3D.z = point3D_[2]
                 objects[value] = {
                     "score": float(scores[index]),
                     "ymin": float(boxes[index][0]),
                     "xmin": float(boxes[index][1]),
                     "ymax": float(boxes[index][2]),
-                    "xmax": float(boxes[index][3])
+                    "xmax": float(boxes[index][3]),
+                    "point3D": point3D
                 }
         
         for label in objects:
@@ -200,6 +238,7 @@ class CamaraProcessing:
                     xmin =  detection["xmin"],
                     ymax =  detection["ymax"],
                     xmax =  detection["xmax"],
+                    point3D = detection["point3D"]
                 ))
         
         return res
