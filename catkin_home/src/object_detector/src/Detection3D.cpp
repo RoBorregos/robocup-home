@@ -20,6 +20,7 @@
 #include <pcl/surface/gp3.h>
 
 
+#include <object_detector/objectDetectionArray.h>
 #include <actionlib/server/simple_action_server.h>
 #include <object_detector/DetectObjects3DAction.h>
 
@@ -27,8 +28,12 @@
 #include <moveit_msgs/CollisionObject.h>
 
 #include <geometry_msgs/PoseArray.h>
+#include <geometry_msgs/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
+
+#include <math.h>
+#include <limits>
 
 struct ObjectParams
 {
@@ -38,6 +43,8 @@ struct ObjectParams
   shape_msgs::Mesh::Ptr mesh;
   /* Center point of the Cluster. */
   geometry_msgs::Pose center;
+  /* Detection Label. */
+  int label = 0;
 };
 
 struct PlaneParams
@@ -82,6 +89,7 @@ public:
     result_.objects_found = 0;
     result_.objects_poses.clear();
     result_.objects_names.clear();
+    result_.objects_ids.clear();
     result_.x_plane = 0;
     result_.y_plane = 0;
     result_.z_plane = 0;
@@ -135,6 +143,7 @@ public:
     pose_pub_msg_.poses.push_back(object_pose.pose);
     result_.objects_poses.push_back(object_pose);
     result_.objects_names.push_back(collision_object.id);
+    result_.objects_ids.push_back(object_found.label);
   }
 
   /** \brief Given the parameters of the plane add it to the planning scene. */
@@ -458,6 +467,40 @@ public:
     return isTheTable;
   }
   
+  /** \brief Calculate Distance between two points. */
+  float getDistance(const geometry_msgs::Point &a, const geometry_msgs::Point &b) {
+    return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2) + pow(a.z - b.z, 2));
+  }
+
+  /** \brief Bind an object with a detection Distance between two points. */
+  void bindDetections(std::vector<ObjectParams> &objects) {
+    // Get the best of three different detections.
+    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_);
+    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections2 = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_);
+    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections3 = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_);
+    input_detections = input_detections->detections.size() < input_detections2->detections.size() ? input_detections2 : input_detections;
+    input_detections = input_detections->detections.size() < input_detections3->detections.size() ? input_detections3 : input_detections;
+
+    int n_detections = input_detections->detections.size();
+    
+    for(int i=0;i<n_detections;i++) {
+      float min_distance = std::numeric_limits<float>::max();
+      int min_index = -1;
+      for(int j=0;j<objects.size();j++) {
+        float curr_distance = getDistance(objects[j].center.position, input_detections->detections[i].point3D);
+        if (curr_distance < min_distance) {
+          min_distance = curr_distance;
+          min_index = j;
+        }
+      }
+      if (min_index != -1) {
+        objects[min_index].label = input_detections->detections[i].label;
+        ROS_INFO_STREAM("Detection " << i << " binded with object " << min_index << " -> Min Distance: " << min_distance);
+      }
+    }
+
+  }
+
   /** \brief PointCloud callback. */
   void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
   {
@@ -491,6 +534,11 @@ public:
       objects[i].mesh.reset(new shape_msgs::Mesh);
       pcl::io::savePCDFile("pcl_object_"+std::to_string(i)+".pcd", *clusters[i]);
       extractObjectDetails(clusters[i], objects[i], i);
+    }
+
+    bindDetections(objects);
+
+    for(int i=0;i < clustersFound; i++) {
       addObject(i, objects[i], table_params);
     }
   }

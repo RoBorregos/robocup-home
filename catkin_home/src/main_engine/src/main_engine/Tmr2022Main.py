@@ -76,7 +76,8 @@ class Tmr2022Main(object):
         
         object_poses = GetObjectsScope.objects_poses
         object_names = GetObjectsScope.objects_names
-        self.objects = zip(object_names, object_poses)
+        object_ids = GetObjectsScope.objects_ids
+        self.objects = zip(object_ids, object_names, object_poses)
 
 def main():
     rospy.init_node('Tmr2022Main', anonymous=True)
