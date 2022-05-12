@@ -14,7 +14,7 @@ import time
 from imutils.video import FPS
 from sensor_msgs.msg import CompressedImage, Image, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PoseArray, Pose
 from std_msgs.msg import Bool
 from object_detector.msg import objectDetection, objectDetectionArray
 from object_detection.utils import label_map_util
@@ -35,7 +35,7 @@ ARGS= {
     "USE_ACTIVE_FLAG": True,
     "DEPTH_ACTIVE": False,
     "DEPTH_INPUT": "/camera/depth/image_raw",
-    "CAMERA_INFO": "/camera/rgb/camera_info",
+    "CAMERA_INFO": "/camera/depth/camera_info",
     "MODELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/",
     "LABELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/label_map.pbtxt",
     "MIN_SCORE_THRESH": 0.6,
@@ -47,7 +47,8 @@ class CamaraProcessing:
     def __init__(self):
         self.bridge = CvBridge()
         self.depth_image = []
-        self.cv_image_rgb_info = CameraInfo()
+        self.rgb_image = []
+        self.imageInfo = CameraInfo()
 
         # Load Models
         print("[INFO] Loading models...")
@@ -64,6 +65,7 @@ class CamaraProcessing:
         self.subscriber = None
         self.handleSource()
         self.publisher = rospy.Publisher('detections', objectDetectionArray, queue_size=5)
+        self.posePublisher = rospy.Publisher("/test/detectionposes", PoseArray, queue_size=5)
         if ARGS["USE_ACTIVE_FLAG"]:
             rospy.Subscriber('detectionsActive', Bool, self.activeFlagSubscriber)
 
@@ -127,7 +129,7 @@ class CamaraProcessing:
             print(e)
     
     def infoImageRosCallback(self, data):
-        self.cv_image_rgb_info = data
+        self.imageInfo = data
         self.subscriberInfo.unregister()
 
     def imageCallback(self, img):
@@ -135,6 +137,7 @@ class CamaraProcessing:
         Rate Neckbottle considering TF object detection model frame rate (<10FPS) against camera input (>30FPS).
         Process a frame only when the script finishes the process of the previous frame, rejecting frames to keep real-time idea.
         """
+        self.rgb_image = img
         if not self.activeFlag:
             self.detections_frame = img
         elif self.runThread == None or not self.runThread.is_alive():
@@ -200,6 +203,11 @@ class CamaraProcessing:
         """
         objects = {}
         res = []
+
+        pa = PoseArray()
+        pa.header.frame_id = "camera_depth_frame"
+        pa.header.stamp = rospy.Time.now()
+
         for index, value in enumerate(classes):
             if scores[index] > ARGS["MIN_SCORE_THRESH"]:
                 if value in objects:
@@ -208,16 +216,15 @@ class CamaraProcessing:
                         continue
                 
                 point3D = Point()
-                point3D.x = 0
-                point3D.y = 0
-                point3D.z = 0
-                point2D = get2DCentroid(boxes[index] , frame)
-                if ARGS["DEPTH_ACTIVE"]:
-                    depth = get_depth(frame, self.depth_image, point2D)
-                    point3D_ = deproject_pixel_to_point(self.cv_image_rgb_info, point2D, depth)
+                point2D = get2DCentroid(boxes[index], self.rgb_image)
+                
+                if ARGS["DEPTH_ACTIVE"] and len(self.depth_image) != 0:
+                    depth = get_depth(self.rgb_image, self.depth_image, point2D)
+                    point3D_ = deproject_pixel_to_point(self.imageInfo, point2D, depth)
                     point3D.x = point3D_[0]
                     point3D.y = point3D_[1]
                     point3D.z = point3D_[2]
+                    pa.poses.append(Pose(position=point3D))
                 objects[value] = {
                     "score": float(scores[index]),
                     "ymin": float(boxes[index][0]),
@@ -226,6 +233,7 @@ class CamaraProcessing:
                     "xmax": float(boxes[index][3]),
                     "point3D": point3D
                 }
+        self.posePublisher.publish(pa)
         
         for label in objects:
             labelText = self.category_index[label]['name']
