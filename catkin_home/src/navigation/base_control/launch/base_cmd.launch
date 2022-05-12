@@ -38,12 +38,7 @@
         name="base_odom"
         type="base_odom"
     />
-    <!-- Run the plotter. --> 
-    <!--<node
-        pkg="base_control"
-        name="multiplePlots.py"
-        type="multiplePlots"
-    />-->
+
     <!-- Send CmdVel Node. --> 
     <node
         pkg="teleop_twist_keyboard"
@@ -52,9 +47,9 @@
         output="screen"
     />
     <!-- Run rviz simulation. --> 
-    <!--<include 
+    <include 
         file="$(find robot_description)/launch/display.launch" 
-    />-->
+    />
     <!--<node 
         type="rviz" 
         name="rviz" 
