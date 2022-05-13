@@ -47,9 +47,9 @@
         output="screen"
     />
     <!-- Run rviz simulation. --> 
-    <include 
+    <!--<include 
         file="$(find robot_description)/launch/display.launch" 
-    />
+    />-->
     <!--<node 
         type="rviz" 
         name="rviz" 
