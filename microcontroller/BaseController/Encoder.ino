@@ -5,11 +5,8 @@ void Encoder::handleEncoder(Motor &motor) {
   if(motor.getCurrentState() == MotorState::Forward) {
     motor.deltaEncoderTicks(1);
   }
-  else if(motor.getCurrentState() == MotorState::Backward){
+  else {
     motor.deltaEncoderTicks(-1);
-  }
-  else{
-    return;
   }
 }
 

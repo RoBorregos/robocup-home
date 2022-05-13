@@ -110,8 +110,14 @@ void computeRobotVelocity(Velocity &robot_velocity){
 
     // Compute the overall velocity of the robot.
     robot_velocity.x = (v_fl + v_fr + v_bl + v_br) / 4.0;
-    robot_velocity.y = (-v_fl + v_fr + v_bl - v_br) / 4.0;
+    robot_velocity.y = (v_fl - v_fr - v_bl + v_br) / 4.0;
     robot_velocity.th = (-v_fl + v_fr - v_bl + v_br) / (4.0 * robot_constant);
+
+    // Compute the overall velocity of the robot.
+    //robot_velocity.x = (v_fl + v_fr + v_bl + v_br) *(wheel_radius/ 4.0;
+    //robot_velocity.y = (-v_fl + v_fr + v_bl - v_br) *(wheel_radius/ 4.0;
+    //robot_velocity.th = (-v_fl + v_fr - v_bl + v_br) *(wheel_radius / (4.0 * robot_constant);
+
 }
 
 // Function to compute robot displacement.

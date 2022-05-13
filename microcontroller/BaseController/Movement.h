@@ -12,7 +12,7 @@
 #include "Kinematics.h"
 #include "Motor.h"
 
-#define N_PI 3.1415926535897932384626433832795
+#define PI 3.1415926535897932384626433832795
 
 inline int sign(int a) { return min(1, max(-1, a)); };
 
