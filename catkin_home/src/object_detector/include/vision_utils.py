@@ -17,16 +17,14 @@ def get2DCentroid(box, frame):
     height = ymax - ymin
     return (int(xmin + width / 2), int(ymin + height / 2))
 
-def get_depth(rgbframe_, depthframe_, pixel):
+def get_depth(depthframe_, pixel):
     '''
         Given pixel coordinates in an image, the actual image and its depth frame, compute the corresponding depth.
     '''
-    heightRGB, widthRGB = (rgbframe_.shape[0], rgbframe_.shape[1])
     heightDEPTH, widthDEPTH = (depthframe_.shape[0], depthframe_.shape[1])
 
-    # Map RGB pixel to depth píxel.
-    x = map(pixel[0], 0, widthRGB, 0, widthDEPTH)
-    y = map(pixel[1], 0, heightRGB, 0, heightDEPTH)
+    x = pixel[0]
+    y = pixel[1]
 
     def medianCalculation(x, y, width, height, depthframe_):
         medianArray = []

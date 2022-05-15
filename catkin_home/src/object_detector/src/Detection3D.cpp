@@ -18,7 +18,8 @@
 #include <pcl/point_types.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/surface/gp3.h>
-
+#include <pcl/common/transforms.h>
+#include <pcl_ros/transforms.h>
 
 #include <object_detector/objectDetectionArray.h>
 #include <actionlib/server/simple_action_server.h>
@@ -29,11 +30,15 @@
 
 #include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/Quaternion.h>
+
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
+#include <tf/transform_listener.h>
 
 #include <math.h>
 #include <limits>
+
+#define CAMERA_FRAME "camera_depth_frame"
 
 struct ObjectParams
 {
@@ -42,7 +47,9 @@ struct ObjectParams
   /* Mesh. */
   shape_msgs::Mesh::Ptr mesh;
   /* Center point of the Cluster. */
-  geometry_msgs::Pose center;
+  geometry_msgs::PoseStamped center;
+  /* Center point of the Cluster referenced to Camera TF. */
+  geometry_msgs::PoseStamped center_cam;
   /* Detection Label. */
   int label = 0;
 };
@@ -55,10 +62,15 @@ struct PlaneParams
   double center_pt[3];
   /* World Z Value. */
   double world_z;
+  /* World Z Min Value. */
+  double min_z;
+  /* World Z Max Value. */
+  double max_z;
   /* Width of the plane. */
   double width;
   /* Height of the plane. */
   double height;
+
 };
 
 class Detect3D
@@ -76,6 +88,7 @@ public:
     listener_(buffer_),
     as_(nh_, name, boost::bind(&Detect3D::handleActionServer, this, _1), false)
   {
+    tf_listener = new tf::TransformListener();
     as_.start();
     pose_pub_ = nh_.advertise<geometry_msgs::PoseArray>("/test/objectposes", 10);
     ROS_INFO_STREAM("Action Server Detect3D - Initialized");
@@ -104,8 +117,15 @@ public:
       return;
     }
 
-    boost::shared_ptr<sensor_msgs::PointCloud2 const> input_cloud = ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/camera/depth/points", nh_);
-    Detect3D::cloudCB(input_cloud);
+    // Get PointCloud and Transform it to Map Frame
+    sensor_msgs::PointCloud2 pc;
+    sensor_msgs::PointCloud2 t_pc;
+    tf_listener->waitForTransform("/map", CAMERA_FRAME, ros::Time(0), ros::Duration(5.0));
+    pc = *(ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/camera/depth/points", nh_));
+    pc.header.frame_id = CAMERA_FRAME;
+    pcl_ros::transformPointCloud("map", pc, t_pc, *tf_listener);
+
+    Detect3D::cloudCB(t_pc);
     as_.setSucceeded(result_);
     pose_pub_.publish(pose_pub_msg_);
   }
@@ -120,13 +140,9 @@ public:
 
     geometry_msgs::PoseStamped object_pose;
     object_pose.header.stamp = ros::Time::now();
-    object_pose.header.frame_id = "camera_depth_frame";
-    object_pose.pose.position = object_found.center.position;
-    object_pose.pose.orientation = object_found.center.orientation;
-
-    geometry_msgs::TransformStamped tf_to_map;
-    tf_to_map = buffer_.lookupTransform("map", object_pose.header.frame_id, ros::Time(0), ros::Duration(1.0) );
-    tf2::doTransform(object_pose, object_pose, tf_to_map);
+    object_pose.header.frame_id = "map";
+    object_pose.pose.position = object_found.center.pose.position;
+    object_pose.pose.orientation = object_found.center.pose.orientation;
 
     // Add object only if is above table.
     if (object_pose.pose.position.z < table_params.world_z) {
@@ -147,7 +163,7 @@ public:
   }
 
   /** \brief Given the parameters of the plane add it to the planning scene. */
-  bool addPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const pcl::ModelCoefficients::Ptr& coefficients_plane, bool addToMoveit, PlaneParams &plane_params)
+  bool addPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const pcl::ModelCoefficients::Ptr& coefficients_plane, PlaneParams &plane_params)
   {
     plane_params.direction_vec[0] = coefficients_plane->values[0];
     plane_params.direction_vec[1] = coefficients_plane->values[1];
@@ -155,58 +171,17 @@ public:
     plane_params.direction_vec[3] = coefficients_plane->values[3];
     extractPlaneDetails(cloud, plane_params);
 
-    // Adding Plane to Planning Scene
-    moveit_msgs::CollisionObject collision_object;
-    collision_object.header.frame_id = "map";
-    collision_object.id = "table";
-
-    // Define a object which will be added to the world.
-    shape_msgs::SolidPrimitive solid_primitive;
-    solid_primitive.type = solid_primitive.BOX;
-    solid_primitive.dimensions.resize(3);
-    solid_primitive.dimensions[0] = plane_params.width;
-    solid_primitive.dimensions[1] = plane_params.height;
-    solid_primitive.dimensions[2] = 0.02; // Custom table wide.
-
-    // Define a pose for the plane (specified relative to frame_id).
-    geometry_msgs::PoseStamped plane_pose;
-    plane_pose.header.stamp = ros::Time::now();
-    plane_pose.header.frame_id = "camera_depth_frame";
-    plane_pose.pose.position.x = plane_params.center_pt[0];
-    plane_pose.pose.position.y = plane_params.center_pt[1];
-    plane_pose.pose.position.z = plane_params.center_pt[2];
-    plane_pose.pose.orientation.x = 0.0;
-    plane_pose.pose.orientation.y = 0.0;
-    plane_pose.pose.orientation.z = 0.0;
-    plane_pose.pose.orientation.w = 1;
-    
-    geometry_msgs::TransformStamped tf_to_map;
-    tf_to_map = buffer_.lookupTransform("map", plane_pose.header.frame_id, ros::Time(0), ros::Duration(1.0) );
-    tf2::doTransform(plane_pose, plane_pose, tf_to_map);
-
-    plane_pose.pose.position.z = plane_params.world_z - 0.04;
-    ROS_INFO_STREAM("Plane Detected at z:" << plane_pose.pose.position.z);
-    plane_pose.pose.orientation.x = 0.0;
-    plane_pose.pose.orientation.y = 0.0;
-    plane_pose.pose.orientation.z = 0.0;
-    plane_pose.pose.orientation.w = 1;
-
-    // Ignore it if floor is the plane detected.
-    if (plane_pose.pose.position.z < 0.2) {
+    // Z conditions to know if it is the Table.
+    if (plane_params.max_z - plane_params.min_z > 0.1) { // Diff > 10cm, Not Parallel Plane 
+      return false;
+    }
+    if (plane_params.min_z < 0.20) { // Z Value < than 20cm, Floor Detected.
       return false;
     }
 
-    // Add Plane as Collision Object.
-    if (addToMoveit) {
-      collision_object.primitives.push_back(solid_primitive);
-      collision_object.primitive_poses.push_back(plane_pose.pose);
-      collision_object.operation = collision_object.ADD;
-      planning_scene_interface_.applyCollisionObject(collision_object);
-    }
-
-    result_.x_plane = plane_pose.pose.position.x;
-    result_.y_plane = plane_pose.pose.position.y;
-    result_.z_plane = plane_pose.pose.position.z;
+    result_.x_plane = plane_params.center_pt[0];
+    result_.y_plane = plane_params.center_pt[1];
+    result_.z_plane = plane_params.center_pt[2];
     result_.width_plane = plane_params.width;
     result_.height_plane = plane_params.height;
     return true;
@@ -316,13 +291,19 @@ public:
     pcl::computeCentroid(*cloud, centroid);
 
     // Store the object centroid.
-    object_found.center.position.x = centroid.x;
-    object_found.center.position.y = centroid.y;
-    object_found.center.position.z = centroid.z;
-    object_found.center.orientation.x = 0.0;
-    object_found.center.orientation.y = 0.0;
-    object_found.center.orientation.z = 0.0;
-    object_found.center.orientation.w = 1.0;
+    object_found.center.header.frame_id = "map";
+    object_found.center.pose.position.x = centroid.x;
+    object_found.center.pose.position.y = centroid.y;
+    object_found.center.pose.position.z = centroid.z;
+    object_found.center.pose.orientation.x = 0.0;
+    object_found.center.pose.orientation.y = 0.0;
+    object_found.center.pose.orientation.z = 0.0;
+    object_found.center.pose.orientation.w = 1.0;
+
+    // Store the object centroid referenced to the camera frame.
+    geometry_msgs::TransformStamped tf_to_cam;
+    tf_to_cam = buffer_.lookupTransform(CAMERA_FRAME, "map", ros::Time(0), ros::Duration(1.0));
+    tf2::doTransform(object_found.center, object_found.center_cam, tf_to_cam);
 
     // Change point cloud origin to object centroid and save it.
     for (auto &point : cloud->points)
@@ -346,6 +327,8 @@ public:
     double min_x_ = cloud->points[0].x;
     double max_y_ = cloud->points[0].y;
     double min_y_ = cloud->points[0].y;
+    double max_z_ = cloud->points[0].z;
+    double min_z_ = cloud->points[0].z;
     double totalZ = 0.0;
     for (auto const point : cloud->points)
     {
@@ -353,6 +336,8 @@ public:
       min_x_ = fmin(min_x_, point.x);
       max_y_ = fmax(max_y_, point.y);
       min_y_ = fmin(min_y_, point.y);
+      max_z_ = fmax(max_z_, point.z);
+      min_z_ = fmin(min_z_, point.z);
       totalZ += point.z;
     }
     double averageZ = totalZ / cloud->points.size();
@@ -366,23 +351,12 @@ public:
     plane_found.height = std::abs(max_x_ - min_x_) + 0.15;
     plane_found.width = std::abs(max_y_ - min_y_) + 0.15;
 
-    // Get Z Value Referenced To Map
-    geometry_msgs::TransformStamped tf_to_map;
+    // Get Z Value Referenced To Map - Perpendicular to Map
+    plane_found.world_z  = cloud->points[0].z;
 
-    geometry_msgs::PoseStamped plane_pose;
-    plane_pose.header.stamp = ros::Time::now();
-    plane_pose.header.frame_id = "camera_depth_frame";
-    plane_pose.pose.position.x = cloud->points[0].x;
-    plane_pose.pose.position.y = cloud->points[0].y;
-    plane_pose.pose.position.z = cloud->points[0].z;
-    plane_pose.pose.orientation.x = 0.0;
-    plane_pose.pose.orientation.y = 0.0;
-    plane_pose.pose.orientation.z = 0.0;
-    plane_pose.pose.orientation.w = 1;
-
-    tf_to_map = buffer_.lookupTransform("map", plane_pose.header.frame_id, ros::Time(0), ros::Duration(1.0) );
-    tf2::doTransform(plane_pose, plane_pose, tf_to_map);
-    plane_found.world_z  = plane_pose.pose.position.z;
+    // Min Max Z Values
+    plane_found.min_z = min_z_;
+    plane_found.max_z = max_z_;
   }
 
   /** \brief Given a pointcloud extract the ROI defined by the user.
@@ -459,7 +433,7 @@ public:
 
     bool isTheTable = false;
 
-    isTheTable = addPlane(planeCloud, coefficients_plane, false, plane_params);
+    isTheTable = addPlane(planeCloud, coefficients_plane, plane_params);
     if (isTheTable) {
       pcl::io::savePCDFile("pcl_table.pcd", *planeCloud);
       pcl::io::savePCDFile("pcl_no_table.pcd", *cloud);
@@ -487,7 +461,7 @@ public:
       float min_distance = std::numeric_limits<float>::max();
       int min_index = -1;
       for(int j=0;j<objects.size();j++) {
-        float curr_distance = getDistance(objects[j].center.position, input_detections->detections[i].point3D);
+        float curr_distance = getDistance(objects[j].center_cam.pose.position, input_detections->detections[i].point3D);
         if (curr_distance < min_distance) {
           min_distance = curr_distance;
           min_index = j;
@@ -502,13 +476,13 @@ public:
   }
 
   /** \brief PointCloud callback. */
-  void cloudCB(const sensor_msgs::PointCloud2ConstPtr& input)
+  void cloudCB(const sensor_msgs::PointCloud2& input)
   {
     // Get cloud ready
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
     pcl::PointIndices::Ptr inliers_plane(new pcl::PointIndices); // Indices that correspond to a plane.
-    pcl::fromROSMsg(*input, *cloud);
+    pcl::fromROSMsg(input, *cloud);
     passThroughFilter(cloud);
     computeNormals(cloud, cloud_normals);
 
@@ -532,13 +506,13 @@ public:
     std::vector<ObjectParams> objects(clustersFound);
     for(int i=0;i < clustersFound; i++) {
       objects[i].mesh.reset(new shape_msgs::Mesh);
-      pcl::io::savePCDFile("pcl_object_"+std::to_string(i)+".pcd", *clusters[i]);
       extractObjectDetails(clusters[i], objects[i], i);
     }
 
     bindDetections(objects);
 
     for(int i=0;i < clustersFound; i++) {
+      pcl::io::savePCDFile("pcl_object_"+std::to_string(i)+".pcd", *clusters[i]);
       addObject(i, objects[i], table_params);
     }
   }
@@ -552,7 +526,7 @@ public:
     //Set parameters for the clustering
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance(0.04); // 4cm
+    ec.setClusterTolerance(0.025); // 2.5cm
     ec.setMinClusterSize(100);
     ec.setMaxClusterSize(30000);
     ec.setSearchMethod(tree);
@@ -576,6 +550,7 @@ public:
 private:
   tf2_ros::Buffer buffer_;
   tf2_ros::TransformListener listener_;
+  tf::TransformListener *tf_listener;
 };
 
 int main(int argc, char** argv)

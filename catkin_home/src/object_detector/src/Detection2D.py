@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # USAGE
-# python3 detection2d.py
+# python3 Detection2d.py
 
 import numpy as np
 import argparse
@@ -216,10 +216,10 @@ class CamaraProcessing:
                         continue
                 
                 point3D = Point()
-                point2D = get2DCentroid(boxes[index], self.rgb_image)
+                point2D = get2DCentroid(boxes[index], self.depth_image)
                 
                 if ARGS["DEPTH_ACTIVE"] and len(self.depth_image) != 0:
-                    depth = get_depth(self.rgb_image, self.depth_image, point2D)
+                    depth = get_depth(self.depth_image, point2D)
                     point3D_ = deproject_pixel_to_point(self.imageInfo, point2D, depth)
                     point3D.x = point3D_[0]
                     point3D.y = point3D_[1]
