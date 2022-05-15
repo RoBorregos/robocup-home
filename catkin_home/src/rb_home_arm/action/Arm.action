@@ -1,9 +1,0 @@
-#goal definition
-string object
-string type_of_movement
----
-#result definition
-bool done
----
-#feedback (TODO: change this)
-int32 position_of_arm

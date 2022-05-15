@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <arg name="rviz"  default="false"/>
+
+  <!-- Load definition of pregrasp motion into play_motion namespace -->
+  <rosparam command="load" file="$(find object_manipulation)/config/pick_motions.yaml" /> 
+
+  <!-- Pick & place server -->
+  <node name="pick_and_place_server" pkg="object_manipulation" type="pick_and_place_server.py" output="screen">
+      <rosparam command="load" file="$(find object_manipulation)/config/pick_and_place_params.yaml" />
+  </node>
+
+  <!-- Node exposing service to start looking for the object and trigger the picking -->
+  <node name="pick_client" pkg="object_manipulation" type="pick_client.py" output="screen"/>  
+
+  <group if="$(arg rviz)">
+      <node name="pick_demo_rviz" pkg="rviz" type="rviz" args="-d $(find object_manipulation)/config/rviz/object_manipulation.rviz" />
+  </group>
+
+</launch>
