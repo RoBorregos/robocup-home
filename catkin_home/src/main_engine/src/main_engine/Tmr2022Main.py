@@ -70,7 +70,6 @@ class Tmr2022Main(object):
                     feedback_cb=get_objects_feedback,
                     done_cb=get_result_callback)
         
-        start_time = time.time()
         while not GetObjectsScope.result_received:
             pass
         
