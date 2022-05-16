@@ -1,0 +1,16 @@
+#goal definition
+---
+#result definition
+geometry_msgs/PoseStamped[] objects_poses
+string[] objects_names
+int32[] objects_ids
+int32 objects_found
+float64 x_plane
+float64 y_plane
+float64 z_plane
+float64 width_plane
+float64 height_plane
+---
+#feedback
+# -1 => Error, 0..1...2 => ObjectsFoundSoFar
+int32 status

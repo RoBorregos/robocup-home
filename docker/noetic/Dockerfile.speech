@@ -15,6 +15,10 @@ RUN apt-get update -qq && \
     mesa-utils \
     --no-install-recommends terminator \
     ros-noetic-audio-common \
+    ros-noetic-moveit-ros-planning \
+    ros-noetic-moveit-ros-planning-interface \
+    ros-noetic-moveit-core \
+    ros-noetic-moveit-msgs \
     ros-noetic-move-base && \
     rm -rf /var/lib/apt/lists/*
 

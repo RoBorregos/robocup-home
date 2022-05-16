@@ -14,17 +14,17 @@
   <link name="base_link">
     <inertial>
       <origin
-        xyz="-0.140101678990613 0.00114478625174916 0.287628607282214"
+        xyz="-0.140101678881117 0.0011447862485028 0.287628607282213"
         rpy="0 0 0" />
       <mass
         value="18.1215133555874" />
       <inertia
         ixx="0.749373660807314"
-        ixy="-2.04114489679086E-05"
-        ixz="0.0287031101977871"
-        iyy="0.757729413836533"
-        iyz="-2.12902753512747E-05"
-        izz="0.727122404257033" />
+        ixy="-2.04114489678898E-05"
+        ixz="0.0287031101977872"
+        iyy="0.757729413836528"
+        iyz="-2.12902753512537E-05"
+        izz="0.727122404257029" />
     </inertial>
     <visual>
       <origin
@@ -96,7 +96,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-R1" type="continuous">
+  <joint name="Chasis_R1" type="continuous">
     <origin
       xyz="0.13960999018429 -0.224000012165135 -0.0268998000000014"
       rpy="0 0 0" />
@@ -148,7 +148,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-R2" type="continuous">
+  <joint name="Chasis_R2" type="continuous">
     <origin
       xyz="0.13960999018429 0.223999987834865 -0.0268998000000016"
       rpy="0 0 0" />
@@ -200,7 +200,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-R3" type="continuous">
+  <joint name="Chasis_R3" type="continuous">
     <origin
       xyz="-0.29339000981571 -0.224000012165135 -0.0263997999996424"
       rpy="0 0 0" />
@@ -252,7 +252,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-R4" type="continuous">
+  <joint name="Chasis_R4" type="continuous">
     <origin
       xyz="-0.29339000981571 0.223999987834865 -0.0268998000000015"
       rpy="0 0 0" />
@@ -268,17 +268,17 @@
   <link name="Elevador">
     <inertial>
       <origin
-        xyz="8.74099458403436E-05 0.000128980381426474 0.936510293479917"
+        xyz="0.0001208 9.8409E-05 0.93651"
         rpy="0 0 0" />
       <mass
-        value="1.52366903082899" />
+        value="1.1237" />
       <inertia
-        ixx="0.125067051697286"
-        ixy="3.36175729833583E-06"
-        ixz="8.45368215712956E-08"
-        iyy="0.125069758562973"
-        iyz="1.24631936090211E-07"
-        izz="0.000983327770578956" />
+        ixx="0.12507"
+        ixy="3.5515E-06"
+        ixz="1.168E-07"
+        iyy="0.12507"
+        iyz="9.5073E-08"
+        izz="0.00098333" />
     </inertial>
     <visual>
       <origin
@@ -304,10 +304,10 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis-Elevador" type="revolute">
+  <joint name="Chasis_Elevador" type="revolute">
     <origin
       xyz="0 0 -0.0462248000000028"
-      rpy="0 0 0" />
+      rpy="0 0 1.57" />
     <parent
       link="base_link" />
     <child
@@ -315,27 +315,28 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
+      lower="-3.14"
       upper="0"
-      effort="0"
-      velocity="0" />
+      effort="39.0"
+      velocity="4.0" />
+    <dynamics damping="0.7" friction="1"/>
   </joint>
 
   <!-- Arm -->
   <link name="Brazo_1">
     <inertial>
       <origin
-        xyz="0.079485082754661 0.0154161125335201 0.0357647125153742"
+        xyz="0.080562 -0.0080834 0.035765"
         rpy="0 0 0" />
       <mass
-        value="0.77399031960245" />
+        value="0.17399" />
       <inertia
-        ixx="0.000714231181888783"
-        ixy="-0.000143123610723033"
-        ixz="8.25869170762567E-06"
-        iyy="0.00143142661510733"
-        iyz="1.37208246328159E-06"
-        izz="0.00197079000658016" />
+        ixx="0.00069468"
+        ixy="7.7994E-05"
+        ixz="8.3045E-06"
+        iyy="0.001451"
+        iyz="-1.0599E-06"
+        izz="0.0019708" />
     </inertial>
     <visual>
       <origin
@@ -361,7 +362,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Elevador-Brazo_1" type="prismatic">
+  <joint name="Elevador_Brazo_1" type="prismatic">
     <origin
       xyz="0 0 1.09559517536383"
       rpy="0 0 0" />
@@ -372,25 +373,26 @@
     <axis
       xyz="0 0 -1" />
     <limit
-      lower="0"
-      upper="0"
-      effort="0"
-      velocity="0" />
+      lower="-0.3"
+      upper="0.8"
+      effort="800.0"
+      velocity="3.0" />
+    <dynamics damping="0.7" friction="100" />
   </joint>
   <link name="Brazo_2">
     <inertial>
       <origin
-        xyz="0.0603177504461659 0.0112878907909101 -0.0279323913726812"
+        xyz="0.0613443977261393 -0.00158504415996192 -0.0279323913726532"
         rpy="0 0 0" />
       <mass
-        value="0.437735318876537" />
+        value="0.237735318876537" />
       <inertia
-        ixx="0.00025073637578851"
-        ixy="-0.000156756565273837"
-        ixz="-2.39699601792785E-06"
-        iyy="0.00105720555370175"
-        iyz="-4.51950044643041E-07"
-        izz="0.00127483380576478" />
+        ixx="0.000221898875336565"
+        ixy="2.20105438729185E-05"
+        ixz="-2.43850077800155E-06"
+        iyy="0.0010860430541537"
+        iyz="5.96884283352628E-08"
+        izz="0.00127483380576477" />
     </inertial>
     <visual>
       <origin
@@ -416,9 +418,9 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Elevador-Brazo_2" type="revolute">
+  <joint name="Elevador_Brazo_2" type="revolute">
     <origin
-      xyz="0.229569270853049 0.0439197092955038 0.00475000000002312"
+      xyz="0.23254 -0.024031 0.00475"
       rpy="0 0 0" />
     <parent
       link="Brazo_1" />
@@ -427,27 +429,28 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
-      upper="0"
-      effort="0"
-      velocity="0" />
+      lower="-1.57"
+      upper="1.57"
+      effort="39.0"
+      velocity="4.0" />
+    <dynamics damping="0.7" friction="1"/>
   </joint>
 
   <!-- Gripper -->
   <link name="Pinza">
     <inertial>
       <origin
-        xyz="0.0208773657549359 0.000373663977065494 -0.0428447957769276"
+        xyz="-0.00819814655383083 -0.00485061932930608 -0.0427651052453255"
         rpy="0 0 0" />
       <mass
-        value="0.378776835881696" />
+        value="0.197688743751798" />
       <inertia
-        ixx="0.000188658302137669"
-        ixy="-1.12847877871589E-05"
-        ixz="8.84794994829402E-06"
-        iyy="0.000181711737296685"
-        iyz="6.68363237323879E-08"
-        izz="0.000280838719177474" />
+        ixx="7.22039610387706E-05"
+        ixy="-1.22111943994307E-05"
+        ixz="6.4739455800225E-06"
+        iyy="0.000104014076525274"
+        iyz="-3.68010060734193E-07"
+        izz="0.000125770789679146" />
     </inertial>
     <visual>
       <origin
@@ -473,9 +476,9 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Brazo_2-Pinza" type="revolute">
+  <joint name="Brazo_2_Pinza" type="revolute">
     <origin
-      xyz="0.134775790545599 0.0253548131501961 -0.0561933909574026"
+      xyz="0.13777 -0.0035105 -0.04825"
       rpy="0 0 0" />
     <parent
       link="Brazo_2" />
@@ -484,25 +487,82 @@
     <axis
       xyz="0 0 1" />
     <limit
-      lower="0"
-      upper="0"
-      effort="0"
-      velocity="0" />
+      lower="-1.57"
+      upper="1.57"
+      effort="39.0"
+      velocity="4.0" />
+    <dynamics damping="0.7" friction="1"/>/>
+  </joint>
+  <link name="BASE_PINZA">
+    <inertial>
+      <origin
+        xyz="0.0332145675494595 0.0578642384423225 -0.0155679379619462"
+        rpy="0 0 0" />
+      <mass
+        value="0.18305827768793" />
+      <inertia
+        ixx="0.000123592072057037"
+        ixy="5.30074461454918E-06"
+        ixz="8.02990291782891E-06"
+        iyy="7.34184687100575E-05"
+        iyz="7.01343093831912E-06"
+        izz="0.000152481669773299" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/BASE_PINZA.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/BASE_PINZA.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="BASE_PINZA_joint" type="revolute">
+    <origin
+      xyz="0.013783 -0.041838 -0.0545"
+      rpy="0 0 0" />
+    <parent
+      link="Pinza" />
+    <child
+      link="BASE_PINZA" />
+    <axis
+      xyz="-0.31288 0.94979 0" />
+    <limit
+      lower="-0.1"
+      upper="0.5"
+      effort="39.0"
+      velocity="4.0" />
+    <dynamics damping="0.7" friction="1"/>
   </joint>
   <link name="Garra_D">
     <inertial>
       <origin
-        xyz="0.0531225495268128 -0.0339315603548094 -0.0338793472285259"
+        xyz="0.0539680792576258 0.00939608768649005 -0.046047941200153"
         rpy="0 0 0" />
       <mass
-        value="0.0862123514148233" />
+        value="0.0862130123732274" />
       <inertia
-        ixx="5.55837007753562E-05"
-        ixy="4.75027774203442E-05"
-        ixz="-1.51320049118783E-06"
-        iyy="0.000109625335346762"
-        iyz="9.92062324277158E-07"
-        izz="0.000130229416831597" />
+        ixx="3.71211434234198E-05"
+        ixy="-2.36250448107481E-05"
+        ixz="1.84164028060382E-05"
+        iyy="0.000131681440737337"
+        iyz="4.31577385425052E-06"
+        izz="0.000126635236422458" />
     </inertial>
     <visual>
       <origin
@@ -528,36 +588,37 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Pinza-Garra_D" type="revolute">
+  <joint name="Pinza_Garra_D" type="revolute">
     <origin
-      xyz="0.071320629609374 -0.0304040623161534 -0.0115566090426307"
+      xyz="0.067687 0.031826 0.020119"
       rpy="0 0 0" />
     <parent
-      link="Pinza" />
+      link="BASE_PINZA" />
     <child
       link="Garra_D" />
     <axis
-      xyz="0 0 1" />
+      xyz="0.1959 0.064533 0.9785" />
     <limit
-      lower="0"
-      upper="0.61087"
-      effort="0"
-      velocity="0" />
+      lower="-0.29"
+      upper="0.19"
+      effort="39.0"
+      velocity="3.0" />
+    <dynamics damping="0.7" friction="1"/>
   </joint>
   <link name="Garra_I">
     <inertial>
       <origin
-        xyz="0.0482430439842013 0.0405700502182957 -0.0338792120173566"
+        xyz="0.048093412615918 0.0263289651212265 -0.045988428510102"
         rpy="0 0 0" />
       <mass
-        value="0.0862120959250573" />
+        value="0.0862121428327342" />
       <inertia
-        ixx="6.87877660993918E-05"
-        ixy="-5.28740526602163E-05"
-        ixz="-1.37095235100696E-06"
-        iyy="9.64196061499374E-05"
-        iyz="-1.18133299687127E-06"
-        izz="0.000130227781147899" />
+        ixx="5.04817508104057E-05"
+        ixy="-4.05615455738052E-05"
+        ixz="1.70447585458729E-05"
+        iyy="0.000118293247913246"
+        iyz="8.0511747253674E-06"
+        izz="0.00012666051613026" />
     </inertial>
     <visual>
       <origin
@@ -583,21 +644,22 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Pinza-Garra_I" type="revolute">
+  <joint name="Pinza_Garra_I" type="revolute">
     <origin
-      xyz="0.0667460022512851 0.0394462976294805 -0.0115566090426305"
+      xyz="0.045785 0.098311 0.020119"
       rpy="0 0 0" />
     <parent
-      link="Pinza" />
+      link="BASE_PINZA" />
     <child
       link="Garra_I" />
     <axis
-      xyz="0 0 1" />
+      xyz="0.1959 0.064533 0.9785" />
     <limit
-      lower="-0.017039"
-      upper="0.76836"
-      effort="0"
-      velocity="0" />
+      lower="-0.29"
+      upper="0.29"
+      effort="39.0"
+      velocity="3.0" />
+    <dynamics damping="0.7" friction="1"/>
   </joint>
 
   <!-- LIDAR -->
@@ -659,7 +721,7 @@
         xyz="0.0470517349686886 0.0123919567767552 -0.00720656108065509"
         rpy="0 0 0" />
       <mass
-        value="0.0123607422626627" />
+        value="0.0723607422626627" />
       <inertia
         ixx="3.82073961685766E-06"
         ixy="-2.35941568160262E-06"
@@ -703,10 +765,11 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="0"
-      upper="0"
-      effort="0"
-      velocity="0" />
+      lower="-0.8"
+      upper="0.5"
+      effort="40.0"
+      velocity="2.0" />
+    <dynamics damping="0.7" friction="2"/>
   </joint>
 
   <!-- Camera -->

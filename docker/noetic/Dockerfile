@@ -17,7 +17,15 @@ RUN apt-get update -qq && \
     ros-noetic-audio-common \
     ros-noetic-map-server \
     ros-noetic-move-base \
-    ros-noetic-rosserial-arduino \ 
+    ros-noetic-moveit-ros-planning \
+    ros-noetic-moveit-ros-planning-interface \
+    ros-noetic-moveit-core \
+    ros-noetic-moveit-msgs \
+    ros-noetic-rosserial-arduino \
+    ros-noetic-moveit-ros-perception \
+    ros-noetic-moveit \
+    ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
     ros-noetic-rosserial && \
     rm -rf /var/lib/apt/lists/*
 
