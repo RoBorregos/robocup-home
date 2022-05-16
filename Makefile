@@ -5,6 +5,8 @@
 #: Builds a Docker image with the corresponding Dockerfile file
 noetic.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile .
+noetic.jetson.build:
+	@docker build -t ros:home -f docker/noetic/Dockerfile.jetson .
 noetic.speech.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.speech .
 noetic.speech.prod.build:
