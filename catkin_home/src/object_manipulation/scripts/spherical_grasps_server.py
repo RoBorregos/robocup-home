@@ -45,6 +45,8 @@ from dynamic_reconfigure.server import Server
 from object_manipulation.cfg import SphericalGraspConfig
 from enum import Enum
 
+import moveit_commander
+
 def normalize(v):
     norm = np.linalg.norm(v)
     if norm == 0:
@@ -95,15 +97,15 @@ def filter_poses(sphere_poses, object_pose,
         if filter_behind:
             if pose.position.x > object_pose.pose.position.x:
                 continue
-        # if pose if under the object, ditch it
+        # if pose is under the object, ditch it
         if filter_under:
             if pose.position.z < object_pose.pose.position.z - 0.01:
                 continue
-        # if pose if over the object, ditch it
+        # if pose is over the object, ditch it
         if filter_over:
             if pose.position.z > object_pose.pose.position.z + 0.03:
                 continue
-        # if pose inclindex xy, ditch it
+        # if pose is inclined in x,y axes, ditch it
         if filter_xy_inclined:
             if pose.orientation.x != 0.0:
                 continue
@@ -115,19 +117,18 @@ def filter_poses(sphere_poses, object_pose,
 
 
 def sort_by_height(sphere_poses):
-    # We prefer to grasp from top to be safer
+    # It is safer to grasp from higher poses.
     newlist = sorted(
         sphere_poses, key=lambda item: item.position.z, reverse=False)
     sorted_list = newlist
     return sorted_list
 
 def sort_by_z_angle(sphere_poses):
-    # We prefer to grasp from top to be safer
+    # It is safer to grasp from poses closer to 0 angle.
     newlist = sorted(
         sphere_poses, key=lambda item: abs(item.orientation.z), reverse=False)
     sorted_list = newlist
     return sorted_list
-
 
 class SphericalGrasps(object):
     def __init__(self):
@@ -144,18 +145,18 @@ class SphericalGrasps(object):
             '/grasp_poses', PoseArray, latch=True, queue_size = 1)
         self.object_pub = rospy.Publisher(
             '/object_marker', Marker, latch=True, queue_size = 1)
+        
+        rospy.loginfo("Waiting for MoveGroupCommander...")
+        self.arm_group = moveit_commander.MoveGroupCommander("arm_torso", wait_for_servers = 0)
 
         rospy.loginfo("SphericalGrasps initialized!")
 
     def dyn_rec_callback(self, config, level):
 
         rospy.loginfo("Received reconf call. ")
-        self._grasp_postures_frame_id_right = config["grasp_postures_frame_id_right"]
-        self._grasp_postures_frame_id_left = config["grasp_postures_frame_id_left"]
-        self._gripper_left_joint_names = config["gripper_left_joint_names"]
-        self._gripper_right_joint_names = config["gripper_right_joint_names"]
-        self._gripper_pre_grasp_positions = config[
-            "gripper_pre_grasp_positions"]
+        self._grasp_postures_frame_id = config["grasp_postures_frame_id"]
+        self._gripper_joint_names = config["gripper_joint_names"]
+        self._gripper_pre_grasp_positions = config["gripper_pre_grasp_positions"]
         self._gripper_grasp_positions = config["gripper_grasp_positions"]
         self._time_pre_grasp_posture = config["time_pre_grasp_posture"]
         self._time_grasp_posture = config["time_grasp_posture"]
@@ -165,24 +166,13 @@ class SphericalGrasps(object):
         self._grasp_desired_distance = config["grasp_desired_distance"]
         self._grasp_min_distance = config["grasp_min_distance"]
 
-        self._pre_grasp_direction_x = config["pre_grasp_direction_x"]
-        self._pre_grasp_direction_y = config["pre_grasp_direction_y"]
-        self._pre_grasp_direction_z = config["pre_grasp_direction_z"]
-
-        self._post_grasp_direction_x = config["post_grasp_direction_x"]
-        self._post_grasp_direction_y = config["post_grasp_direction_y"]
-        self._post_grasp_direction_z = config["post_grasp_direction_z"]
-
         self._grasp_quality = config["grasp_quality"]
         self._max_contact_force = config["max_contact_force"]
         self._allowed_touch_objects = config["allowed_touch_objects"]
 
-        self._fix_tool_frame_to_grasping_frame_roll = config[
-            "fix_tool_frame_to_grasping_frame_roll"]
-        self._fix_tool_frame_to_grasping_frame_pitch = config[
-            "fix_tool_frame_to_grasping_frame_pitch"]
-        self._fix_tool_frame_to_grasping_frame_yaw = config[
-            "fix_tool_frame_to_grasping_frame_yaw"]
+        self._fix_tool_frame_to_grasping_frame_roll = config["fix_tool_frame_to_grasping_frame_roll"]
+        self._fix_tool_frame_to_grasping_frame_pitch = config["fix_tool_frame_to_grasping_frame_pitch"]
+        self._fix_tool_frame_to_grasping_frame_yaw = config["fix_tool_frame_to_grasping_frame_yaw"]
 
         self._step_degrees_yaw = config["step_degrees_yaw"]
         self._step_degrees_pitch = config["step_degrees_pitch"]
@@ -310,9 +300,9 @@ class SphericalGrasps(object):
 
         pre_grasp_posture = JointTrajectory()
 
-        pre_grasp_posture.header.frame_id = self._grasp_postures_frame_id_right
+        pre_grasp_posture.header.frame_id = self._grasp_postures_frame_id
         pre_grasp_posture.joint_names = [
-            name for name in self._gripper_right_joint_names.split()]
+            name for name in self._gripper_joint_names.split()]
 
         jtpoint = JointTrajectoryPoint()
         jtpoint.positions = [
@@ -365,11 +355,11 @@ class SphericalGrasps(object):
         return g
 
     def manual_grasp_retreat(self):
-        pose_goal = self.right_arm_group.get_current_pose()
+        pose_goal = self.arm_group.get_current_pose()
         pose_goal.pose.position.x = pose_goal.pose.position.x - 0.07
-        self.right_arm_group.set_pose_target(pose_goal)
-        self.right_arm_group.go(wait=True)
-        self.right_arm_group.stop()
+        self.arm_group.set_pose_target(pose_goal)
+        self.arm_group.go(wait=True)
+        self.arm_group.stop()
 
     def create_grasps_from_object_pose(self, object_pose):
         """
@@ -397,7 +387,7 @@ class SphericalGrasps(object):
         # Actually ignored....
         pre_grasp_posture.header.frame_id = self._grasp_pose_frame_id
         pre_grasp_posture.joint_names = [
-            name for name in self._gripper_right_joint_names.split()]
+            name for name in self._gripper_joint_names.split()]
         jtpoint = JointTrajectoryPoint()
         jtpoint.positions = [
             float(pos) for pos in self._gripper_pre_grasp_positions.split()]
@@ -409,7 +399,7 @@ class SphericalGrasps(object):
         pl.pre_place_approach = self.createGripperTranslation(
             Vector3(1.0, 0.0, 0.0))
         pl.post_place_retreat = self.createGripperTranslation(
-            Vector3(-1.0, -0.30, 0.0), desired_distance = 0.35, min_distance = ARGS["CAN_RADIUS"] * 2)
+            Vector3(-1.0, -0.30, 0.0), desired_distance = 0.35, min_distance = 0.08)
 
         pl.post_place_posture = pre_grasp_posture
         place_locs.append(pl)
@@ -417,15 +407,15 @@ class SphericalGrasps(object):
         return place_locs
 
     def createGripperTranslation(self, direction_vector,
-                                 desired_distance=ARGS["CAN_RADIUS"] * 2,
-                                 min_distance=ARGS["CAN_RADIUS"]):
+                                 desired_distance=0.1,
+                                 min_distance=0.05):
         """Returns a GripperTranslation message with the
          direction_vector and desired_distance and min_distance in it.
         Intended to be used to fill the pre_grasp_approach
          and post_grasp_retreat field in the Grasp message."""
         g_trans = GripperTranslation()
 
-        g_trans.direction.header.frame_id = self._grasp_postures_frame_id_right
+        g_trans.direction.header.frame_id = self._grasp_postures_frame_id
 
         g_trans.direction.header.stamp = rospy.Time.now()
         g_trans.direction.vector.x = direction_vector.x

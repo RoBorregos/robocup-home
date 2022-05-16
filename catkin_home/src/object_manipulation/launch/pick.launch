@@ -14,8 +14,4 @@
   <!-- Node exposing service to start looking for the object and trigger the picking -->
   <node name="pick_client" pkg="object_manipulation" type="pick_client.py" output="screen"/>  
 
-  <group if="$(arg rviz)">
-      <node name="pick_demo_rviz" pkg="rviz" type="rviz" args="-d $(find object_manipulation)/config/rviz/object_manipulation.rviz" />
-  </group>
-
 </launch>

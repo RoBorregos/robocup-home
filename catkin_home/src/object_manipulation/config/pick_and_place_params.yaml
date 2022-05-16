@@ -9,29 +9,15 @@ time_grasp_posture_final: 0.5
 # Base frame of MoveIt for your robot
 grasp_pose_frame_id: base_footprint
 # Frame where the direction of the poses will be computed
-grasp_postures_frame_id: arm_tool_link
-grasp_postures_frame_id_right: arm_right_tool_link
-grasp_postures_frame_id_left: arm_left_tool_link
+grasp_postures_frame_id: BASE_PINZA
 # Currently unused grasp quality to put in the message
 grasp_quality: 0.1
 # Gripper joint poses
-gripper_joint_names: "gripper_left_finger_joint gripper_right_finger_joint"
-gripper_right_joint_names: "gripper_right_left_finger_joint gripper_right_right_finger_joint"
-gripper_left_joint_names: "gripper_left_left_finger_joint gripper_left_right_finger_joint"
+gripper_joint_names: "Pinza_Garra_I Pinza_Garra_D"
 # Closed position
-gripper_grasp_positions: "0.020 0.020"
+gripper_grasp_positions: "0.20 -0.20"
 # Open position
-gripper_pre_grasp_positions: "0.045 0.045"
-
-# Direction in reference of the grasp_postures_frame_id
-pre_grasp_direction_x: 1.0
-pre_grasp_direction_y: 0.0
-pre_grasp_direction_z: 0.0
-
-# Direction in reference of the grasp_postures_frame_id
-post_grasp_direction_x: -1.0
-post_grasp_direction_y: 0.0
-post_grasp_direction_z: 0.0
+gripper_pre_grasp_positions: "-0.19 0.19"
 
 max_contact_force: 0.0
 allowed_touch_objects: ''
@@ -54,6 +40,4 @@ max_degrees_pitch: 360
 step_degrees_pitch: 15
 step_degrees_yaw: 15
 
-links_to_allow_contact: ["gripper_left_finger_link", "gripper_right_finger_link", "gripper_link"]
-links_to_allow_contact_right: ["gripper_right_left_finger_link", "gripper_right_right_finger_link", "gripper_right_link"]
-links_to_allow_contact_left: ["gripper_left_left_finger_link", "gripper_left_right_finger_link", "gripper_left_link"]
+links_to_allow_contact: ["Pinza_Garra_I", "Pinza_Garra_D", "BASE_PINZA"]

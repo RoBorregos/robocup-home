@@ -17,8 +17,6 @@ from nav_msgs.msg import Odometry
 from object_manipulation.msg import PickUpPoseAction, PickUpPoseGoal, PickUpPoseResult, PickUpPoseFeedback
 from moveit_msgs.srv import GetPlanningScene, GetPlanningSceneRequest, GetPlanningSceneResponse
 from std_srvs.srv import Empty, EmptyRequest
-from gazebo_msgs.srv import GetModelState
-from gazebo_ros_link_attacher.srv import Attach, AttachRequest, AttachResponse
 from copy import deepcopy
 from random import shuffle
 import copy
@@ -79,32 +77,10 @@ def createPlaceGoal(place_pose,
 
     return placeg
 
-class Can:
-    def __init__(self, name, relative_entity_name):
-        self._name = name
-        self._relative_entity_name = relative_entity_name
-
 class PickAndPlaceServer(object):
     def __init__(self):
-        self._blockListDict = {
-            'can_1': Can('standard_can_fit_clone', 'link_0'),
-            'can_2': Can('standard_can_fit_clone_0', 'link_0'),
-            'can_3': Can('standard_can_fit_clone_1', 'link_0'),
-            'can_4': Can('standard_can_fit_clone_2', 'link_0'),
-            'can_5': Can('standard_can_fit_clone_4_clone', 'link_0'),
-            'can_6': Can('standard_can_fit_clone_4_clone_0', 'link_0'),
-            'can_7': Can('standard_can_fit_clone_4_clone_1', 'link_0'),
-            'can_8': Can('standard_can_fit_clone_4_clone_2', 'link_0'),
-            'can_9': Can('standard_can_fit_clone_4_clone_5', 'link_0'),
-            'can_10': Can('standard_can_fit_clone_4_clone_6', 'link_0'),
-            'can_11': Can('standard_can_fit_clone_4_clone_7', 'link_0'),
-            'can_12': Can('standard_can_fit_clone_4_clone_8', 'link_0'),
-        }
         self.tfBuffer = tf2_ros.Buffer()
         self.tf_l = tf2_ros.TransformListener(self.tfBuffer)
-
-        self.is_simulation = rospy.get_param('/IS_SIMULATION', True)
-        rospy.logwarn("IS_SIMULATION " + str(self.is_simulation))
 
         rospy.loginfo("Waiting for Robot...")
         odom_msg = rospy.wait_for_message("/mobile_base_controller/odom", Odometry)
@@ -132,18 +108,6 @@ class PickAndPlaceServer(object):
             '/clear_octomap', Empty)
         self.clear_octomap_srv.wait_for_service()
         rospy.loginfo("Connected!")
-
-        if self.is_simulation:
-            rospy.loginfo("Waiting for /gazebo/get_model_state")
-            rospy.wait_for_service("/gazebo/get_model_state")
-            self.get_model_srv = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-            self.pose_array_p = rospy.Publisher("pose_array/cans", PoseArray, queue_size=5)
-            rospy.loginfo("Waiting for /link_attacher_node/attach Service")
-            rospy.wait_for_service("/link_attacher_node/attach")
-            self.attach_srv = rospy.ServiceProxy('/link_attacher_node/attach', Attach)
-            rospy.loginfo("Waiting for /link_attacher_node/detach Service")
-            rospy.wait_for_service("/link_attacher_node/detach")
-            self.detach_srv = rospy.ServiceProxy('/link_attacher_node/detach', Attach)
         
         self.gripper_group = moveit_commander.MoveGroupCommander("gripper", wait_for_servers = 0)
 
@@ -163,101 +127,6 @@ class PickAndPlaceServer(object):
             execute_cb=self.place_cb, auto_start=False)
         self.place_as.start()
 
-        self.can_poses_gazebo = []
-        self.currentAttach = None
-        loadCansThread = threading.Thread(target=self.load_cans_gazebo, args=(True, ))
-        loadCansThread.start()
-
-    def load_cans_gazebo(self, wait = False):
-        if not self.is_simulation:
-            return
-        if wait:
-            time.sleep(7.5)
-        rospy.logwarn("Loading Gazebo Requirements For Attacher...")
-        self.can_poses_gazebo = []
-
-        pa = PoseArray()
-        pa.header.frame_id = "map"
-        pa.header.stamp = rospy.Time.now()
-    
-        for block in self._blockListDict.itervalues():
-            blockName = str(block._name)
-            resp_coordinates = self.get_model_srv(blockName, "map")
-            resp_coordinates.pose.position.x = resp_coordinates.pose.position.x + 2.01
-            resp_coordinates.pose.position.y = resp_coordinates.pose.position.y + ARGS["CAN_RADIUS"]
-            pa.poses.append(resp_coordinates.pose)
-            self.can_poses_gazebo.append([resp_coordinates.pose.position.x, resp_coordinates.pose.position.y, resp_coordinates.pose.position.z, block])
-
-        self.pose_array_p.publish(pa)
-
-    def generate_attach_arm_to_can_msg(self, can_name = None):
-        if not self.is_simulation:
-            return
-
-        if can_name is None or len(self.can_poses_gazebo) == 0:
-            return
-
-        scene_objects = self.scene.get_objects(object_ids = [can_name])
-        if not (can_name in scene_objects):
-            return
-        
-        if len(scene_objects[can_name].primitive_poses) == 0:
-            return
-
-        pose_stamped = PoseStamped()
-        pose_stamped.header = scene_objects[can_name].header
-        pose_stamped.pose = scene_objects[can_name].primitive_poses[0]
-        pose_stamped = self.transformTo(pose_stamped, frame_id="map")        
-
-        def get_distance_to_ref(x_, y_, z_):
-            return math.sqrt( (x_ *x_) + (y_* y_)+(z_*z_))
-        
-        # Match Model with name by distance to current Pose.
-        self.can_poses_gazebo.sort(key=lambda elem: get_distance_to_ref(
-                                elem[0]-pose_stamped.pose.position.x,
-                                elem[1]-pose_stamped.pose.position.y,
-                                0.0))
-
-        req = AttachRequest()
-        req.model_name_1 = "tiago_dual" # Robot
-        req.link_name_1 = "gripper_right_finger_link" # Gripper Link
-        req.model_name_2 = str(self.can_poses_gazebo[0][3]._name) # Model can
-        req.link_name_2 = str(self.can_poses_gazebo[0][3]._relative_entity_name)  # Link can
-
-        self.currentAttach = req
-
-    def detach_can(self):
-        if not self.is_simulation:
-            return
-
-        if self.currentAttach == None:
-            return
-        self.detach_srv.call(self.currentAttach)
-        rospy.logwarn("Detached" + str(self.currentAttach.model_name_1) + " with " + str(self.currentAttach.model_name_2))
-        self.currentAttach = None
-        self.load_cans_gazebo()
-    
-    def attach_can(self):
-        if not self.is_simulation:
-            return
-
-        if self.currentAttach == None:
-            return
-        self.attach_srv.call(self.currentAttach)
-        rospy.logwarn("Attached" + str(self.currentAttach.model_name_1) + " with " + str(self.currentAttach.model_name_2))
-
-    def detach_and_retach(self, waitTime = 0):
-        if not self.is_simulation:
-            return
-
-        if self.currentAttach == None:
-            return
-        time.sleep(waitTime)
-        self.detach_srv.call(self.currentAttach)
-        rospy.logwarn("Detached" + str(self.currentAttach.model_name_1) + " with " + str(self.currentAttach.model_name_2))
-        time.sleep(1) ## Give some time to acommodate between grippers
-        self.attach_srv.call(self.currentAttach)
-        rospy.logwarn("Attached" + str(self.currentAttach.model_name_1) + " with " + str(self.currentAttach.model_name_2))
 
     def pick_cb(self, goal):
         """
@@ -308,8 +177,6 @@ class PickAndPlaceServer(object):
         if object_name in scene_attached_objects:
             return
 
-        self.generate_attach_arm_to_can_msg(object_name)
-
         self.scene.remove_attached_object("arm_right_tool_link")
 
         possible_grasps = self.sg.create_grasps_from_object_pose(object_pose)
@@ -352,13 +219,8 @@ class PickAndPlaceServer(object):
                     feedback_cb=pick_feedback,
                     done_cb=pick_callback)
         
-        gripperMovement = False
         while not PickScope.result_received:
-            g_joint_values = self.gripper_group.get_current_joint_values()
-            if not gripperMovement and g_joint_values[0] < 0.040 and g_joint_values[1] < 0.040:
-                rospy.logwarn("Gripper Movement, Attaching object")
-                self.attach_can()
-                gripperMovement = True
+            pass
 
         return PickScope.error_code
 
@@ -383,13 +245,8 @@ class PickAndPlaceServer(object):
                     feedback_cb=place_feedback,
                     done_cb=place_callback)
         
-        gripperMovement = False
         while not PlaceScope.result_received:
-            g_joint_values = self.gripper_group.get_current_joint_values()
-            if not gripperMovement and g_joint_values[0] > 0.040 and g_joint_values[1] > 0.040:
-                rospy.logwarn("Gripper Movement, Detaching object")
-                self.detach_can()
-                gripperMovement = True
+            pass
 
         return PlaceScope.error_code
     
