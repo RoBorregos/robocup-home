@@ -66,7 +66,7 @@ noetic.objectDetection.prod.create:
 noetic.objectDetection.prod.create.intel: 
 	@./docker/run_scripts/runIntelGpu.bash IS_OBJECT_DETECTION_PROD
 noetic.objectDetection.prod.create.nvidia: 
-	@./docker/run_scripts/runobjdtc.bash IS_OBJECT_DETECTION_PROD
+	@./docker/run_scripts/runNvidiaGpuOd.bash IS_OBJECT_DETECTION_PROD
 
 #: Start the container in background
 noetic.up:
