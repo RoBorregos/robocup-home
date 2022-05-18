@@ -6,10 +6,13 @@
   <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui" output="screen" if="$(arg use_gui)" />
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
+  <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_description)/rviz/urdf.rviz" />
   <!-- Laser Filter -->
-  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter" output="screen" >
+  <!--<node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter" output="screen" >
     <rosparam command="load" file="$(find nav_main)/filters/laser_config.yaml" />
-  </node>
+  </node>-->
 
   <!-- <node pkg="robot_localization" type="ekf_localization_node"
       name="robot_localization_ekf_node_odom"

@@ -1,5 +1,14 @@
 <?xml version="1.0"?>
 
 <launch>
-  <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+  <include file="$(find rplidar_ros)/launch/rplidar.launch" >
+    <param name="serial_port"         type="string" value="/dev/ttyUSB1"/>  
+    <param name="serial_baudrate"     type="int"    value="115200"/>
+    <param name="frame_id"            type="string" value="laser"/>
+    <param name="inverted"            type="bool"   value="false"/>
+    <param name="angle_compensate"    type="bool"   value="true"/>
+  </include>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rplidar_ros)/rviz/rplidar.rviz" />
 </launch>
+
+<!--<node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">-->
