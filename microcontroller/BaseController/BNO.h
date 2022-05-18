@@ -2,6 +2,8 @@
 #ifndef BNO_h
 #define BNO_h
 
+#include <ros.h>
+#include <sensor_msgs/Imu.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
@@ -20,7 +22,7 @@ class BNO {
     uint8_t orientationStatus();
     
     void updateEvents();
-    void getImuInfo();
+    sensor_msgs::Imu getImuInfo();
 
     //////////////////////////////////Get Functions//////////////////////////////////////
     // Returns the angle in X axis.
