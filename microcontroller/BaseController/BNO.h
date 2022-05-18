@@ -13,32 +13,16 @@ class BNO {
 
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
-    BNO();
-
+    BNO(ros::NodeHandle *nh);
 
     //////////////////////////////////Calibration//////////////////////////////////////
     // Function that return a value between '0' (uncalibrated data) and '3' (fully calibrated).
     uint8_t orientationStatus();
-    /////ADDITION/////
-    void init();
     
     void updateEvents();
-    float getQuat_x();
-    float getQuat_y();
-    float getQuat_z();
-    float getQuat_w();
-    float getAngVel_x();
-    float getAngVel_y();
-    float getAngVel_z();
-    float getLinAcc_x();
-    float getLinAcc_y();
-    float getLinAcc_z();
-    void anglesInfo();
+    void getImuInfo();
 
     //////////////////////////////////Get Functions//////////////////////////////////////
-    // Returns the angle in X axis considering bno_set_point_ and it is in a range of 0-360.
-    int getCurrentXAngle();
-    
     // Returns the angle in X axis.
     double getAngleX();
     
@@ -50,10 +34,12 @@ class BNO {
 
     
   private:
+    // ROS
+    ros::NodeHandle * nh_;
+    
     Adafruit_BNO055 bno_ = Adafruit_BNO055(55, 0x28); 
     sensors_event_t angVelocityData_, linearAccelData_;
     imu::Quaternion quat_;
-    int bno_set_point_ = 0;
 };
 
 #endif

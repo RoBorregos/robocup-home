@@ -8,7 +8,7 @@ Movement *robot = nullptr;
 unsigned long oldtime;
 
 void setup() {
-    Serial.begin(57600);
+    // Serial.begin(57600);
     
     /*
     BNO bno;
@@ -64,8 +64,8 @@ void setup() {
         nh.spinOnce();
     }
     nh.loginfo("Node Initialization completed.");
-    BNO bno;
-    //bno.orientationStatus();
+    BNO bno(&nh);
+    bno.orientationStatus();
     nh.loginfo("Bno Initialization completed.");
     Movement initRobot(&bno, &nh);
     robot = &initRobot;
