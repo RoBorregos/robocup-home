@@ -66,12 +66,14 @@ class RosBridge{
         base_control::StampedEncoders back_encoders_msg_;
 
         // ODOM BNO MSG
-        sensor_msgs::Imu bno_sensor_msgs_odom_;
+        sensor_msgs::Imu bno_sensor_msgs_;
         
         static constexpr uint8_t kOdomPeriod = 40;
+        static constexpr uint8_t kSensorsPeriod = 50;
 
         // Timers.
         unsigned long odom_timer_ = 0;
+        unsigned long sensor_timer_ = 0;
         unsigned long watchdog_timer_ = 0;
         
 };

@@ -1,8 +1,7 @@
 #include "BNO.h"
 
 //////////////////////////////////Constructor//////////////////////////////////////
-BNO::BNO() {
-  
+BNO::BNO(ros::NodeHandle *nh) : nh_(nh) {
   if (!bno_.begin()) {
     while (1);
   }
@@ -10,7 +9,6 @@ BNO::BNO() {
   bno_.setExtCrystalUse(true);
   sensors_event_t event;
   bno_.getEvent(&event);
-  bno_set_point_ = event.orientation.x;
 }
 
 //////////////////////////////////Calibration//////////////////////////////////////
@@ -22,14 +20,6 @@ uint8_t BNO::orientationStatus() {
 
 
 //////////////////////////////////Get Functions//////////////////////////////////////
-int BNO::getCurrentXAngle() {
-  int angle = getAngleX() - bno_set_point_;
-  if (angle < 0) {
-    angle +=  360;
-  }
-  return angle;
-}
-
 double BNO::getAngleX() {
   sensors_event_t event;
   bno_.getEvent(&event);
@@ -57,82 +47,22 @@ void BNO::updateEvents(){
   quat_ = bno_.getQuat();
 }
 
-float BNO::getQuat_x(){
+sensor_msgs::Imu BNO::getImuInfo(){
+  sensor_msgs::Imu bno_sensor_;
   updateEvents();
-  return quat_.x();
-}
+  bno_sensor_.header.frame_id = "imu_link";
+  bno_sensor_.header.stamp = nh_->now(); 
+  bno_sensor_.orientation.x = quat_.x();
+  bno_sensor_.orientation.y = quat_.y();
+  bno_sensor_.orientation.z = quat_.z();
+  bno_sensor_.orientation.w = quat_.w();
+  bno_sensor_.linear_acceleration.x = linearAccelData_.acceleration.x;
+  bno_sensor_.linear_acceleration.y = linearAccelData_.acceleration.y;
+  bno_sensor_.linear_acceleration.z = linearAccelData_.acceleration.z;
 
-float BNO::getQuat_y(){
-  updateEvents();
-  return quat_.y();
-}
+  bno_sensor_.angular_velocity.x = angVelocityData_.gyro.x;
+  bno_sensor_.angular_velocity.y = angVelocityData_.gyro.y;
+  bno_sensor_.angular_velocity.z = angVelocityData_.gyro.z;
 
-float BNO::getQuat_z(){
-  updateEvents();
-  return quat_.z();
-}
-
-float BNO::getQuat_w(){
-  updateEvents();
-  return quat_.w();
-}
-
-float BNO::getAngVel_x(){
-  updateEvents();
-  return angVelocityData_.gyro.x;
-}
-
-float BNO::getAngVel_y(){
-  updateEvents();
-  return angVelocityData_.gyro.y;
-}
-
-float BNO::getAngVel_z(){
-  updateEvents();
-  return angVelocityData_.gyro.z;
-}
-
-float BNO::getLinAcc_x(){
-  updateEvents();
-  return linearAccelData_.acceleration.x;
-}
-
-float BNO::getLinAcc_y(){
-  updateEvents();
-  return linearAccelData_.acceleration.y;
-}
-
-float BNO::getLinAcc_z(){
-  updateEvents();
-  return linearAccelData_.acceleration.z;
-}
-
-void BNO::anglesInfo(){
-  /*Serial.print(F("BNO INFO**** \n----------\nQuaternion\n  X = "));
-  Serial.println((float)getQuat_x(),4);
-  Serial.print(F("  Y = "));
-  Serial.println((float)getQuat_y(),4);
-  Serial.print(F("  Z = "));
-  Serial.println((float)getQuat_z(),4);
-  Serial.print(F("  w = "));
-  Serial.println((float)getQuat_w(),4);
-  Serial.print(F("----------\nAngular Vel\n  X = "));
-  Serial.println((float)getAngVel_x(),4);
-  Serial.print(F("  Y = "));
-  Serial.println((float)getAngVel_y(),4);
-  Serial.print(F("  Z = "));
-  Serial.println((float)getAngVel_z(),4);
-  Serial.print(F("----------\nLinear Acc\n  X = "));
-  Serial.println((float)getLinAcc_x(),4);
-  Serial.print(F("  Y = "));
-  Serial.println((float)getLinAcc_y(),4);
-  Serial.print(F("  Z = "));
-  Serial.println((float)getLinAcc_z(),4);
-  Serial.print(F("----------\nAngle Published\n  X = "));
-  Serial.println((float)getAngleX(),4);
-  Serial.print(F("  Y = "));
-  Serial.println((float)getAngleY(),4);
-  Serial.print(F("  Z = "));
-  Serial.println((float)getAngleZ(),4);
-  */
+  return bno_sensor_;
 }
