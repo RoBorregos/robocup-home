@@ -1,12 +1,22 @@
 #include "Encoder.h"
 //////////////////////////////////Main Function//////////////////////////////////////
+int laststate = -1;
+int astate;
+
 void Encoder::handleEncoder(Motor &motor) {
   motor.deltaPidTicks(1);
   if(motor.getCurrentState() == MotorState::Forward) {
     motor.deltaEncoderTicks(1);
   }
-  else {
+  else if(motor.getCurrentState() == MotorState::Backward){
     motor.deltaEncoderTicks(-1);
+  }
+  else {
+  if(motor.getlastState() == MotorState::Forward){
+    motor.deltaEncoderTicks(1);
+  }else if(motor.getlastState() == MotorState::Backward){
+    motor.deltaEncoderTicks(-1);
+  }
   }
 }
 

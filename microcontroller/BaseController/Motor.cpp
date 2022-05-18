@@ -26,8 +26,8 @@ void Motor::defineOutput() {
   pinMode(digital_one_, OUTPUT);
   pinMode(digital_two_, OUTPUT);
   pinMode(analog_one_, OUTPUT);
-  pinMode(encoder_one_, INPUT);
-  pinMode(encoder_two_, INPUT);
+  pinMode(encoder_one_, INPUT_PULLUP);
+  pinMode(encoder_two_, INPUT_PULLUP);
 }
 
 void Motor::initEncoders() {
@@ -59,7 +59,8 @@ void Motor::forward() {
   digitalWrite(digital_two_, LOW);
 
   pid_.reset();
-  
+
+  last_state_ =  (last_state_ != current_state_) ? current_state_ : last_state_;
   current_state_ = MotorState::Forward;
 }
 
@@ -75,6 +76,7 @@ void Motor::backward() {
 
   pid_.reset();
 
+  last_state_ =  (last_state_ != current_state_) ? current_state_ : last_state_;
   current_state_ = MotorState::Backward;
 }
 
@@ -90,6 +92,7 @@ void Motor::stop() {
   
   pid_.reset();
 
+  last_state_ =  (last_state_ != current_state_) ? current_state_ : last_state_;
   current_state_ = MotorState::Stop;
 }
 
@@ -233,4 +236,16 @@ double Motor::getTargetSpeed() {
 
 MotorState Motor::getCurrentState() {
   return current_state_;
+}
+
+MotorState Motor::getlastState() {
+  return last_state_;
+}
+
+int Motor::getEnc1State() {
+  return digitalRead(encoder_one_);
+}
+
+int Motor::getEnc2State() {
+  return digitalRead(encoder_two_);
 }
