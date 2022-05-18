@@ -28,7 +28,7 @@ bno_sensor_publisher_odom_("/sensor/imu", &bno_sensor_msgs_){
     back_encoders_msg_.encoders.right_wheel = 0;
 
     // BNO odom msg init.
-    bno_sensor_msgs_ = bno.getImuInfo();
+    bno_sensor_msgs_ = bno_->getImuInfo();
 }
 
 //////////////////////////////////Velocity Suscriber//////////////////////////////////////
@@ -72,15 +72,16 @@ void RosBridge::publish() {
             odom_timer_ = odom_timer_ + kOdomPeriod;
         }
     }
-    if((millis() - sensor_timer_) > kSensorsPeriod) {
+    //TODO. Improve Publish Info Timing. Currently 50ms
+    if(false && (millis() - sensor_timer_) > kSensorsPeriod) {
         unsigned long currentTime = millis();
         
         //BNO odom data.
-        bno_sensor_msgs_ = bno.getImuInfo();
+        bno_sensor_msgs_ = bno_->getImuInfo();
 
         // Publish data.
         bno_sensor_publisher_odom_.publish(&bno_sensor_msgs_);
-
+        
         if((currentTime - kSensorsPeriod) > (sensor_timer_ + kSensorsPeriod)) {
             sensor_timer_ = currentTime;
         }
