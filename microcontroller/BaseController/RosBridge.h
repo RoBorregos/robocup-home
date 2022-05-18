@@ -6,6 +6,8 @@
 
 #include <ros.h>
 #include <geometry_msgs/Quaternion.h>
+#include <sensor_msgs/Range.h>
+#include <sensor_msgs/Imu.h>
 #include <ros/node_handle.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/Twist.h>
@@ -23,7 +25,7 @@
 class RosBridge{
     public:
         //////////////////////////////////Constructor//////////////////////////////////////
-        RosBridge(Movement *move_all, ros::NodeHandle *nh);
+        RosBridge(Movement *move_all, BNO *bno, ros::NodeHandle *nh);
         
         
         //////////////////////////////////Run//////////////////////////////////////
@@ -43,6 +45,8 @@ class RosBridge{
         void publish();
         
         Movement *move_all_;
+
+        BNO *bno_;
         
         // Node.
         ros::NodeHandle  *nh_;
@@ -54,8 +58,15 @@ class RosBridge{
         // Publisher.
         ros::Publisher front_encoder_publisher_;
         ros::Publisher back_encoder_publisher_;
+
+         //ODOM BNO PUBLISHER
+        ros::Publisher bno_sensor_publisher_odom_;
+        
         base_control::StampedEncoders front_encoders_msg_;
         base_control::StampedEncoders back_encoders_msg_;
+
+        // ODOM BNO MSG
+        sensor_msgs::Imu bno_sensor_msgs_odom_;
         
         static constexpr uint8_t kOdomPeriod = 40;
 

@@ -54,11 +54,11 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
     front_right_motor_.setMotorSpeedPID(RpmToMs(rpm.motor2));
     back_left_motor_.setMotorSpeedPID(RpmToMs(rpm.motor3));
     back_right_motor_.setMotorSpeedPID(RpmToMs(rpm.motor4));
-    /*char log_msg[20];
+    char log_msg[20];
     char result[8]; // Buffer big enough for 7-character float
     dtostrf(RpmToMs(rpm.motor1), 6, 2, result);
     sprintf(log_msg,"M1 RPM :%s", result);
-    nh_->loginfo(log_msg);*/
+    nh_->loginfo(log_msg);
   } else {
     char log_msg[20];
     char result[8]; // Buffer big enough for 7-character float

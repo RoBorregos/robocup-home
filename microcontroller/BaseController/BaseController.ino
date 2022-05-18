@@ -9,6 +9,7 @@ unsigned long oldtime;
 
 void setup() {
     Serial.begin(57600);
+    
     /*
     BNO bno;
     ros::NodeHandle nh; 
@@ -20,7 +21,7 @@ void setup() {
 
     oldtime=millis();
     Plot myPlot(robot);
-    while(oldtime <= 6000){
+    /*while(oldtime <= 6000){
       oldtime = millis();
       robot->back_left_motor_.setMotorSpeedPID(0.13);
       robot->front_left_motor_.setMotorSpeedPID(0.13);
@@ -43,13 +44,17 @@ void setup() {
       robot->back_right_motor_.setMotorSpeedPID(0.20);
       robot->front_right_motor_.setMotorSpeedPID(0.20);
       myPlot.PlotTargetandCurrent();
+    }*/
+    /*while(1){
+      robot->back_left_motor_.setMotorSpeedPID(0.17);
+      robot->front_left_motor_.setMotorSpeedPID(0.17);
+      robot->back_right_motor_.setMotorSpeedPID(0.17);
+      robot->front_right_motor_.setMotorSpeedPID(0.17);
+      myPlot.PlotTargetandCurrent();
     }
-    robot->back_left_motor_.setMotorSpeedPID(0);
-    robot->front_left_motor_.setMotorSpeedPID(0);
-    robot->back_right_motor_.setMotorSpeedPID(0);
-    robot->front_right_motor_.setMotorSpeedPID(0);
     
     return;
+    
     */
     
     ros::NodeHandle nh; 
@@ -59,21 +64,18 @@ void setup() {
         nh.spinOnce();
     }
     nh.loginfo("Node Initialization completed.");
-
     BNO bno;
+    //bno.orientationStatus();
     nh.loginfo("Bno Initialization completed.");
     Movement initRobot(&bno, &nh);
     robot = &initRobot;
     robot->initEncoders();
     nh.loginfo("Movement Initialization completed.");
 
-    Plot plot(robot);
-    nh.loginfo("Plot Initialization completed.");
-
-    RosBridge rosbridge(robot, &nh);
+    RosBridge rosbridge(robot, &bno, &nh);
     nh.loginfo("RosBridge Initialization completed.");
 
-    rosbridge.run();
+    rosbridge.run();  
 }
 
 void loop() {   

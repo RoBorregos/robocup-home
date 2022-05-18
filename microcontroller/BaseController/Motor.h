@@ -93,10 +93,18 @@ class Motor {
 
     // Return the current state of the motor.
     MotorState getCurrentState();
+    MotorState getlastState();
 
+    //Return Encoder One Pin State.
+    int getEnc1State();
+
+    //Return Encoder Two Pin State.
+    int getEnc2State();
+    
   private:
     MotorId id_;
     MotorState current_state_ = MotorState::Stop;
+    MotorState last_state_ = MotorState::Stop;
     
     // Motor Characteristics.
     static constexpr double kPulsesPerRevolution = 4320.0;

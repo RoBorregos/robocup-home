@@ -59,19 +59,19 @@ class Movement {
     // Pins,
     static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {15, 14};
     static constexpr uint8_t kAnalogPinFrontLeftMotor = 11;
-    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {2, 25};
+    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {2, 47};//PL2 = P4_4 = D47
 
     static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {22, 23};
     static constexpr uint8_t kAnalogPinBackLeftMotor = 6;
-    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {3, 37};
+    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {3, 48};//PL1 = P4_5 = D48
 
     static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {26,27};
     static constexpr uint8_t kAnalogPinFrontRightMotor = 7;
-    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {19, 33};
+    static constexpr uint8_t kEncoderPinsFrontRightMotor[2] = {19, 45};//PL4 = P4_2 = D45
 
     static constexpr uint8_t kDigitalPinsBackRightMotor[2] = {30,31};
     static constexpr uint8_t kAnalogPinBackRightMotor = 8;
-    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {18, 29};
+    static constexpr uint8_t kEncoderPinsBackRightMotor[2] = {18, 44};//PL5 = P4_1 = D44
 
   private:
     // ROS
