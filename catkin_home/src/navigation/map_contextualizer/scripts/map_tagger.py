@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """ Map tagger application script.
 
 Application for manual map contextualization done by tagging the map,
@@ -16,7 +16,7 @@ Global app states:
 
 In the end, it generates a .json file with the map description.
 """
-import pathlib
+
 import rospy
 from geometry_msgs.msg import PoseStamped
 import json
@@ -26,11 +26,10 @@ from map_contextualizer.msg import MapDisplayState
 from map_contextualizer.msg import MapContext
 from map_contextualizer.msg import Room
 from map_contextualizer.msg import ObjInt
-#from map_contextualizer.scripts import map
-import sys 
-sys.path.append(str(pathlib.Path(__file__).parent) + 
-'/home/bryan/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts')
-from map import *
+import pathlib
+import sys
+sys.path.append(str(pathlib.Path(__file__).parent) + '/../include')
+from mapClasses import Map
 import os
 from os import listdir
 from os.path import isfile, join
@@ -38,7 +37,8 @@ global map_publisher
 global state_publisher
 global state
 global obj_name
-#global map
+
+BASE_PATH = str(pathlib.Path(__file__).parent) + '/../../../'
 
 def callback(data):
     """Gets point location placed on the map in rviz and
@@ -54,7 +54,7 @@ def callback(data):
     global map
     global map_publisher
     global obj_name
-    if(state.state not in [0, -1]):
+    if(state.state not in [0,-1]):
         room_index = -1
         for index in range(len(map.rooms)):
                 if map.rooms[index].name == state.room:
@@ -74,6 +74,19 @@ map = MapContext()
 map_publisher = None
 state_publisher = None
 obj_name = None
+
+
+def handleIntInput(msg_ = "", range=(0, 10)):
+    x = -1
+    while x < range[0] or x > range[1]:
+        print(msg_)
+        while True:
+            x = input()
+
+            if x and x.isnumeric():
+                break
+        x = int(x)
+    return x
 
 if __name__ == '__main__':
     """Main application workflow.
@@ -99,29 +112,27 @@ if __name__ == '__main__':
     print("~~~~~~~~~~~~~~~~~~~~~~~~~")
     #global map
     #global state
-    print("What do you want to do?")
-    print("1. Open existing map")
-    print("2. Create new map")
-    print("0. Exit")
-    x = int(input())
-    print("")
+    x = handleIntInput(
+            msg_ = "What do you want to do? \n 1. Open existing map  \n 2. Create new map  \n 0. Exit",
+            range=(0, 2)
+        )
 
     if(x not in [1, 2]):
-    #if(x == 0):
         exit(0)
 
     if(x==1):
         print("Choose a map:")
-        maps = [f for f in listdir("/home/bryan/robocup-home/catkin_home/src/navigation/map_contextualizer/contextmaps") ]
-        x=-1
-        for index, context_map in enumerate(maps):
-            print((str(index+1) + ". " + context_map[:-5]))
-        print("0. Exit")
-        x = int(input())
+        maps = [f for f in listdir(BASE_PATH + "navigation/map_contextualizer/contextmaps") ]
+        x = -1
+        while x < 0 or x >= len(maps):
+            for index, context_map in enumerate(maps):
+                print((str(index+1) + ". " + context_map[:-5]))
+            print("0. Exit")
+            x = int(input())
         if x==0 or x>len(maps): exit(0)
 
         context_map = None
-        with open("/home/bryan/robocup-home/catkin_home/src/navigation/map_contextualizer/contextmaps" + maps[x-1], "r") as read_file:
+        with open(BASE_PATH + "navigation/map_contextualizer/contextmaps/" + maps[x-1], "r") as read_file:
             context_map = json.load(read_file)
 
         map.name = context_map["name"]
@@ -160,15 +171,17 @@ if __name__ == '__main__':
         map_publisher.publish(map)
         print(map)
     else:
-        x = input("Give me the name of the map: ")
+        x = str(input("Give me the name of the map: "))
         map.name = x
 
     while not rospy.is_shutdown():
-        print("What do you want to do?")
-        print("1. Add a room")
-        print("2. Delete a room")
-        print("0. Exit")
-        x = int(input())
+        x = -1
+        while x < 0 or x > 2:
+            print("What do you want to do?")
+            print("1. Add a room")
+            print("2. Delete a room")
+            print("0. Exit")
+            x = int(input())
         if x == 0:
             break
         if x == 1:
@@ -197,13 +210,13 @@ if __name__ == '__main__':
             x = int(input("Save object of interest? (0 = no, 1 = Yes): "))
             while(x):
                 #global obj_name
-                obj_name = str(input('Give me the name of the object: '))
+                obj_name = str((input('Give me the name of the object: ')))
                 state.state = 4
                 state_publisher.publish(state)
                 obj = ObjInt()
                 obj.name = obj_name
                 map.rooms[-1].obj_int.append(obj)
-                print("Please choose the enclosing perimeter area of the object")
+                print("Please choose the important pose of the object")
                 print("Insert any key to stop")
                 x = input()
                 x = int(input("Save another object of interest? (0 = no, 1 = Yes): "))
