@@ -9,3 +9,8 @@ nlu:
     - Bottle
     - Cereal
     - Bowl
+
+    - tea
+    - juice
+    - vegetables
+    - coke

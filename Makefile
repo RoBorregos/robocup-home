@@ -9,7 +9,7 @@ noetic.speech.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.speech .
 noetic.speech.prod.build:
 	@docker login ghcr.io
-	@docker build -t ros:home -f docker/noetic/Dockerfile.speech.prod .
+	@docker build -t ros:homesp -f docker/noetic/Dockerfile.speech.prod .
 noetic.navigation.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.navigation .
 noetic.objectDetection.build:
@@ -62,6 +62,10 @@ noetic.objectDetection.prod.create.nvidia:
 noetic.up:
 	@xhost +
 	@docker start ros-home
+
+noetic.speech.up:
+	@xhost +
+	@docker start ros-homesp
 
 #: Stop the container
 noetic.down:
