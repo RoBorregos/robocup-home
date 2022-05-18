@@ -12,6 +12,8 @@
 #include "Kinematics.h"
 #include "Motor.h"
 
+#define N_PI 3.1415926535897932384626433832795
+
 inline int sign(int a) { return min(1, max(-1, a)); };
 
 class Movement {
@@ -45,6 +47,9 @@ class Movement {
     //////////////////////////////////VELOCITY//////////////////////////////////////    
     // Received a Velocity Command.
     void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
+
+    // Calculate meters per second equivalent to Revolutions per minute.
+    double RpmToMs(const double rpm);
     
     // Stop robot.
     void stop();
@@ -54,11 +59,11 @@ class Movement {
     // Pins,
     static constexpr uint8_t kDigitalPinsFrontLeftMotor[2] = {15, 14};
     static constexpr uint8_t kAnalogPinFrontLeftMotor = 11;
-    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {3, 25};
+    static constexpr uint8_t kEncoderPinsFrontLeftMotor[2] = {2, 25};
 
     static constexpr uint8_t kDigitalPinsBackLeftMotor[2] = {22, 23};
     static constexpr uint8_t kAnalogPinBackLeftMotor = 6;
-    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {2, 37};
+    static constexpr uint8_t kEncoderPinsBackLeftMotor[2] = {3, 37};
 
     static constexpr uint8_t kDigitalPinsFrontRightMotor[2] = {26,27};
     static constexpr uint8_t kAnalogPinFrontRightMotor = 7;
@@ -84,7 +89,7 @@ class Movement {
     int last_encoder_counts_[Movement::kCountMotors];
 
     // Constants
-    static constexpr bool kUsingPID = false;
+    static constexpr bool kUsingPID = true;
 
     // Kinematics
     Kinematics kinematics_;
