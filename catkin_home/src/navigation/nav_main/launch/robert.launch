@@ -1,5 +1,0 @@
-<launch>
-    <!-- <TODO run /control_base publisher/> -->
-    <!-- <include file="$(find rplidar_ros)/launch/rplidar.launch" /> -->
-    <include file="$(find robot_description)/launch/display.launch" />
-</launch>

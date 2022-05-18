@@ -11,7 +11,7 @@ Global app states:
 2:  Add object area
 """
 
-import tf2_ros
+import tf
 import roslib; roslib.load_manifest('visualization_marker_tutorials')
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
@@ -181,7 +181,6 @@ def updateMarkers():
                 br.sendTransform((obj.obj_area[0].x, obj.obj_area[0].y, obj.obj_area[0].z),
                     (0.0, 0.0, 0.0, 1.0), rospy.Time.now(), frame_id, "/map")
                 defineMarker(room.name == marker_state.room, frame_id, 3)
-    # rospy.loginfo("Map updated")
 
 if __name__ == '__main__':
     """ Main, updates transforms and markers. """
@@ -189,8 +188,8 @@ if __name__ == '__main__':
     rospy.Subscriber("/tagged_map", MapContext, getMapContext)
     rospy.Subscriber("/map_tagger_state", MapDisplayState, changeState)
     topic = 'goal_visualization_array'
-    publisher = rospy.Publisher(topic, MarkerArray)
-    br = tf2_ros.TransformBroadcaster()
+    publisher = rospy.Publisher(topic, MarkerArray, queue_size = 5)
+    br = tf.TransformBroadcaster()
     rospy.init_node('map_displayer')
 
     # global path
