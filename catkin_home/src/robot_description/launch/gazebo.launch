@@ -2,7 +2,7 @@
   <arg name="world_name" default="worlds/empty.world"/>
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(arg world_name)"/>
-    <arg name="paused" value="false"/>
+    <arg name="paused" value="true"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
     <arg name="headless" value="false"/>
@@ -22,7 +22,7 @@
     pkg="gazebo_ros"
     type="spawn_model"
     name="spawn_urdf"
-    args="-urdf -model robot_description -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -R $(arg roll_pos) -P $(arg pitch_pos) -Y $(arg yaw_pos) -param robot_description"
+    args="-urdf -model robot_description -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -R $(arg roll_pos) -P $(arg pitch_pos) -Y $(arg yaw_pos) -param robot_description -unpause"
   />
   <node
     name="fake_joint_calibration"

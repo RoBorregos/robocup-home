@@ -1,26 +1,40 @@
 <launch>
-  <arg
-    name="model" />
-  <arg
-    name="gui"
-    default="False" />
-  <param
-    name="robot_description"
-    textfile="$(find robot_description)/urdf/robot.urdf.xacro" />
-  <param
-    name="use_gui"
-    value="$(arg gui)" />
-  <node
-    name="joint_state_publisher"
-    pkg="joint_state_publisher"
-    type="joint_state_publisher" />
-  <node
-    name="robot_state_publisher"
-    pkg="robot_state_publisher"
-    type="robot_state_publisher" />
-  <node
-    name="rviz"
-    pkg="rviz"
-    type="rviz"
-    args="-d $(find robot_description)/rviz/urdf.rviz" />
+  <arg name="model" />
+  <arg name="use_gui" default="False" />
+  <param name="robot_description" textfile="$(find robot_description)/urdf/robot.urdf.xacro" />
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" unless="$(arg use_gui)" />
+  <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui" output="screen" if="$(arg use_gui)" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- Laser Filter -->
+  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter" output="screen" >
+    <rosparam command="load" file="$(find nav_main)/filters/laser_config.yaml" />
+  </node>
+
+  <!-- <node pkg="robot_localization" type="ekf_localization_node"
+      name="robot_localization_ekf_node_odom"
+      clear_params="true">
+    <param name="frequency" value="10." />
+    <param name="sensor_timeout" value="0.2" />
+    <param name="two_d_mode" value="true" />
+    <param name="publish_tf" value="true" />
+    <param name="map_frame" value="map"/>
+    <param name="base_link_frame" value="base_footprint" />
+    <param name="odom0" value="odom"/>
+    <param name="imu0" value="imu"/> 
+    <rosparam param="odom0_config">
+              [true, true, false,
+              false,  false,  true,
+              false, false, false,
+              false,  false,  true,
+              true,  false,  false]
+    </rosparam>
+    <rosparam param="imu0_config">
+              [false, false, false,
+              false, false, true,
+              false, false, false,
+              false, false, true,
+              true, false, false]
+    </rosparam>
+  </node> -->
 </launch>

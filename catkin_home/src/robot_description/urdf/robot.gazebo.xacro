@@ -14,8 +14,8 @@
       <yaw_velocity_p_gain>1.0</yaw_velocity_p_gain>
       <x_velocity_p_gain>15.0</x_velocity_p_gain>
       <y_velocity_p_gain>15.0</y_velocity_p_gain>
-      <max_x_velocity>0.6</max_x_velocity>
-      <max_y_velocity>0.6</max_y_velocity>
+      <max_x_velocity>1.0</max_x_velocity>
+      <max_y_velocity>1.0</max_y_velocity>
       <max_yaw_velocity>0.5</max_yaw_velocity>
     </plugin>
   </gazebo>
@@ -35,22 +35,32 @@
 
   <gazebo reference="R1">
     <material>Gazebo/Black</material>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <gazebo reference="R2">
     <material>Gazebo/Black</material>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <gazebo reference="R3">
     <material>Gazebo/Black</material>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <gazebo reference="R4">
     <material>Gazebo/Black</material>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <gazebo reference="neck_link">
     <material>Gazebo/Black</material>
+    <mu1>0.2</mu1>
+    <mu2>0.2</mu2>
   </gazebo>
 
   <!-- camera -->
@@ -236,6 +246,26 @@
     </sensor>
   </gazebo> -->
 
+  <gazebo reference="imu_link">
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>imu</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>imu</topicName>
+        <bodyName>imu_link</bodyName>
+        <updateRateHZ>10.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>imu_link</frameName>
+        <initialOrientationAsReference>false</initialOrientationAsReference>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
 
   <gazebo reference="Elevador">
     <material>Gazebo/White</material>
@@ -249,11 +279,43 @@
   <gazebo reference="Pinza">
     <material>Gazebo/White</material>
   </gazebo>
+  <gazebo reference="BASE_PINZA">
+    <material>Gazebo/White</material>
+  </gazebo>
   <gazebo reference="Garra_D">
     <material>Gazebo/Black</material>
   </gazebo>
   <gazebo reference="Garra_I">
     <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- Arm Motors Plugin -->
+  <xacro:macro name="gazebo-joint" params="joint">
+    <transmission name="${joint}_transmission">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${joint}">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${joint}_motor">
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+  <xacro:gazebo-joint joint="Chasis_Elevador" />
+  <xacro:gazebo-joint joint="Elevador_Brazo_1" />
+  <xacro:gazebo-joint joint="Elevador_Brazo_2" />
+  <xacro:gazebo-joint joint="Brazo_2_Pinza" />
+  <xacro:gazebo-joint joint="BASE_PINZA_joint" />
+  <xacro:gazebo-joint joint="Pinza_Garra_D" />
+  <xacro:gazebo-joint joint="Pinza_Garra_I" />
+  <xacro:gazebo-joint joint="neck_joint" />
+  <xacro:gazebo-joint joint="Chasis_R1" />
+  <xacro:gazebo-joint joint="Chasis_R2" />
+  <xacro:gazebo-joint joint="Chasis_R3" />
+  <xacro:gazebo-joint joint="Chasis_R4" />
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
   </gazebo>
 
 </robot>
