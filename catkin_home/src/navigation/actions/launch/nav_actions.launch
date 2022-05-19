@@ -1,0 +1,4 @@
+<launch>
+    <node name="navServer" pkg="actions" type="navServer.py" output="screen" />
+    <node name="navClient" pkg="actions" type="navClient.py" output="screen" />
+</launch>
