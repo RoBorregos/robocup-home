@@ -40,13 +40,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-noetic-audio-common \
     ros-noetic-map-server \
     ros-noetic-move-base \
-    ros-noetic-rosserial-arduino \ 
-    ros-noetic-rosserial \
-    && rm -rf /var/lib/apt/lists/*
-
-# # setup entrypoint
-# COPY ./ros_entrypoint.sh /
-
+    ros-noetic-moveit-ros-planning \
+    ros-noetic-moveit-ros-planning-interface \
+    ros-noetic-moveit-core \
+    ros-noetic-moveit-msgs \
+    ros-noetic-rosserial-arduino \
+    ros-noetic-moveit-ros-perception \
+    ros-noetic-moveit \
+    ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
+    ros-noetic-rosserial && \
+    rm -rf /var/lib/apt/lists/*
 
 # Init catkin_home directoy
 RUN mkdir /catkin_home

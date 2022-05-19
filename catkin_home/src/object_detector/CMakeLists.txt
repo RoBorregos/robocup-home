@@ -8,11 +8,29 @@ project(object_detector)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  actionlib
+  actionlib_msgs
+  geometry_msgs
+  shape_msgs
+  moveit_msgs
+  moveit_core
+  moveit_ros_planning
+  moveit_ros_planning_interface
+  moveit_ros_perception
   roscpp
+  roslib
   rospy
-  sensor_msgs
+  pcl_ros
+  pcl_conversions
   std_msgs
+  std_srvs
   message_generation
+  tf
+  tf2
+  tf2_ros
+  tf2_eigen
+  tf2_geometry_msgs
+  laser_geometry
 )
 
 ## System dependencies are found with CMake's conventions
@@ -63,15 +81,17 @@ add_message_files(
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+add_action_files(
+  FILES
+  DetectObjects3D.action
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
+  actionlib_msgs
+  geometry_msgs
+  shape_msgs
   std_msgs
 )
 
@@ -105,10 +125,14 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#INCLUDE_DIRS include
-#LIBRARIES object_detector
-CATKIN_DEPENDS roscpp rospy sensor_msgs std_msgs geometry_msgs
-#DEPENDS system_lib
+  LIBRARIES
+  INCLUDE_DIRS
+  CATKIN_DEPENDS
+    roscpp
+    roslib
+    message_runtime
+    moveit_core
+    moveit_ros_planning_interface
 )
 
 ###########
@@ -121,6 +145,8 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
 )
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=shadow")
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -135,7 +161,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/object_detector_node.cpp)
+add_executable(Detection3D src/Detection3D.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -146,8 +172,10 @@ include_directories(
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(Detection3D object_detector_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
+target_link_libraries(Detection3D ${catkin_LIBRARIES})
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
