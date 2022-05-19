@@ -6,13 +6,9 @@
     <!-- Map tagger display to show saved data from the map -->
     <node pkg="map_contextualizer" name="map_tagger" type="map_tagger.py" output="screen" />
     <!-- Move base activated to get costmaps -->
-    <!-- <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-      <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
-      <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
-      <rosparam file="$(find nav_main)/config/local_costmap_params.yaml" command="load" />
-      <rosparam file="$(find nav_main)/config/global_costmap_params.yaml" command="load" /> 
-      <rosparam file="$(find nav_main)/config/base_local_planner_params.yaml" command="load" />
-    </node> -->
+    <include file="$(find nav_main)/launch/move_base.launch">
+      <arg name="base_local_planner" value="teb"/>
+    </include>
     <!-- launches rviz and map server for map visulalization -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nav_main)/rviz/map_tagging.rviz"/>
     <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find nav_main)/maps/map.pgm 0.050000" />

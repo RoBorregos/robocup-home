@@ -1,18 +1,28 @@
 <launch>
+   <arg name="base_local_planner" default="dwa" />
+   
+   <group if="$(eval arg('base_local_planner') == 'dwa')">
+      <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+         <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+         <param name="controller_frequency" value="10.0" />
+         <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
+         <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+         <rosparam file="$(find nav_main)/config/local_costmap_params.yaml" command="load" />
+         <rosparam file="$(find nav_main)/config/global_costmap_params.yaml" command="load" /> 
+         <rosparam file="$(find nav_main)/config/dwa_local_planner_params.yaml" command="load" />
+      </node>
+  </group>
 
-   <master auto="start"/>
-   <!-- Run the map server --> 
-   <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find nav_main)/maps/map.pgm 0.050000" /> -->
-   <!-- <include file="$(find hector_mapping)/launch/mapping_default.launch" /> -->
-
-   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-      <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
-      <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
-      <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
-      <rosparam file="$(find nav_main)/config/local_costmap_params.yaml" command="load" />
-      <rosparam file="$(find nav_main)/config/global_costmap_params.yaml" command="load" />
-      <rosparam file="$(find nav_main)/config/move_base_params.yaml" command="load" />
-      <rosparam file="$(find nav_main)/config/dwa_local_planner_params.yaml" command="load" />
-    </node>
+  <group if="$(eval arg('base_local_planner') == 'teb')">
+      <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+         <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+         <param name="controller_frequency" value="10.0" />
+         <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+         <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+         <rosparam file="$(find nav_main)/config/local_costmap_params.yaml" command="load" />
+         <rosparam file="$(find nav_main)/config/global_costmap_params.yaml" command="load" />
+         <rosparam file="$(find nav_main)/config/teb_local_planner_params.yaml" command="load" />
+      </node>
+  </group>
 
 </launch>

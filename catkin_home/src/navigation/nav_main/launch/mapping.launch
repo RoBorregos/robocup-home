@@ -2,15 +2,16 @@
     <arg name="set_base_frame" default="base_footprint"/>
     <arg name="set_odom_frame" default="odom"/>
     <arg name="set_map_frame"  default="map"/>
-    <arg name="is_sim"  default="True"/>
+    <arg name="is_sim"  default="False"/>
 
-    <!--<include file="$(find robot_description)/launch/lidar.launch" unless="$(arg is_sim)" />-->
+    <!-- Laser -->
+    <include file="$(find nav_main)/launch/lidar.launch">
+        <param name="is_sim" value="$(arg is_sim)"/>
+    </include>
 
-    <!--<include file="$(find robot_description)/launch/display.launch" />-->
+    <include file="$(find robot_description)/launch/display.launch" />
 
-    <!--<node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py"/>-->
-
-    <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_description)/rviz/mapping.rviz" />-->
+    <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py"/>
 
     <!-- Gmapping -->
     <node pkg="gmapping" type="slam_gmapping" name="robot_slam_gmapping" output="screen">
@@ -21,4 +22,7 @@
         <remap from="scan" to="scan_filtered"/>
         <rosparam command="load" file="$(find nav_main)/config/gmapping_params.yaml" />
     </node>
+
+    <!-- Save Map CMD. -->
+    <!-- rosrun map_server map_saver static_map:=dynamic_map -->
 </launch>

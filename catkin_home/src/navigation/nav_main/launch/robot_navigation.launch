@@ -1,7 +1,7 @@
 <launch>
   <!-- Arguments -->
   <arg name="map_file" default="$(find nav_main)/maps/map.yaml"/>
-  <arg name="is_sim" default="True" />
+  <arg name="is_sim" default="False" />
 
   <include file="$(find robot_description)/launch/display.launch" />
 
@@ -14,17 +14,12 @@
   </include>
 
   <!-- MoveBase -->
-  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-    <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="global_costmap" /> 
-    <rosparam file="$(find nav_main)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
-    <rosparam file="$(find nav_main)/config/local_costmap_params.yaml" command="load" />
-    <rosparam file="$(find nav_main)/config/global_costmap_params.yaml" command="load" /> 
-    <rosparam file="$(find nav_main)/config/dwa_local_planner_params.yaml" command="load" />
-  </node>
+  <include file="$(find nav_main)/launch/move_base.launch">
+    <arg name="base_local_planner" value="teb"/>
+  </include>
 
   <!-- Laser -->
-  <include file="$(find nav_main)/launch/lidar.launch" unless="$(arg is_sim)" />
-  <node pkg="laser_filters" type="scan_to_scan_filter_chain" name="laser_filter" output="screen" >
-    <rosparam command="load" file="$(find nav_main)/filters/laser_config.yaml" />
-  </node>
+  <include file="$(find nav_main)/launch/lidar.launch">
+    <param name="is_sim" value="$(arg is_sim)"/>
+  </include>
 </launch>
