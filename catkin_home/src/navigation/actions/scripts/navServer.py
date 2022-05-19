@@ -36,9 +36,12 @@ class navigationServer(object):
         self.move_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.move_client.wait_for_server()
 
+        # Localization
+        rospy.wait_for_service('/global_localization')
+        global_localization = rospy.ServiceProxy('/global_localization', Empty)
+        global_localization()
         self.send_relative_goal()
         self.send_relative_goal()
-        self.pub_amcl = rospy.Publisher('initialpose', PoseWithCovarianceStamped, queue_size=10)
 
         # Initialize Navigation Action Server
         self._as = actionlib.SimpleActionServer(self._action_name, actions.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
