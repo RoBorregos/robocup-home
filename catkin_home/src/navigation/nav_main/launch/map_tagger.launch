@@ -1,14 +1,14 @@
 <launch>
     <!-- Dummy base link for creating the tf tree -->
-    <node pkg="tf" type="static_transform_publisher" name="dummy_base_link" args="1 0 0 0 0 0 1 map base_link 100" />
+    <node pkg="tf" type="static_transform_publisher" name="map_publisher" args="1 0 0 0 0 0 1 map base_footprint 100" />
     <!-- Map tagger display to show saved data from the map -->
     <node pkg="map_contextualizer" name="map_displayer" type="map_tagger_display.py" output="screen" />
     <!-- Map tagger display to show saved data from the map -->
     <node pkg="map_contextualizer" name="map_tagger" type="map_tagger.py" output="screen" />
     <!-- Move base activated to get costmaps -->
-    <include file="$(find nav_main)/launch/move_base.launch">
+    <!-- <include file="$(find nav_main)/launch/move_base.launch">
       <arg name="base_local_planner" value="teb"/>
-    </include>
+    </include> -->
     <!-- launches rviz and map server for map visulalization -->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nav_main)/rviz/map_tagging.rviz"/>
     <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find nav_main)/maps/map.pgm 0.050000" />

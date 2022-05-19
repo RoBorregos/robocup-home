@@ -1,45 +1,77 @@
-#! /usr/bin/env python
-
-from __future__ import print_function
+#! /usr/bin/env python3
 
 import rospy
-# Brings in the SimpleActionClient
 import actionlib
+from actions.msg import navServAction, navServGoal
+from geometry_msgs.msg import PoseStamped
+from enum import Enum
 
-# Brings in the messages used by the navigation action, including the
-# goal message and the result message.
-import actions.msg
+def handleIntInput(msg_ = "", range=(0, 10)):
+    x = -1
+    while x < range[0] or x > range[1]:
+        print(msg_)
+        while True:
+            x = input()
 
-def navigationClient():
-    # Creates the SimpleActionClient, passing the type of the action
-    # (NavigationAction) to the constructor.
-    client = actionlib.SimpleActionClient('navServer', actions.msg.navServAction)
+            if x and x.isnumeric():
+                break
+        x = int(x)
+    return x
 
-    # Waits until the action server has started up and started
-    # listening for goals.
-    client.wait_for_server()
-    print("Nav server running...")
+class MoveGoals(Enum):
+    KITCHEN = 1
+    COUCH = 2
+    BATHROOM = 3
+    CLOSET = 4
 
-    # Creates a goal to send to the action server.
-    goal = actions.msg.navServGoal(target_location = "kitchen")
+class NavClient(object):
+    
+    def __init__(self):
+        self.client = actionlib.SimpleActionClient('navServer', navServAction)
+        self.client.wait_for_server()
 
-    # Sends the goal to the action server.
-    client.send_goal(goal)
+        while True:
+            x = handleIntInput(
+                msg_ = "1. Kitchen  \n 2. Couch  \n 3. Bathroom  \n 4. Closet  \n 0. Exit",
+                range=(0, 4)
+            )
+            if x == 0:
+                break
+            self.nav_goal(MoveGoals(x))
 
-    # Waits for the server to finish performing the action.
-    client.wait_for_result()
+    def nav_goal(self, target = MoveGoals.KITCHEN):
+        class NavGoalScope:
+            target_location = target.name
+            result = False
+            pose = PoseStamped()
+            
+            result_received = False
+        
+        def nav_goal_feedback(feedback_msg):
+            NavGoalScope.pose = feedback_msg.pose
+        
+        def get_result_callback(state, result):
+            NavGoalScope.result = result.result
 
-    # Prints out the result of executing the action
-    return client.get_result()  # The Navigation status result
+            NavGoalScope.result_received = True
+            rospy.loginfo("Nav Goal Finished")
+
+        rospy.loginfo("Sending Nav Goal")
+        self.client.send_goal(
+                    navServGoal(target_location = NavGoalScope.target_location),
+                    feedback_cb=nav_goal_feedback,
+                    done_cb=get_result_callback)
+        
+        while not NavGoalScope.result_received:
+            pass
+        
+        return NavGoalScope.result
 
 if __name__ == '__main__':
     try:
-        # Initializes a rospy node so that the SimpleActionClient can
-        # publish and subscribe over ROS.
-        rospy.init_node('nav_client_py')
-        
-        result = navigationClient()
-        print("Result:")
-        print(result)
+        rospy.init_node('NavGoalClient', anonymous=True)
+        rospy.loginfo("NavGoalClient initialized.")
+        NavClient()
+
     except rospy.ROSInterruptException:
         print("program interrupted before completion", file=sys.stderr)
