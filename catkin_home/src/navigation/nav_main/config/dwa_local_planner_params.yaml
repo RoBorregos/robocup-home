@@ -18,13 +18,13 @@ DWAPlannerROS:
   min_vel_theta: -1.82
 
   acc_lim_x: 2.5
-  acc_lim_y: 0.0
+  acc_lim_y: 2.5
   acc_lim_theta: 3.2 
 
 # Goal Tolerance Parametes
   xy_goal_tolerance: 0.07
   yaw_goal_tolerance: 0.07
-  latch_xy_goal_tolerance: false
+  latch_xy_goal_tolerance: true
 
 # Forward Simulation Parameters
   sim_time: 2.0 # Too low value is in sufficient time to pass narrow area and too high value is not allowed rapidly rotates  1.5 vs 5
