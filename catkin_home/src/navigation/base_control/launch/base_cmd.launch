@@ -25,7 +25,7 @@
     >
         <param 
             name="port" 
-            value="/dev/ttyUSB0"
+            value="/dev/ttyUSB1"
         />
         <param 
             name="baud" 
@@ -47,9 +47,9 @@
         output="screen"
     />
     <!-- Run rviz simulation. --> 
-    <include 
+    <!--<include 
         file="$(find robot_description)/launch/display.launch" 
-    />
+    />-->
     <!--<node 
         type="rviz" 
         name="rviz" 
