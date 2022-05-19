@@ -4,6 +4,7 @@ import json
 import math
 import tf
 
+import numpy
 import pathlib
 import actionlib
 import rospy
@@ -11,6 +12,7 @@ from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actions.msg
+from geometry_msgs.msg import Twist 
 from actions.msg import navServAction, navServGoal, navServResult
 
 BASE_PATH = str(pathlib.Path(__file__).parent) + '/../../../../'
@@ -40,8 +42,7 @@ class navigationServer(object):
         rospy.wait_for_service('/global_localization')
         global_localization = rospy.ServiceProxy('/global_localization', Empty)
         global_localization()
-        self.send_relative_goal()
-        self.send_relative_goal()
+        self.rotate()
 
         # Initialize Navigation Action Server
         self._as = actionlib.SimpleActionServer(self._action_name, actions.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
@@ -63,18 +64,24 @@ class navigationServer(object):
         self.move_client.send_goal(goal)
         self.move_client.wait_for_result()
     
-    def send_relative_goal(self, target_pose):
-        goal = MoveBaseGoal()
-        pose_stamped = PoseStamped()
-        pose_stamped.header.stamp = rospy.Time.now()
-        pose_stamped.header.frame_id = "odom"
-        pose_stamped.pose.position.x = 0.0
-        pose_stamped.pose.position.y = 0.0
-        pose_stamped.pose.position.z = 0.0
-        pose_stamped.pose.orientation = quaternion_from_euler(0.0, 0.0, numpy.deg2rad(180.0))
-        goal.target_pose = pose_stamped
-        self.move_client.send_goal(goal)
-        self.move_client.wait_for_result()
+    def rotate(self):
+        velocity_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
+        vel_msg = Twist()
+        
+        vel_msg.linear.x = 0
+        vel_msg.linear.y = 0
+        vel_msg.linear.z = 0
+        vel_msg.angular.x = 0
+        vel_msg.angular.y = 0
+        vel_msg.angular.z = 0.16
+
+        t0 = time.time()
+
+        while not rospy.is_shutdown() and time.time() - t0 < 15:
+            velocity_publisher.publish(vel_msg)
+            rospy.sleep(1/50)
+        vel_msg.angular.z = 0
+        velocity_publisher.publish(vel_msg)
 
 if __name__ == '__main__':
     rospy.init_node('navServer')
