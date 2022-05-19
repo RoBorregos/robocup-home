@@ -66,6 +66,6 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## Install ##
 #############
 
-catkin_install_python(PROGRAMS scripts/map_tagger.py scripts/map_tagger_display.py scripts/map.py
+catkin_install_python(PROGRAMS scripts/map_tagger.py scripts/map_tagger_display.py #scripts/map.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

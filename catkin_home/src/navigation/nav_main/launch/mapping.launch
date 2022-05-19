@@ -4,13 +4,13 @@
     <arg name="set_map_frame"  default="map"/>
     <arg name="is_sim"  default="True"/>
 
-    <include file="$(find robot_description)/launch/lidar.launch" unless="$(arg is_sim)" />
+    <!--<include file="$(find robot_description)/launch/lidar.launch" unless="$(arg is_sim)" />-->
 
-    <include file="$(find robot_description)/launch/display.launch" />
+    <!--<include file="$(find robot_description)/launch/display.launch" />-->
 
-    <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py"/>
+    <!--<node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py"/>-->
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_description)/rviz/mapping.rviz" />
+    <!--<node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_description)/rviz/mapping.rviz" />-->
 
     <!-- Gmapping -->
     <node pkg="gmapping" type="slam_gmapping" name="robot_slam_gmapping" output="screen">
