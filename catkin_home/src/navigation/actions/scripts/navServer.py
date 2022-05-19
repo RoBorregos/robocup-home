@@ -36,6 +36,8 @@ class navigationServer(object):
         self.move_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.move_client.wait_for_server()
 
+        self.send_relative_goal()
+        self.send_relative_goal()
         self.pub_amcl = rospy.Publisher('initialpose', PoseWithCovarianceStamped, queue_size=10)
 
         # Initialize Navigation Action Server
@@ -54,6 +56,19 @@ class navigationServer(object):
         pose_stamped.header.stamp = rospy.Time.now()
         pose_stamped.header.frame_id = "map"
         pose_stamped.pose = target_pose
+        goal.target_pose = pose_stamped
+        self.move_client.send_goal(goal)
+        self.move_client.wait_for_result()
+    
+    def send_relative_goal(self, target_pose):
+        goal = MoveBaseGoal()
+        pose_stamped = PoseStamped()
+        pose_stamped.header.stamp = rospy.Time.now()
+        pose_stamped.header.frame_id = "odom"
+        pose_stamped.pose.position.x = 0.0
+        pose_stamped.pose.position.y = 0.0
+        pose_stamped.pose.position.z = 0.0
+        pose_stamped.pose.orientation = quaternion_from_euler(0.0, 0.0, numpy.deg2rad(180.0))
         goal.target_pose = pose_stamped
         self.move_client.send_goal(goal)
         self.move_client.wait_for_result()
