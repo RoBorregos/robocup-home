@@ -146,6 +146,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        claser:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
@@ -215,10 +219,10 @@ Visualization Manager:
       Min Color: 0; 0; 0
       Name: LaserScan
       Position Transformer: XYZ
-      Queue Size: 10
+      Queue Size: 100
       Selectable: true
       Size (Pixels): 3
-      Size (m): 0.009999999776482582
+      Size (m): 0.03
       Style: Flat Squares
       Topic: /scan
       Unreliable: false
