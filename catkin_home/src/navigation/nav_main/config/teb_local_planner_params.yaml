@@ -25,7 +25,7 @@ TebLocalPlannerROS:
  min_turning_radius: 0.0
  footprint_model:
    type: "polygon"
-   vertices: [ [0.23, -0.27], [0.23, 0.27], [-0.31, 0.27], [-0.31, -0.27] ]
+   vertices: [ [0.245, -0.29], [0.245, 0.29], [-0.34, 0.29], [-0.34, -0.29] ]
 
  # GoalTolerance
     
