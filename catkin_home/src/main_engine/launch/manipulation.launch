@@ -1,0 +1,9 @@
+<launch>
+    <!-- Pick & place server -->
+    <node name="pick_and_place_server" pkg="object_manipulation" type="pick_and_place_server.py" output="screen">
+        <rosparam command="load" file="$(find object_manipulation)/config/pick_and_place_params.yaml" />
+    </node>
+
+    <!-- Main Engine server -->
+    <node name="Tmr2022Manipulation" pkg="main_engine" type="Tmr2022Manipulation.py" respawn="true" output="screen"/>
+</launch>

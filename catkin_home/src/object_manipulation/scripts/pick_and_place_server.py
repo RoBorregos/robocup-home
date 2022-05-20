@@ -1,5 +1,6 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 
 import rospy
 import threading
@@ -34,7 +35,7 @@ def createPickupGoal(group="arm_torso", target="part",
                      grasp_pose=PoseStamped(),
                      possible_grasps=[],
                      links_to_allow_contact=[],
-                     support_surface_name = "table"):
+                     support_surface_name = "<octomap>"):
     """ Create a PickupGoal with the provided data"""
     pug = PickupGoal()
     pug.target_name = target
@@ -83,7 +84,7 @@ class PickAndPlaceServer(object):
         self.tf_l = tf2_ros.TransformListener(self.tfBuffer)
 
         rospy.loginfo("Waiting for Robot...")
-        odom_msg = rospy.wait_for_message("/mobile_base_controller/odom", Odometry)
+        odom_msg = rospy.wait_for_message("/odom", Odometry)
         rospy.loginfo("Robot Launched...")
 
         rospy.loginfo("Initalizing PickAndPlaceServer...")
@@ -112,10 +113,9 @@ class PickAndPlaceServer(object):
         self.gripper_group = moveit_commander.MoveGroupCommander("gripper", wait_for_servers = 0)
 
         # Get the links of the end effector exclude from collisions
-        self.links_to_allow_contact_right = rospy.get_param('~links_to_allow_contact_right', None)
-        self.links_to_allow_contact_left = rospy.get_param('~links_to_allow_contact_left', None)
-        if self.links_to_allow_contact_right is None or self.links_to_allow_contact_left is None:
-            rospy.logwarn("Didn't find any links to allow contacts... at param ~links_to_allow_contact_right | ~links_to_allow_contact_left")
+        self.links_to_allow_contact = rospy.get_param('~links_to_allow_contact', None)
+        if self.links_to_allow_contact is None:
+            rospy.logwarn("Didn't find any links to allow contacts... at param ~links_to_allow_contact")
 
         self.pick_as = SimpleActionServer(
             '/pickup_pose', PickUpPoseAction,
@@ -177,11 +177,11 @@ class PickAndPlaceServer(object):
         if object_name in scene_attached_objects:
             return
 
-        self.scene.remove_attached_object("arm_right_tool_link")
+        self.scene.remove_attached_object("BASE_PINZA")
 
         possible_grasps = self.sg.create_grasps_from_object_pose(object_pose)
 
-        links_to_allow_contact = self.links_to_allow_contact_right
+        links_to_allow_contact = self.links_to_allow_contact
 
         links_to_allow_contact.extend(allow_contact_with)
 
@@ -254,16 +254,15 @@ class PickAndPlaceServer(object):
 
         possible_placings = self.sg.create_placings_from_object_pose(object_pose)
         
-        links_to_allow_contact = self.links_to_allow_contact_left
+        links_to_allow_contact = self.links_to_allow_contact
 
         links_to_allow_contact.extend(allow_contact_with)
 
         error_code = -1
 
         
-        rospy.loginfo(
-            "Trying to place with arm and torso")
-        # Try with arm and torso
+        rospy.loginfo("Trying to place with arm and torso")
+        
         goal = createPlaceGoal(
             object_pose, possible_placings, "arm_torso", object_name, links_to_allow_contact)
 
@@ -279,7 +278,7 @@ class PickAndPlaceServer(object):
         return error_code
 
     def strip_leading_slash(self, s):
-		return s[1:] if s.startswith("/") else s
+        return s[1:] if s.startswith("/") else s
 
     def transformTo(self, poseStamped, frame_id="base_footprint"):
         poseStamped.header.frame_id = self.strip_leading_slash(poseStamped.header.frame_id)

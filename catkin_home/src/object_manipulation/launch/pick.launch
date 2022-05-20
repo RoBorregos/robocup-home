@@ -11,7 +11,4 @@
       <rosparam command="load" file="$(find object_manipulation)/config/pick_and_place_params.yaml" />
   </node>
 
-  <!-- Node exposing service to start looking for the object and trigger the picking -->
-  <node name="pick_client" pkg="object_manipulation" type="pick_client.py" output="screen"/>  
-
 </launch>

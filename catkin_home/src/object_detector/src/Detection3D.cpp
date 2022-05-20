@@ -51,7 +51,7 @@ struct ObjectParams
   /* Center point of the Cluster referenced to Camera TF. */
   geometry_msgs::PoseStamped center_cam;
   /* Detection Label. */
-  int label = 0;
+  int label = -1;
 };
 
 struct PlaneParams
@@ -449,9 +449,18 @@ public:
   /** \brief Bind an object with a detection Distance between two points. */
   void bindDetections(std::vector<ObjectParams> &objects) {
     // Get the best of three different detections.
-    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_);
-    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections2 = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_);
-    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections3 = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_);
+    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_, ros::Duration(2.5));
+    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections2 = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_, ros::Duration(2.5));
+    boost::shared_ptr<object_detector::objectDetectionArray const> input_detections3 = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_, ros::Duration(2));
+    if (!input_detections) {
+      input_detections = input_detections2;
+    }
+    if (!input_detections) {
+      input_detections = input_detections3;
+    }
+    if (!input_detections) {
+      return;
+    }
     input_detections = input_detections->detections.size() < input_detections2->detections.size() ? input_detections2 : input_detections;
     input_detections = input_detections->detections.size() < input_detections3->detections.size() ? input_detections3 : input_detections;
 
