@@ -35,6 +35,7 @@ generate_dynamic_reconfigure_options(
 add_action_files(
   FILES
   PickUpPose.action
+  manipulationServ.action
 )
 
 generate_messages(

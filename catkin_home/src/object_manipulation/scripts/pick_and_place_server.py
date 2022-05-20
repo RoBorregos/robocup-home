@@ -83,10 +83,6 @@ class PickAndPlaceServer(object):
         self.tfBuffer = tf2_ros.Buffer()
         self.tf_l = tf2_ros.TransformListener(self.tfBuffer)
 
-        rospy.loginfo("Waiting for Robot...")
-        odom_msg = rospy.wait_for_message("/odom", Odometry)
-        rospy.loginfo("Robot Launched...")
-
         rospy.loginfo("Initalizing PickAndPlaceServer...")
         self.sg = SphericalGrasps()
         rospy.loginfo("Connecting to pickup AS")
@@ -176,8 +172,6 @@ class PickAndPlaceServer(object):
         rospy.loginfo("Attached objects:" + str(scene_attached_objects))
         if object_name in scene_attached_objects:
             return
-
-        self.scene.remove_attached_object("BASE_PINZA")
 
         possible_grasps = self.sg.create_grasps_from_object_pose(object_pose)
 

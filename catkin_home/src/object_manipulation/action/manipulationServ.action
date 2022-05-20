@@ -1,8 +1,7 @@
 #goal definition
-string target_location
+int32 object_id
 ---
 #result definition
 bool result
 ---
 #feedback
-geometry_msgs/PoseStamped pose

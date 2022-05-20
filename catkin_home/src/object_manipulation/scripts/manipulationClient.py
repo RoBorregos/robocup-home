@@ -2,9 +2,35 @@
 
 import rospy
 import actionlib
-from actions.msg import navServAction, navServGoal
+from object_manipulation.msg import manipulationServAction, manipulationServGoal
 from geometry_msgs.msg import PoseStamped
 from enum import Enum
+
+OBJECTS_NAME= {
+    1 : 'VEGETABLES',
+    2: 'TEA',
+    3 : 'COKE',
+    4 : 'JUICE',
+}
+OBJECTS_ID= {
+    'VEGETABLES' : 1,
+    'TEA' : 2,
+    'COKE' : 3,
+    'JUICE' : 4,
+}
+class ManipulationGoals(Enum):
+    VEGETABLES = 1
+    TEA = 2
+    COKE = 3
+    JUICE = 4
+
+def generateObjectString():
+    result = ""
+    for object_id in OBJECTS_NAME:
+        object_ = OBJECTS_NAME[object_id]
+        result += str(object_id) + ") " + object_ + "\n"
+    result += "0) Exit"
+    return result 
 
 def handleIntInput(msg_ = "", range=(0, 10)):
     x = -1
@@ -18,60 +44,53 @@ def handleIntInput(msg_ = "", range=(0, 10)):
         x = int(x)
     return x
 
-class MoveGoals(Enum):
-    KITCHEN = 1
-    COUCH = 2
-    BATHROOM = 3
-    CLOSET = 4
-
-class NavClient(object):
+class ManipulationClient(object):
     
     def __init__(self):
-        self.client = actionlib.SimpleActionClient('navServer', navServAction)
+        self.client = actionlib.SimpleActionClient('manipulationServer', manipulationServAction)
         self.client.wait_for_server()
 
         while True:
             x = handleIntInput(
-                msg_ = "1. Kitchen  \n 2. Couch  \n 3. Bathroom  \n 4. Closet  \n 0. Exit",
+                msg_ = generateObjectString(),
                 range=(0, 4)
             )
             if x == 0:
                 break
-            self.nav_goal(MoveGoals(x))
+            self.manipulation_goal(ManipulationGoals(x))
 
-    def nav_goal(self, target = MoveGoals.KITCHEN):
-        class NavGoalScope:
-            target_location = target.name
+    def manipulation_goal(self, target = ManipulationGoals.COKE):
+        class ManipulationGoalScope:
+            object_ = target
             result = False
-            pose = PoseStamped()
             
             result_received = False
         
-        def nav_goal_feedback(feedback_msg):
-            NavGoalScope.pose = feedback_msg.pose
-        
-        def get_result_callback(state, result):
-            NavGoalScope.result = result.result
-
-            NavGoalScope.result_received = True
-            rospy.loginfo("Nav Goal Finished")
-
-        rospy.loginfo("Sending Nav Goal")
-        self.client.send_goal(
-                    navServGoal(target_location = NavGoalScope.target_location),
-                    feedback_cb=nav_goal_feedback,
-                    done_cb=get_result_callback)
-        
-        while not NavGoalScope.result_received:
+        def manipulation_goal_feedback(feedback_msg):
             pass
         
-        return NavGoalScope.result
+        def get_result_callback(state, result):
+            ManipulationGoalScope.result = result.result
+
+            ManipulationGoalScope.result_received = True
+            rospy.loginfo("Manipulation Goal Finished")
+
+        rospy.loginfo("Sending Manipulation Goal")
+        self.client.send_goal(
+                    manipulationServGoal(object_id = ManipulationGoalScope.object_.value),
+                    feedback_cb=manipulation_goal_feedback,
+                    done_cb=get_result_callback)
+        
+        while not ManipulationGoalScope.result_received:
+            pass
+        
+        return ManipulationGoalScope.result
 
 if __name__ == '__main__':
     try:
-        rospy.init_node('NavGoalClient', anonymous=True)
-        rospy.loginfo("NavGoalClient initialized.")
-        NavClient()
+        rospy.init_node('ManipulationGoalClient', anonymous=True)
+        rospy.loginfo("ManipulationGoalClient initialized.")
+        ManipulationClient()
 
     except rospy.ROSInterruptException:
         print("program interrupted before completion", file=sys.stderr)

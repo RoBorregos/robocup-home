@@ -11,10 +11,9 @@ import rospy
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-import actions.msg
 from geometry_msgs.msg import Twist 
-from actions.msg import manipulationServAction, manipulationServGoal, manipulationServResult
-
+from object_manipulation.msg import manipulationServAction, manipulationServGoal, manipulationServResult
+from enum import Enum
 
 class MoveItErrorCodes(Enum):
     SUCCESS = 1
@@ -41,6 +40,11 @@ OBJECTS_ID= {
     'COKE' : 3,
     'JUICE' : 4,
 }
+class ManipulationGoals(Enum):
+    VEGETABLES = 1
+    TEA = 2
+    COKE = 3
+    JUICE = 4
 
 class manipuationServer(object):
 
@@ -48,24 +52,24 @@ class manipuationServer(object):
         self._action_name = name
         rospy.loginfo(name)
 
-        # Mechanisms
+        # # Mechanisms
         rospy.loginfo("Waiting for MoveGroupCommander ARM_TORSO...")
         self.arm_group = moveit_commander.MoveGroupCommander("arm_torso", wait_for_servers = 0)
         rospy.loginfo("Waiting for MoveGroupCommander NECK...")
         self.neck_group = moveit_commander.MoveGroupCommander("neck", wait_for_servers = 0)
 
-        # Vision
+        # # Vision
         self.vision2D_enable = rospy.Publisher("detectionsActive", Bool, queue_size=10)
         rospy.loginfo("Waiting for ComputerVision 3D AS...")
         self.vision3D_as = actionlib.SimpleActionClient("Detect3D", DetectObjects3DAction)
         self.vision3D_as.wait_for_server()
 
-        # Test Getting Objects:
-        rospy.loginfo("Getting objects")
-        self.get_objects()
-        rospy.loginfo("Objects Received: " + str(len(self.objects)))
+        # # Test Getting Objects:
+        # rospy.loginfo("Getting objects")
+        # self.get_objects()
+        # rospy.loginfo("Objects Received: " + str(len(self.objects)))
 
-        # Manipulation
+        # # Manipulation
         rospy.loginfo("Waiting for /pickup_pose AS...")
         self.pick_as = actionlib.SimpleActionClient('/pickup_pose', PickUpPoseAction)
         self.pick_as.wait_for_server()
@@ -76,14 +80,14 @@ class manipuationServer(object):
         self.place_goal_publisher = rospy.Publisher("pose_place/goal", PoseStamped, queue_size=5)
         rospy.loginfo("Loaded everything...")
 
-        self.pick_random_object()
+        # self.pick_random_object()
 
         # Initialize Manipulation Action Server
-        self._as = actionlib.SimpleActionServer(self._action_name, actions.msg.manipulationServAction, execute_cb=self.execute_cb, auto_start = False)
+        self._as = actionlib.SimpleActionServer(self._action_name, manipulationServAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
     
-    def pick_target_object(self, object_name='Coca-Cola'):
-        targetID = OBJECTS_ID[object_name]
+    def pick_target_object(self, object_id = 1):
+        targetID = object_id
         targetDetails = None
         for _object in self.objects:
             if  _object[0] == targetID:
@@ -96,10 +100,15 @@ class manipuationServer(object):
         return self.pick(targetDetails[2], targetDetails[1], [])
 
     def execute_cb(self, goal):
-        target = goal.target_location
-        rospy.loginfo("Robot Moving Towards " + target)
-        # self.send_goal(placesPoses[target])
-        self._as.set_succeeded(manipulationServResult(result=True))
+        target = ManipulationGoals(goal.object_id)
+
+        # Get Objects:
+        rospy.loginfo("Getting objects")
+        self.get_objects()
+        rospy.loginfo("Objects Received: " + str(len(self.objects)))
+
+        rospy.loginfo("Robot Picking " + target.name + " up")
+        self.pick_target_object(goal.object_id)
 
     def send_goal(self, target_pose):
         goal = MoveBaseGoal()
@@ -165,6 +174,50 @@ class manipuationServer(object):
             pass
 
         return PlaceScope.error_code
+
+    def get_objects(self):
+        class GetObjectsScope:
+            objects_found_so_far = 0
+            objects_found = 0
+            objects_poses = []
+            objects_names = []
+            objects_ids = []
+
+            x_plane = 0.0
+            y_plane = 0.0
+            z_plane = 0.0
+            width_plane = 0.0
+            height_plane = 0.0
+            result_received = False
+        
+        def get_objects_feedback(feedback_msg):
+            GetObjectsScope.objects_found_so_far = feedback_msg.status
+        
+        def get_result_callback(state, result):
+            GetObjectsScope.objects_poses = result.objects_poses
+            GetObjectsScope.objects_names = result.objects_names
+            GetObjectsScope.objects_found = result.objects_found
+            GetObjectsScope.objects_ids = result.objects_ids
+            GetObjectsScope.x_plane = result.x_plane
+            GetObjectsScope.y_plane = result.y_plane
+            GetObjectsScope.z_plane = result.z_plane
+            GetObjectsScope.width_plane = result.width_plane
+            GetObjectsScope.height_plane = result.height_plane
+            GetObjectsScope.result_received = True
+
+        self.vision3D_as.send_goal(
+                    DetectObjects3DGoal(),
+                    feedback_cb=get_objects_feedback,
+                    done_cb=get_result_callback)
+        
+        start_time = time.time()
+        while not GetObjectsScope.result_received:
+            pass
+        
+        object_poses = GetObjectsScope.objects_poses
+        object_names = GetObjectsScope.objects_names
+        object_ids = GetObjectsScope.objects_ids
+        self.objects = list(zip(object_ids, object_names, object_poses))
 
 if __name__ == '__main__':
     rospy.init_node('manipulationServer')
