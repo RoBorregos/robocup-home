@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # Copyright (c) 2016 PAL Robotics SL. All Rights Reserved
@@ -184,7 +184,7 @@ class SphericalGrasps(object):
         return config
 
     def generate_grasp_poses(self, object_pose):
-        object_pose.pose.position.z += 0.022 # Move pose a little bit higher, table PADDING.
+        object_pose.pose.position.z -= 0.01 # Move pose a little bit lower.
 
         # Compute all the points of the sphere with step X
         # http://math.stackexchange.com/questions/264686/how-to-find-the-3d-coordinates-on-a-celestial-spheres-surface
