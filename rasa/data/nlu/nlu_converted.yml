@@ -13,6 +13,18 @@ nlu:
     - a [banana](object) from the [studio](place) robot
     - the [pizza](object) from the [basement](place)
     - From the [kitchen](place) bring [soda](object)
+    - Bring the [coke](object) from the [kitchen](place)
+    - Please bring a [juice](object) from the [closet](place)
+    - Bring [vegetables](object) from the [couch](place) robot
+    - Go to the [bathroom](place) and bring me [tea](object)
+    - Bring me the [coke](object) from the [kitchen](place)
+    - Bring me the [vegetables](object) from the [closet](place)
+    - Bring me the [tea](object) from the [couch](place)
+    - the [juice](object) from the [bathroom](place)
+    - a [tea](object) from the [kitchen](place) robot
+    - the [vegetables](object) from the [closet](place)
+    - From the [couch](place) bring [juice](object)
+
 
 - intent: bring_something_secret_intent
   examples: |
@@ -29,6 +41,13 @@ nlu:
     - will you go to the [couch](place)
     - to the [closet](place)
     - Can you go to the [bathroom](place)
+    - to the [kitchen](place)
+    - [couch](place)
+    - go to the [closet](place)
+    - please go to the [bathroom](place)
+    - will you go to the [closet](place)
+    - to the [couch](place)
+    - Can you go to the [bathroom](place)
   
 
 
@@ -42,6 +61,14 @@ nlu:
     - can you please bring the [milk](object)
     - will you bring the [tea](object)
     - a [soup](object)
+    - bring the [coke](object)
+    - please bring the [juice](object)
+    - the [vegetables](object)
+    - a [tea](object)
+    - [tea](object)
+    - can you please bring the [vegetables](object)
+    - will you bring the [juice](object)
+    - a [coke](object)
 
 - intent: store_object
   examples: |
@@ -49,6 +76,10 @@ nlu:
    - store the [pizza](object) in the [shelf](place)
    - put the [can](object) in the [shelf](place)
    - can you store the [potatoe](object) in the [shelf](place)
+   - Please store the [coke](object) in the [kitchen](place)
+   - store the [tea](object) in the [closet](place)
+   - put the [juice](object) in the [bathroom](place)
+   - can you store the [vegetables](object) in the [couch](place)
 
 - intent: bring_to
   examples: |
@@ -60,6 +91,14 @@ nlu:
     - can you please carry my [luggage](object)?
     - could you carry my [bag](object)?
     - will you carry my [bag](object) to the [car](place)?
+    - Please bring the [tea](object) to the [kitchen](place)
+    - Help me carry my [coke](object) to the [closet](place)
+    - Carry my [juice](object)
+    - please carry my [vegetables](object)
+    - please help me carry my [tea](object)
+    - can you please carry my [coke](object)?
+    - could you carry my [juice](object)?
+    - will you carry my [vegetables](object) to the [bathroom](place)?
 
 - intent: out_of_scope
   examples: |
@@ -74,6 +113,11 @@ nlu:
     - tidy up the [kitchen](place)
     - please tidy up the [garage](place)
     - can you clean the [attic](place)
+    - Please clean the [bathroom](place)
+    - Clean the [couch](place)
+    - tidy up the [kitchen](place)
+    - please tidy up the [closet](place)
+    - can you clean the [bathroom](place)
 
 - intent: farewell
   examples: |

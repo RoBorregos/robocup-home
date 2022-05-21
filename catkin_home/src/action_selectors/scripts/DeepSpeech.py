@@ -23,7 +23,7 @@ asr_server = None
 def on_audio_callback(data):
     rospy.loginfo("DeepSpeech computing...")
     unicode_text = asr_server.bytes_speech_to_text(data.data)
-    text = unicode_text.encode('ascii', 'ignore')
+    text = unicode_text.encode('ascii', 'ignore').decode("utf-8")
 
     if len(text) == 0 or text.isspace():
        rospy.loginfo("Audio is empty")

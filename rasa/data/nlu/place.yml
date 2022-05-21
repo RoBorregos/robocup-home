@@ -11,3 +11,7 @@ nlu:
     - backyard
     - basement
     - attic
+    - kitchen
+    - bathroom
+    - couch
+    - closet
