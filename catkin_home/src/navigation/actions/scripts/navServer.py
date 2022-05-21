@@ -38,11 +38,11 @@ class navigationServer(object):
         rospy.loginfo("MoveBase AS Loaded ...")
 
         # Localization
-        rospy.loginfo("Global Localization")
-        rospy.wait_for_service('/global_localization')
-        global_localization = rospy.ServiceProxy('/global_localization', Empty)
-        global_localization()
-        self.rotate()
+        #rospy.loginfo("Global Localization")
+        #rospy.wait_for_service('/global_localization')
+        #global_localization = rospy.ServiceProxy('/global_localization', Empty)
+        #global_localization()
+        #self.rotate()
 
         # Initialize Navigation Action Server
         self._as = actionlib.SimpleActionServer(self._action_name, actions.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
