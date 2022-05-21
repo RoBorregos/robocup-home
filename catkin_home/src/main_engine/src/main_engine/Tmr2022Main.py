@@ -4,6 +4,7 @@ import actionlib
 import time
 from std_msgs.msg import String
 from std_msgs.msg import Bool
+from actions.msg import navServAction, navServGoal, navServResult
 from intercom.msg import action_selector_cmd, bring_something_cmd
 from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal  
 import time
@@ -17,10 +18,6 @@ NAVIGATION1_STATE = "navigation1"
 OBJECTDETECTION_STATE = "object_detection"
 NAVIGATION2_STATE = "navigation2"
 END_STATE = "done"
-
-ARRIVE_NAVIGATION = "arrive"
-RETURN_NAVIGATION = "return"
-DONE_NAVIGATION = "done"
 
 class MoveGoals(Enum):
     KITCHEN = 1
