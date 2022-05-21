@@ -6,8 +6,28 @@ from std_msgs.msg import String
 from std_msgs.msg import Bool
 from intercom.msg import action_selector_cmd, bring_something_cmd
 from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal  
+import time
+from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
+
+START_STATE = "start"
+SPEECH_STATE = "speech"
+NAVIGATION1_STATE = "navigation1"
+OBJECTDETECTION_STATE = "object_detection"
+NAVIGATION2_STATE = "navigation2"
+END_STATE = "done"
+
+ARRIVE_NAVIGATION = "arrive"
+RETURN_NAVIGATION = "return"
+DONE_NAVIGATION = "done"
+
+class MoveGoals(Enum):
+    KITCHEN = 1
+    COUCH = 2
+    BATHROOM = 3
+    CLOSET = 4
 
 class Tmr2022Main(object):
+    currentState =  START_STATE
     targetPlace = None
     targetObject = None
 
@@ -15,68 +35,85 @@ class Tmr2022Main(object):
         # Conversation/Speech
         self.speech_enable = rospy.Publisher("inputAudioActive", Bool, queue_size=10)
         self.parser_listener = rospy.Subscriber('action/bring_something', bring_something_cmd, self.listen_parser)
-        self.say_publisher = rospy.Publisher('robot_text', String, queue_size=10)
         
+        # Navigation
+        self.initial_pose = None
+        rospy.loginfo("Waiting for MoveBase AS...")
+        self.move_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+        self.move_client.wait_for_server()
+        rospy.loginfo("MoveBase AS Loaded ...")
+        self.initial_pose_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, self.initial_pose_cb)
+        self.nav_nav_client = actionlib.SimpleActionClient('navServer', navServAction)
+        self.nav_client.wait_for_server()
+
         # Vision
         self.vision2D_enable = rospy.Publisher("detectionsActive", Bool, queue_size=10)
-        self.vision3D_as = actionlib.SimpleActionClient("Detect3D", DetectObjects3DAction)
-        rospy.loginfo("Waiting for ComputerVision 3D AS...")
-        self.vision3D_as.wait_for_server()
 
-        self.get_objects()
+        self.run()
+
+    def initial_pose_cb(self, msg):
+        self.initial_pose = PoseStamped(header = msg.header, pose = msg.pose.pose)
 
     def run(self):
-        pass
+        self.currentState = SPEECH_STATE
+        while (self.currentState == START_STATE) and not rospy.is_shutdown():
+            pass
+        self.speech_enable.publish(Bool(False))
+
+    def nav_goal(self, target = MoveGoals.KITCHEN):
+        class NavGoalScope:
+            target_location = target.name
+            result = False
+            pose = PoseStamped()
+            
+            result_received = False
+        
+        def nav_goal_feedback(feedback_msg):
+            NavGoalScope.pose = feedback_msg.pose
+        
+        def get_result_callback(state, result):
+            NavGoalScope.result = result.result
+
+            NavGoalScope.result_received = True
+            rospy.loginfo("Nav Goal Finished")
+
+        rospy.loginfo("Sending Nav Goal")
+        self.nav_client.send_goal(
+                    navServGoal(target_location = NavGoalScope.target_location),
+                    feedback_cb=nav_goal_feedback,
+                    done_cb=get_result_callback)
+        
+        while not NavGoalScope.result_received:
+            pass
+        
+        return NavGoalScope.result
+
+    def back_to_origin(self):
+        goal = MoveBaseGoal()
+        self.move_client.send_goal(self.initial_pose)
+        self.move_client.wait_for_result()
 
     def listen_parser(self):
+        ## Received Cmd
         self.targetPlace = bring_something_cmd.place
         self.targetObject = bring_something_cmd.object
         rospy.loginfo("Parser Received " + bring_something_cmd.place + "-" + bring_something_cmd.object)
 
-    def get_objects(self):
-        class GetObjectsScope:
-            objects_found_so_far = 0
-            objects_found = 0
-            objects_poses = []
-            objects_names = []
-            objects_ids = []
+        # GOTO-NAV
+        ## TODO: PASAR DE STRING A ID
+        self.nav_goal(MoveGoals(1))
+        self.currentState = NAVIGATION1_STATE
 
-            x_plane = 0.0
-            y_plane = 0.0
-            z_plane = 0.0
-            width_plane = 0.0
-            height_plane = 0.0
-            result_received = False
-        
-        def get_objects_feedback(feedback_msg):
-            GetObjectsScope.objects_found_so_far = feedback_msg.status
-        
-        def get_result_callback(state, result):
-            GetObjectsScope.objects_poses = result.objects_poses
-            GetObjectsScope.objects_names = result.objects_names
-            GetObjectsScope.objects_found = result.objects_found
-            GetObjectsScope.objects_ids = result.objects_ids
-            GetObjectsScope.x_plane = result.x_plane
-            GetObjectsScope.y_plane = result.y_plane
-            GetObjectsScope.z_plane = result.z_plane
-            GetObjectsScope.width_plane = result.width_plane
-            GetObjectsScope.height_plane = result.height_plane
-            GetObjectsScope.result_received = True
-            rospy.loginfo("Objects Received: " + str(GetObjectsScope.objects_found))
-
-        rospy.loginfo("Getting objects")
-        self.vision3D_as.send_goal(
-                    DetectObjects3DGoal(),
-                    feedback_cb=get_objects_feedback,
-                    done_cb=get_result_callback)
-        
-        while not GetObjectsScope.result_received:
+        # 15 Seconds Vision Enable
+        start = time.time()
+        self.vision2D_enable.publish(Bool(True))
+        while time.time() - start < 15:
             pass
-        
-        object_poses = GetObjectsScope.objects_poses
-        object_names = GetObjectsScope.objects_names
-        object_ids = GetObjectsScope.objects_ids
-        self.objects = zip(object_ids, object_names, object_poses)
+        self.vision2D_enable.publish(Bool(False))
+
+        ## GO BACK TO ORIGIN
+        self.back_to_origin()
+
 
 def main():
     rospy.init_node('Tmr2022Main', anonymous=True)
