@@ -9,12 +9,8 @@ TebLocalPlannerROS:
  dt_ref: 0.3
  dt_hysteresis: 0.1
  global_plan_overwrite_orientation: True
- max_global_plan_lookahead_dist: 5.0
+ max_global_plan_lookahead_dist: 3.0
  feasibility_check_no_poses: 5
- global_plan_viapoint_sep: 1.0
- min_samples: 5
- exact_arc_length: True
- allow_init_with_backwards_motion: false
     
  # Robot
 
@@ -28,25 +24,22 @@ TebLocalPlannerROS:
  acc_lim_theta: 3.12
  min_turning_radius: 0.0
  footprint_model:
-  type: "polygon"
-  vertices: [ [0.26, -0.305], [0.26, 0.305], [-0.36, 0.305], [-0.36, -0.29] ]
+   type: "polygon"
+   vertices: [ [0.26, -0.31], [0.26, 0.31], [-0.38, 0.31], [-0.38, -0.31] ]
 
  # GoalTolerance
     
- xy_goal_tolerance: 0.15
- yaw_goal_tolerance: 0.15
+ xy_goal_tolerance: 0.07
+ yaw_goal_tolerance: 0.07
+ 
  free_goal_vel: False
     
  # Obstacles
     
- min_obstacle_dist: 0.06
+ min_obstacle_dist: 0.3
  include_costmap_obstacles: True
  costmap_obstacles_behind_robot_dist: 1.0
  obstacle_poses_affected: 30
- inflation_dist: 0.5
- 
- ## Costmap converter plugin (optional)
- # costmap_converter_plugin: "costmap_converter::CostmapToPolygonsDBSConcaveHull" # no visible improvement
  costmap_converter_plugin: ""
  costmap_converter_spin_thread: True
  costmap_converter_rate: 5
@@ -59,22 +52,20 @@ TebLocalPlannerROS:
  optimization_verbose: False
  penalty_epsilon: 0.1
  weight_max_vel_x: 2
- weight_max_vel_theta: 10
+ weight_max_vel_theta: 1
  weight_acc_lim_x: 1
  weight_acc_lim_theta: 1
  weight_kinematics_nh: 1000
- weight_kinematics_forward_drive: 500
+ weight_kinematics_forward_drive: 1
  weight_kinematics_turning_radius: 1
  weight_optimaltime: 1
  weight_obstacle: 50
- weight_inflation: 5.0
  weight_dynamic_obstacle: 10 # not in use yet
- selection_alternative_time_cost: False # not in use yet
- weight_viapoint: 0.75
+ alternative_time_cost: False # not in use yet
 
  # Homotopy Class Planner
 
- enable_homotopy_class_planning: False
+ enable_homotopy_class_planning: True
  enable_multithreading: True
  simple_exploration: False
  max_number_classes: 4

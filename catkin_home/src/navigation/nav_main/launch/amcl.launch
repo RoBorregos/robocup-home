@@ -56,7 +56,7 @@
     <param name="avoid_unknown"             value="True"/>
     <param name="use_map_topic"             value="True"/>
     <param name="first_map_only"            value="True"/>
-    <param name="tf_broadcast"              value="False"/>
+    <param name="tf_broadcast"              value="True"/>
 
   </node>
 </launch>
