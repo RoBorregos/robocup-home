@@ -3,25 +3,27 @@
 import json
 import math
 import tf
-
+import time
 import numpy
+from tf.transformations import quaternion_from_euler
+from std_srvs.srv import Empty
+from nav_msgs.msg import Odometry
 import pathlib
 import actionlib
 import rospy
 from actionlib_msgs.msg import *
-from geometry_msgs.msg import Pose, Point, Quaternion
+from geometry_msgs.msg import Pose, PoseStamped, Point, Quaternion, Twist
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import actions.msg
-from geometry_msgs.msg import Twist 
 from actions.msg import navServAction, navServGoal, navServResult
 
 BASE_PATH = str(pathlib.Path(__file__).parent) + '/../../../../'
 
 placesPoses = {
- "KITCHEN": Pose(Point(x=0.0, y=0.0, z=0.0), Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)),
- "COUCH": Pose(Point(x=0.0, y=0.0, z=0.0), Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)),
- "BATHROOM": Pose(Point(x=0.0, y=0.0, z=0.0), Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)),
- "CLOSET": Pose(Point(x=0.0, y=0.0, z=0.0), Quaternion(x=0.0, y=0.0, z=0.0, w=1.0))
+ "BATHROOM": Pose(Point(x=-0.3963, y=3.802, z=0.0), Quaternion(x=0.0, y=0.0, z=0.4664, w=0.8845)),
+ "CLOSET": Pose(Point(x=-1.9308, y=2.7578, z=0.0), Quaternion(x=0.0, y=0.0, z=-0.6844, w=0.729)),
+ "COUCH": Pose(Point(x=0.0496, y=0.1873, z=0.0), Quaternion(x=0.0, y=0.0, z=0.0299, w=0.999)),
+ "KITCHEN": Pose(Point(x=-1.256, y=1.5809, z=0.0), Quaternion(x=0.0, y=0.0, z=-0.9992, w=0.0392)),
 }
 
 class navigationServer(object):
@@ -30,19 +32,17 @@ class navigationServer(object):
         self._action_name = name
         rospy.loginfo(name)
 
-        rospy.loginfo("Waiting for Robot...")
-        odom_msg = rospy.wait_for_message("odom", Odometry)
-        rospy.loginfo("Robot Launched...")
-
         rospy.loginfo("Waiting for MoveBase AS...")
         self.move_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.move_client.wait_for_server()
+        rospy.loginfo("MoveBase AS Loaded ...")
 
         # Localization
-        rospy.wait_for_service('/global_localization')
-        global_localization = rospy.ServiceProxy('/global_localization', Empty)
-        global_localization()
-        self.rotate()
+        #rospy.loginfo("Global Localization")
+        #rospy.wait_for_service('/global_localization')
+        #global_localization = rospy.ServiceProxy('/global_localization', Empty)
+        #global_localization()
+        #self.rotate()
 
         # Initialize Navigation Action Server
         self._as = actionlib.SimpleActionServer(self._action_name, actions.msg.navServAction, execute_cb=self.execute_cb, auto_start = False)
@@ -51,7 +51,7 @@ class navigationServer(object):
     def execute_cb(self, goal):
         target = goal.target_location
         rospy.loginfo("Robot Moving Towards " + target)
-        # self.send_goal(placesPoses[target])
+        self.send_goal(placesPoses[target])
         self._as.set_succeeded(navServResult(result=True))
 
     def send_goal(self, target_pose):
