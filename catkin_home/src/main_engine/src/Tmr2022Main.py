@@ -11,6 +11,7 @@ import time
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from enum import Enum
+from actionlib_msgs.msg import GoalID
 
 START_STATE = "start"
 SPEECH_STATE = "speech"
@@ -43,13 +44,15 @@ class Tmr2022Main(object):
         self.targetObject = None
         
         # Navigation
+        self.cancel_move = rospy.Publisher("/move_base/cancel", GoalID, queue_size=10)
+        
         self.initial_pose = None
         self.initial_pose_sub = rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.initial_pose_cb)
         rospy.loginfo("Waiting for MoveBase AS...")
         self.move_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.move_client.wait_for_server()
         rospy.loginfo("MoveBase AS Loaded ...")
-        self.nav_nav_client = actionlib.SimpleActionClient('navServer', navServAction)
+        self.nav_client = actionlib.SimpleActionClient('navServer', navServAction)
         self.nav_client.wait_for_server()
 
         # Vision
@@ -62,11 +65,13 @@ class Tmr2022Main(object):
 
     def run(self):
         self.currentState = SPEECH_STATE
-        while (self.currentState == START_STATE) and not rospy.is_shutdown():
+        while (self.currentState == SPEECH_STATE) and not rospy.is_shutdown():
             pass
         self.speech_enable.publish(Bool(False))
 
     def nav_goal(self, target = MoveGoals.KITCHEN):
+        start_time = time.time()
+        # rostopic pub /move_base/cancel actionlib_msgs/GoalID -- {}
         class NavGoalScope:
             target_location = target.name
             result = False
@@ -89,8 +94,12 @@ class Tmr2022Main(object):
                     feedback_cb=nav_goal_feedback,
                     done_cb=get_result_callback)
         
-        while not NavGoalScope.result_received:
+        while not NavGoalScope.result_received and time.time() - start_time < 50:
             pass
+
+        if not NavGoalScope.result_received:
+            self.cancel_move.publish(GoalID())
+            return False
         
         return NavGoalScope.result
 
@@ -99,12 +108,15 @@ class Tmr2022Main(object):
         self.move_client.send_goal(self.initial_pose)
         self.move_client.wait_for_result()
 
-    def listen_parser(self):
+    def listen_parser(self, msg):
+        rospy.loginfo("Parser Received " + msg.place + "-" + msg.object)
+        if len(msg.place) == 0 or len(msg.object) == 0:
+            return
         ## Received Cmd
-        self.targetPlace = MoveGoals[upper(bring_something_cmd.place)]
-        self.targetObject = ManipulationGoals[upper(bring_something_cmd.object)]
-        rospy.loginfo("Parser Received " + bring_something_cmd.place + "-" + bring_something_cmd.object)
-
+        self.targetPlace = MoveGoals[msg.place.upper()]
+        self.targetObject = ManipulationGoals[msg.object.upper()]
+        time.sleep(15)
+        self.speech_enable.publish(Bool(False))
         # GOTO-NAV
         self.nav_goal(self.targetPlace)
         self.currentState = NAVIGATION1_STATE
@@ -112,7 +124,7 @@ class Tmr2022Main(object):
         # 15 Seconds Vision Enable
         start = time.time()
         self.vision2D_enable.publish(Bool(True))
-        while time.time() - start < 15:
+        while time.time() - start < 60:
             pass
         self.vision2D_enable.publish(Bool(False))
 
