@@ -8,6 +8,8 @@ from intercom.msg import action_selector_cmd, bring_something_cmd
 from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal  
 import time
 from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+from enum import Enum
 
 START_STATE = "start"
 SPEECH_STATE = "speech"
@@ -26,23 +28,30 @@ class MoveGoals(Enum):
     BATHROOM = 3
     CLOSET = 4
 
+class ManipulationGoals(Enum):
+    VEGETABLES = 1
+    TEA = 2
+    COKE = 3
+    JUICE = 4
+
 class Tmr2022Main(object):
-    currentState =  START_STATE
-    targetPlace = None
-    targetObject = None
 
     def __init__(self):
+        self.currentState =  START_STATE
+
         # Conversation/Speech
         self.speech_enable = rospy.Publisher("inputAudioActive", Bool, queue_size=10)
         self.parser_listener = rospy.Subscriber('action/bring_something', bring_something_cmd, self.listen_parser)
+        self.targetPlace = None
+        self.targetObject = None
         
         # Navigation
         self.initial_pose = None
+        self.initial_pose_sub = rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.initial_pose_cb)
         rospy.loginfo("Waiting for MoveBase AS...")
         self.move_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.move_client.wait_for_server()
         rospy.loginfo("MoveBase AS Loaded ...")
-        self.initial_pose_sub = rospy.Subscriber('initialpose', PoseWithCovarianceStamped, self.initial_pose_cb)
         self.nav_nav_client = actionlib.SimpleActionClient('navServer', navServAction)
         self.nav_client.wait_for_server()
 
@@ -95,13 +104,12 @@ class Tmr2022Main(object):
 
     def listen_parser(self):
         ## Received Cmd
-        self.targetPlace = bring_something_cmd.place
-        self.targetObject = bring_something_cmd.object
+        self.targetPlace = MoveGoals[upper(bring_something_cmd.place)]
+        self.targetObject = ManipulationGoals[upper(bring_something_cmd.object)]
         rospy.loginfo("Parser Received " + bring_something_cmd.place + "-" + bring_something_cmd.object)
 
         # GOTO-NAV
-        ## TODO: PASAR DE STRING A ID
-        self.nav_goal(MoveGoals(1))
+        self.nav_goal(self.targetPlace)
         self.currentState = NAVIGATION1_STATE
 
         # 15 Seconds Vision Enable
@@ -113,7 +121,6 @@ class Tmr2022Main(object):
 
         ## GO BACK TO ORIGIN
         self.back_to_origin()
-
 
 def main():
     rospy.init_node('Tmr2022Main', anonymous=True)
