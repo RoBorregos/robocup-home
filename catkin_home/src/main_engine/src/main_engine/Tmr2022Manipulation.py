@@ -74,7 +74,7 @@ class Tmr2022Main(object):
         rospy.loginfo("Getting objects")
         self.get_objects()
         rospy.loginfo("Objects Received: " + str(len(self.objects)))
-
+        return
         # Manipulation
         rospy.loginfo("Waiting for /pickup_pose AS...")
         self.pick_as = actionlib.SimpleActionClient('/pickup_pose', PickUpPoseAction)
@@ -86,7 +86,7 @@ class Tmr2022Main(object):
         self.place_goal_publisher = rospy.Publisher("pose_place/goal", PoseStamped, queue_size=5)
         rospy.loginfo("Loaded everything...")
 
-        self.pick_random_object()
+        self.pick_target_object()
 
     def pick_target_object(self, object_name='Coca-Cola'):
         targetID = OBJECTS_ID[object_name]

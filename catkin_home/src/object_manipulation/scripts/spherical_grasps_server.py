@@ -341,13 +341,15 @@ class SphericalGrasps(object):
         g.grasp_pose = PoseStamped(header, fixed_pose)
         g.grasp_quality = self._grasp_quality
 
-        g.pre_grasp_approach = self.createGripperTranslation(
-            Vector3(1.0, 0.0, 0.0), desired_distance = self._grasp_desired_distance,
-            min_distance = self._grasp_min_distance)
+        ### IS THIS POSSIBLE WITH A 4 DOF arm?
+        # https://github.com/ros-planning/moveit/issues/1064
+        # g.pre_grasp_approach = self.createGripperTranslation(
+        #     Vector3(1.0, 0.0, 0.0), desired_distance = self._grasp_desired_distance,
+        #     min_distance = self._grasp_min_distance)
         
-        g.post_grasp_retreat = self.createGripperTranslation(
-            Vector3(-1.0, -0.35, 0.0), desired_distance = self._grasp_desired_distance,
-            min_distance = self._grasp_min_distance)
+        # g.post_grasp_retreat = self.createGripperTranslation(
+        #     Vector3(-1.0, -0.35, 0.0), desired_distance = self._grasp_desired_distance,
+        #     min_distance = self._grasp_min_distance)
 
         g.max_contact_force = self._max_contact_force
         g.allowed_touch_objects = self._allowed_touch_objects

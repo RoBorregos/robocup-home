@@ -43,7 +43,6 @@ ARGS= {
 }
 
 class CamaraProcessing:
-
     def __init__(self):
         self.bridge = CvBridge()
         self.depth_image = []
@@ -74,6 +73,7 @@ class CamaraProcessing:
         callFpsThread = threading.Thread(target=self.callFps, args=(), daemon=True)
         callFpsThread.start()
 
+        # Show OpenCV window.
         try:
             self.detections_frame = []
             rate = rospy.Rate(60)
@@ -86,9 +86,11 @@ class CamaraProcessing:
             pass
         cv2.destroyAllWindows()
     
+    # Callback for active flag
     def activeFlagSubscriber(self, msg):
         self.activeFlag = msg.data
 
+    # Function to handle either a cv2 image or a ROS image.
     def handleSource(self):
         if ARGS["ROS_INPUT"]:
             self.subscriber = rospy.Subscriber(ARGS["SOURCE"], Image, self.imageRosCallback)
@@ -99,6 +101,7 @@ class CamaraProcessing:
             cThread = threading.Thread(target=self.cameraThread, daemon=True)
             cThread.start()
 
+    # Function to handle a cv2 input.
     def cameraThread(self):
         cap = cv2.VideoCapture(ARGS["SOURCE"])
         frame = []
@@ -116,27 +119,28 @@ class CamaraProcessing:
             pass
         cap.release()
 
+    # Function to handle a ROS input.
     def imageRosCallback(self, data):
         try:
             self.imageCallback(self.bridge.imgmsg_to_cv2(data, "bgr8"))
         except CvBridgeError as e:
             print(e)
     
+    # Function to handle a ROS depth input.
     def depthImageRosCallback(self, data):
         try:
             self.depth_image = self.bridge.imgmsg_to_cv2(data, "32FC1")
         except CvBridgeError as e:
             print(e)
     
+    # Function to handle ROS camera info input.
     def infoImageRosCallback(self, data):
         self.imageInfo = data
         self.subscriberInfo.unregister()
 
+    # Function to handle Rate Neckbottle, TF object detection model frame rate (<10FPS) against camera input (>30FPS).
+    # Process a frame only when the script finishes the process of the previous frame, rejecting frames to keep real-time idea.
     def imageCallback(self, img):
-        """
-        Rate Neckbottle considering TF object detection model frame rate (<10FPS) against camera input (>30FPS).
-        Process a frame only when the script finishes the process of the previous frame, rejecting frames to keep real-time idea.
-        """
         self.rgb_image = img
         if not self.activeFlag:
             self.detections_frame = img
@@ -144,6 +148,7 @@ class CamaraProcessing:
             self.runThread = threading.Thread(target=self.run, args=(img, ), daemon=True)
             self.runThread.start()
 
+    # Handle FPS calculation.
     def callFps(self):	
         if self.fps != None:
             self.fps.stop()
@@ -156,51 +161,39 @@ class CamaraProcessing:
         callFpsThread = threading.Timer(2.0, self.callFps, args=())
         callFpsThread.start()
 
+    # Function to run the detection model.
     def run_inference_on_image(self, frame):
-        # Convert CV2 frame from BGR to RGB
-        # Comment this line in case the model can take any order of RGB
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        
-        # Expand dimensions since the model expects frames to have shape: [1, None, None, 3]
-        frame_np = np.expand_dims(frame, axis=0) #np.shape = (1, 800, 600, 3)
-        # Load frame using OpenCV
-
-        # The input needs to be a tensor, convert it using `tf.convert_to_tensor`.
+        frame_np = np.expand_dims(frame, axis=0)
         input_tensor = tf.convert_to_tensor(frame_np, dtype=tf.uint8)
 
         if ARGS["VERBOSE"]:
             print('Predicting...')
+
         start_time = time.time()
-
-        # Run the model to get the detections dictionary
         detections = self.detect_fn(input_tensor)
-
         end_time = time.time()
         elapsed_time = end_time - start_time
+        
         if ARGS["VERBOSE"]:
             print('Done! Took {} seconds'.format(elapsed_time))
 
-        # All outputs are batches tensors.
-        # Convert to numpy arrays, and take index [0] to remove the batch dimension.
-        # We're only interested in the first num_detections.
         num_detections = int(detections.pop('num_detections'))
         detections = {key: value[0, :num_detections].numpy()
                     for key, value in detections.items()}
         detections['num_detections'] = num_detections
 
-        # Detection_classes should be ints.
         detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
         return detections['detection_boxes'], detections['detection_scores'], detections['detection_classes'], detections
 
+    # Handle the detection model input/output.
     def compute_result(self, frame):
         (boxes, scores, classes, detections) = self.run_inference_on_image(frame)
         return self.get_objects(boxes, scores, classes, frame.shape[0], frame.shape[1], frame), detections, frame, self.category_index
 
+    # This function creates the output array of the detected objects with its 2D & 3D coordinates.
     def get_objects(self, boxes, scores, classes, height, width, frame):
-        """
-        This function creates the output array of the detected objects with its coordinates.
-        """
         objects = {}
         res = []
 
@@ -248,9 +241,9 @@ class CamaraProcessing:
                     xmax =  detection["xmax"],
                     point3D = detection["point3D"]
                 ))
-        
         return res
 
+    # Main function to run the detection model.
     def run(self, frame):
         frame_processed = imutils.resize(frame, width=500)
 

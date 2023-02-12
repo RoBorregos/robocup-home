@@ -19,9 +19,9 @@
   <!-- unpause only after loading robot model -->
   <arg name="unpause" value="$(eval '' if arg('paused') else '-unpause')" />
   <!-- push robot_description to factory and spawn robot in gazebo. -->
-  <arg name="x_pos" default="-0.01"/>
-  <arg name="y_pos" default="-0.98"/>
-  <arg name="z_pos" default="0.1"/>
+  <arg name="x_pos" default="0.06"/>
+  <arg name="y_pos" default="-0.70"/>
+  <arg name="z_pos" default="0.09"/>
   <arg name="roll_pos" default="0.00"/>
   <arg name="pitch_pos" default="0.00"/>
   <arg name="yaw_pos" default="1.57"/>

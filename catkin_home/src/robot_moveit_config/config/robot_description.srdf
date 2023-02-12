@@ -38,12 +38,12 @@
         <joint name="Elevador_Brazo_1" value="0"/>
     </group_state>
     <group_state name="open" group="gripper">
-        <joint name="Pinza_Garra_D" value="0"/>
-        <joint name="Pinza_Garra_I" value="0"/>
+        <joint name="Pinza_Garra_D" value="-0.29"/>
+        <joint name="Pinza_Garra_I" value="0.29"/>
     </group_state>
     <group_state name="close" group="gripper">
-        <joint name="Pinza_Garra_D" value="0.7683"/>
-        <joint name="Pinza_Garra_I" value="-0.6749"/>
+        <joint name="Pinza_Garra_D" value="0.19"/>
+        <joint name="Pinza_Garra_I" value="-0.2804"/>
     </group_state>
     <group_state name="default" group="neck">
         <joint name="neck_joint" value="0"/>
@@ -51,12 +51,12 @@
     <group_state name="rest" group="arm_torso">
         <joint name="BASE_PINZA_joint" value="0"/>
         <joint name="Brazo_2_Pinza" value="1.57"/>
-        <joint name="Chasis_Elevador" value="1.3271"/>
+        <joint name="Chasis_Elevador" value="-3.14"/>
         <joint name="Elevador_Brazo_1" value="-0.2088"/>
         <joint name="Elevador_Brazo_2" value="-1.57"/>
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="arm_gripper" parent_link="Pinza" group="gripper"/>
+    <end_effector name="arm_gripper" parent_link="BASE_PINZA" group="gripper"/>
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <virtual_joint name="world_joint" type="planar" parent_frame="odom" child_link="base_footprint"/>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
@@ -66,8 +66,6 @@
     <disable_collisions link1="BASE_PINZA" link2="Garra_D" reason="Adjacent"/>
     <disable_collisions link1="BASE_PINZA" link2="Garra_I" reason="Adjacent"/>
     <disable_collisions link1="BASE_PINZA" link2="Pinza" reason="Adjacent"/>
-    <disable_collisions link1="BASE_PINZA" link2="R1" reason="Never"/>
-    <disable_collisions link1="BASE_PINZA" link2="R2" reason="Never"/>
     <disable_collisions link1="BASE_PINZA" link2="R3" reason="Never"/>
     <disable_collisions link1="BASE_PINZA" link2="R4" reason="Never"/>
     <disable_collisions link1="BASE_PINZA" link2="camera" reason="Never"/>
@@ -93,7 +91,6 @@
     <disable_collisions link1="Brazo_2" link2="R2" reason="Never"/>
     <disable_collisions link1="Brazo_2" link2="R3" reason="Never"/>
     <disable_collisions link1="Brazo_2" link2="R4" reason="Never"/>
-    <disable_collisions link1="Brazo_2" link2="base_link" reason="Never"/>
     <disable_collisions link1="Brazo_2" link2="base_scan" reason="Never"/>
     <disable_collisions link1="Brazo_2" link2="camera" reason="Never"/>
     <disable_collisions link1="Brazo_2" link2="neck_link" reason="Never"/>
@@ -107,18 +104,11 @@
     <disable_collisions link1="Elevador" link2="base_scan" reason="Never"/>
     <disable_collisions link1="Elevador" link2="camera" reason="Never"/>
     <disable_collisions link1="Elevador" link2="neck_link" reason="Never"/>
+    <disable_collisions link1="Garra_D" link2="Garra_I" reason="Never"/>
     <disable_collisions link1="Garra_D" link2="Pinza" reason="Never"/>
-    <disable_collisions link1="Garra_D" link2="R1" reason="Never"/>
-    <disable_collisions link1="Garra_D" link2="R2" reason="Never"/>
-    <disable_collisions link1="Garra_D" link2="R3" reason="Never"/>
-    <disable_collisions link1="Garra_D" link2="R4" reason="Never"/>
     <disable_collisions link1="Garra_D" link2="camera" reason="Never"/>
     <disable_collisions link1="Garra_D" link2="neck_link" reason="Never"/>
     <disable_collisions link1="Garra_I" link2="Pinza" reason="Never"/>
-    <disable_collisions link1="Garra_I" link2="R1" reason="Never"/>
-    <disable_collisions link1="Garra_I" link2="R2" reason="Never"/>
-    <disable_collisions link1="Garra_I" link2="R3" reason="Never"/>
-    <disable_collisions link1="Garra_I" link2="R4" reason="Never"/>
     <disable_collisions link1="Garra_I" link2="camera" reason="Never"/>
     <disable_collisions link1="Garra_I" link2="neck_link" reason="Never"/>
     <disable_collisions link1="Pinza" link2="R1" reason="Never"/>

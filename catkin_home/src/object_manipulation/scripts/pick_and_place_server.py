@@ -30,13 +30,12 @@ for name in MoveItErrorCodes.__dict__.keys():
         code = MoveItErrorCodes.__dict__[name]
         moveit_error_dict[code] = name
 
-
+# Function to create a PickupGoal with the provided data.
 def createPickupGoal(group="arm_torso", target="part",
                      grasp_pose=PoseStamped(),
                      possible_grasps=[],
                      links_to_allow_contact=[],
                      support_surface_name = "<octomap>"):
-    """ Create a PickupGoal with the provided data"""
     pug = PickupGoal()
     pug.target_name = target
     pug.group_name = group
@@ -54,13 +53,13 @@ def createPickupGoal(group="arm_torso", target="part",
     pug.attached_object_touch_links.extend(links_to_allow_contact)
     return pug
 
+# Function to create a PlaceGoal with the provided data..
 def createPlaceGoal(place_pose,
                     place_locations,
                     group="arm_torso",
                     target="part",
                     links_to_allow_contact=[],
                     support_surface_name = "<octomap>"):
-    """Create PlaceGoal with the provided data"""
     placeg = PlaceGoal()
     placeg.group_name = group
     placeg.support_surface_name = support_surface_name
@@ -108,7 +107,6 @@ class PickAndPlaceServer(object):
         
         self.gripper_group = moveit_commander.MoveGroupCommander("gripper", wait_for_servers = 0)
 
-        # Get the links of the end effector exclude from collisions
         self.links_to_allow_contact = rospy.get_param('~links_to_allow_contact', None)
         if self.links_to_allow_contact is None:
             rospy.logwarn("Didn't find any links to allow contacts... at param ~links_to_allow_contact")
@@ -123,7 +121,7 @@ class PickAndPlaceServer(object):
             execute_cb=self.place_cb, auto_start=False)
         self.place_as.start()
 
-
+    # Function to handle pickup callback.
     def pick_cb(self, goal):
         """
         :type goal: PickUpPoseGoal
@@ -136,6 +134,7 @@ class PickAndPlaceServer(object):
         else:
             self.pick_as.set_succeeded(p_res)
 
+    # Function to handle place callback.
     def place_cb(self, goal):
         """
         :type goal: PickUpPoseGoal
@@ -148,6 +147,7 @@ class PickAndPlaceServer(object):
         else:
             self.place_as.set_succeeded(p_res)
 
+    # Function to confirm that an object is or not attached.
     def confirm_status_with_attached_objects(self, code_error, object_name, expected):
         rospy.sleep(0.5) # Give some time to appear in attached_objects
         scene_attached_objects = self.scene.get_attached_objects([object_name])
@@ -166,6 +166,7 @@ class PickAndPlaceServer(object):
 
         return code_error
 
+    # Function to grasp an object.
     def grasp_object(self, object_pose, object_name, allow_contact_with = []):
         # Confirm if not attached already
         scene_attached_objects = self.scene.get_attached_objects([object_name])
@@ -193,6 +194,7 @@ class PickAndPlaceServer(object):
 
         return error_code
 
+    # Function to handle pick action server call.
     def handle_pick_as(self, goal):
         class PickScope:
             state = ""
@@ -218,6 +220,7 @@ class PickAndPlaceServer(object):
 
         return PickScope.error_code
 
+    # Function to handle place action server call.
     def handle_place_as(self, goal):
         class PlaceScope:
             state = ""
@@ -244,6 +247,7 @@ class PickAndPlaceServer(object):
 
         return PlaceScope.error_code
     
+    # Function to place an object.
     def place_object(self, object_pose, object_name, allow_contact_with = [], try_only_with_arm_first = False):
 
         possible_placings = self.sg.create_placings_from_object_pose(object_pose)
@@ -270,32 +274,6 @@ class PickAndPlaceServer(object):
         str(moveit_error_dict[error_code]))
 
         return error_code
-
-    def strip_leading_slash(self, s):
-        return s[1:] if s.startswith("/") else s
-
-    def transformTo(self, poseStamped, frame_id="base_footprint"):
-        poseStamped.header.frame_id = self.strip_leading_slash(poseStamped.header.frame_id)
-        rospy.loginfo("Transforming Pose from frame: " + poseStamped.header.frame_id + " to "+ frame_id)
-        ps = PoseStamped()
-        ps.pose = poseStamped.pose
-        ps.header.stamp = self.tfBuffer.get_latest_common_time(frame_id, poseStamped.header.frame_id)
-        ps.header.frame_id = poseStamped.header.frame_id
-        transform_ok = False
-        while not transform_ok and not rospy.is_shutdown():
-            try:
-                transform = self.tfBuffer.lookup_transform(frame_id, 
-                                       ps.header.frame_id,
-                                       rospy.Time(0))
-                poseStampedTF = do_transform_pose(ps, transform)
-                transform_ok = True
-            except tf2_ros.ExtrapolationException as e:
-                rospy.logwarn(
-                    "Exception on transforming point... trying again \n(" +
-                    str(e) + ")")
-                rospy.sleep(0.01)
-                ps.header.stamp = self.tfBuffer.get_latest_common_time(frame_id, poseStamped.header.frame_id)
-        return poseStampedTF
 
 if __name__ == '__main__':
     rospy.init_node('pick_and_place_server')

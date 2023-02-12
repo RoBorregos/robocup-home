@@ -441,12 +441,12 @@ public:
     return isTheTable;
   }
   
-  /** \brief Calculate Distance between two points. */
+  /** \brief Calculate distance between two points. */
   float getDistance(const geometry_msgs::Point &a, const geometry_msgs::Point &b) {
     return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2) + pow(a.z - b.z, 2));
   }
 
-  /** \brief Bind an object with a detection Distance between two points. */
+  /** \brief Bind an object mesh with a 2D detection using distance between two points. */
   void bindDetections(std::vector<ObjectParams> &objects) {
     // Get the best of three different detections.
     boost::shared_ptr<object_detector::objectDetectionArray const> input_detections = ros::topic::waitForMessage<object_detector::objectDetectionArray>("/detections", nh_, ros::Duration(2.5));

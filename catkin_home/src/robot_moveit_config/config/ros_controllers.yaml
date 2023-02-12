@@ -35,6 +35,8 @@ arm_torso_controller:
     - Elevador_Brazo_2
     - Brazo_2_Pinza
     - BASE_PINZA_joint
+  constraints:
+    stopped_velocity_tolerance: 0
   gains:
     Chasis_Elevador:
       p: 100
@@ -65,6 +67,8 @@ torso_controller:
   type: effort_controllers/JointTrajectoryController
   joints:
     - Elevador_Brazo_1
+  constraints:
+    stopped_velocity_tolerance: 0
   gains:
     Elevador_Brazo_1:
       p: 10000
@@ -76,6 +80,8 @@ gripper_controller:
   joints:
     - Pinza_Garra_D
     - Pinza_Garra_I
+  constraints:
+    stopped_velocity_tolerance: 0
   gains:
     Pinza_Garra_D:
       p: 100
@@ -91,6 +97,8 @@ neck_controller:
   type: effort_controllers/JointTrajectoryController
   joints:
     - neck_joint
+  constraints:
+    stopped_velocity_tolerance: 0
   gains:
     neck_joint:
       p: 100
