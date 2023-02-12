@@ -223,53 +223,6 @@
       </link>
       <pose>0.060462 -0.188362 0 0 -0 0</pose>
     </model>
-    <model name='Nestle_Nesquik_Chocolate_Powder_Flavored_Milk_Additive_109_Oz_Canister'>
-      <link name='link_0'>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>model://nestle_nesquik_chocolate_powder_flavored_milk_additive_109_oz_canister/meshes/model.obj</uri>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision_0'>
-          <geometry>
-            <mesh>
-              <uri>model://nestle_nesquik_chocolate_powder_flavored_milk_additive_109_oz_canister/meshes/model.obj</uri>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <self_collide>0</self_collide>
-        <inertial>
-          <pose>0 0 0 0 -0 0</pose>
-          <inertia>
-            <ixx>1</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>1</iyy>
-            <iyz>0</iyz>
-            <izz>1</izz>
-          </inertia>
-          <mass>1</mass>
-        </inertial>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <pose>0.27798 -0.285288 0 0 -0 0</pose>
-    </model>
     <model name='master_chef_can'>
       <link name='link'>
         <pose>0 0 0.07 0 -0 0</pose>
@@ -325,16 +278,6 @@
       <real_time>140 129023690</real_time>
       <wall_time>1652078160 649560500</wall_time>
       <iterations>139755</iterations>
-      <model name='Nestle_Nesquik_Chocolate_Powder_Flavored_Milk_Additive_109_Oz_Canister'>
-        <pose>0.228285 -0.27094 0.774852 -0.004522 0.001847 1.51733</pose>
-        <scale>1 1 1</scale>
-        <link name='link_0'>
-          <pose>0.228285 -0.27094 0.774852 -0.004522 0.001847 1.51733</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 -9.8 0 -0 0</acceleration>
-          <wrench>0 0 -9.8 0 -0 0</wrench>
-        </link>
-      </model>
       <model name='cafe_table'>
         <pose>0.043492 -0.012817 0 0 -0 0</pose>
         <scale>1 1 1</scale>
