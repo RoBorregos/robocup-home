@@ -223,56 +223,6 @@
       </link>
       <pose>0.060462 -0.188362 0 0 -0 0</pose>
     </model>
-    <model name='master_chef_can'>
-      <link name='link'>
-        <pose>0 0 0.07 0 -0 0</pose>
-        <inertial>
-          <mass>0.39</mass>
-          <inertia>
-            <ixx>0.00058</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.00058</iyy>
-            <iyz>0</iyz>
-            <izz>0.00019</izz>
-          </inertia>
-          <pose>0 0 0 0 -0 0</pose>
-        </inertial>
-        <collision name='collision'>
-          <pose>0 0 -0.005 0 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <radius>0.05</radius>
-              <length>0.14</length>
-            </cylinder>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>model://master_chef_can/textured.obj</uri>
-            </mesh>
-          </geometry>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
-      <pose>-0.097439 -0.237067 0 0 -0 0</pose>
-    </model>
     <state world_name='default'>
       <sim_time>139 755000000</sim_time>
       <real_time>140 129023690</real_time>
@@ -306,16 +256,6 @@
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='master_chef_can'>
-        <pose>-0.183766 -0.279004 0.780001 7e-06 2.1e-05 0.00028</pose>
-        <scale>1 1 1</scale>
-        <link name='link'>
-          <pose>-0.183764 -0.279004 0.850001 7e-06 2.1e-05 0.00028</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0.000102 -1.4e-05 19.5998 -1.9e-05 0.001391 0.00029</acceleration>
-          <wrench>4e-05 -5e-06 7.64393 0 -0 0</wrench>
         </link>
       </model>
       <light name='sun'>
