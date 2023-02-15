@@ -1,0 +1,9 @@
+[submodule "catkin_ws/src/manipulation/gpd_ros"]
+	path = catkin_ws/src/manipulation/gpd_ros
+	url = https://github.com/RoBorregos/gpd_ros.git
+[submodule "lib/gpd"]
+	path = lib/gpd
+	url = https://github.com/RoBorregos/gpd.git
+[submodule "catkin_home/src/manipulation/gpd_ros"]
+	path = catkin_home/src/manipulation/gpd_ros
+	url = https://github.com/RoBorregos/gpd_ros.git

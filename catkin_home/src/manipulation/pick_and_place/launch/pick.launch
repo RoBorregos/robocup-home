@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+  <arg name="rviz"  default="false"/>
+
+  <!-- Pick & place server -->
+  <node name="pick_and_place_server" pkg="pick_and_place" type="pick_and_place_server.py" output="screen" />
+</launch>

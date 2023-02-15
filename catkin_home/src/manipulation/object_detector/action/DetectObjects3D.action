@@ -1,10 +1,9 @@
 #goal definition
+object_detector/objectDetectionArray force_object
 ---
 #result definition
-geometry_msgs/PoseStamped[] objects_poses
-string[] objects_names
-int32[] objects_ids
-int32 objects_found
+gpd_ros/CloudSamples object_cloud
+geometry_msgs/PoseStamped object_pose
 float64 x_plane
 float64 y_plane
 float64 z_plane
