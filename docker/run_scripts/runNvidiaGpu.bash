@@ -67,6 +67,7 @@ $DOCKER_COMMAND -it -d\
   --privileged \
   -v "$PWD/catkin_home/src:/catkin_home/src" \
   -v "$PWD/catkin_home/typings:/catkin_home/typings" \
+  -v "$PWD/lib:/catkin_home/lib" \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --name=ros-home \
   ros:home \

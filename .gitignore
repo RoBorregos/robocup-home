@@ -64,5 +64,7 @@ out.log
 *.pyc
 .vscode/
 venv/
+lib/x86_64-linux-gnu/
+lib/firmware/
 
 # End 

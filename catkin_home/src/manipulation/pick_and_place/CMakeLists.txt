@@ -36,6 +36,7 @@ add_service_files(
 add_action_files(
   FILES
   PickAndPlace.action
+  manipulationServ.action
 )
 
 generate_messages(
