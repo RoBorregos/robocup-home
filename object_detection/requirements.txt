@@ -109,5 +109,5 @@ typing-extensions==3.7.4.3
 uritemplate==3.0.1
 urllib3==1.26.3
 utils==1.0.1
-Werkzeug==1.0.1
+Werkzeug==2.2.3
 wrapt==1.12.1
