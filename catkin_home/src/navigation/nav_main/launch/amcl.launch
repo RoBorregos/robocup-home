@@ -49,7 +49,7 @@
     <param name="odom_alpha3"               value="0.8"/>
     <param name="odom_alpha4"               value="0.1"/>
     <param name="global_frame_id"           value="map"/>
-    <param name="odom_frame_id"             value="odom"/>
+    <param name="odom_frame_id"             value="odom_combined"/>
     <param name="base_frame_id"             value="base_footprint"/>
 
 

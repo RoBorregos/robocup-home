@@ -1,9 +1,9 @@
 <launch>
   <!-- Arguments -->
-  <arg name="map_file" default="$(find nav_main)/maps/map.yaml"/>
+  <arg name="map_file" default="$(find nav_main)/maps/HomeArea.yaml"/>
   <arg name="is_sim" default="False" />
 
-  <include file="$(find robot_description)/launch/display.launch" />
+  <!-- <include file="$(find robot_description)/launch/display.launch" /> -->
 
   <!-- Map server -->
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
@@ -19,7 +19,7 @@
   </include>
 
   <!-- Laser -->
-  <include file="$(find nav_main)/launch/lidar.launch">
+  <!-- <include file="$(find nav_main)/launch/lidar.launch">
     <param name="is_sim" value="$(arg is_sim)"/>
-  </include>
+  </include>  -->
 </launch>
