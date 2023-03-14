@@ -1,0 +1,36 @@
+<launch>
+  <arg name="multi" default=""/>
+  <arg name="arm"  default="True"/>
+  <arg name="wrist_model"  default="wrist-2017"/>
+  <arg name="end_effector"  default="pal-gripper"/>
+  <arg name="ft_sensor"  default="schunk-ft"/>
+  <arg name="laser_model"  default="sick-571"/>
+  <arg name="camera_model"  default="orbbec-astra"/>
+  <arg name="no_safety_eps" default="False"/>
+  <arg name="robot_description" default="robot_description"/>
+  <arg name="base_type"  default="pmb2"/>
+  <arg name="description_calibration_dir" value="$(optenv pal_eye_hand_calibration_tiago_calibration_path)"/>
+  <arg name="extrinsic_calibration_dir" value="$(optenv pal_camera_calibration_extrinsics_calibration_path)"/>
+  <!-- Robot description -->
+  <param name="$(arg robot_description)"
+    command="rosrun xacro xacro --inorder
+    '$(find tiago_description)/robots/tiago.urdf.xacro'
+    arm:=$(arg arm)
+    wrist_model:=$(arg wrist_model)
+    end_effector:=$(arg end_effector)
+    ft_sensor:=$(arg ft_sensor)
+    laser_model:=$(arg laser_model)
+    camera_model:=$(arg camera_model)
+    no_safety_eps:=$(arg no_safety_eps)
+    base_type:=$(arg base_type)
+    description_calibration_dir:=$(arg description_calibration_dir)
+    extrinsic_calibration_dir:=$(arg extrinsic_calibration_dir)
+    $(arg multi)" />
+           <rosparam command="load" file="$(find tiago_description)/config/collision/collision_parameters.yaml" />
+  
+  <arg name="use_gui" default="False" />
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" unless="$(arg use_gui)" />
+  <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui" output="screen" if="$(arg use_gui)" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_description)/rviz/urdf.rviz" />
+</launch>
