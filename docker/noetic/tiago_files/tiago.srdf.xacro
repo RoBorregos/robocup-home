@@ -25,6 +25,10 @@
     <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="world_joint" type="planar" parent_frame="odom" child_link="internal_odom"/>
+    
 <xacro:if value="${has_arm}">
     <group name="arm">
         <joint name="arm_1_joint" />
@@ -47,6 +51,15 @@
         <joint name="arm_7_joint" />
         <joint name="arm_tool_joint" />
     </group>
+    <group name="base">
+        <joint name="odom_x"/>
+        <joint name="odom_y"/>
+        <joint name="odom_r"/>
+    </group>
+    <group name="whole_body">
+        <group name="base"/>
+        <group name="arm_torso"/>
+    </group>    
     <xacro:include filename="$(find tiago_moveit_config)/config/srdf/end_effectors/${end_effector}.srdf.xacro" />
     <xacro:define_end_effector arm="arm" name="${end_effector_name}"/>
     <xacro:if value="${has_ft_sensor}">

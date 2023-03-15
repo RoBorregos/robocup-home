@@ -9,8 +9,8 @@
   <rosparam command="load" file="$(find tiago_controller_configuration)/config/joint_state_controller_extra_joints$(arg base_type_suffix).yaml" ns="joint_torque_sensor_state_controller"/>
   <rosparam command="load" file="$(find joint_state_controller)/joint_state_controller.yaml" />
 
-  <param name="mobile_base_controller/base_frame_id" value="$(arg robot_namespace)/base_footprint"/>
-  <param name="mobile_base_controller/odom_frame_id" value="$(arg robot_namespace)/odom"/>
+  <param name="mobile_base_controller/base_frame_id" value="$(arg robot_namespace)/nav/base_footprint"/>
+  <param name="mobile_base_controller/odom_frame_id" value="$(arg robot_namespace)/nav/odom"/>
 
   <!-- Set up controllers depending of arm existance -->
   <arg name="controller_list" if="$(arg arm)"
