@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="tiago" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:arg name="base_type" default="pmb2"/>
+    <xacro:arg name="arm" default="true"/>
+    <xacro:arg name="end_effector" default="pal-hey5"/>
+    <xacro:arg name="ft_sensor" default="schunk-ft"/>
+    <xacro:property name="base_type" value="$(arg base_type)"/>
+    <xacro:property name="has_arm" value="$(arg arm)"/>
+    <xacro:property name="end_effector" value="$(arg end_effector)"/>
+    <xacro:property name="ft_sensor" value="$(arg ft_sensor)"/>
+    <xacro:property name="has_ft_sensor" value="${ft_sensor not in ['false', False]}"/>
+    <xacro:property name="robot" value="tiago"/>
+<xacro:if value="${base_type == 'omni_base'}">
+    <xacro:property name="robot" value="tiago_omni"/>
+</xacro:if>
+<xacro:unless value="${base_type == 'omni_base'}">
+    <xacro:property name="robot" value="tiago"/>
+</xacro:unless>
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+<xacro:if value="${has_arm}">
+    <group name="arm">
+        <joint name="arm_1_joint" />
+        <joint name="arm_2_joint" />
+        <joint name="arm_3_joint" />
+        <joint name="arm_4_joint" />
+        <joint name="arm_5_joint" />
+        <joint name="arm_6_joint" />
+        <joint name="arm_7_joint" />
+        <joint name="arm_tool_joint" />
+    </group>
+    <group name="arm_torso">
+        <joint name="torso_lift_joint" />
+        <joint name="arm_1_joint" />
+        <joint name="arm_2_joint" />
+        <joint name="arm_3_joint" />
+        <joint name="arm_4_joint" />
+        <joint name="arm_5_joint" />
+        <joint name="arm_6_joint" />
+        <joint name="arm_7_joint" />
+        <joint name="arm_tool_joint" />
+    </group>
+    <xacro:include filename="$(find tiago_moveit_config)/config/srdf/end_effectors/${end_effector}.srdf.xacro" />
+    <xacro:define_end_effector arm="arm" name="${end_effector_name}"/>
+    <xacro:if value="${has_ft_sensor}">
+        <xacro:include filename="$(find tiago_moveit_config)/config/srdf/disable_collisions/${robot}_${end_effector}_${ft_sensor}.srdf.xacro" />
+    </xacro:if>
+    <xacro:unless value="${has_ft_sensor}">
+        <xacro:include filename="$(find tiago_moveit_config)/config/srdf/disable_collisions/${robot}_${end_effector}.srdf.xacro" />
+    </xacro:unless>
+</xacro:if>
+<xacro:unless value="${has_arm}">
+    <group name="torso">
+        <joint name="torso_lift_joint" />
+    </group>
+    <xacro:include filename="$(find tiago_moveit_config)/config/srdf/disable_collisions/${robot}_no-arm.srdf.xacro" />
+</xacro:unless>
+</robot>
