@@ -4,3 +4,6 @@
 [submodule "catkin_home/src/manipulation/gpd_ros"]
 	path = catkin_home/src/manipulation/gpd_ros
 	url = https://github.com/RoBorregos/gpd_ros.git
+[submodule "catkin_home/src/manipulation/xarm_ros"]
+	path = catkin_home/src/manipulation/xarm_ros
+	url = https://github.com/xArm-Developer/xarm_ros.git
