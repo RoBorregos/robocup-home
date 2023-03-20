@@ -41,13 +41,15 @@ COPY docker/noetic/tiago_files/default_controllers.launch /tiago_public_ws/src/t
 COPY docker/noetic/tiago_files/tiago.srdf.xacro /tiago_public_ws/src/tiago_moveit_config/config/srdf/tiago.srdf.xacro
 COPY docker/noetic/tiago_files/upload.launch /tiago_public_ws/src/tiago_robot/tiago_description/robots/upload.launch
 COPY docker/noetic/tiago_files/tiago.urdf.xacro /tiago_public_ws/src/tiago_robot/tiago_description/robots/tiago.urdf.xacro
-# TO-DO: Add the rest of the files
-# tiago_pal-gripper_schunk-ft.srdf 
-# kinemastic_kdl.yml
-# kinemastic_trac_ik.yml
-# ompl_planning.yml
-# stomp_planning.yml
-# /tiago_public_ws/src/tiago_moveit_config/config/controllers/controllers_pal-gripper_schunk-ft.yaml
+# Related to base controller
+COPY docker/noetic/tiago_files/controllers_pal-gripper.yaml /tiago_public_ws/src/tiago_moveit_config/config/controllers/controllers_pal-gripper.yaml
+COPY docker/noetic/tiago_files/controllers_pal-gripper_schunk-ft.yaml /tiago_public_ws/src/tiago_moveit_config/config/controllers/controllers_pal-gripper_schunk-ft.yaml
+COPY docker/noetic/tiago_files/tiago_pal-gripper_schunk-ft.srdf /tiago_public_ws/src/tiago_moveit_config/config/srdf/tiago_pal-gripper_schunk-ft.srdf
+COPY docker/noetic/tiago_files/joint_limits.yaml /tiago_public_ws/src/tiago_moveit_config/config/joint_limits.yaml
+COPY docker/noetic/tiago_files/kinematics_trac_ik.yaml /tiago_public_ws/src/tiago_moveit_config/config/kinematics_trac_ik.yaml
+COPY docker/noetic/tiago_files/kinematics_kdl.yaml /tiago_public_ws/src/tiago_moveit_config/config/kinematics_kdl.yaml
+COPY docker/noetic/tiago_files/ompl_planning.yml /tiago_public_ws/src/tiago_moveit_config/config/ompl_planning.yml
+COPY docker/noetic/tiago_files/stomp_planning.yml /tiago_public_ws/src/tiago_moveit_config/config/stomp_planning.yml
 
 
 # Init catkin_home directoy
