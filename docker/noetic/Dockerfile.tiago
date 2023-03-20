@@ -15,6 +15,7 @@ RUN apt-get update -qq && \
     python3-pip \
     mesa-utils \
     --no-install-recommends terminator \
+    ros-noetic-trac-ik-kinematics-plugin \
     ros-noetic-audio-common \
     ros-noetic-map-server \
     ros-noetic-move-base \
@@ -30,8 +31,24 @@ RUN apt-get update -qq && \
     ros-noetic-gazebo-ros-pkgs \
     ros-noetic-gazebo-ros-control \
     ros-noetic-ros-controllers \
+    ros-noetic-moveit-visual-tools \
+    ros-noetic-teleop-twist-keyboard \
     ros-noetic-rosserial && \
     rm -rf /var/lib/apt/lists/*
+
+# Modify tiago files
+COPY docker/noetic/tiago_files/default_controllers.launch /tiago_public_ws/src/tiago_simulation/tiago_controller_configuration_gazebo/launch/default_controllers.launch
+COPY docker/noetic/tiago_files/tiago.srdf.xacro /tiago_public_ws/src/tiago_moveit_config/config/srdf/tiago.srdf.xacro
+COPY docker/noetic/tiago_files/upload.launch /tiago_public_ws/src/tiago_robot/tiago_description/robots/upload.launch
+COPY docker/noetic/tiago_files/tiago.urdf.xacro /tiago_public_ws/src/tiago_robot/tiago_description/robots/tiago.urdf.xacro
+# TO-DO: Add the rest of the files
+# tiago_pal-gripper_schunk-ft.srdf 
+# kinemastic_kdl.yml
+# kinemastic_trac_ik.yml
+# ompl_planning.yml
+# stomp_planning.yml
+# /tiago_public_ws/src/tiago_moveit_config/config/controllers/controllers_pal-gripper_schunk-ft.yaml
+
 
 # Init catkin_home directoy
 RUN mkdir /catkin_home && mkdir -p /catkin_home/lib/

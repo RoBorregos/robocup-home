@@ -68,6 +68,65 @@
    <xacro:property name="end_effector_name"       value="${'hand' if end_effector == 'pal-hey5' else 'gripper'}"/>
    <xacro:property name="head_link_name"          value="head_2_link"/>
    <xacro:property name="description_calibration_dir"       value="${arg description_calibration_dir}"/>
+
+  <virtual_joint name="world_joint" type="planar" parent_frame="odom" child_link="internal_odom"/>
+  
+  <!-- ############################BASE_MOVEMENT############################## -->
+  <link name="internal_odom"></link>
+  <joint name="internal_odom_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="internal_odom"/>
+    <child link="internal_odom_inertia"/>
+  </joint>
+
+  <link name="internal_odom_inertia">
+    <inertial>
+      <mass value="0.10"/>
+      <!--  assume as square, hence inertia = (1/12) * m * (a^2 + b^2)  -->
+      <inertia ixx="0.000729" ixy="0" ixz="0" iyy="0.000729" iyz="0" izz="0.000729"/>
+    </inertial>
+  </link>
+  
+  <joint name="odom_y" type="prismatic">
+    <axis xyz="0 1 0"/>
+    <parent link="internal_odom_inertia"/>
+    <child link="odom_yx_link"/>
+    <limit lower="0" upper="0" velocity="0.5" effort="1"/>
+    <dynamics damping="0.7" friction="2"/>
+  </joint>
+
+  <link name="odom_yx_link">
+    <inertial>
+      <mass value="0.10"/>
+      <!--  assume as square, hence inertia = (1/12) * m * (a^2 + b^2)  -->
+      <inertia ixx="0.000729" ixy="0" ixz="0" iyy="0.000729" iyz="0" izz="0.000729"/>
+    </inertial>
+  </link>
+
+  <joint name="odom_x" type="prismatic">
+    <axis xyz="1 0 0"/>
+    <parent link="odom_yx_link"/>
+    <child link="odom_xr_link"/>
+    <limit lower="-10" upper="10" velocity="0.5" effort="1"/>
+    <dynamics damping="0.7" friction="2"/>
+  </joint>
+
+  <link name="odom_xr_link">
+    <inertial>
+      <mass value="0.10"/>
+      <!--  assume as square, hence inertia = (1/12) * m * (a^2 + b^2)  -->
+      <inertia ixx="0.000729" ixy="0" ixz="0" iyy="0.000729" iyz="0" izz="0.000729"/>
+    </inertial>
+  </link>
+
+  <joint name="odom_r" type="revolute">
+    <axis xyz="0 0 1"/>
+    <parent link="odom_xr_link"/>
+    <child link="base_footprint"/>
+    <limit lower="-6.2832" upper="6.2832" velocity="0.5" effort="1"/>
+    <dynamics damping="0.7" friction="2"/>
+  </joint>
+  <!-- ########################################################################### -->
   
   <!-- The following included files set up definitions of parts of the robot body -->
   <!-- Base -->

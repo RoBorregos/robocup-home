@@ -32,53 +32,11 @@ class MoveitBaseController:
       self.broadcaster = tf.TransformBroadcaster()
 
       # Set up publishers for cmd_vel and joint_states topics
-      self.cmd_vel_pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
-      self.joint_state_pub = rospy.Publisher('joint_states', JointState, queue_size=10)
       self.publish_rate = rospy.Rate(10)
       self.run()
 
     def run(self):
       while not rospy.is_shutdown():
-        # Get the current joint positions from MoveIt
-        joint_names = ['odom_x', 'odom_y', 'odom_r']
-        current_joint = self.robot.get_current_state().joint_state
-        # print(self.robot)
-        current_position = [0, 0, 0]
-        current_velocity = [0, 0, 0]
-        current_effort = [0, 0, 0]
-        for i in range(len(current_joint.name)):
-          for j in range(len(joint_names)):
-            if current_joint.name[i] == joint_names[j]:
-              if len(current_joint.position) > 0:
-                current_position[j] = current_joint.position[i]
-              if len(current_joint.velocity) > 0:
-                current_velocity[j] = current_joint.vzelocity[i] 
-              if len(current_joint.effort) > 0:
-                current_effort[j] = current_joint.effort[i]
-          
-        # Create a new JointState message
-        joint_state = JointState()
-        joint_state.header = Header()
-        joint_state.header.stamp = rospy.Time.now()
-        joint_state.name = joint_names
-        joint_state.position = current_position
-        joint_state.velocity = current_velocity
-        joint_state.effort = current_effort
-
-        # Publish the JointState message
-        self.joint_state_pub.publish(joint_state)
-
-        # Create a new Twist message
-        twist = Twist()
-        twist.linear.x = current_velocity[0]
-        twist.linear.y = current_velocity[1]
-        twist.linear.z = 0
-        twist.angular.x = 0
-        twist.angular.y = 0
-        twist.angular.z = current_velocity[2]
-
-        # Publish the Twist message
-        self.cmd_vel_pub.publish(twist)
 
         # Fix Transforms
         try:

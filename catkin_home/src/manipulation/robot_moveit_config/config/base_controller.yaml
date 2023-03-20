@@ -1,0 +1,25 @@
+base_controller:
+  # action_ns: follow_joint_trajectory
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - odom_y
+    - odom_x
+    - odom_r
+  constraints:
+    stopped_velocity_tolerance: 0
+  gains:
+    odom_y:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    odom_x:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    odom_r:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
