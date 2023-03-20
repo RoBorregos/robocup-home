@@ -7,23 +7,24 @@
     <param name="sensor_timeout" value="0.2" />
     <param name="two_d_mode" value="true" />
     <param name="publish_tf" value="true" />
-    <param name="map_frame" value="map"/>
+    <param name="map_frame" value="rl/odom"/>
     <param name="base_link_frame" value="base_footprint" />
     <param name="odom0" value="odom"/>
-    <param name="imu0" value="imu"/> 
+    <param name="pose0" value="/poseupdate"/> 
     <rosparam param="odom0_config">
-              [true, true, false,
-              false,  false,  true,
-              false, false, false,
-              false,  false,  true,
-              true,  false,  false]
+              [true, true, false,   <!-- x, y, z -->
+              false,  false,  true, <!-- roll, pitch, yaw -->
+              true, false, false,   <!-- vx, vy, vz -->
+              false,  false,  true, <!-- vroll, vpitch, vyaw -->
+              false,  false,  false] <!-- ax, ay, az -->
     </rosparam>
-    <rosparam param="imu0_config">
-              [false, false, false,
-              false, false, true,
-              false, false, false,
-              false, false, false,
-              true, false, false]
+    <rosparam param="pose0_config">
+              [true, true, false,   <!-- x, y, z -->
+              false,  false,  true, <!-- roll, pitch, yaw -->
+              false, false, false,   <!-- vx, vy, vz -->
+              false,  false,  false, <!-- vroll, vpitch, vyaw -->
+              false,  false,  false] <!-- ax, ay, az -->
     </rosparam>
   </node>
 </launch>
+<!-- http://docs.ros.org/en/lunar/api/robot_localization/html/configuring_robot_localization.html -->
