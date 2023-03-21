@@ -65,12 +65,43 @@
     <arg name="advanced_grasping" value="$(arg advanced_grasping)" unless="$(arg public_sim)"/>
   </include>
 
+  <!-- NAV STACK LAUNCH FILE -->
+  <!-- <arg name="rviz"     default="true"/>
+  <arg name="sim_sufix" value="_public_sim"     if="$(arg public_sim)"/>
+  <arg name="sim_sufix" value=""                unless="$(arg public_sim)"/>
+  <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)"
+          args="-d $(find tiago_2dnav)/config/rviz/navigation$(arg sim_sufix).rviz"/>
+
+  <arg name="planner"        default="base"/>
+  <arg name="global_planner" default="global_planner"/>
+  <arg name="local_planner"  default="$(eval 'teb' if (arg('public_sim') or arg('base_type')=='omni_base') else 'pal')"/>
+  <arg name="mapping"        default="$(eval 'gmapping' if arg('public_sim') else 'karto')"/>
+  <arg name="rgbd_sensors"   default="false"/>
+  <include file="$(find tiago_2dnav_gazebo)/launch/navigation.launch">
+    <arg name="state"          value="mapping"/>
+    <arg name="mapping"        value="$(arg mapping)"/>
+    <arg name="planner"        value="$(arg planner)"/>
+    <arg name="global_planner" value="$(arg global_planner)"/>
+    <arg name="local_planner"  value="$(arg local_planner)"/>
+    <arg name="public_sim"     value="$(arg public_sim)"/>
+    <arg name="rgbd_sensors"   value="$(arg rgbd_sensors)"/>
+    <arg name="laser_model"    value="$(arg laser_model)"/>
+    <arg name="base_type"      value="$(arg base_type)"/>
+  </include> -->
+
   <!-- point cloud throttle and filter -->
   <group unless="$(arg public_sim)">
     <include file="$(find pal_pcl_points_throttle_and_filter)/launch/throttle_filtering_points.launch">
       <arg name="cloud"  value="/xtion/depth_registered/points"/>
     </include>
   </group>
+
+  <!-- USED BY NAVSTACK: pointcloud to laserscan-->
+  <!-- <group if="$(arg public_sim)">
+    <include file="$(find tiago_laser_sensors)/launch/rgbd_cloud_laser.launch">
+      <arg name="cloud" value="/xtion/depth_registered/points"/>
+    </include>
+  </group> -->
 
   <group if="$(arg tuck_arm)">
       <node name="tuck_arm" pkg="tiago_gazebo" type="tuck_arm.py" output="screen"/>
