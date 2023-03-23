@@ -17,8 +17,6 @@ from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Point, PoseArray, Pose
 from std_msgs.msg import Bool
 from object_detector.msg import objectDetection, objectDetectionArray
-from object_detection.utils import label_map_util
-from object_detection.utils import visualization_utils as vis_util
 import sys
 sys.path.append(str(pathlib.Path(__file__).parent) + '/../include')
 from vision_utils import *
@@ -54,7 +52,11 @@ class CamaraProcessing:
         
         def loadTfModel():
             self.detect_fn = tf.saved_model.load(ARGS["MODELS_PATH"])
-            self.category_index = label_map_util.create_category_index_from_labelmap(ARGS["LABELS_PATH"], use_display_name=True)
+            self.category_index = {
+                1 : 'Coca-Cola',
+                2 : 'Coffee',
+                3 : 'Nesquik',
+            }
 
         loadTfModel()
         print("[INFO] Model Loaded")
@@ -229,7 +231,7 @@ class CamaraProcessing:
         self.posePublisher.publish(pa)
         
         for label in objects:
-            labelText = self.category_index[label]['name']
+            labelText = self.category_index[label]
             detection = objects[label]
             res.append(objectDetection(
                     label = int(label),
@@ -242,14 +244,64 @@ class CamaraProcessing:
                     point3D = detection["point3D"]
                 ))
         return res
+    
+    def visualize_detections(self, image, boxes, classes, scores, category_index, use_normalized_coordinates=True, max_boxes_to_draw=200, min_score_thresh=0.5, agnostic_mode=False):
+        """Visualize detections on an input image."""
+        
+        # Convert image to BGR format (OpenCV uses BGR instead of RGB)
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        
+        # Loop over all detections
+        for i in range(min(max_boxes_to_draw, boxes.shape[0])):
+            # Extract bounding box coordinates and class ID
+            ymin, xmin, ymax, xmax = tuple(boxes[i].tolist())
+            class_id = int(classes[i])
+            
+            # If agnostic mode is enabled, set class ID to 1 (i.e. "object")
+            if agnostic_mode:
+                class_id = 1
+            
+            # Extract class name and score
+            class_name = category_index[class_id]
+            score = scores[i]
+            
+            # Ignore detections below the minimum score threshold
+            if score < min_score_thresh:
+                continue
+            
+            # Convert bounding box coordinates to pixel coordinates if normalized coordinates are used
+            if use_normalized_coordinates:
+                height, width, _ = image.shape
+                ymin, xmin = ymin * height, xmin * width
+                ymax, xmax = ymax * height, xmax * width
+                
+            # Draw bounding box on image
+            label = "{}: {:.2f}".format(class_name, score)
+            # Set Green Color
+            color = (0, 255, 0)
+            cv2.rectangle(image, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, thickness=2)
+            
+            # Draw label on image
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            font_scale = 0.5
+            text_size, _ = cv2.getTextSize(label, font, font_scale, thickness=1)
+            text_bottom_left = (int(xmin), int(ymin) - 5)
+            text_top_right = (text_bottom_left[0] + text_size[0] + 10, text_bottom_left[1] - text_size[1] - 10)
+            cv2.rectangle(image, text_bottom_left, text_top_right, color, cv2.FILLED)
+            cv2.putText(image, label, (text_bottom_left[0] + 5, text_bottom_left[1] - 5), font, font_scale, (255, 255, 255), thickness=1)
+            
+        # Convert image back to RGB format
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        
+        return image
 
     # Main function to run the detection model.
     def run(self, frame):
         frame_processed = imutils.resize(frame, width=500)
 
         detected_objects, detections, image, category_index = self.compute_result(frame_processed)
-        
-        vis_util.visualize_boxes_and_labels_on_image_array(
+
+        frame = self.visualize_detections(
             frame,
             detections['detection_boxes'],
             detections['detection_classes'],

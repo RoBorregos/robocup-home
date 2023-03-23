@@ -1,17 +1,23 @@
 <launch>
     <!-- ObjectDetection -->
     <arg name="SOURCE" default="/camera/rgb/image_raw" />
+    <arg name="DEPTH_INPUT" default="/camera/depth/image_raw" />
+    <arg name="CAMERA_INFO" default="/camera/rgb/camera_info" />
     <arg name="ROS_INPUT" default="True" />
     <arg name="USE_ACTIVE_FLAG" default="False" />
     <arg name="VERBOSE" default="True" />
     <arg name="DEPTH_ACTIVE" default="True" />
+    <arg name="MODELS_PATH" default="$(find object_detector)/models/gazebo/" />
+    <arg name="LABELS_PATH" default="$(find object_detector)/models/gazebo/label_map.pbtxt" />
     <node name="Detection2D" pkg="object_detector" type="Detection2D.py" respawn="true" output="screen">
         <param name="SOURCE" value="$(arg SOURCE)" />
         <param name="ROS_INPUT" value="$(arg ROS_INPUT)" />
         <param name="USE_ACTIVE_FLAG" value="$(arg USE_ACTIVE_FLAG)" />
         <param name="VERBOSE" value="$(arg VERBOSE)" />
-        <param name="MODELS_PATH" value="$(find object_detector)/models/gazebo/" />
-        <param name="LABELS_PATH" value="$(find object_detector)/models/gazebo/label_map.pbtxt" />
+        <param name="MODELS_PATH" value="$(arg MODELS_PATH)" />
+        <param name="LABELS_PATH" value="$(arg LABELS_PATH)" />
         <param name="DEPTH_ACTIVE" value="$(arg DEPTH_ACTIVE)" />
+        <param name="DEPTH_INPUT" value="$(arg DEPTH_INPUT)" />
+        <param name="CAMERA_INFO" value="$(arg CAMERA_INFO)" />
     </node>
 </launch>
