@@ -56,6 +56,10 @@
         <joint name="odom_y"/>
         <joint name="odom_r"/>
     </group>
+    <group name="head">
+        <joint name="head_1_joint"/>
+        <joint name="head_2_joint"/>
+    </group>
     <group name="whole_body">
         <group name="base"/>
         <group name="arm_torso"/>
