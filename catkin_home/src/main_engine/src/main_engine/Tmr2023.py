@@ -28,7 +28,8 @@ class MoveGoals(Enum):
     CLOSET = 4
 
 class ManipulationGoals(Enum):
-    VEGETABLES = 1import os
+    VEGETABLES = 1
+    import os
 import openai
 
 openai.api_key = os.getenv("OPENAI_API_KEY")

@@ -1,0 +1,17 @@
+
+Minimal
+- Gender :  man | woman | boy | girl | (male person) | (female person)
+- Age : men | women | boys | girls | male | female
+- Pose : sitting | standing | lying down
+
+Useful
+- dressed in an [color] [outfita]
+
+
+
+
+color : blue | yellow | black | white | red | gray | orange
+
+
+(T-shirt) | shirt | blouse | sweater | coat | jacket
+

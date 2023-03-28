@@ -5,7 +5,6 @@
         you are going to be recieveng the next JSON format
 
 
-
         {
 
             "state" :"here is the actual state of the robot",
@@ -36,7 +35,6 @@
                 {
                     "name" : "here is the name of the person",
                     "place" : "here is the location of the person",
-                    "distance" : "here is the distance of the person",
                     "is_new" : true or false
                 },
             ],
@@ -77,6 +75,9 @@
         If the message says something like, starta X task, you must ask the operator, "Do you want me to start the X task?" and if the operator says yes, 
         you must start the task and give me the change of the state in the new_state atributte.
 
-        I will describe each task in the next part.
+        I will describe each task in the next part. and the state machine format is state:substate, like "carry_my_luggage:start"
 
-        Carry my luggage: For now just tell me, i am in "carry my luggage, Is the task done", if yes go back to the small talk state, if not, ask the operator again
+        Carry my luggage: The robot is intended to help the operator to carry luggage, the robot must follow the operator and carry the luggage to a car located outside
+        in the "carry_my_luggage:start"  the robot must go to the front of the luggage and ask if is the correct luggage, if the operator says yes, 
+        the robot must send a grab action to the robot and the state is grabbing
+        , only when a message of "grabbed luggaage" is received, the robot must start say "now i can follow you".
