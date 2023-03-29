@@ -1,6 +1,6 @@
 #Folders and files to ignore
 __ignore__/
-
+CATKIN_IGNORE
 ### ROS ###
 /catkin_home/devel/
 /catkin_home/devel_isolated/
