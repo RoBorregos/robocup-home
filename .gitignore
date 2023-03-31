@@ -47,6 +47,7 @@ wrokspace.code-workspace
 /object_detection/models/dependencies/TensorFlow
 /object_detection/models/dependencies/coco
 /object_detection/images/train
+__ignore__/*
 catkin_home/src/object_detector/models
 catkin_home/src/object_detector/resources
 
