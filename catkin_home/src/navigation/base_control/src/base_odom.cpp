@@ -27,38 +27,27 @@ struct Position {
 };
 
 // Initialize global variables.
-int front_left = 0;
-int front_right = 0;
-int back_left = 0;
-int back_right = 0;
-double dt_front = 0.000001;
-double dt_back = 0.000001;
+int left = 0;
+int right = 0;
+double dt = 0.000001;
 
 // Initialize constants.
-const double wheel_radius = 0.05;
+const double wheel_radius = 0.06;
 const double wheel_circumference = wheel_radius * 2 * M_PI;
-const double encoder_resolution = 4320;
+const double encoder_resolution = 600;
 // The robot constant is defined by the sum of the distance between 
 // the wheel's x-coord & the origin, and the y-coord & the origin.
-const double robot_constant = 0.25 + 0.20;
+const double robot_constant = 0.33;
 const double dist_per_tick = wheel_circumference / encoder_resolution;
 const bool publish_odom_message = true;
 const bool publish_odom_frame = true;
 
-// Function to save front encoder data to global variables.
-void feCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
-    ROS_INFO_STREAM("INFO RECEIVED \n *Front Encoders");
-    front_left = msg->encoders.left_wheel;
-    front_right = msg->encoders.right_wheel;
-    dt_front = msg->encoders.time_delta;
-}
-
-// Function to save back encoder data to global variables.
-void reCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
-    ROS_INFO_STREAM("INFO RECEIVED \n *back Encoders");
-    back_left = msg->encoders.left_wheel;
-    back_right = msg->encoders.right_wheel;
-    dt_back = msg->encoders.time_delta;
+// Function to save encoder data to global variables.
+void halCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
+    ROS_INFO_STREAM("INFO RECEIVED \n *Encoders");
+    left = msg->encoders.left_wheel;
+    right = msg->encoders.right_wheel;
+    dt = msg->encoders.time_delta;
 }
 
 // Function to save back encoder data to global variables.
@@ -113,27 +102,23 @@ void initializeOdometryTransform(geometry_msgs::TransformStamped &odom_trans){
 // Function to compute robot velocity.
 void computeRobotVelocity(Velocity &robot_velocity){
     // Compute the velocities of each wheel.
-    const double v_fl = (front_left * dist_per_tick) / dt_front;
-    const double v_fr = (front_right * dist_per_tick) / dt_front;
-    const double v_bl = (back_left * dist_per_tick) / dt_back;
-    const double v_br = (back_right * dist_per_tick) / dt_back;
+    const double v_l = (left * dist_per_tick) / dt;
+    const double v_r = (right * dist_per_tick) / dt;
 
     // Compute the overall velocity of the robot.
-    robot_velocity.x = (v_fl + v_fr + v_bl + v_br) / 4.0;
-    robot_velocity.y = (-v_fl + v_fr + v_bl - v_br) / 4.0;
-    robot_velocity.th = (-v_fl + v_fr - v_bl + v_br) / (4.0 * robot_constant);
+    robot_velocity.x = (v_l + v_r) / 2.0;
+    robot_velocity.th = (-v_l + v_r) / (2.0 * robot_constant);
 }
 
 // Function to compute robot displacement.
 void computeRobotDisplacement(const Velocity robot_velocity, Position &robot_position, const double avg_dt){
     // Compute the change in displacement.
     const double delta_x = robot_velocity.x * avg_dt;
-    const double delta_y = robot_velocity.y * avg_dt;
     const double delta_th = robot_velocity.th * avg_dt;
 
     // Compute the overall displacement.
-    robot_position.x += delta_x * cos(robot_position.th) - delta_y * sin(robot_position.th);
-    robot_position.y += delta_x * sin(robot_position.th) + delta_y * cos(robot_position.th);
+    robot_position.x += delta_x * cos(robot_position.th);
+    robot_position.y += delta_x * sin(robot_position.th);
     robot_position.th += delta_th;
     robot_position.th = fmod(robot_position.th, 2*M_PI);
 }
@@ -144,8 +129,7 @@ int main(int argc, char** argv) {
     ROS_INFO_STREAM("*Node initiated");
     ros::NodeHandle ros_node;
     ros::Publisher odom_pub = ros_node.advertise<nav_msgs::Odometry>("/base_control/odom", 60);
-    ros::Subscriber fr_enc = ros_node.subscribe("/base_control/front/encoders", 100, feCallBack);
-    ros::Subscriber rr_enc = ros_node.subscribe("/base_control/back/encoders", 100, reCallBack);
+    ros::Subscriber rr_enc = ros_node.subscribe("/base_control/encoders", 100, halCallBack);
     //ros::Subscriber subImu = ros_node.subscribe("/sensor/imu", 100, imuCallBack);
     tf::TransformBroadcaster odom_broadcaster;
     ros::Time current_time = ros::Time::now();
@@ -172,7 +156,7 @@ int main(int argc, char** argv) {
         current_time = ros::Time::now();
 
         // Calculates the average time between encoder counts for the front and back encoders.
-        const double avg_dt = (dt_front + dt_back) / 2.0;
+        const double avg_dt = dt;
 
         // Skips the rest of the loop if for some reason no time has passed between encoder counts.
         if (avg_dt == 0) {
