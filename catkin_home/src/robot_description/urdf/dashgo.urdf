@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="dashgo">
+  <link
+    name="Base">
+    <inertial>
+      <origin
+        xyz="7.28752940389825E-05 0.0569098315439797 0.259207232289335"
+        rpy="0 0 0" />
+      <mass
+        value="5.92220977742572" />
+      <inertia
+        ixx="0.134189556605473"
+        ixy="-2.49642917566475E-05"
+        ixz="7.32459015732295E-10"
+        iyy="0.135866070097009"
+        iyz="0.000122787889238702"
+        izz="0.0791062934791392" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Base.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Base.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Llanta1">
+    <inertial>
+      <origin
+        xyz="4.02455846426619E-16 6.52256026967279E-16 0.0200000000000002"
+        rpy="0 0 0" />
+      <mass
+        value="0.528918539158378" />
+      <inertia
+        ixx="0.000631308353030454"
+        ixy="-1.64320882748444E-36"
+        ixz="1.72050413075699E-18"
+        iyy="0.000631308353030454"
+        iyz="-1.31827511759956E-36"
+        izz="0.00112157176228534" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Llanta1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Llanta1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Cont1.1Llanta"
+    type="continuous">
+    <origin
+      xyz="0.145999999999999 0.1155 0.0375"
+      rpy="1.5707963267949 0 1.5707963267949" />
+    <parent
+      link="Base" />
+    <child
+      link="Llanta1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="Llanta2">
+    <inertial>
+      <origin
+        xyz="-1.38777878078145E-17 -1.11022302462516E-16 -0.02"
+        rpy="0 0 0" />
+      <mass
+        value="0.528918539158378" />
+      <inertia
+        ixx="0.000631308353030454"
+        ixy="-8.470329472543E-22"
+        ixz="-9.10263751530836E-20"
+        iyy="0.000631308353030454"
+        iyz="4.50857846912387E-20"
+        izz="0.00112157176228534" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Llanta2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Llanta2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Cont1.2Llanta"
+    type="continuous">
+    <origin
+      xyz="-0.146 0.1155 0.0375"
+      rpy="1.5707963267949 0.0209487637131551 1.5707963267949" />
+    <parent
+      link="Base" />
+    <child
+      link="Llanta2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="Loca1">
+    <inertial>
+      <origin
+        xyz="-1.38777878078145E-17 0.0345546529721542 1.38777878078145E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.0167352759899297" />
+      <inertia
+        ixx="7.54150196205056E-06"
+        ixy="1.40155850818218E-21"
+        ixz="-8.27048938529183E-22"
+        iyy="5.85653067123054E-06"
+        iyz="-1.78257050125666E-21"
+        izz="7.09027556219276E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Loca1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Loca1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Cont2.1Loca"
+    type="continuous">
+    <origin
+      xyz="-0.09 -0.0720000000000001 0"
+      rpy="1.5707963267949 0 0" />
+    <parent
+      link="Base" />
+    <child
+      link="Loca1" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="LlantaLoca1">
+    <inertial>
+      <origin
+        xyz="-2.77555756156289E-17 -0.00741632050454702 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.0694291976443344" />
+      <inertia
+        ixx="3.17985725211052E-05"
+        ixy="-5.2134949516848E-38"
+        ixz="0"
+        iyy="1.95153903045283E-05"
+        iyz="7.67877008722871E-41"
+        izz="1.95153903045283E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/LlantaLoca1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/LlantaLoca1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Cont2.2Llanta"
+    type="continuous">
+    <origin
+      xyz="0 0.01 0"
+      rpy="0 0 0" />
+    <parent
+      link="Loca1" />
+    <child
+      link="LlantaLoca1" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="Loca2">
+    <inertial>
+      <origin
+        xyz="-4.16333634234434E-17 0.0345546529721542 5.55111512312578E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.0167352759899297" />
+      <inertia
+        ixx="7.54150196205055E-06"
+        ixy="3.09430207591605E-21"
+        ixz="2.11758236813575E-22"
+        iyy="5.85653067123052E-06"
+        iyz="4.4410066045179E-22"
+        izz="7.09027556219274E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Loca2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Loca2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Cont3.1Loca"
+    type="continuous">
+    <origin
+      xyz="0.09 -0.072 0"
+      rpy="1.5707963267949 0 0.132004559319761" />
+    <parent
+      link="Base" />
+    <child
+      link="Loca2" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="LlantaLoca2">
+    <inertial>
+      <origin
+        xyz="-1.72084568816899E-15 -0.00469061857919632 -0.00574455456677565"
+        rpy="0 0 0" />
+      <mass
+        value="0.0694291976443344" />
+      <inertia
+        ixx="3.17985725211052E-05"
+        ixy="1.6940658945086E-21"
+        ixz="-2.22346148654254E-21"
+        iyy="1.95153903045283E-05"
+        iyz="2.5410988417629E-21"
+        izz="1.95153903045283E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/LlantaLoca2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/LlantaLoca2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Cont3.2Llanta"
+    type="continuous">
+    <origin
+      xyz="0 0.01 0"
+      rpy="-0.886055251315474 0 0" />
+    <parent
+      link="Loca2" />
+    <child
+      link="LlantaLoca2" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="Lidar">
+    <inertial>
+      <origin
+        xyz="-9.49517221724887E-50 0.0125 -1.38777878078145E-17"
+        rpy="0 0 0" />
+      <mass
+        value="0.0962112750161874" />
+      <inertia
+        ixx="3.44757068808005E-05"
+        ixy="8.13422838622583E-38"
+        ixz="1.3254524700622E-52"
+        iyy="5.89294059474148E-05"
+        iyz="-6.00991536754997E-37"
+        izz="3.44757068808005E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Lidar.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Lidar.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Cont4.1Lidar"
+    type="fixed">
+    <origin
+      xyz="0 -0.11 0.12"
+      rpy="1.5707963267949 0 0" />
+    <parent
+      link="Base" />
+    <child
+      link="Lidar" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="RevCam1">
+    <inertial>
+      <origin
+        xyz="-0.00218640113558175 0.0383778465870377 -0.00515828443968223"
+        rpy="0 0 0" />
+      <mass
+        value="0.080717320175421" />
+      <inertia
+        ixx="2.37796512993044E-05"
+        ixy="8.55530391588442E-07"
+        ixz="-2.49698267928059E-07"
+        iyy="1.83589770932125E-05"
+        iyz="-4.19202714077007E-06"
+        izz="2.27836705307719E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/RevCam1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/RevCam1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Rev1Cam"
+    type="continuous">
+    <origin
+      xyz="0.001 0.0505 1.745"
+      rpy="1.5708 0 0.034703" />
+    <parent
+      link="Base" />
+    <child
+      link="RevCam1" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="0.5236"
+      upper="-0.5236"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="RevCam2">
+    <inertial>
+      <origin
+        xyz="-0.0039179304343604 -0.0102932368661917 0.0320850186207662"
+        rpy="0 0 0" />
+      <mass
+        value="0.0649807233686397" />
+      <inertia
+        ixx="2.60101323603901E-05"
+        ixy="-1.98669220487654E-07"
+        ixz="-5.07308429498082E-06"
+        iyy="4.1839084740969E-05"
+        iyz="3.16753039765723E-07"
+        izz="3.84670102617887E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/RevCam2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/RevCam2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Rev2Cam"
+    type="continuous">
+    <origin
+      xyz="0 0.05 0"
+      rpy="-0.12119923501911 -0.000974083686339191 -0.0160540649488372" />
+    <parent
+      link="RevCam1" />
+    <child
+      link="RevCam2" />
+    <axis
+      xyz="0.991299708192299 0 0.131624042400552" />
+    <limit
+      lower="0.5236"
+      upper="-0.5236"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="Cam">
+    <inertial>
+      <origin
+        xyz="2.70839394232595E-06 0.0154840832193527 0.0423792552563691"
+        rpy="0 0 0" />
+      <mass
+        value="0.152258268041015" />
+      <inertia
+        ixx="2.28182703915157E-05"
+        ixy="-2.5626085953302E-09"
+        ixz="-6.38822957916521E-09"
+        iyy="0.000372324879577432"
+        iyz="-3.15065570916892E-08"
+        izz="0.000374741837893712" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Cam.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.176470588235294 0.176470588235294 0.176470588235294 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Cam.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Fix1Cam"
+    type="fixed">
+    <origin
+      xyz="-0.00321508643507233 -0.0539823818454634 0.0300733117769173"
+      rpy="1.4793695539324 0.132007098338006 3.14159265358979" />
+    <parent
+      link="RevCam2" />
+    <child
+      link="Cam" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>
