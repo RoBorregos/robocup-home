@@ -1,25 +1,22 @@
-#include <ros.h>
 #include "Movement.h"
-#include "Odometry.h"
+#include "RosBridge.h"
+#include "BNO.h"
 #include "Plot.h"
 
 Movement *robot = nullptr;
 bool ROS_ENABLE = true;
 bool CHECK_PID = false;
 bool CHECK_MOTORS = false;
+bool CHECK_ENCODERS = true;
 
 void setup() {
-    ros::NodeHandle nh;
-
-    if (ROS_ENABLE) {
-      nh.initNode();
-      while (!nh.connected()) {
-          nh.spinOnce();
-      }
-      nh.loginfo("Node Initialization completed."); 
-    }
+    Serial.begin(57600);
+    Serial2.begin(57600);
+    // if (ROS_ENABLE) {
+    // }
     
-    Movement initRobot(&nh);
+    BNO bno;
+    Movement initRobot;
     robot = &initRobot;
     robot->initEncoders();
 
@@ -27,17 +24,12 @@ void setup() {
         loop();
     }
     
-    nh.loginfo("Movement Initialization completed.");
-
-    Plot plot(robot, !ROS_ENABLE);
-    Serial3.begin(57600);
-    plot.startSequence();
-    nh.loginfo("Plot Initialization completed.");        
-
-    Odometry odom(robot,&nh, &plot);
-    nh.loginfo("Odometry Initialization completed.");
-
-    odom.run();
+    Plot plot(robot, ROS_ENABLE);
+    // plot.startSequence();
+    
+    RosBridge bridge(robot, &bno, &plot);
+    
+    bridge.run();
 }
 
 // Used if ROS disabled.
@@ -67,11 +59,45 @@ void loop() {
                       sign = true;
                     }
                 }
-                robot->cmdVelocity(0.5, 0, 0, false);
+                robot->cmdVelocity(0.5, 0, 0);
                 plot.plotTargetandCurrent();
             }
         }
     }
+    if (CHECK_ENCODERS) {
+        Serial.begin(9600);
+        bool direction = false;
+        long long start_time = millis();
+        while(1) {
+          if (millis() - start_time > 5000) {
+            start_time = millis();
+            direction = !direction;
+          }
+          if (direction) {
+            robot->right_motor_.forward();
+            robot->right_motor_.changePwm(120);
+            robot->left_motor_.forward();
+            robot->left_motor_.changePwm(120);
+          } else {
+            robot->left_motor_.backward();
+            robot->left_motor_.changePwm(120);
+            robot->right_motor_.backward();
+            robot->right_motor_.changePwm(120);
+          }
+               
+          //Serial.print("R");
+          //Serial.println( (robot->right_motor_.getPidTicks()));
+            //   Serial.print("RD");
+            //   Serial.println( (robot->right_motor_.getEncodersDir()));
+          //Serial.print("L");
+          //Serial.println( (robot->right_motor_.getPidTicks()));
+          Serial.print("D ");
+          Serial.print( (robot->right_motor_.getEncodersDir()));
+          Serial.print("\t L ");
+          Serial.println( (robot->left_motor_.getEncodersDir()));
+        }
+    }
+    
     if (CHECK_MOTORS) {
         Serial.begin(9600);
         // Check Motors

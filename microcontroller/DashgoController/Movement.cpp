@@ -1,11 +1,11 @@
 #include "Movement.h"
 
 //////////////////////////////////Constructor//////////////////////////////////////
-Movement::Movement(ros::NodeHandle *nh) : nh_(nh), kinematics_(kRPM, kWheelDiameter, kFrWheelsDist, kLrWheelsDist, kPwmBits) {
-  left_motor_ = Motor(nh_, MotorId::Left, kFwdRevPinLeftMotor, 
+Movement::Movement() : kinematics_(kRPM, kWheelDiameter, kFrWheelsDist, kLrWheelsDist, kPwmBits) {
+  left_motor_ = Motor(MotorId::Left, kFwdRevPinLeftMotor, 
                           kSpeedPinLeftMotor, kEnablePinLeftMotor, 
                           kEncoderPinsLeftMotor[0], kEncoderPinsLeftMotor[1], true);
-  right_motor_ = Motor(nh_, MotorId::Right, kFwdRevPinRightMotor, 
+  right_motor_ = Motor(MotorId::Right, kFwdRevPinRightMotor, 
                             kSpeedPinRightMotor, kEnablePinRightMotor, 
                             kEncoderPinsRightMotor[0], kEncoderPinsRightMotor[1]);
 }
@@ -68,54 +68,15 @@ double constrainDa(double x, double min_, double max_)
 }
 
 //////////////////////////////////PID//////////////////////////////////////
-void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z, bool debug = false)
+void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z)
 {
   double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
 
-  if (debug)
-  {
-    if (linear_x != x)
-    {
-      nh_->loginfo("Linear velocity in X constrained!");
-    }
-    if (linear_y != y)
-    {
-      nh_->loginfo("Linear velocity in Y constrained!");
-    }
-    if (angular_z != z)
-    {
-      nh_->loginfo("Angular velocity in Z constrained!");
-    }
-  }
-
   Kinematics::output rpm = kinematics_.getRPM(x, y, z);
   
   updatePIDKinematics(rpm.motor1, rpm.motor2);
-
-  if (debug)
-  {
-    char log_msg[20];
-    char result[8];
-    double rpms[kMotorCount];
-    rpms[0] = (float)rpm.motor1; // Left
-    rpms[1] = (float)rpm.motor2; // Right
-
-    dtostrf(angular_z, 6, 2, result);
-    sprintf(log_msg, "Angular Z :%s", result);
-    nh_->loginfo(log_msg);
-    dtostrf(linear_x, 6, 2, result);
-    sprintf(log_msg, "Linear X :%s", result);
-    nh_->loginfo(log_msg);
-    dtostrf(linear_y, 6, 2, result);
-    sprintf(log_msg, "Linear Y :%s", result);
-    nh_->loginfo(log_msg);
-    dtostrf(millis() - cycle, 6, 2, result);
-    sprintf(log_msg, "Cycle :%s", result);
-    nh_->loginfo(log_msg);
-    cycle = millis();
-  }
 }
 
 void Movement::updatePIDKinematics(double rm_speed, double lm_speed) {

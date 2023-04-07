@@ -1,24 +1,17 @@
 #include "Encoder.h"
 //////////////////////////////////Main Function//////////////////////////////////////
-void Encoder::handleEncoder(Motor &motor) {
-  // TODO FIX Direction
-  motor.setEncodersDir(
-    digitalRead(motor.getEncoderOne()) == 1 && digitalRead(motor.getEncoderTwo() == 0) ? 1 : -1
-  );
+void Encoder::handleEncoder(Motor &motor, int sign) {
+  int op_sign = sign == 1 ? -1 : 1;
+  motor.setEncodersDir((int)(digitalRead(motor.getEncoderTwo()) == HIGH ? sign : op_sign));
   motor.setPidTicks(motor.getPidTicks() + 1);
-  if(motor.getCurrentState() == MotorState::Forward) {
-    motor.setOdomTicks(motor.getOdomTicks() + 1);
-  }
-  else {
-    motor.setOdomTicks(motor.getOdomTicks() - 1);
-  }
+  motor.setOdomTicks(motor.getOdomTicks() + (motor.getEncodersDir()));
 }
 
 //////////////////////////////////Motor Functions//////////////////////////////////////
 void Encoder::leftEncoder() {
-  handleEncoder(robot->left_motor_);
+  handleEncoder(robot->left_motor_, -1);
 }
 
 void Encoder::rightEncoder() {
-  handleEncoder(robot->right_motor_);
+  handleEncoder(robot->right_motor_, 1);
 }

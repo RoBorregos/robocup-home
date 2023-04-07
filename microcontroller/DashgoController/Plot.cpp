@@ -2,9 +2,10 @@
 
 // Constructor
 
-Plot::Plot(Movement *moveAll, bool useSerial3)
+Plot::Plot(Movement *moveAll, bool useSerial2)
 {
     this->moveAll = moveAll;
+    useSerial2_ = useSerial2;
     timeMsg = millis();
 }
 
@@ -38,7 +39,7 @@ void Plot::plotTargetandCurrent()
     plotData(
         moveAll->right_motor_.getCurrentSpeed(),
         moveAll->left_motor_.getCurrentSpeed(),
-        moveAll->left_motor_.getTargetRps(moveAll->left_motor_.getTargetSpeed()),
+        abs(moveAll->left_motor_.getTargetRps(moveAll->left_motor_.getTargetSpeed())),
         0.0,
         0.0
     );
@@ -73,13 +74,19 @@ void Plot::plotData(const double data1, const double data2, const double data3, 
                           byteData3[0], byteData3[1], byteData3[2], byteData3[3],
                           byteData4[0], byteData4[1], byteData4[2], byteData4[3],
                           byteData5[0], byteData5[1], byteData5[2], byteData5[3]};
-
-    Serial3.write(buf, 20);
-
+    if (useSerial2_) {
+      Serial2.write(buf, 20);
+    } else {
+      Serial.write(buf, 20);
+    }
+    
     timeMsg = millis();
 }
 
 void Plot::startSequence(){
-    Serial3.write("<target>"); // Sequence to recognize at "multiplePlots.py"
+    if (useSerial2_) {
+      Serial2.write("<target>"); // Sequence to recognize at "multiplePlots.py"
+    } else {
+      Serial.write("<target>"); // Sequence to recognize at "multiplePlots.py"
+    }
 }
-

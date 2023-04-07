@@ -14,12 +14,12 @@ private:
   
   
   Movement *moveAll;
-
+  bool useSerial2_;
   unsigned long timeMsg;
 
 public:
   // Constructor
-  Plot(Movement *moveAll);
+  Plot(Movement *moveAll, bool useSerial2);
 
   // Plot Functions
 

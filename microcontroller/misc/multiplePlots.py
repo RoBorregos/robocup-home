@@ -111,7 +111,7 @@ class serialPlot:
 
 def main():
     # portName = 'COM11'
-    portName = '/dev/ttyUSB0'
+    portName = '/dev/ttyUSB1'
     baudRate = 57600
     maxPlotLength = 100     # number of points in x-axis of real time plot
     dataNumBytes = 4        # number of bytes of 1 data point

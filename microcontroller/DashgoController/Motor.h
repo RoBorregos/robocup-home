@@ -4,7 +4,6 @@
 
 #include <Arduino.h>
 
-#include <ros.h>
 #include "MotorId.h"
 #include "PID.h"
 
@@ -18,7 +17,7 @@ class Motor {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
     Motor();
-    Motor(ros::NodeHandle *nh, const MotorId id, const uint8_t fwd_rev, const uint8_t speed, 
+    Motor(const MotorId id, const uint8_t fwd_rev, const uint8_t speed, 
     const uint8_t enable, const uint8_t encoder_one, const uint8_t encoder_two, bool inv_fwd = false);
     
     //////////////////////////////////Initialization//////////////////////////////////////
@@ -63,7 +62,7 @@ class Motor {
     void changePwm(const uint8_t pwm);
     
     // Compute Pid controller and update pwm. 
-    void constantRPM(const double velocity, const bool debug = false);
+    void constantRPM(const double velocity);
 
 
     //////////////////////////////////Set Methods//////////////////////////////////////
@@ -146,9 +145,6 @@ class Motor {
     static constexpr double kP = 45; // 50
     static constexpr double kI = 55;
     static constexpr double kD = 40; // 20
-    
-    // ROS
-    ros::NodeHandle * nh_;
 };
 
 

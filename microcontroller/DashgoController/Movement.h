@@ -5,7 +5,6 @@
 #include "MotorId.h"
 
 #include "Kinematics.h"
-#include <ros.h>
 #include <math.h>
 #include <Arduino.h>
 
@@ -19,7 +18,7 @@ enum class Direction{
 class Movement {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
-    Movement(ros::NodeHandle *nh);
+    Movement();
 
 
     //////////////////////////////////Motors//////////////////////////////////////
@@ -61,7 +60,7 @@ class Movement {
     
     //////////////////////////////////PID//////////////////////////////////////
     // Robot linear velocity to rpm per motor. 
-    void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z, bool debug = false);
+    void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
     
     // Set motors to velocity. 
     void updatePIDKinematics(double rm_speed, double lm_speed);
@@ -97,9 +96,6 @@ class Movement {
     static constexpr double kAngularZMaxVelocity = kMaxVelocity / kLrWheelsDist;
     static constexpr uint8_t kPwmBits = 8;
     long long cycle = 0;
-
-    // ROS
-    ros::NodeHandle * nh_;
 
     // Kinematics.
     Kinematics kinematics_;

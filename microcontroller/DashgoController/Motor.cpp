@@ -4,8 +4,8 @@
 
 //////////////////////////////////Constructor//////////////////////////////////////
 Motor::Motor() {}
-Motor::Motor(ros::NodeHandle *nh, const MotorId id, const uint8_t fwd_rev, const uint8_t speed, 
-const uint8_t enable, const uint8_t encoder_one, const uint8_t encoder_two, bool inv_fwd) : nh_(nh),
+Motor::Motor(const MotorId id, const uint8_t fwd_rev, const uint8_t speed, 
+const uint8_t enable, const uint8_t encoder_one, const uint8_t encoder_two, bool inv_fwd) :
 pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidMotorTimeSample) {
 
   id_ = id;
@@ -34,10 +34,10 @@ void Motor::defineOutput() {
 void Motor::initEncoders() {
   switch (id_) {
     case MotorId::Left:
-      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::leftEncoder, CHANGE);
+      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::leftEncoder, RISING);
     break;
     case MotorId::Right:
-      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::rightEncoder, CHANGE);
+      attachInterrupt(digitalPinToInterrupt(encoder_one_), Encoder::rightEncoder, RISING);
     break;
   }
 }
@@ -143,7 +143,7 @@ void Motor::changePwm(const uint8_t pwm) {
   }
 }
 
-void Motor::constantRPM(double velocity, const bool debug = false) {
+void Motor::constantRPM(double velocity) {
   target_speed_ = RpsToMs(velocity / kSecondsInMinute);
   int speed_sign = fmin(1, fmax(-1, velocity));
   velocity = fabs(velocity);
@@ -164,21 +164,6 @@ void Motor::constantRPM(double velocity, const bool debug = false) {
     velocity / kSecondsInMinute, current_speed_, tmp_pwm, pid_ticks_,
     kPulsesPerRevolution, kPidCountTimeSamplesInOneSecond
   );
-
-  if (debug) {
-    char log_msg[20];
-    char result[8];
-    
-    dtostrf(speed_sign, 6, 2, result);
-    sprintf(log_msg, "Speed Sign :%s", result);
-    nh_->loginfo(log_msg);
-    dtostrf(velocity, 6, 2, result);
-    sprintf(log_msg, "Velocity :%s", result);
-    nh_->loginfo(log_msg);
-    dtostrf(tmp_pwm, 6, 2, result);
-    sprintf(log_msg, "PWM :%s", result);
-    nh_->loginfo(log_msg);
-  }
  
   changePwm(tmp_pwm);
 }
