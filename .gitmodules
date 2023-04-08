@@ -1,3 +1,6 @@
 [submodule "catkin_home/src/navigation/hector_slam_roborregos"]
 	path = catkin_home/src/navigation/hector_slam_roborregos
 	url = https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
+[submodule "catkin_home/src/robot_pose_publisher"]
+	path = catkin_home/src/robot_pose_publisher
+	url = https://github.com/GT-RAIL/robot_pose_publisher.git
