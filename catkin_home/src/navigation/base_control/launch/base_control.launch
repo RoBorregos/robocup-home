@@ -3,7 +3,7 @@
         auto="start"
     />
     <!-- Run the map server --> 
-    <arg 
+    <!-- <arg 
         name="map_file" 
         default="$(find nav_main)/maps/TMR_2019.yaml"
     />
@@ -18,7 +18,7 @@
         type="static_transform_publisher" 
         name="odom_broadcaster" 
         args="0 0 0 0 0 0 1 map odom 20" 
-    />
+    /> -->
     <!-- Run the arduino serial communication node. --> 
     <node 
         pkg="rosserial_python" 
@@ -28,21 +28,21 @@
     >
         <param 
             name="port" 
-            value="/dev/ttyUSB0" 
+            value="/dev/ttyACM0" 
         />
         <param 
             name="baud" 
             value="57600" 
         />
     </node>
-    <!-- Run the odometry calculator node. --> 
+    <!-- Run the odometry calculator node. 
     <node
         pkg="base_control"
         name="base_odom"
         type="base_odom"
-    />
+    /> -->
     <!-- Run the velocity commands simulation node. --> 
-    <node
+    <!-- <node
         pkg="base_control"
         name="cmd_vel_simulation"
         type="cmd_vel.py"
@@ -57,7 +57,7 @@
     <!-- Run rviz simulation. --> 
     <include 
         file="$(find robot_description)/launch/display.launch" 
-    />
+    /> -->
     <!--<node 
         type="rviz" 
         name="rviz" 

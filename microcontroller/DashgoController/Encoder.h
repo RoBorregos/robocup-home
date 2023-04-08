@@ -7,21 +7,16 @@
 namespace Encoder{
     //////////////////////////////////Main Function//////////////////////////////////////
     // Count ticks for specific motor.
-    void handleEncoder(Motor &motor);
+    void handleEncoder(Motor &motor, int sign);
 
 
     //////////////////////////////////Motor Functions//////////////////////////////////////
     
-    // Call main function for back left motor.
-    void backLeftEncoder();
+    // Call main function for left motor.
+    void leftEncoder();
     
-    // Call main function for back right motor.
-    void backRightEncoder();
+    // Call main function for right motor.
+    void rightEncoder();
     
-    // Call main function for front left motor.
-    void frontLeftEncoder();
-    
-    // Call main function for front right motor.
-    void frontRightEncoder();
 };
 #endif
