@@ -1,9 +1,18 @@
 <launch>
+    <arg name="MAP_FRAME" default="map" />
+    <arg name="CAMERA_FRAME" default="xtion_rgb_optical_frame" />
+    <arg name="map_to_odom"  default="true"/>
+    <arg name="POINT_CLOUD_TOPIC" default="/xtion/depth_registered/points" />
     <node 
         pkg="tf" 
         type="static_transform_publisher" 
         name="odom_broadcaster" 
         args="0 0 0 0 0 0 1 map odom 20" 
+        if="$(arg map_to_odom)"
     />
-    <node name="Detection3D" pkg="object_detector" type="Detection3D" respawn="true" output="screen" />
+    <node name="Detection3D" pkg="object_detector" type="Detection3D" respawn="true" output="screen">
+        <param name="POINT_CLOUD_TOPIC" value="$(arg POINT_CLOUD_TOPIC)"/>
+        <param name="MAP_FRAME" value="$(arg MAP_FRAME)" />
+        <param name="CAMERA_FRAME" value="$(arg CAMERA_FRAME)" />
+    </node>
 </launch>

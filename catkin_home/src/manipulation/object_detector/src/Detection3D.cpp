@@ -49,8 +49,6 @@
 #include <octomap/octomap.h>
 #include <octomap/OcTree.h>
 
-#define CAMERA_FRAME "head_rgbd_sensor_depth_frame"
-
 using namespace octomap;
 
 struct ObjectParams
@@ -87,6 +85,9 @@ struct ObjectParams
 
 class Detect3D
 {
+  std::string POINT_CLOUD_TOPIC = std::string("/head_rgbd_sensor/depth_registered/points");
+  std::string MAP_FRAME = std::string("map");
+  std::string CAMERA_FRAME = std::string("head_rgbd_sensor_depth_frame");
   const std::string name = "Detect3D";
   ros::NodeHandle nh_;
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface_;
@@ -115,6 +116,13 @@ public:
     clear_octomap = nh_.serviceClient<std_srvs::Empty>("/clear_octomap");
     clear_octomap.waitForExistence();
     ROS_INFO_STREAM("Action Server Detect3D - Initialized");
+    // Load Params.
+    nh_.param("/Detection3D/MAP_FRAME", MAP_FRAME, MAP_FRAME);
+    nh_.param("/Detection3D/CAMERA_FRAME", CAMERA_FRAME, CAMERA_FRAME);
+    nh_.param("/Detection3D/POINT_CLOUD_TOPIC", POINT_CLOUD_TOPIC, POINT_CLOUD_TOPIC);
+    ROS_INFO_STREAM("MAP_FRAME: " << MAP_FRAME);
+    ROS_INFO_STREAM("CAMERA_FRAME: " << CAMERA_FRAME);
+    ROS_INFO_STREAM("POINT_CLOUD_TOPIC: " << POINT_CLOUD_TOPIC);
   }
 
   /** \brief Handle Action Server Goal Received. */
@@ -124,6 +132,7 @@ public:
     biggest_object_ = goal->force_object.detections.size() == 0;
     force_object_ = !biggest_object_ ? goal->force_object.detections[0] : object_detector::objectDetection();
     feedback_.status = 0;
+    result_.success = true;
     result_.object_cloud = gpd_ros::CloudSamples();
     result_.object_pose = geometry_msgs::PoseStamped();
     result_.x_plane = 0;
@@ -146,10 +155,10 @@ public:
     // Get PointCloud and Transform it to Map Frame
     sensor_msgs::PointCloud2 pc;
     sensor_msgs::PointCloud2 t_pc;
-    tf_listener->waitForTransform("/map", CAMERA_FRAME, ros::Time(0), ros::Duration(5.0));
-    pc = *(ros::topic::waitForMessage<sensor_msgs::PointCloud2>("/camera/depth/points", nh_));
+    tf_listener->waitForTransform(MAP_FRAME, CAMERA_FRAME, ros::Time(0), ros::Duration(5.0));
+    pc = *(ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_));
     pc.header.frame_id = CAMERA_FRAME;
-    pcl_ros::transformPointCloud("map", pc, t_pc, *tf_listener);
+    pcl_ros::transformPointCloud(MAP_FRAME, pc, t_pc, *tf_listener);
 
     Detect3D::cloudCB(t_pc);
     as_.setSucceeded(result_);
@@ -161,12 +170,12 @@ public:
   {
     // Adding Object to Planning Scene
     moveit_msgs::CollisionObject collision_object;
-    collision_object.header.frame_id = "map";
+    collision_object.header.frame_id = MAP_FRAME;
     collision_object.id = id;
 
     geometry_msgs::PoseStamped object_pose;
     object_pose.header.stamp = ros::Time::now();
-    object_pose.header.frame_id = "map";
+    object_pose.header.frame_id = MAP_FRAME;
     object_pose.pose = object_found.center.pose;
     
     collision_object.meshes.push_back(*object_found.mesh);
@@ -194,7 +203,7 @@ public:
 
     // Adding Plane to Planning Scene
     moveit_msgs::CollisionObject collision_object;
-    collision_object.header.frame_id = "map";
+    collision_object.header.frame_id = MAP_FRAME;
     collision_object.id = "table";
 
     // Define a cylinder which will be added to the world.
@@ -207,7 +216,7 @@ public:
 
     geometry_msgs::PoseStamped plane_pose;
     plane_pose.header.stamp = ros::Time::now();
-    plane_pose.header.frame_id = "map";
+    plane_pose.header.frame_id = MAP_FRAME;
     plane_pose.pose.position.x = (plane_params.max_x + plane_params.min_x) / 2;
     plane_pose.pose.position.y = (plane_params.max_y + plane_params.min_y) / 2;
     plane_pose.pose.position.z = (plane_params.max_z + plane_params.min_z) / 2 - 0.04;
@@ -353,7 +362,7 @@ public:
     pcl::computeCentroid(*cloud, centroid);
 
     // Store the object centroid.
-    object_found.center.header.frame_id = "map";
+    object_found.center.header.frame_id = MAP_FRAME;
     object_found.center.pose.position.x = centroid.x;
     object_found.center.pose.position.y = centroid.y;
     object_found.center.pose.position.z = centroid.z;
@@ -364,7 +373,7 @@ public:
 
     // Store the object centroid referenced to the camera frame.
     geometry_msgs::TransformStamped tf_to_cam;
-    tf_to_cam = buffer_.lookupTransform(CAMERA_FRAME, "map", ros::Time(0), ros::Duration(1.0));
+    tf_to_cam = buffer_.lookupTransform(CAMERA_FRAME, MAP_FRAME, ros::Time(0), ros::Duration(1.0));
     tf2::doTransform(object_found.center, object_found.center_cam, tf_to_cam);
 
     if (isCluster) {
@@ -539,7 +548,7 @@ public:
     cloud_sources.camera_source.assign(cloud->points.size(), tmpInt);
 
     geometry_msgs::TransformStamped tf_to_cam;
-    tf_to_cam = buffer_.lookupTransform("map", CAMERA_FRAME, ros::Time(0), ros::Duration(1.0));
+    tf_to_cam = buffer_.lookupTransform(MAP_FRAME, CAMERA_FRAME, ros::Time(0), ros::Duration(1.0));
     geometry_msgs::Point tmpPoint;
     tmpPoint.x = tf_to_cam.transform.translation.x;
     tmpPoint.y = tf_to_cam.transform.translation.y;
@@ -564,6 +573,7 @@ public:
   /** \brief PointCloud callback. */
   void cloudCB(const sensor_msgs::PointCloud2& input)
   {
+    ROS_INFO_STREAM("Received PointCloud");
     // Reset Planning Scene Interface
     std::vector<std::string> object_ids = planning_scene_interface_.getKnownObjectNames();
     planning_scene_interface_.removeCollisionObjects(object_ids);
@@ -581,6 +591,7 @@ public:
     passThroughFilter(cloud);
     computeNormals(cloud, cloud_normals);
 
+    ROS_INFO_STREAM("PointCloud Pre-Processing Done");
     // Detect and Remove the table on which the object is resting.
     bool tableRemoved = false;
     ObjectParams table_params;
@@ -589,6 +600,7 @@ public:
       extractNormals(cloud_normals, inliers_plane);
     }
     // TO-DO Remove Other Planes.
+    ROS_INFO_STREAM("Table Removed");
 
     if (cloud->points.empty()) {
       return;
@@ -598,6 +610,7 @@ public:
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
     getClusters(cloud, clusters);
     int clustersFound = clusters.size();
+    ROS_INFO_STREAM("Clusters Found: " << clustersFound);
 
     std::vector<ObjectParams> objects;
     for(int i=0;i < clustersFound; i++) {
@@ -611,7 +624,6 @@ public:
         objects.push_back(tmp);
       }
     }
-    ROS_INFO_STREAM("Clusters Found: " << clustersFound);
     ROS_INFO_STREAM("Valid Objects: " << objects.size());
 
     if (!biggest_object_) {
@@ -619,6 +631,7 @@ public:
     }
 
     if (objects.size() < 1) {
+      result_.success = false;
       return;
     }
     ObjectParams selectedObject = objects[0];

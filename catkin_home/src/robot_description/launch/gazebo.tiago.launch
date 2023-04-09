@@ -11,14 +11,14 @@
   <arg name="laser_model"  default="sick-571"/>
   <arg name="camera_model"  default="orbbec-astra"/>
   <arg name="multi" default=""/>
-  <arg name="gzpose" default="-x 0.0 -y -0.9 -z 0.0 -R 0.0 -P 0.0 -Y 1.57"/>
+  <arg name="gzpose" default="-x 0.0 -y -1.075 -z 0.0 -R 0.0 -P 0.0 -Y 1.57"/>
   <arg name="gui" default="true"/>
   <arg name="debug" default="false"/>
   <arg name="public_sim" default="true"/>
   <arg name="tuck_arm" default="true"/>
   <arg name="recording" default="false"/>
   <arg name="extra_gazebo_args" default=""/>
-  <arg name="use_moveit_camera" default="false"/>
+  <arg name="use_moveit_camera" default="true"/>
   <arg name="use_dynamic_footprint" default="false"/>
   <arg name="base_type" default="pmb2"/>
   <arg name="advanced_grasping" default="false"/> <!-- Requires extra software from PAL Robotics -->
@@ -90,11 +90,14 @@
   </include> -->
 
   <!-- point cloud throttle and filter -->
-  <group unless="$(arg public_sim)">
-    <include file="$(find pal_pcl_points_throttle_and_filter)/launch/throttle_filtering_points.launch">
-      <arg name="cloud"  value="/xtion/depth_registered/points"/>
-    </include>
-  </group>
+  <!-- <group unless="$(arg public_sim)"> -->
+  <!-- <include file="$(find pal_pcl_points_throttle_and_filter)/launch/throttle_filtering_points.launch">
+    <arg name="cloud"  value="/xtion/depth_registered/points"/>
+  </include> -->
+  <!-- </group> -->
+  <!-- /throttle_filtering_points/filtered_points -->
+  <node name="throttle" pkg="robot_description" type="throttle.py" output="screen" />
+
 
   <!-- USED BY NAVSTACK: pointcloud to laserscan-->
   <!-- <group if="$(arg public_sim)">

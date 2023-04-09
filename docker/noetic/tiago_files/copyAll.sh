@@ -12,3 +12,11 @@ docker cp kinematics_trac_ik.yaml 372d434031a1:/tiago_public_ws/src/tiago_moveit
 docker cp kinematics_kdl.yaml 372d434031a1:/tiago_public_ws/src/tiago_moveit_config/config/kinematics_kdl.yaml
 docker cp ompl_planning.yaml 372d434031a1:/tiago_public_ws/src/tiago_moveit_config/config/ompl_planning.yaml
 docker cp stomp_planning.yaml 372d434031a1:/tiago_public_ws/src/tiago_moveit_config/config/stomp_planning.yaml
+docker cp end_effector.urdf.xacro 372d434031a1:/tiago_public_ws/src/tiago_robot/tiago_description/urdf/end_effector/end_effector.urdf.xacro
+docker cp gripper.urdf.xacro 372d434031a1:/tiago_public_ws/src/pal_gripper/pal_gripper_description/urdf/gripper.urdf.xacro
+docker cp gazebo_tiago.urdf 372d434031a1:/tiago_public_ws/src/tiago_moveit_config/config/gazebo_tiago.urdf
+docker cp arm.urdf.xacro 372d434031a1:/tiago_public_ws/src/tiago_robot/tiago_description/urdf/arm/arm.urdf.xacro
+docker cp move_group.launch 372d434031a1:tiago_public_ws/src/tiago_moveit_config/launch/move_group.launch
+docker cp ompl-chomp_planning_pipeline.launch.xml 372d434031a1:tiago_public_ws/src/tiago_moveit_config/launch/ompl-chomp_planning_pipeline.launch.xml
+docker cp ompl_planning_pipeline.launch.xml 372d434031a1:tiago_public_ws/src/tiago_moveit_config/launch/ompl_planning_pipeline.launch.xml
+docker cp chomp_planning.yaml 372d434031a1:tiago_public_ws/src/tiago_moveit_config/config/chomp_planning.yaml

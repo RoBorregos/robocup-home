@@ -2,10 +2,10 @@
 <launch>
      <arg name="hw_ns" default="RBRGS" />
      
-     <!-- Fix TF and publish joint states -->
-     <node name="MoveitBase"
+     <!-- Fix Base TFs -->
+     <!-- <node name="MoveitBase"
           pkg="robot_moveit_config" type="MoveItBase.py" output="screen"
-     />
+     /> -->
 
      <!-- Run HardwareInterface -->
      <node name="MyRobot"

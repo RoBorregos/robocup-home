@@ -39,6 +39,7 @@
         <joint name="arm_6_joint" />
         <joint name="arm_7_joint" />
         <joint name="arm_tool_joint" />
+        <joint name="end_effector_joint" />
     </group>
     <group name="arm_torso">
         <joint name="torso_lift_joint" />
@@ -50,6 +51,7 @@
         <joint name="arm_6_joint" />
         <joint name="arm_7_joint" />
         <joint name="arm_tool_joint" />
+        <joint name="end_effector_joint" />
     </group>
     <group name="base">
         <joint name="odom_x"/>

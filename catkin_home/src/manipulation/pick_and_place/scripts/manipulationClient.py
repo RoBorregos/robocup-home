@@ -2,27 +2,26 @@
 
 import rospy
 import actionlib
-from object_manipulation.msg import manipulationServAction, manipulationServGoal
+from pick_and_place.msg import manipulationServAction, manipulationServGoal
 from geometry_msgs.msg import PoseStamped
 from enum import Enum
+import time
+import signal
 
 OBJECTS_NAME= {
-    1 : 'VEGETABLES',
-    2: 'TEA',
-    3 : 'COKE',
-    4 : 'JUICE',
+    1 : 'Coca-Cola',
+    2 : 'Coffee',
+    3 : 'Nesquik',
 }
 OBJECTS_ID= {
-    'VEGETABLES' : 1,
-    'TEA' : 2,
-    'COKE' : 3,
-    'JUICE' : 4,
+    'Coca-Cola' : 1,
+    'Coffee' : 2,
+    'Nesquik' : 3,
 }
 class ManipulationGoals(Enum):
-    VEGETABLES = 1
-    TEA = 2
-    COKE = 3
-    JUICE = 4
+    COKE = 1
+    COFFEE = 2
+    NESQUIK = 3
 
 def generateObjectString():
     result = ""
@@ -47,17 +46,18 @@ def handleIntInput(msg_ = "", range=(0, 10)):
 class ManipulationClient(object):
     
     def __init__(self):
+        rospy.loginfo("Connecting to Manipulation Server")
         self.client = actionlib.SimpleActionClient('manipulationServer', manipulationServAction)
         self.client.wait_for_server()
+        rospy.loginfo("Connected to Manipulation Server")
 
-        while True:
-            x = handleIntInput(
-                msg_ = generateObjectString(),
-                range=(0, 4)
-            )
+        result = False
+        while not result:
+            x = OBJECTS_ID['Coca-Cola']
             if x == 0:
                 break
-            self.manipulation_goal(ManipulationGoals(x))
+            result = self.manipulation_goal(ManipulationGoals(x))
+            time.sleep(5.0)
 
     def manipulation_goal(self, target = ManipulationGoals.COKE):
         class ManipulationGoalScope:
@@ -81,8 +81,11 @@ class ManipulationClient(object):
                     feedback_cb=manipulation_goal_feedback,
                     done_cb=get_result_callback)
         
-        while not ManipulationGoalScope.result_received:
-            pass
+        stop_flag = False
+        while not ManipulationGoalScope.result_received and not stop_flag:
+            time.sleep(0.1)
+            if signal.getsignal(signal.SIGINT):
+                stop_flag = True
         
         return ManipulationGoalScope.result
 

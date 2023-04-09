@@ -71,6 +71,6 @@ install(PROGRAMS
 install(DIRECTORY launch
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-add_executable(test scripts/test.cpp)
-target_link_libraries(test ${catkin_LIBRARIES})
-add_dependencies(test ${catkin_EXPORTED_TARGETS})
+add_executable(test_c scripts/test_c.cpp)
+target_link_libraries(test_c ${catkin_LIBRARIES})
+add_dependencies(test_c ${catkin_EXPORTED_TARGETS})

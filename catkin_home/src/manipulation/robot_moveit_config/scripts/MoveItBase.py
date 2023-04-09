@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """
-This script has three implementations to allow the base to move while the arm is moving.
-1-. Convert the joint states to a twist message and publish it to the cmd_vel topic.
-https://github.com/RoBorregos/home-simulation/blob/22cdabc11514fd063fbee8cac8a49bc61a0e41cf/catkin_ws/src/main_engine/src/handyman.cpp
-2-. Fix Nav Odom Frame so it doesn't consider moveit base movement.
+This script has an implementation to allow the base to move while the arm is moving.
+1-. Fix Nav Odom Frame so it doesn't consider moveit base movement.
 https://github.com/RoBorregos/home-simulation/blob/22cdabc11514fd063fbee8cac8a49bc61a0e41cf/catkin_ws/src/main_engine/scripts/fix_tf.py
-3-. Publish the joint states of the base to the joint_states topic as fake controller.
 """
 
 import rospy

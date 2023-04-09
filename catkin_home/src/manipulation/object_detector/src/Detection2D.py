@@ -38,6 +38,7 @@ ARGS= {
     "LABELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/label_map.pbtxt",
     "MIN_SCORE_THRESH": 0.6,
     "VERBOSE": True,
+    "CAMERA_FRAME": "xtion_rgb_optical_frame",
 }
 
 class CamaraProcessing:
@@ -154,8 +155,9 @@ class CamaraProcessing:
     def callFps(self):	
         if self.fps != None:
             self.fps.stop()
-            print("[INFO] elapsed time: {:.2f}".format(self.fps.elapsed()))
-            print("[INFO] approx. FPS: {:.2f}".format(self.fps.fps()))
+            if ARGS["VERBOSE"]:
+                print("[INFO] elapsed time: {:.2f}".format(self.fps.elapsed()))
+                print("[INFO] approx. FPS: {:.2f}".format(self.fps.fps()))
             self.fpsValue = self.fps.fps()
 
         self.fps = FPS().start()
@@ -200,7 +202,7 @@ class CamaraProcessing:
         res = []
 
         pa = PoseArray()
-        pa.header.frame_id = "camera_depth_frame"
+        pa.header.frame_id = ARGS["CAMERA_FRAME"]
         pa.header.stamp = rospy.Time.now()
 
         for index, value in enumerate(classes):

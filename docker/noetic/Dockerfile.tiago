@@ -14,6 +14,7 @@ RUN apt-get update -qq && \
     libgazebo11-dev \
     python3-pip \
     mesa-utils \
+    libudev-dev \
     --no-install-recommends terminator \
     ros-noetic-trac-ik-kinematics-plugin \
     ros-noetic-audio-common \
@@ -33,6 +34,8 @@ RUN apt-get update -qq && \
     ros-noetic-ros-controllers \
     ros-noetic-moveit-visual-tools \
     ros-noetic-teleop-twist-keyboard \
+    ros-noetic-moveit-planners-ompl \
+    ros-noetic-moveit-planners-chomp \
     ros-noetic-rosserial && \
     rm -rf /var/lib/apt/lists/*
 
@@ -51,6 +54,8 @@ COPY docker/noetic/tiago_files/kinematics_kdl.yaml /tiago_public_ws/src/tiago_mo
 COPY docker/noetic/tiago_files/ompl_planning.yml /tiago_public_ws/src/tiago_moveit_config/config/ompl_planning.yml
 COPY docker/noetic/tiago_files/stomp_planning.yml /tiago_public_ws/src/tiago_moveit_config/config/stomp_planning.yml
 
+RUN pip install tensorflow
+RUN pip install imutils
 
 # Init catkin_home directoy
 RUN mkdir /catkin_home && mkdir -p /catkin_home/lib/

@@ -23,9 +23,6 @@
 
 #include <object_detector/objectDetectionArray.h>
 
-#include <gpd_ros/CloudSamples.h>
-#include <gpd_ros/CloudSources.h>
-
 #include <actionlib/server/simple_action_server.h>
 #include <object_detector/DetectObjects3DAction.h>
 

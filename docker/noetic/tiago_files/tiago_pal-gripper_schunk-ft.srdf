@@ -17,6 +17,7 @@
         <joint name="arm_6_joint" />
         <joint name="arm_7_joint" />
         <joint name="arm_tool_joint" />
+        <joint name="end_effector_joint" />
     </group>
     <group name="arm_torso">
         <joint name="torso_lift_joint" />
@@ -28,6 +29,7 @@
         <joint name="arm_6_joint" />
         <joint name="arm_7_joint" />
         <joint name="arm_tool_joint" />
+        <joint name="end_effector_joint" />
     </group>
     <group name="gripper">
         <link name="gripper_left_finger_link" />
@@ -53,7 +55,7 @@
     </group>
 
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector group="gripper" name="gripper" parent_group="arm_torso" parent_link="arm_tool_link" />
+    <end_effector group="gripper" name="gripper" parent_group="arm_torso" parent_link="end_effector_link" />
     <disable_collisions link1="arm_1_link" link2="arm_2_link" reason="Adjacent" />
     <disable_collisions link1="arm_1_link" link2="arm_3_link" reason="Never" />
     <disable_collisions link1="arm_1_link" link2="arm_4_link" reason="Never" />
@@ -61,6 +63,7 @@
     <disable_collisions link1="arm_1_link" link2="arm_6_link" reason="Never" />
     <disable_collisions link1="arm_1_link" link2="arm_7_link" reason="Never" />
     <disable_collisions link1="arm_1_link" link2="arm_tool_link" reason="Never" />
+    <disable_collisions link1="arm_1_link" link2="end_effector_link" reason="Never" />
     <disable_collisions link1="arm_1_link" link2="base_antenna_left_link" reason="Never" />
     <disable_collisions link1="arm_1_link" link2="base_antenna_right_link" reason="Never" />
     <disable_collisions link1="arm_1_link" link2="base_cover_link" reason="Never" />
@@ -112,6 +115,7 @@
     <disable_collisions link1="arm_2_link" link2="arm_6_link" reason="Never" />
     <disable_collisions link1="arm_2_link" link2="arm_7_link" reason="Never" />
     <disable_collisions link1="arm_2_link" link2="arm_tool_link" reason="Never" />
+    <disable_collisions link1="arm_2_link" link2="end_effector_link" reason="Never" />
     <disable_collisions link1="arm_2_link" link2="base_antenna_left_link" reason="Never" />
     <disable_collisions link1="arm_2_link" link2="base_antenna_right_link" reason="Never" />
     <disable_collisions link1="arm_2_link" link2="base_cover_link" reason="Never" />
@@ -163,6 +167,7 @@
     <disable_collisions link1="arm_3_link" link2="arm_6_link" reason="Never" />
     <disable_collisions link1="arm_3_link" link2="arm_7_link" reason="Never" />
     <disable_collisions link1="arm_3_link" link2="arm_tool_link" reason="Never" />
+    <disable_collisions link1="arm_3_link" link2="end_effector_link" reason="Never" />
     <disable_collisions link1="arm_3_link" link2="base_antenna_left_link" reason="Never" />
     <disable_collisions link1="arm_3_link" link2="base_antenna_right_link" reason="Never" />
     <disable_collisions link1="arm_3_link" link2="base_cover_link" reason="Never" />
@@ -212,6 +217,7 @@
     <disable_collisions link1="arm_4_link" link2="arm_6_link" reason="Never" />
     <disable_collisions link1="arm_4_link" link2="arm_7_link" reason="Never" />
     <disable_collisions link1="arm_4_link" link2="arm_tool_link" reason="Never" />
+    <disable_collisions link1="arm_4_link" link2="end_effector_link" reason="Never" />
     <disable_collisions link1="arm_4_link" link2="base_antenna_left_link" reason="Never" />
     <disable_collisions link1="arm_4_link" link2="base_antenna_right_link" reason="Never" />
     <disable_collisions link1="arm_4_link" link2="base_cover_link" reason="Never" />
@@ -255,6 +261,7 @@
     <disable_collisions link1="arm_5_link" link2="arm_6_link" reason="Adjacent" />
     <disable_collisions link1="arm_5_link" link2="arm_7_link" reason="Never" />
     <disable_collisions link1="arm_5_link" link2="arm_tool_link" reason="Never" />
+    <disable_collisions link1="arm_5_link" link2="end_effector_link" reason="Never" />
     <disable_collisions link1="arm_5_link" link2="base_antenna_left_link" reason="Never" />
     <disable_collisions link1="arm_5_link" link2="base_cover_link" reason="Never" />
     <disable_collisions link1="arm_5_link" link2="base_footprint" reason="Never" />
@@ -294,6 +301,7 @@
     <disable_collisions link1="arm_5_link" link2="xtion_rgb_optical_frame" reason="Never" />
     <disable_collisions link1="arm_6_link" link2="arm_7_link" reason="Adjacent" />
     <disable_collisions link1="arm_6_link" link2="arm_tool_link" reason="Adjacent" />
+    <disable_collisions link1="arm_6_link" link2="end_effector_link" reason="Adjacent" />
     <disable_collisions link1="arm_6_link" link2="base_antenna_left_link" reason="Never" />
     <disable_collisions link1="arm_6_link" link2="base_cover_link" reason="Never" />
     <disable_collisions link1="arm_6_link" link2="base_footprint" reason="Never" />
@@ -332,6 +340,7 @@
     <disable_collisions link1="arm_6_link" link2="xtion_rgb_frame" reason="Never" />
     <disable_collisions link1="arm_6_link" link2="xtion_rgb_optical_frame" reason="Never" />
     <disable_collisions link1="arm_7_link" link2="arm_tool_link" reason="Adjacent" />
+    <disable_collisions link1="arm_7_link" link2="end_effector_link" reason="Adjacent" />
     <disable_collisions link1="arm_7_link" link2="base_antenna_left_link" reason="Never" />
     <disable_collisions link1="arm_7_link" link2="base_antenna_right_link" reason="Never" />
     <disable_collisions link1="arm_7_link" link2="base_cover_link" reason="Never" />
@@ -416,6 +425,45 @@
     <disable_collisions link1="arm_tool_link" link2="xtion_orbbec_aux_joint_frame" reason="Never" />
     <disable_collisions link1="arm_tool_link" link2="xtion_rgb_frame" reason="Never" />
     <disable_collisions link1="arm_tool_link" link2="xtion_rgb_optical_frame" reason="Never" />
+
+    <disable_collisions link1="end_effector_link" link2="base_antenna_left_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_antenna_right_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_cover_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_footprint" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_imu_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_laser_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_mic_back_left_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_mic_back_right_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_mic_front_left_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_mic_front_right_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_sonar_01_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_sonar_02_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="base_sonar_03_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="caster_back_left_1_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="caster_back_left_2_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="caster_back_right_1_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="caster_back_right_2_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="caster_front_left_1_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="caster_front_left_2_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="caster_front_right_1_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="caster_front_right_2_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="gripper_grasping_frame" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="gripper_left_finger_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="gripper_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="gripper_right_finger_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="gripper_tool_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="rgbd_laser_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="suspension_left_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="suspension_right_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="wrist_ft_link" reason="Adjacent" />
+    <disable_collisions link1="end_effector_link" link2="wrist_ft_tool_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="xtion_depth_frame" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="xtion_depth_optical_frame" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="xtion_link" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="xtion_optical_frame" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="xtion_orbbec_aux_joint_frame" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="xtion_rgb_frame" reason="Never" />
+    <disable_collisions link1="end_effector_link" link2="xtion_rgb_optical_frame" reason="Never" />
     <disable_collisions link1="base_antenna_left_link" link2="base_antenna_right_link" reason="Never" />
     <disable_collisions link1="base_antenna_left_link" link2="base_cover_link" reason="Never" />
     <disable_collisions link1="base_antenna_left_link" link2="base_footprint" reason="Never" />
