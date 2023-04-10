@@ -689,7 +689,7 @@ def testController():
     index = 0
     start_time = time.time()
     while(1):
-        print(controller.get_emergency_button())
+        print(controller.get_imu_val())
         if time.time() - start_time > 2.5:
             index = (index + 1) % 2
             start_time = time.time()
@@ -697,5 +697,6 @@ def testController():
         time.sleep(0.1) 
 
 if __name__ == '__main__':
+    testController()
     myMicroController = MicroControllerROS()
     

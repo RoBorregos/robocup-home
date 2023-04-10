@@ -58,7 +58,7 @@ class RosBridge{
         int left_encoders = 0.0;
         int right_encoders = 0.0;
         float time_delta = 0.0;
-        int emergency_btn_pin = 35;
+        int emergency_btn_pin = 13;
 
         int last_encoder_counts_[kCountMotors];
         static constexpr uint8_t kOdomPeriod = 40;
