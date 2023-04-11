@@ -4,7 +4,7 @@ import actionlib
 import time
 from std_msgs.msg import String
 from std_msgs.msg import Bool
-from actions.msg import navServAction, navServGoal, navServResult 
+# from actions.msg import navServAction, navServGoal, navServResult 
 #
 from intercom.msg import action_selector_cmd, bring_something_cmd
 from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal  
@@ -13,6 +13,8 @@ from geometry_msgs.msg import PoseWithCovarianceStamped, PoseStamped
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from enum import Enum
 from actionlib_msgs.msg import GoalID
+import os
+import openai
 
 START_STATE = "start"
 SPEECH_STATE = "speech"
@@ -29,7 +31,8 @@ class MoveGoals(Enum):
 
 class ManipulationGoals(Enum):
     VEGETABLES = 1
-    import os
+    
+import os
 import openai
 
 openai.api_key = os.getenv("OPENAI_API_KEY")

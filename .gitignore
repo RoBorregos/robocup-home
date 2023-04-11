@@ -29,7 +29,10 @@ CATKIN_IGNORE
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/params.tar.gz
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/README.md
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/vocab.txt
-/catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm/lm.binary
+/catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm
+/catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k
+/catkin_home/src/action_selectors/scripts/DeepSpeech/models/librispeech
+
 /catkin_home/src/action_selectors/data/AzureSTTAPIKey.txt
 
 ### BASE CONTROL ###

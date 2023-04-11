@@ -14,6 +14,10 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from enum import Enum
 from actionlib_msgs.msg import GoalID
 
+
+
+
+
 START_STATE = "start"
 SPEECH_STATE = "speech"
 NAVIGATION1_STATE = "navigation1"
@@ -40,7 +44,6 @@ class Tmr2022Main(object):
 
         # Conversation/Speech
         self.speech_enable = rospy.Publisher("inputAudioActive", Bool, queue_size=10)
-        self.parser_listener = rospy.Subscriber('action/bring_something', bring_something_cmd, self.listen_parser)
         self.targetPlace = None
         self.targetObject = None
         
