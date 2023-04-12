@@ -50,7 +50,7 @@ obstacle_layer:
   other_sensor_data:
     data_type: PointCloud
     topic: /other_sensor_data 
-    marking: ture
+    marking: true
     clearing: true
     min_obstacle_height: 0.31
     max_obstacle_height: 0.4
@@ -58,7 +58,7 @@ obstacle_layer:
   camera_depth:
     data_type: PointCloud2
     topic: /camera/depth/points #_filtered
-    marking: ture
+    marking: true
     clearing: true
     min_obstacle_height: 0.41
     max_obstacle_height: 2.0

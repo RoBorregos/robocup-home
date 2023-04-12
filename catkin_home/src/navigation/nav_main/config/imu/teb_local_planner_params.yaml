@@ -3,7 +3,7 @@ TebLocalPlannerROS:
  odom_topic: odom
  #odom_topic: /robot_pose_ekf/odom_combined
  #map_frame: /odom
- map_frame: /odom_combined
+ map_frame: odom_combined
 
  # Trajectory
 

@@ -7,3 +7,6 @@
 [submodule "catkin_home/src/ydlidar"]
 	path = catkin_home/src/ydlidar
 	url = https://github.com/EAIBOT/ydlidar.git
+[submodule "catkin_home/src/yocs_velocity_smoother"]
+	path = catkin_home/src/yocs_velocity_smoother
+	url = https://github.com/nlimpert/yocs_velocity_smoother.git

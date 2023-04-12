@@ -22,40 +22,51 @@
   <arg name="node_name"             value="velocity_smoother"/>
   <arg name="nodelet_manager_name"  value="nodelet_manager"/>
   <arg name="config_file"           value="$(find base_control)/config/yocs_velocity_smoother.yaml"/>
+  <!-- <arg name="config_file"           value="$(find yocs_velocity_smoother)/param/standalone.yaml"/> -->
   <arg name="raw_cmd_vel_topic"     value="cmd_vel"/>
   <arg name="smooth_cmd_vel_topic"  value="smoother_cmd_vel"/>
   <arg name="robot_cmd_vel_topic"   value="robot_cmd_vel"/>
   <arg name="odom_topic"            value="odom"/>
-  
+  <!-- <arg name="odom_topic"            value="odom"/> -->
+
   <!-- nodelet manager -->
   <node pkg="nodelet" type="nodelet" name="$(arg nodelet_manager_name)" args="manager" respawn="true"/>
   
-    <node 
-        pkg="rosserial_python" 
-        type="serial_node.py" 
-        name="rosserial" 
-        output="screen"
-    >
-        <param 
-            name="port" 
-            value="/dev/ttyACM0" 
-        />
-        <param 
-            name="baud" 
-            value="57600" 
-        />
-    </node>
+  <!-- <node pkg="rosserial_python" type="serial_node.py" name="rosserial" output="screen">
+    <param name="port" value="/dev/ttyUSB0" />
+    <param name="baud" value="57600" />
+  </node> -->
 
   <!-- velocity smoother -->
   <!-- <include file="$(find yocs_velocity_smoother)/launch/velocity_smoother.launch">
-    <arg name="node_name"             value="$(arg node_name)"/>
-    <arg name="nodelet_manager_name"  value="$(arg nodelet_manager_name)"/>
-    <arg name="config_file"           value="$(arg config_file)"/>
-    <arg name="raw_cmd_vel_topic"     value="$(arg raw_cmd_vel_topic)"/>
-    <arg name="smooth_cmd_vel_topic"  value="$(arg smooth_cmd_vel_topic)"/>
-    <arg name="robot_cmd_vel_topic"   value="$(arg robot_cmd_vel_topic)"/>
-    <arg name="odom_topic"            value="$(arg odom_topic)"/>
+    <param name="node_name"             value="$(arg node_name)"/>
+    <param name="nodelet_manager_name"  value="$(arg nodelet_manager_name)"/>
+    <param name="config_file"           value="$(arg config_file)"/>
+    <param name="raw_cmd_vel_topic"     value="$(arg raw_cmd_vel_topic)"/>
+    <param name="smooth_cmd_vel_topic"  value="$(arg smooth_cmd_vel_topic)"/>
+    <param name="robot_cmd_vel_topic"   value="$(arg robot_cmd_vel_topic)"/>
+    <param name="odom_topic"            value="$(arg odom_topic)"/>
   </include> -->
   <!-- <node name="dashgo_action" pkg="dashgo_tools" type="check_action.py" output="screen" respawn="true"/> -->
   <!-- rosrun teleop_twist_keyboard teleop_twist_keyboard.py _repeat_rate:=10 cmd_vel:=smoother_cmd_vel -->
+
+  <node pkg="yocs_velocity_smoother" type="yocs_velocity_smoother_node" name="$(arg node_name)" output="screen">
+    <param name="node_name"             value="$(arg node_name)"/>
+    <param name="nodelet_manager_name"  value="$(arg nodelet_manager_name)"/>
+    <param name="config_file"           value="$(arg config_file)"/>
+    <param name="raw_cmd_vel_topic"     value="$(arg raw_cmd_vel_topic)"/>
+    <param name="smooth_cmd_vel_topic"  value="$(arg smooth_cmd_vel_topic)"/>
+    <param name="robot_cmd_vel_topic"   value="$(arg robot_cmd_vel_topic)"/>
+    <param name="odom_topic"            value="$(arg odom_topic)"/>    
+    <!-- parameters -->
+    <rosparam file="$(arg config_file)" command="load"/>
+
+    <!-- velocity commands I/O -->
+    <remap from="$(arg node_name)/raw_cmd_vel"    to="$(arg raw_cmd_vel_topic)"/>
+    <remap from="$(arg node_name)/smooth_cmd_vel" to="$(arg smooth_cmd_vel_topic)"/>
+
+    <!-- Robot velocity feedbacks -->
+    <remap from="$(arg node_name)/robot_cmd_vel"  to="$(arg robot_cmd_vel_topic)"/>
+    <remap from="$(arg node_name)/odometry"       to="$(arg odom_topic)"/>
+  </node>
 </launch>
