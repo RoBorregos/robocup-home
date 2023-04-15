@@ -4,6 +4,3 @@
 [submodule "catkin_home/src/robot_pose_publisher"]
 	path = catkin_home/src/robot_pose_publisher
 	url = https://github.com/GT-RAIL/robot_pose_publisher.git
-[submodule "catkin_home/src/yocs_velocity_smoother"]
-	path = catkin_home/src/yocs_velocity_smoother
-	url = https://github.com/nlimpert/yocs_velocity_smoother.git
