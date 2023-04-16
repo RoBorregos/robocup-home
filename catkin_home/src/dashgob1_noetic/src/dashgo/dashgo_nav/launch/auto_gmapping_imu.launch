@@ -1,0 +1,18 @@
+<launch>
+  <include file="$(find dashgo_driver)/launch/driver_imu.launch"/>
+  <include file="$(find ydlidar)/launch/ydlidar1_up.launch"/>
+  <include file="$(find dashgo_description)/launch/dashgo_description.launch"/>
+  <include file="$(find dashgo_nav)/launch/include/imu/gmapping_base.launch"/>
+  <include file="$(find dashgo_nav)/launch/include/imu/teb_move_base.launch"/>
+  <node pkg="frontier_exploration" type="explore_client" name="explore_client" output="screen"/>
+  <node pkg="frontier_exploration" type="explore_server" name="explore_server" output="screen">
+    <param name="frequency" value="2.0"/>
+    <param name="goal_aliasing" value="0.2"/>
+    <rosparam file="$(find dashgo_nav)/config/imu/costmap_common_params.yaml" command="load" ns="explore_costmap" />
+    <rosparam file="$(find dashgo_nav)/config/imu/costmap_exploration.yaml" command="load" ns="explore_costmap" />
+  </node>
+  <include file="$(find hector_exploration_node)/launch/exploration_planner.launch"/>
+  <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" />
+  <node name="robot_data" pkg="dashgo_tools" type="robot_data.py" respawn="true" />
+  <node name="get_scan_data" pkg="dashgo_tools" type="get_scan_data.py" respawn="true" />
+</launch>

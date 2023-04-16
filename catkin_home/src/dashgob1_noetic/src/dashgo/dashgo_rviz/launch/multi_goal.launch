@@ -1,0 +1,4 @@
+<launch>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dashgo_rviz)/rviz/multi_goal.rviz" />
+</launch>
+

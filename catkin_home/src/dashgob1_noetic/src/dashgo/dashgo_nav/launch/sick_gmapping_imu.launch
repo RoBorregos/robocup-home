@@ -1,0 +1,11 @@
+<launch>
+  <include file="$(find dashgo_driver)/launch/driver_imu.launch"/>
+  <include file="$(find sick_tim)/launch/sick.launch"/>
+  <include file="$(find dashgo_description)/launch/dashgo_description.launch"/>
+
+  <include file="$(find dashgo_nav)/launch/include/sick/imu/gmapping_base.launch"/>
+  <include file="$(find dashgo_nav)/launch/include/sick/imu/teb_move_base.launch"/>
+  <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" />
+  <node name="robot_data" pkg="dashgo_tools" type="robot_data.py" respawn="true" />
+  <node name="get_scan_data" pkg="dashgo_tools" type="get_scan_data.py" respawn="true" />
+</launch>

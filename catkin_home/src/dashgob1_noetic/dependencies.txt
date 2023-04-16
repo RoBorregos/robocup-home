@@ -1,0 +1,15 @@
+sudo apt-get install ros-noetic-serial
+sudo apt-get install ros-noetic-ecl-exceptions
+sudo apt-get install ros-noetic-ecl-time
+sudo apt-get install ros-noetic-ecl-threads
+sudo apt-get install ros-noetic-ecl-formatters
+sudo apt-get install ros-noetic-ecl-linear-algebra
+sudo apt-get install ros-noetic-base-local-planner
+sudo apt-get install ros-noetic-navigation
+sudo apt-get install ros-noetic-robot-pose-ekf
+
+
+git clone https://github.com/ros-perception/ar_track_alvar.git -b noetic-devel
+git clone https://github.com/yujinrobot/yocs_msgs.git
+git clone https://github.com/yujinrobot/yujin_ocs
+

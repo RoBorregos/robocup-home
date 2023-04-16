@@ -1,0 +1,13 @@
+#goal definition
+string imu
+string method
+float32 distance
+float32 angule
+float32 vel
+float32 error
+---
+#result definition
+bool issuccess
+---
+#feedback
+float32 accomplished
