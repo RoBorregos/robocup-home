@@ -34,6 +34,7 @@ CATKIN_IGNORE
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/librispeech
 
 /catkin_home/src/action_selectors/data/AzureSTTAPIKey.txt
+/catkin_home/src/main_engine/data/OpenAiKey.txt
 
 ### BASE CONTROL ###
 base_control/test
