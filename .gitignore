@@ -67,5 +67,12 @@ out.log
 *.pyc
 .vscode/
 venv/
+*.log
 
-# End 
+
+# tiago simulation #
+
+
+*tiago_public_ws/
+
+#End

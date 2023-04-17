@@ -1,0 +1,79 @@
+# Use the existing Tiago - Noetic image
+FROM palroboticssl/tiago_tutorials:noetic
+
+LABEL maintainer="Jose Cisneros <A01283070@itesm.mx>"
+
+# Install dependencies
+RUN apt-get update -qq && \
+    apt-get install -y \
+    build-essential \
+    nano \
+    git \ 
+    autoconf \
+    libtool \
+    libgazebo11-dev \
+    python3-pip \
+    mesa-utils \
+    libudev-dev \
+    --no-install-recommends terminator \
+    ros-noetic-trac-ik-kinematics-plugin \
+    ros-noetic-audio-common \
+    ros-noetic-map-server \
+    ros-noetic-move-base \
+    ros-noetic-moveit-ros-planning \
+    ros-noetic-moveit-ros-planning-interface \
+    ros-noetic-moveit-core \
+    ros-noetic-moveit-msgs \
+    ros-noetic-rosserial-arduino \
+    ros-noetic-moveit-ros-perception \
+    ros-noetic-moveit \
+    ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
+    ros-noetic-gazebo-ros-pkgs \
+    ros-noetic-gazebo-ros-control \
+    ros-noetic-ros-controllers \
+    ros-noetic-moveit-visual-tools \
+    ros-noetic-teleop-twist-keyboard \
+    ros-noetic-moveit-planners-ompl \
+    ros-noetic-moveit-planners-chomp \
+    ros-noetic-rosserial && \
+    rm -rf /var/lib/apt/lists/*
+
+# Modify tiago files
+COPY docker/noetic/tiago_files/default_controllers.launch /tiago_public_ws/src/tiago_simulation/tiago_controller_configuration_gazebo/launch/default_controllers.launch
+COPY docker/noetic/tiago_files/tiago.srdf.xacro /tiago_public_ws/src/tiago_moveit_config/config/srdf/tiago.srdf.xacro
+COPY docker/noetic/tiago_files/upload.launch /tiago_public_ws/src/tiago_robot/tiago_description/robots/upload.launch
+COPY docker/noetic/tiago_files/tiago.urdf.xacro /tiago_public_ws/src/tiago_robot/tiago_description/robots/tiago.urdf.xacro
+# Related to base controller
+COPY docker/noetic/tiago_files/controllers_pal-gripper.yaml /tiago_public_ws/src/tiago_moveit_config/config/controllers/controllers_pal-gripper.yaml
+COPY docker/noetic/tiago_files/controllers_pal-gripper_schunk-ft.yaml /tiago_public_ws/src/tiago_moveit_config/config/controllers/controllers_pal-gripper_schunk-ft.yaml
+COPY docker/noetic/tiago_files/tiago_pal-gripper_schunk-ft.srdf /tiago_public_ws/src/tiago_moveit_config/config/srdf/tiago_pal-gripper_schunk-ft.srdf
+COPY docker/noetic/tiago_files/joint_limits.yaml /tiago_public_ws/src/tiago_moveit_config/config/joint_limits.yaml
+COPY docker/noetic/tiago_files/kinematics_trac_ik.yaml /tiago_public_ws/src/tiago_moveit_config/config/kinematics_trac_ik.yaml
+COPY docker/noetic/tiago_files/kinematics_kdl.yaml /tiago_public_ws/src/tiago_moveit_config/config/kinematics_kdl.yaml
+COPY docker/noetic/tiago_files/ompl_planning.yaml /tiago_public_ws/src/tiago_moveit_config/config/ompl_planning.yaml
+COPY docker/noetic/tiago_files/stomp_planning.yaml /tiago_public_ws/src/tiago_moveit_config/config/stomp_planning.yaml
+
+RUN pip install tensorflow
+RUN pip install imutils
+
+# Init catkin_home directoy
+RUN mkdir /catkin_home && mkdir -p /catkin_home/lib/
+COPY catkin_home/ /catkin_home/
+# COPY lib/ /catkin_home/lib/
+# RUN cd /catkin_home/lib/gpd && mkdir build && cd build && cmake .. && make && make install
+
+# Change Workdir
+WORKDIR /catkin_home
+
+# catkin_make
+RUN /bin/bash -c '. /opt/ros/noetic/setup.bash;. /tiago_public_ws/devel/setup.bash;catkin_make'
+
+# Add ROS environment variables automatically
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN echo "[ -f /catkin_home/devel/setup.bash ] && source /catkin_home/devel/setup.bash" >> ~/.bashrc
+RUN echo "export GAZEBO_MODEL_PATH=/catkin_home/src/simulation/models:$GAZEBO_MODEL_PATH" >> ~/.bashrc
+RUN echo "export GAZEBO_RESOURCE_PATH=/catkin_home/src/simulation:$GAZEBO_RESOURCE_PATH" >> ~/.bashrc
+
+
+ENTRYPOINT [ "/bin/bash", "-l", "-c" ]

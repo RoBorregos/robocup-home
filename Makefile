@@ -5,6 +5,8 @@
 #: Builds a Docker image with the corresponding Dockerfile file
 noetic.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile .
+noetic.tiago.build:
+	@docker build -t ros:hometgo -f docker/noetic/Dockerfile.tiago .
 noetic.jetson.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.jetson .
 noetic.speech.build:
@@ -81,6 +83,10 @@ noetic.objectDetection.up:
 	@xhost +
 	@docker start ros-homeod
 
+noetic.tiago.up:
+	@xhost +
+	@docker start ros-hometgo
+
 #: Stop the container
 noetic.down:
 	@docker stop ros-home
@@ -103,6 +109,11 @@ noetic.logs:
 noetic.shell:
 	@docker exec -it ros-home bash
 
+noetic.speech.shell:
+	@docker exec -it ros-home bash
+
+noetic.tiago.shell:
+	@docker exec -it ros-hometgo bash
 #: Remove ros-home container. 
 noetic.remove: noetic.down
 	@docker container rm ros-home

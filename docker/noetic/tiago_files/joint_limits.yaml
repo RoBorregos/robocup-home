@@ -1,0 +1,75 @@
+default_velocity_scaling_factor: 1.0
+joint_limits:
+  arm_2_joint:
+    has_velocity_limits: true
+    max_velocity: 3.66
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_1_joint:
+    has_velocity_limits: true
+    max_velocity: 2.7
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_6_joint:
+    has_velocity_limits: true
+    max_velocity: 1.76
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_7_joint:
+    has_velocity_limits: true
+    max_velocity: 1.76
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_4_joint:
+    has_velocity_limits: true
+    max_velocity: 4.58
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_5_joint:
+    has_velocity_limits: true
+    max_velocity: 1.95
+    has_acceleration_limits: false
+    max_acceleration: 0
+  arm_3_joint:
+    has_velocity_limits: true
+    max_velocity: 4.58
+    has_acceleration_limits: false
+    max_acceleration: 0
+  torso_lift_joint:
+    has_velocity_limits: true
+    max_velocity: 0.07
+    has_acceleration_limits: false
+    max_acceleration: 0
+  # pal-gripper
+  gripper_left_finger_joint:
+    has_velocity_limits: true
+    max_velocity: 0.01
+    has_acceleration_limits: false
+    max_acceleration: 0
+  gripper_right_finger_joint:
+    has_velocity_limits: true
+    max_velocity: 0.01
+    has_acceleration_limits: false
+    max_acceleration: 0
+  # schunk-wsg
+  gripper_finger_joint:
+    has_velocity_limits: true
+    max_velocity: 0.01
+    has_acceleration_limits: false
+    max_acceleration: 0
+  # base joints
+  odom_y:
+    has_velocity_limits: true
+    max_velocity: 0.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  odom_x:
+    has_velocity_limits: true
+    max_velocity: 0.5
+    has_acceleration_limits: false
+    max_acceleration: 0
+  odom_r:
+    has_velocity_limits: true
+    max_velocity: 0.5
+    has_acceleration_limits: false
+    max_acceleration: 0
