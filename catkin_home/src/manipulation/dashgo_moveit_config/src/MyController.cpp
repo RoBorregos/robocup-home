@@ -13,22 +13,22 @@ class MyRobot : public hardware_interface::RobotHW
 public:
   MyRobot(ros::NodeHandle nh) : nh(nh)
   {
-    const int num_joints = 7;
+    const int num_joints = 6;
     
     // Initialize joint state
-    gripper_changed_ = false;
+    gripper_changed_ = true;
     base_joint_position_.assign(3, 0.0);
     base_joint_velocity_.assign(3, 0.0);
     base_joint_effort_.assign(3, 0.0);
     head_joint_position_.assign(2, 0.0);
     head_joint_velocity_.assign(2, 0.0);
     head_joint_effort_.assign(2, 0.0);
-    gripper_joint_position_.assign(2, 0.0);
-    gripper_joint_velocity_.assign(2, 0.0);
-    gripper_joint_effort_.assign(2, 0.0);
+    gripper_joint_position_.assign(1, 0.0);
+    gripper_joint_velocity_.assign(1, 0.0);
+    gripper_joint_effort_.assign(1, 0.0);
     head_joint_position_command_.assign(2, 0.0);
     base_joint_position_command_.assign(3, 0.0);
-    gripper_joint_position_command_.assign(2, 0.0);
+    gripper_joint_position_command_.assign(1, 0.0);
 
 
 
@@ -39,8 +39,7 @@ public:
       { "odom_r", &base_joint_position_[2], &base_joint_velocity_[2], &base_joint_effort_[2] },
       { "Cam1Rev1", &head_joint_position_[0], &head_joint_velocity_[0], &head_joint_effort_[0] },
       { "Cam1Rev2", &head_joint_position_[1], &head_joint_velocity_[1], &head_joint_effort_[1] },
-      { "Rev1Servo", &gripper_joint_position_[0], &gripper_joint_velocity_[0], &gripper_joint_effort_[0] },
-      { "Rev2Servo", &gripper_joint_position_[1], &gripper_joint_velocity_[1], &gripper_joint_effort_[1] }
+      { "Rev1Servo", &gripper_joint_position_[0], &gripper_joint_velocity_[0], &gripper_joint_effort_[0] }
     };
 
     for (int i = 0; i < num_joints; i++) {
@@ -53,8 +52,7 @@ public:
       { jnt_state_interface_.getHandle("odom_r"), &base_joint_position_command_[2] },
       { jnt_state_interface_.getHandle("Cam1Rev1"), &head_joint_position_command_[0] },
       { jnt_state_interface_.getHandle("Cam1Rev2"), &head_joint_position_command_[1] },
-      { jnt_state_interface_.getHandle("Rev1Servo"), &gripper_joint_position_command_[0] },
-      { jnt_state_interface_.getHandle("Rev2Servo"), &gripper_joint_position_command_[1] }
+      { jnt_state_interface_.getHandle("Rev1Servo"), &gripper_joint_position_command_[0] }
     };
     
     for (int i = 0; i < num_joints; i++) {
@@ -65,7 +63,7 @@ public:
     registerInterface(&jnt_pos_interface_);
 
     pubTwist = nh.advertise<geometry_msgs::Twist>("/mobile_base_controller/cmd_vel", 1);
-    pubJoint = nh.advertise<sensor_msgs::JointState>("/joint_states", 1);
+    pubJoint = nh.advertise<sensor_msgs::JointState>("DASHGO/joint_states", 1);
     prev_time_ = ros::Time::now();
   }
 
@@ -89,11 +87,11 @@ public:
   }
 
   void gripperRead() {
-    if (gripper_joint_position_[0] != gripper_joint_position_command_[0] || gripper_joint_position_[1] != gripper_joint_position_command_[1]) {
+    if (gripper_joint_position_[0] != gripper_joint_position_command_[0]) {
       gripper_changed_ = true;
     }
     gripper_joint_position_[0] = gripper_joint_position_command_[0];
-    gripper_joint_position_[1] = gripper_joint_position_command_[1];
+    // ROS_INFO("Gripper position: %f", gripper_joint_position_[0]);
   }
 
   void read() {
@@ -108,12 +106,15 @@ public:
     joint_state.position = std::vector<double>(base_joint_position_.begin(), base_joint_position_.end());
     joint_state.position.insert(joint_state.position.end(), head_joint_position_.begin(), head_joint_position_.end());
     joint_state.position.insert(joint_state.position.end(), gripper_joint_position_.begin(), gripper_joint_position_.end());
+    joint_state.position.push_back(-1 * joint_state.position[5]);
     joint_state.velocity = std::vector<double>(base_joint_velocity_.begin(), base_joint_velocity_.end());
     joint_state.velocity.insert(joint_state.velocity.end(), head_joint_velocity_.begin(), head_joint_velocity_.end());
     joint_state.velocity.insert(joint_state.velocity.end(), gripper_joint_velocity_.begin(), gripper_joint_velocity_.end());
+    joint_state.velocity.push_back(-1 * joint_state.velocity[5]);
     joint_state.effort = std::vector<double>(base_joint_effort_.begin(), base_joint_effort_.end());
     joint_state.effort.insert(joint_state.effort.end(), head_joint_effort_.begin(), head_joint_effort_.end());
     joint_state.effort.insert(joint_state.effort.end(), gripper_joint_effort_.begin(), gripper_joint_effort_.end());
+    joint_state.effort.push_back(-1 * joint_state.effort[5]);
     pubJoint.publish(joint_state);
   }
 
@@ -134,17 +135,17 @@ public:
     ros::ServiceClient gripper_client = nh.serviceClient<xarm_msgs::SetDigitalIO>("/xarm/set_digital_out");
     if (gripper_client.exists() && gripper_changed_) {
       gripper_changed_ = false;
-      if (gripper_joint_position_[0] > 0.1 && gripper_joint_position_[1] < 0.1) {
+      if (gripper_joint_position_[0] < -0.1) {
         xarm_msgs::SetDigitalIO srv;
         srv.request.io_num = 1;
-        srv.request.value = 0;
+        srv.request.value = 1;
         if (!gripper_client.call(srv)) {
           ROS_ERROR("Failed to call service");
         }
       } else {
         xarm_msgs::SetDigitalIO srv;
         srv.request.io_num = 1;
-        srv.request.value = 1;
+        srv.request.value = 0;
         if (!gripper_client.call(srv)) {
           ROS_ERROR("Failed to call service");
         }

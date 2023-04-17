@@ -1,0 +1,19 @@
+ARM_GROUP: "xarm5"
+ARM_JOINTS: [joint1, joint2, joint3, joint4, joint5]
+ARM_GRASP: [3.10669, -1.20428, -0.418879, -1.43117, 0.0]
+HEAD_GROUP: "head"
+HEAD_JOINTS: [Cam1Rev1, Cam1Rev2]
+HEAD_LOOK_DOWN: [0.0, 0.3962]
+HEAD_LOOK_FRONT: [0.0, 0.3962]
+HEAD_LEFT: [0.0, 0.0]
+HEAD_RIGHT: [0.0, 0.0]
+GRIPPER_GROUP: "gripper"
+GRIPPER_JOINTS: [ "Rev1Servo", "Rev2Servo"]
+GRIPPER_OPEN: [-0.0734, 0.5403]
+GRIPPER_CLOSED: [0.4, 0.06]
+GRASP_POSTURES_FRAME_ID: "end_effector_link"
+ALLOW_CONTACT: [
+  "<octomap>",
+]
+CAMERA_DEPTH_FRAME: zed2_left_camera_optical_frame
+CAMERA_PC_FRAME: zed2_left_camera_frame

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+     <arg name="hw_ns" default="DASHGO" />
+
+     <!-- Run HardwareInterface -->
+     <node name="MyController"
+          pkg="dashgo_moveit_config" type="MyController" output="screen"
+          ns="$(arg hw_ns)"
+     />
+
+     <!-- load controller configuration -->
+     <rosparam command="load" file="$(find dashgo_moveit_config)/config/DASHGO_controllers.yaml" ns="$(arg hw_ns)" />
+     <!-- spawn controller -->
+     <node name="controllers_spawner_base" 
+          pkg="controller_manager" type="spawner" output="screen" 
+          args="base_controller head_controller gripper_controller"
+          ns="$(arg hw_ns)"
+     />
+     <remap from="base_controller/follow_joint_trajectory" to="$(arg hw_ns)/base_controller/follow_joint_trajectory"/>
+     <remap from="head_controller/follow_joint_trajectory" to="$(arg hw_ns)/head_controller/follow_joint_trajectory"/>
+     <!-- <remap from="gripper_controller/follow_joint_trajectory" to="$(arg hw_ns)/gripper_controller/follow_joint_trajectory"/> -->
+</launch>

@@ -27,18 +27,20 @@
   <include file="$(find object_detector)/launch/object_3D.launch">
     <arg name="MAP_FRAME" default="map" />
     <arg name="CAMERA_FRAME" default="xtion_rgb_optical_frame" />
-    <arg name="map_to_odom"  default="true"/>
+    <arg name="map_to_odom"  default="false"/>
+    <arg name="odom_to_internal_odom"  default="false"/>
     <arg name="POINT_CLOUD_TOPIC" default="/xtion/depth_registered/points" />
   </include>
 
   <!-- Manipulation Server -->
-  <!-- <node name="manipulation_server" pkg="pick_and_place" type="manipulationServer.py" output="screen" /> -->
+  <node name="manipulation_server" pkg="pick_and_place" type="manipulationServer.py" output="screen" />
   
   <!-- GPD -->
-	<!-- <node name="detect_grasps_server_samples" pkg="gpd_ros" type="detect_grasps_server_samples" output="screen" respawn="true">
+	<node name="detect_grasps_server_samples" pkg="gpd_ros" type="detect_grasps_server_samples" output="screen" respawn="true">
     <param name="config_file" value="/catkin_home/src/manipulation/pick_and_place/config/ros_eigen_params.cfg" />
     <param name="rviz_topic" value="plot_grasps" />
-  </node> -->
+  </node>
+  
   <!-- Manipulation Client | Running in separate shell -->
   <!-- <node name="manipulation_client" pkg="pick_and_place" type="manipulationClient.py" output="screen" /> -->
   <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)"

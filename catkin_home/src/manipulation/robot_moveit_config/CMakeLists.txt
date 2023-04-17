@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   hardware_interface
   controller_manager
+  xarm_msgs
 )
 
 catkin_package(
@@ -16,6 +17,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 add_executable(MyRobot src/MyRobot.cpp)
 target_link_libraries(MyRobot ${catkin_LIBRARIES})
+add_dependencies(MyRobot ${catkin_EXPORTED_TARGETS})
 
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   PATTERN "setup_assistant.launch" EXCLUDE)

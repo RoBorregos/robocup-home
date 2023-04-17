@@ -12,16 +12,23 @@ OBJECTS_NAME= {
     1 : 'Coca-Cola',
     2 : 'Coffee',
     3 : 'Nesquik',
+    4 : 'Zucaritas',
+    5 : 'Harpic'
 }
 OBJECTS_ID= {
     'Coca-Cola' : 1,
     'Coffee' : 2,
     'Nesquik' : 3,
+    'Zucaritas' : 4,
+    'Harpic' : 5
 }
 class ManipulationGoals(Enum):
     COKE = 1
     COFFEE = 2
     NESQUIK = 3
+    ZUCARITAS = 4
+    HARPIC = 5
+    BIGGEST = 6
 
 def generateObjectString():
     result = ""
@@ -52,12 +59,22 @@ class ManipulationClient(object):
         rospy.loginfo("Connected to Manipulation Server")
 
         result = False
-        while not result:
-            x = OBJECTS_ID['Coca-Cola']
+        x = OBJECTS_ID['Coca-Cola']
+        while not result and not rospy.is_shutdown():
             if x == 0:
                 break
             result = self.manipulation_goal(ManipulationGoals(x))
-            time.sleep(5.0)
+            ## Wait for user input
+            in_ = handleIntInput("(1) Zucaritas, (2) Coca-Cola, (3) Harpic", range=(0, 3))
+            if in_ == 0:
+                break
+            if in_ == 1:
+                x = OBJECTS_ID['Zucaritas']
+            elif in_ == 2:
+                x = OBJECTS_ID['Coca-Cola']
+            elif in_ == 3:
+                x = OBJECTS_ID['Harpic']
+            
 
     def manipulation_goal(self, target = ManipulationGoals.COKE):
         class ManipulationGoalScope:
@@ -81,11 +98,8 @@ class ManipulationClient(object):
                     feedback_cb=manipulation_goal_feedback,
                     done_cb=get_result_callback)
         
-        stop_flag = False
-        while not ManipulationGoalScope.result_received and not stop_flag:
-            time.sleep(0.1)
-            if signal.getsignal(signal.SIGINT):
-                stop_flag = True
+        while not ManipulationGoalScope.result_received and not rospy.is_shutdown():
+            pass
         
         return ManipulationGoalScope.result
 

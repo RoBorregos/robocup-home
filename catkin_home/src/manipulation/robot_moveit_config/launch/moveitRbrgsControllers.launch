@@ -14,13 +14,14 @@
      />
 
      <!-- load controller configuration -->
-     <rosparam command="load" file="$(find robot_moveit_config)/config/base_controller.yaml" ns="$(arg hw_ns)" />
+     <rosparam command="load" file="$(find robot_moveit_config)/config/RBRGS_controllers.yaml" ns="$(arg hw_ns)" />
      <!-- spawn controller -->
      <node name="controllers_spawner_base" 
           pkg="controller_manager" type="spawner" output="screen" 
-          args="base_controller"
+          args="base_controller head_controller"
           ns="$(arg hw_ns)"
      />
      <!-- <remap from="base_controller/follow_joint_trajectory" to="RBRGS/base_controller/follow_joint_trajectory"/> -->    
      <remap from="base_controller/follow_joint_trajectory" to="$(arg hw_ns)/base_controller/follow_joint_trajectory"/>
+<    <remap from="head_controller/follow_joint_trajectory" to="$(arg hw_ns)/head_controller/follow_joint_trajectory"/>
 </launch>

@@ -2,17 +2,15 @@
 
 //////////////////////////////////Constructor//////////////////////////////////////
 BNO::BNO() {
-  bno_ = Adafruit_BNO055(55);
   
+  bno_ = Adafruit_BNO055(55);
   if (!bno_.begin()) {
-    while (1);
+    while(1);
   }
   
   bno_.setExtCrystalUse(true);
   sensors_event_t event;
   bno_.getEvent(&event);
-
-  pinMode(reset_pin_, OUTPUT);
 
 }
 

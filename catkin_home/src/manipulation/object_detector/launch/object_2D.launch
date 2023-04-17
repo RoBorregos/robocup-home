@@ -10,7 +10,9 @@
     <arg name="MODELS_PATH" default="$(find object_detector)/models/gazebo/" />
     <arg name="LABELS_PATH" default="$(find object_detector)/models/gazebo/label_map.pbtxt" />
     <arg name="CAMERA_FRAME" default="xtion_rgb_optical_frame" />
-    <node name="Detection2D" pkg="object_detector" type="Detection2D.py" respawn="true" output="screen">
+    <arg name="USE_FAKE_DETECTOR" default="False" />
+
+    <node name="Detection2D" pkg="object_detector" type="Detection2D.py" respawn="true" output="screen" unless="$(arg USE_FAKE_DETECTOR)">
         <param name="SOURCE" value="$(arg SOURCE)" />
         <param name="ROS_INPUT" value="$(arg ROS_INPUT)" />
         <param name="USE_ACTIVE_FLAG" value="$(arg USE_ACTIVE_FLAG)" />
@@ -22,4 +24,6 @@
         <param name="CAMERA_INFO" value="$(arg CAMERA_INFO)" />
         <param name="CAMERA_FRAME" value="$(arg CAMERA_FRAME)" />
     </node>
+
+    <node name="Detection2DFake" pkg="object_detector" type="Detection2DFake.py" respawn="true" output="screen" if="$(arg USE_FAKE_DETECTOR)" />
 </launch>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="dashgo">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="arm">
+        <joint name="joint1"/>
+        <joint name="joint2"/>
+        <joint name="joint3"/>
+        <joint name="joint4"/>
+        <joint name="joint5"/>
+    </group>
+    <group name="gripper">
+        <joint name="Rev1Servo"/>
+        <joint name="Rev2Servo"/>
+    </group>
+    <group name="head">
+        <joint name="Cam1Rev1"/>
+        <joint name="Cam1Rev2"/>
+    </group>
+    <group name="base">
+        <joint name="odom_y"/>
+        <joint name="odom_x"/>
+        <joint name="odom_r"/>
+    </group>
+    <group name="whole_body">
+        <group name="arm"/>
+        <group name="base"/>
+    </group>
+    <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
+    <group_state name="arm_default" group="arm">
+        <joint name="joint1" value="3.10669"/>
+        <joint name="joint2" value="-1.2042"/>
+        <joint name="joint3" value="-0.4188"/>
+        <joint name="joint4" value="-1.4311"/>
+        <joint name="joint5" value="0"/>
+    </group_state>
+    <group_state name="home" group="arm">
+        <joint name="joint1" value="3.1416" />
+        <joint name="joint2" value="0" />
+        <joint name="joint3" value="0" />
+        <joint name="joint4" value="0" />
+        <joint name="joint5" value="0" />
+    </group_state>
+    <group_state name="close" group="gripper">
+        <joint name="Rev1Servo" value="0.0"/>
+        <joint name="Rev2Servo" value="0.0"/>
+    </group_state>
+    <group_state name="open" group="gripper">
+        <joint name="Rev1Servo" value="-0.32"/>
+        <joint name="Rev2Servo" value="0.32"/>
+    </group_state>
+    <group_state name="default_neck" group="head">
+        <joint name="Cam1Rev1" value="0"/>
+        <joint name="Cam1Rev2" value="0.3962"/>
+    </group_state>
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="end_effector_link" parent_link="link5" group="gripper" parent_group="arm"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="world_joint" type="planar" parent_frame="odom" child_link="internal_odom"/>
+    <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="Base" link2="BaseBrazo" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="Cam1" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="Cam2" reason="Never"/>
+    <disable_collisions link1="Base" link2="Cam2Rev" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="Lidar" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="Llanta1" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="Llanta2" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="Base" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="Base" link2="Loca1" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="Loca2" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="RevCam1" reason="Adjacent"/>
+    <disable_collisions link1="Base" link2="link1" reason="Never"/>
+    <disable_collisions link1="Base" link2="link_base" reason="Default"/>
+    <disable_collisions link1="BaseBrazo" link2="Cam1" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="Cam2" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="Cam2Rev" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="Lidar" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="Llanta1" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="Llanta2" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="Loca1" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="link1" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="link2" reason="Never"/>
+    <disable_collisions link1="BaseBrazo" link2="link_base" reason="Adjacent"/>
+    <disable_collisions link1="Base_Gripper" link2="Dedo1" reason="Never"/>
+    <disable_collisions link1="Base_Gripper" link2="Dedo2" reason="Never"/>
+    <disable_collisions link1="Base_Gripper" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="Base_Gripper" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="Base_Gripper" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="Base_Gripper" link2="Servo1" reason="Adjacent"/>
+    <disable_collisions link1="Base_Gripper" link2="Servo2" reason="Adjacent"/>
+    <disable_collisions link1="Base_Gripper" link2="link4" reason="Never"/>
+    <disable_collisions link1="Base_Gripper" link2="link5" reason="Adjacent"/>
+    <disable_collisions link1="Cam1" link2="Cam2" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Cam2Rev" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Lidar" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Llanta1" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Llanta2" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Loca1" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="RevCam1" reason="Default"/>
+    <disable_collisions link1="Cam1" link2="link1" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="link2" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="link3" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="Cam2Rev" reason="Adjacent"/>
+    <disable_collisions link1="Cam2" link2="Lidar" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="Llanta1" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="Llanta2" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="Loca1" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="link1" reason="Never"/>
+    <disable_collisions link1="Cam2" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="Lidar" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="Llanta1" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="Llanta2" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="Loca1" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="link1" reason="Never"/>
+    <disable_collisions link1="Cam2Rev" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Dedo1" link2="Dedo2" reason="Never"/>
+    <disable_collisions link1="Dedo1" link2="Servo1" reason="Adjacent"/>
+    <disable_collisions link1="Dedo1" link2="Servo2" reason="Never"/>
+    <disable_collisions link1="Dedo1" link2="link4" reason="Never"/>
+    <disable_collisions link1="Dedo1" link2="link5" reason="Never"/>
+    <disable_collisions link1="Dedo2" link2="Servo1" reason="Never"/>
+    <disable_collisions link1="Dedo2" link2="Servo2" reason="Adjacent"/>
+    <disable_collisions link1="Dedo2" link2="link4" reason="Never"/>
+    <disable_collisions link1="Dedo2" link2="link5" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="Llanta1" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="Llanta2" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="Loca1" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="link1" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="link2" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="link3" reason="Never"/>
+    <disable_collisions link1="Lidar" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="Llanta2" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="Loca1" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="link1" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="link2" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="link3" reason="Never"/>
+    <disable_collisions link1="Llanta1" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="LlantaLoca1" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="Loca1" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="link1" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="link2" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="link3" reason="Never"/>
+    <disable_collisions link1="Llanta2" link2="link_base" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="LlantaLoca2" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="Loca1" reason="Adjacent"/>
+    <disable_collisions link1="LlantaLoca1" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="Servo2" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="link1" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="link2" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="link3" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="link4" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="link5" reason="Never"/>
+    <disable_collisions link1="LlantaLoca1" link2="link_base" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="Loca1" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="Loca2" reason="Adjacent"/>
+    <disable_collisions link1="LlantaLoca2" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="Servo1" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="Servo2" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="link1" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="link2" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="link3" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="link4" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="link5" reason="Never"/>
+    <disable_collisions link1="LlantaLoca2" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="Loca2" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="Servo1" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="link1" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="link2" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="link3" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="link4" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="link5" reason="Never"/>
+    <disable_collisions link1="Loca1" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="RevCam1" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="RevCam2" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="Servo1" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="Servo2" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="link1" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="link2" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="link3" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="link4" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="link5" reason="Never"/>
+    <disable_collisions link1="Loca2" link2="link_base" reason="Never"/>
+    <disable_collisions link1="RevCam1" link2="RevCam2" reason="Adjacent"/>
+    <disable_collisions link1="RevCam1" link2="link1" reason="Never"/>
+    <disable_collisions link1="RevCam1" link2="link2" reason="Never"/>
+    <disable_collisions link1="RevCam1" link2="link3" reason="Never"/>
+    <disable_collisions link1="RevCam1" link2="link4" reason="Never"/>
+    <disable_collisions link1="RevCam1" link2="link5" reason="Never"/>
+    <disable_collisions link1="RevCam1" link2="link_base" reason="Never"/>
+    <disable_collisions link1="RevCam2" link2="link1" reason="Never"/>
+    <disable_collisions link1="RevCam2" link2="link2" reason="Never"/>
+    <disable_collisions link1="RevCam2" link2="link3" reason="Never"/>
+    <disable_collisions link1="RevCam2" link2="link4" reason="Never"/>
+    <disable_collisions link1="RevCam2" link2="link5" reason="Never"/>
+    <disable_collisions link1="RevCam2" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Servo1" link2="Servo2" reason="Never"/>
+    <disable_collisions link1="Servo1" link2="link4" reason="Never"/>
+    <disable_collisions link1="Servo1" link2="link5" reason="Never"/>
+    <disable_collisions link1="Servo2" link2="link4" reason="Never"/>
+    <disable_collisions link1="Servo2" link2="link5" reason="Never"/>
+    <disable_collisions link1="link1" link2="link2" reason="Adjacent"/>
+    <disable_collisions link1="link1" link2="link_base" reason="Adjacent"/>
+    <disable_collisions link1="link2" link2="link3" reason="Adjacent"/>
+    <disable_collisions link1="link2" link2="link4" reason="Never"/>
+    <disable_collisions link1="link2" link2="link5" reason="Never"/>
+    <disable_collisions link1="link2" link2="link_base" reason="Never"/>
+    <disable_collisions link1="link3" link2="link4" reason="Adjacent"/>
+    <disable_collisions link1="link3" link2="link5" reason="Never"/>
+    <disable_collisions link1="link4" link2="link5" reason="Adjacent"/>
+</robot>

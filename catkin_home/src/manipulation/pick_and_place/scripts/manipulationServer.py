@@ -39,17 +39,28 @@ OBJECTS_NAME= {
     1 : 'Coca-Cola',
     2 : 'Coffee',
     3 : 'Nesquik',
+    4 : 'Zucaritas',
+    5 : 'Harpic'
 }
 OBJECTS_ID= {
     'Coca-Cola' : 1,
     'Coffee' : 2,
     'Nesquik' : 3,
+    'Zucaritas' : 4,
+    'Harpic' : 5
 }
 class ManipulationGoals(Enum):
     COKE = 1
     COFFEE = 2
     NESQUIK = 3
-    BIGGEST = 4
+    ZUCARITAS = 4
+    HARPIC = 5
+    BIGGEST = 6
+
+ARM_ENABLE = False
+HEAD_ENABLE = False
+VISION_ENABLE = True
+MANIPULATION_ENABLE = False
 
 class manipuationServer(object):
 
@@ -60,40 +71,43 @@ class manipuationServer(object):
         self.ARM_GROUP = rospy.get_param("ARM_GROUP", "arm_torso")
         self.HEAD_GROUP = rospy.get_param("HEAD_GROUP", "head")
 
-        # # Mechanisms
-        rospy.loginfo("Waiting for MoveGroupCommander ARM_TORSO...")
-        self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
-        rospy.loginfo("Waiting for MoveGroupCommander HEAD/HEAD...")
-        self.head_group = moveit_commander.MoveGroupCommander(self.HEAD_GROUP, wait_for_servers = 0)
+        # Mechanisms | Initialize Robot Pose
+        if ARM_ENABLE:
+            rospy.loginfo("Waiting for MoveGroupCommander ARM_TORSO...")
+            self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
+            self.initARM()
+        if HEAD_ENABLE:
+            rospy.loginfo("Waiting for MoveGroupCommander HEAD/HEAD...")
+            self.head_group = moveit_commander.MoveGroupCommander(self.HEAD_GROUP, wait_for_servers = 0)
+            self.initHEAD()
 
-        # Initialize Robot Pose
-        self.initARM()
-        self.initHEAD()
-        
         # Vision
-        self.vision2D_enable = rospy.Publisher("detectionsActive", Bool, queue_size=10)
-        rospy.loginfo("Waiting for ComputerVision 3D AS...")
-        self.vision3D_as = actionlib.SimpleActionClient("Detect3D", DetectObjects3DAction)
-        self.vision3D_as.wait_for_server()
+        if VISION_ENABLE:
+            self.vision2D_enable = rospy.Publisher("detectionsActive", Bool, queue_size=10)
+            rospy.loginfo("Waiting for ComputerVision 3D AS...")
+            self.vision3D_as = actionlib.SimpleActionClient("Detect3D", DetectObjects3DAction)
+            self.vision3D_as.wait_for_server()
 
         # # Manipulation
-        rospy.loginfo("Waiting for /pickup_pose AS...")
-        self.pick_as = actionlib.SimpleActionClient('/pickup_pose', PickAndPlaceAction)
-        self.pick_as.wait_for_server()
-        rospy.loginfo("Waiting for /place_pose AS...")
-        self.place_as = actionlib.SimpleActionClient('/place_pose', PickAndPlaceAction)
-        self.place_as.wait_for_server()
-        self.pick_goal_publisher = rospy.Publisher("pose_pickup/goal", PoseStamped, queue_size=5)
-        self.place_goal_publisher = rospy.Publisher("pose_place/goal", PoseStamped, queue_size=5)
-        self.grasp_config_list = rospy.Publisher("grasp_config_list", GraspConfigList, queue_size=5)
+        if MANIPULATION_ENABLE:
+            rospy.loginfo("Waiting for /pickup_pose AS...")
+            self.pick_as = actionlib.SimpleActionClient('/pickup_pose', PickAndPlaceAction)
+            self.pick_as.wait_for_server()
+            rospy.loginfo("Waiting for /place_pose AS...")
+            self.place_as = actionlib.SimpleActionClient('/place_pose', PickAndPlaceAction)
+            self.place_as.wait_for_server()
+            self.pick_goal_publisher = rospy.Publisher("pose_pickup/goal", PoseStamped, queue_size=5)
+            self.place_goal_publisher = rospy.Publisher("pose_place/goal", PoseStamped, queue_size=5)
+            self.grasp_config_list = rospy.Publisher("grasp_config_list", GraspConfigList, queue_size=5)
+            rospy.wait_for_service('/detect_grasps_server_samples/detect_grasps_samples')
 
-        rospy.wait_for_service('/detect_grasps_server_samples/detect_grasps_samples')
         rospy.loginfo("Loaded everything...")
-        # self.pick_random_object()
-
+        
         # Initialize Manipulation Action Server
         self._as = actionlib.SimpleActionServer(self._action_name, manipulationServAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
+
+        rospy.loginfo("Manipulation Server Initialized ...")
     
     def initARM(self):
         ARM_JOINTS = rospy.get_param("ARM_JOINTS", ["arm_1_joint", "arm_2_joint", "arm_3_joint", "arm_4_joint", "arm_5_joint", "arm_6_joint", "arm_7_joint"])
@@ -134,7 +148,13 @@ class manipuationServer(object):
 
     def execute_cb(self, goal):
         target = ManipulationGoals(goal.object_id)
-        self.headTableDiscovery()
+
+        if HEAD_ENABLE:
+            self.headTableDiscovery()
+
+        if not VISION_ENABLE:
+            self._as.set_succeeded(manipulationServResult(result = False))
+            return
 
         # Get Objects:
         rospy.loginfo("Getting objects")
@@ -143,8 +163,12 @@ class manipuationServer(object):
             rospy.loginfo("Object Not Found")
             self._as.set_succeeded(manipulationServResult(result = False))
             return
-        rospy.loginfo("Object Found")
-            
+        rospy.loginfo("Object Extracted")
+        
+        if not MANIPULATION_ENABLE:
+            self._as.set_succeeded(manipulationServResult(result = False))
+            return
+
         TEST_GDP = False
         while TEST_GDP  and not rospy.is_shutdown():
             rospy.loginfo("Getting grasping points")
@@ -267,6 +291,10 @@ class manipuationServer(object):
             GetObjectsScope.objects_found_so_far = feedback_msg.status
         
         def get_result_callback(state, result):
+            if result is None:
+                GetObjectsScope.success = False
+                GetObjectsScope.result_received = True
+                return
             GetObjectsScope.success = result.success
             GetObjectsScope.object_pose = result.object_pose
             GetObjectsScope.object_cloud = result.object_cloud
@@ -296,6 +324,7 @@ class manipuationServer(object):
                 rospy.loginfo("Objects Found:" + str(len(detections.detections)))
                 for detection in detections.detections:
                     if detection.labelText == OBJECTS_NAME[target.value]:
+                        rospy.loginfo("Target Found:" + detection.labelText)
                         goal = DetectObjects3DGoal(force_object = objectDetectionArray(detections = [detection]))
                         GetObjectsScope.detection = detection
                         success = True

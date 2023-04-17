@@ -2,8 +2,8 @@
   <arg
     name="model" />
   <param name="robot_description"
-    command="rosrun xacro xacro --inorder
-    '$(find robot_description)/urdf/gripper.urdf.xacro'" />
+    command="rosrun xacro xacro
+    '$(find robot_description)/urdf/dashgo.urdf.xacro'" />
   <node
     name="joint_state_publisher_gui"
     pkg="joint_state_publisher_gui"

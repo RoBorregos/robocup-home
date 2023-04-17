@@ -120,6 +120,7 @@ public:
     nh_.param("/Detection3D/MAP_FRAME", MAP_FRAME, MAP_FRAME);
     nh_.param("/Detection3D/CAMERA_FRAME", CAMERA_FRAME, CAMERA_FRAME);
     nh_.param("/Detection3D/POINT_CLOUD_TOPIC", POINT_CLOUD_TOPIC, POINT_CLOUD_TOPIC);
+    CAMERA_FRAME = "zed2_left_camera_frame";
     ROS_INFO_STREAM("MAP_FRAME: " << MAP_FRAME);
     ROS_INFO_STREAM("CAMERA_FRAME: " << CAMERA_FRAME);
     ROS_INFO_STREAM("POINT_CLOUD_TOPIC: " << POINT_CLOUD_TOPIC);
@@ -194,10 +195,10 @@ public:
     extractObjectDetails(cloud, plane_params, plane_params, false);
 
     // Z conditions to know if it is the Table.
-    if (plane_params.max_z - plane_params.min_z > 0.1) { // Diff > 10cm, Not Parallel Plane 
+    if (plane_params.max_z - plane_params.min_z > 0.15) { // Diff > 15cm, Not Parallel Plane 
       return false;
     }
-    if (plane_params.min_z < 0.20) { // Z Value < than 20cm, Floor Detected.
+    if (plane_params.min_z < 0.30) { // Z Value < than 30cm, Floor Detected.
       return false;
     }
 
@@ -385,14 +386,18 @@ public:
               << " y: " << object_found.center.pose.position.y
               << " z: " << object_found.center.pose.position.z
               << " Tz: " << table_params.min_z);
+
         object_found.isValid = false;
         return;
       }
 
-      ROS_INFO_STREAM("Object dimensions: "
-        << " " << abs(object_found.max_x - object_found.min_x)
-        << " " << abs(object_found.max_y - object_found.min_y)
-        << " " << abs(object_found.max_z - object_found.min_z));
+        ROS_INFO_STREAM("Object dimensions: "
+        << "max_x " << object_found.max_x
+        << "min_x " << object_found.min_x
+        << "max_y " << object_found.max_y
+        << "min_y " << object_found.min_y
+        << "max_z " << object_found.max_z
+        << "min_z " << object_found.min_z);
 
       // Add object only if it has restricted dimensions.
       if (abs(object_found.max_x - object_found.min_x) > 0.5 ||
@@ -468,7 +473,7 @@ public:
   /** \brief Given the pointcloud remove the biggest plane from the pointcloud. Return True if its the table.
       @param cloud - Pointcloud.
       @param inliers_plane - Indices representing the plane. (output) */
-  bool removeBiggestPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const pcl::PointIndices::Ptr& inliers_plane, ObjectParams &plane_params)
+  bool removeBiggestPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, const pcl::PointIndices::Ptr& inliers_plane, ObjectParams &plane_params, int count)
   {
     // Do Plane Segmentation
     pcl::SACSegmentation<pcl::PointXYZ> segmentor;
@@ -501,9 +506,18 @@ public:
 
     isTheTable = addPlane(planeCloud, coefficients_plane, plane_params);
     if (isTheTable) {
+      ROS_INFO_STREAM("Table Found at MaxZ:" << plane_params.max_z << ", MinZ:" << plane_params.min_z << "\n");      
       pcl::io::savePCDFile("pcl_table.pcd", *planeCloud);
-      pcl::io::savePCDFile("pcl_no_table.pcd", *cloud);
+      ROS_INFO_STREAM("File saved: " << "pcl_table.pcd");
     }
+
+    if (!isTheTable) {
+      count++;
+      ROS_INFO_STREAM("Plane Found");
+      pcl::io::savePCDFile("pcl_plane_"+std::to_string(count)+".pcd", *planeCloud);
+      ROS_INFO_STREAM("File saved: " << "pcl_plane_"+std::to_string(count)+".pcd");
+    }
+
     return isTheTable;
   }
   
@@ -517,7 +531,7 @@ public:
     float min_distance = std::numeric_limits<float>::max();
     int min_index = -1;
     for(int j=0;j<objects.size();j++) {
-      float curr_distance = getDistance(objects[j].center_cam.pose.position, force_object_.point3D);
+      float curr_distance = getDistance(objects[j].center.pose.position, force_object_.point3D);
       ROS_INFO_STREAM( j << ": Distance center cluster to object point " << curr_distance);
       if (curr_distance < min_distance) {
         min_distance = curr_distance;
@@ -588,21 +602,34 @@ public:
     pcl::PointIndices::Ptr inliers_plane(new pcl::PointIndices); // Indices that correspond to a plane.
     pcl::fromROSMsg(input, *cloud);
     pcl::fromROSMsg(input, *cloud_original);
+
+    // sensor_msgs::PointCloud2 tmp;
+    // pcl::toROSMsg(*cloud, tmp);
+    // tmp.header.frame_id = input.header.frame_id;
+    // tmp.header.stamp = input.header.stamp;
+    // pc_pub_1_.publish(tmp);
+
     passThroughFilter(cloud);
+
+    // pcl::toROSMsg(*cloud, tmp);
+    // tmp.header.frame_id = input.header.frame_id;
+    // tmp.header.stamp = input.header.stamp;
+    // pc_pub_2_.publish(tmp);
+    
+
     computeNormals(cloud, cloud_normals);
 
     ROS_INFO_STREAM("PointCloud Pre-Processing Done");
     // Detect and Remove the table on which the object is resting.
     bool tableRemoved = false;
     ObjectParams table_params;
-    while(!tableRemoved && !cloud->points.empty()) {
-      tableRemoved = removeBiggestPlane(cloud, inliers_plane, table_params);
+    int count = 0;
+    while(!tableRemoved && cloud->points.size() > 3) {
+      tableRemoved = removeBiggestPlane(cloud, inliers_plane, table_params, count++);
       extractNormals(cloud_normals, inliers_plane);
     }
-    // TO-DO Remove Other Planes.
-    ROS_INFO_STREAM("Table Removed");
 
-    if (cloud->points.empty()) {
+    if (cloud->points.size() <= 3) {
       return;
     }
 
@@ -653,7 +680,7 @@ public:
     //Set parameters for the clustering
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance(0.025); // 2.5cm
+    ec.setClusterTolerance(0.02); // 2cm
     ec.setMinClusterSize(100);
     ec.setMaxClusterSize(30000);
     ec.setSearchMethod(tree);

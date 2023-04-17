@@ -459,7 +459,7 @@ class BaseController:
 
             try:
                 res  = self.Microcontroller.get_emergency_button()
-                self.emergencybt_val = res
+                self.emergencybt_val = res[1]
                 self.emergencybt_pub.publish(self.emergencybt_val)
             except:
                 self.emergencybt_val = -1
@@ -680,20 +680,22 @@ def testController():
     print(controller.get_baud())
     print(controller.get_encoder_counts())
     print(controller.reset_IMU())
-    print(controller.get_imu_val())
     print(controller.get_emergency_button())
     print(controller.reset_encoders())
+    
     print(controller.stop())
     
     velocities = [-0.25, 0.25]
     index = 0
     start_time = time.time()
     while(1):
+        print(controller.get_imu_val())
         print(controller.get_emergency_button())
+        print(controller.get_encoder_counts())
         if time.time() - start_time > 2.5:
             index = (index + 1) % 2
             start_time = time.time()
-        controller.drive(velocities[index], 0.0)
+        # controller.drive(velocities[index], 0.0)
         time.sleep(0.1) 
 
 if __name__ == '__main__':

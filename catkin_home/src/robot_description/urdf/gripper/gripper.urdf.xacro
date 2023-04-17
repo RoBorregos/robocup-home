@@ -51,6 +51,13 @@
         </geometry>
       </collision>
     </link>
+    <link name="end_effector_link">
+    </link>
+    <joint name="end_effector_joint" type="fixed">
+      <parent link="Base_Gripper" />
+      <child link="end_effector_link" />
+      <origin xyz="0 0 0.165" rpy="0 0 0" />
+    </joint>
     <link
       name="Servo1">
       <inertial>
@@ -96,7 +103,8 @@
       type="revolute">
       <origin
         xyz="0 0.035167 0.088595"
-        rpy="0 -0.36888 -1.5708" />
+        rpy="0 -0.01 -1.5708" />
+        <!-- 0.35 -->
       <parent
         link="Base_Gripper" />
       <child
@@ -104,8 +112,8 @@
       <axis
         xyz="0 1 0" />
       <limit
-        lower="-0.349066"
-        upper="0.349066"
+        lower="-0.39"
+        upper="0.02"
         effort="0"
         velocity="0" />
     </joint>
@@ -207,7 +215,7 @@
       type="revolute">
       <origin
         xyz="0 -0.034832 0.088595"
-        rpy="0 -0.12482 -1.5708" />
+        rpy="0 -0.02 -1.5708" />
       <parent
         link="Base_Gripper" />
       <child
@@ -215,10 +223,14 @@
       <axis
         xyz="0 1 0" />
       <limit
-        lower="-0.349066"
-        upper="0.349066"
+        lower="-0.02"
+        upper="0.39"
         effort="0"
         velocity="0" />
+      <mimic
+        joint="Rev1Servo"
+        multiplier="-1"
+        offset="0" />
     </joint>
     <link
       name="Dedo2">
