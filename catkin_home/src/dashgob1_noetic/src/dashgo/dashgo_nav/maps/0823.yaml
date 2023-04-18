@@ -1,0 +1,8 @@
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/0823.pgm
+resolution: 0.050000
+origin: [-13.800000, -13.800000, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+angle_init: 2.381830
+

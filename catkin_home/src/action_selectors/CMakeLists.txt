@@ -170,19 +170,19 @@ link_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 
 # Azure Speech To Text C++ Executable Target.
-add_executable(AzureSpeechToText src/azureSpeechText.cpp)
-add_dependencies(AzureSpeechToText 
+#add_executable(AzureSpeechToText src/azureSpeechText.cpp)
+#add_dependencies(AzureSpeechToText 
   # Add the dependency of the generated message `RawInput.msg`.
-  ${PROJECT_NAME}_generate_messages_cpp
+  #${PROJECT_NAME}_generate_messages_cpp
   # Mark that this should wait for the Azure SDK to download.
-  azure_speech_sdk_project
-)
+  #azure_speech_sdk_project
+#)
 # Add the catkin libraries and the downloaded library that is at 
 # azure_speech_sdk_project/lib/x64/Microsoft.CognitiveServices.Speech.core.so
-target_link_libraries(AzureSpeechToText 
-  ${catkin_LIBRARIES} 
-  Microsoft.CognitiveServices.Speech.core
-)
+#target_link_libraries(AzureSpeechToText 
+#  ${catkin_LIBRARIES} 
+#  Microsoft.CognitiveServices.Speech.core
+#)
 
 
 ## Rename C++ executable without prefix

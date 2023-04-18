@@ -6,7 +6,7 @@ controller_patience: 3.0 # 3.0
 planner_frequency: 1.0
 planner_patience: 3.0
 
-oscillation_timeout: 5.0
+oscillation_timeout: 0.0
 oscillation_distance: 0.2
 
 # Planner selection
@@ -21,7 +21,7 @@ clearing_rotation_allowed: true
 useMagnetometer: false
 auto_update_: false
 particle_range: 1.0
-angle_tolerance: 0.05
+angle_tolerance: 0.15
 
 recovery_behaviors:
  #- name: 'conservative_reset'

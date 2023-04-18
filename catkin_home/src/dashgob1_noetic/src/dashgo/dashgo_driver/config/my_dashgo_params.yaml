@@ -1,0 +1,65 @@
+# port: /dev/port1
+port: /dev/ttyUSB0
+baud: 115200
+timeout: 0.1
+rate: 50
+sensorstate_rate: 10
+slam_project_version: 1.1
+
+useImu: False
+useSonar: True
+use_base_controller: True
+base_controller_rate: 30 #10
+
+
+sonar_height: 0.15
+sonar_safe_distance: 8
+sonar_dec_distance: 40.0  ##decelerate
+
+sonar0_offset_yaw: 3.14
+sonar0_offset_x: -0.091
+sonar0_offset_y: -0.11
+
+sonar1_offset_yaw: -0.70
+sonar1_offset_x: 0.265
+sonar1_offset_y: -0.128
+
+sonar2_offset_yaw: 0.0
+sonar2_offset_x: 0.27
+sonar2_offset_y: 0.0
+
+sonar3_offset_yaw: 0.70 
+sonar3_offset_x: 0.265
+sonar3_offset_y: 0.128
+
+sonar4_offset_yaw: 3.14
+sonar4_offset_x: -0.091
+sonar4_offset_y: 0.11
+
+# For a robot that uses base_footprint, change base_frame to base_footprint
+#base_frame: base_link
+base_frame: base_footprint
+
+# === Robot drivetrain parameters
+wheel_diameter: 0.1240
+wheel_track: 0.305
+encoder_resolution: 610
+gear_reduction: 1.0
+motors_reversed: False
+
+# === Turn and Linear
+min_rotation_speed: 0.15
+max_rotation_speed: 1.5
+rotation_accel: 0.8
+rotation_decel: 1.6
+move_accel: 0.8
+move_decel: 1.0
+primary_threshold: 0.3
+secondary_threshold: 0.2
+
+# === PID parameters
+Kp: 50
+Kd: 20
+Ki: 0
+Ko: 50
+accel_limit: 1.0

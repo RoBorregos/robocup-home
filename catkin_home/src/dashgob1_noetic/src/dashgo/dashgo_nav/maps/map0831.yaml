@@ -1,0 +1,86 @@
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-13.800000, -12.200000, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+angle_init: 0.000000
+
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/map0831.pgm
+resolution: 0.050000
+origin: [-12.8, -17.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196

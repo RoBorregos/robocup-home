@@ -1,0 +1,134 @@
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-12.200000, -15.400000, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+angle_init: 0.000000
+
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196
+image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/test0912.pgm
+resolution: 0.050000
+origin: [-15.2, -13.6, 0.000000]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196

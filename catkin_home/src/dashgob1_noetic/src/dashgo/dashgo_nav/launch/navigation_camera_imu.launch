@@ -1,0 +1,24 @@
+<launch>
+  <include file="$(find dashgo_nav)/launch/astra.launch"/>
+  <include file="$(find dashgo_driver)/launch/driver_imu.launch"/>
+  <include file="$(find ydlidar)/launch/ydlidar1_up.launch"/>
+  <include file="$(find dashgo_description)/launch/dashgo_description.launch"/>
+  <arg name="map_file" default="$(find dashgo_nav)/maps/eai_map_imu.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+  <arg name="initial_pose_x" default="0.0"/> 
+  <arg name="initial_pose_y" default="0.0"/> 
+  <arg name="initial_pose_a" default="0.0"/>
+  <include file="$(find dashgo_nav)/launch/include/imu/amcl.launch.xml">
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+  <include file="$(find dashgo_nav)/launch/include/imu/teb_move_base.launch"/>
+  <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" />
+  <node name="multi_mark" pkg="dashgo_tools" type="multi_goals_loop.py" output="screen" />
+  <node pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="laser_filter">
+      <rosparam command="load" file="$(find dashgo_tools)/conf/box_filter.yaml" />
+  </node>
+  <node name="multiGoals" pkg="dashgo_tools" type="multiGoals.py" respawn="true" />
+  <node name="get_scan_data" pkg="dashgo_tools" type="get_scan_data.py" respawn="true" />
+</launch>

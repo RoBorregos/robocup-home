@@ -1,0 +1,54 @@
+<launch>
+  <param name="/use_sim_time" value="false" />
+  <node name="dashgo_driver" pkg="dashgo_driver" type="dashgo_driver.py" output="screen" respawn="true">
+    <rosparam file="$(find dashgo_driver)/config/my_dashgo_params_imu.yaml" command="load" />
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="imu_broadcaster" args="0 0 0 0 0 0 base_footprint imu_base 100" respawn="true" />
+  
+  <include file="$(find nav_main)/launch/odom.launch" />
+
+  <arg name="node_name"             value="velocity_smoother"/>
+  <arg name="nodelet_manager_name"  value="nodelet_manager"/>
+  <arg name="config_file"           value="$(find dashgo_driver)/config/yocs_velocity_smoother.yaml"/>
+  <arg name="raw_cmd_vel_topic"     value="cmd_vel"/>
+  <arg name="smooth_cmd_vel_topic"  value="smoother_cmd_vel"/>
+  <arg name="robot_cmd_vel_topic"   value="robot_cmd_vel"/>
+  <arg name="odom_topic"            value="odom"/>
+  
+  <!-- nodelet manager -->
+  <node pkg="nodelet" type="nodelet" name="$(arg nodelet_manager_name)" args="manager" respawn="true"/>
+  
+  <node pkg="yocs_velocity_smoother" type="yocs_velocity_smoother_node" name="$(arg node_name)" output="screen">
+    <param name="node_name"             value="$(arg node_name)"/>
+    <param name="nodelet_manager_name"  value="$(arg nodelet_manager_name)"/>
+    <param name="config_file"           value="$(arg config_file)"/>
+    <param name="raw_cmd_vel_topic"     value="$(arg raw_cmd_vel_topic)"/>
+    <param name="smooth_cmd_vel_topic"  value="$(arg smooth_cmd_vel_topic)"/>
+    <param name="robot_cmd_vel_topic"   value="$(arg robot_cmd_vel_topic)"/>
+    <param name="odom_topic"            value="$(arg odom_topic)"/>    
+    <!-- parameters -->
+    <rosparam file="$(arg config_file)" command="load"/>
+
+    <!-- velocity commands I/O -->
+    <remap from="$(arg node_name)/raw_cmd_vel"    to="$(arg raw_cmd_vel_topic)"/>
+    <remap from="$(arg node_name)/smooth_cmd_vel" to="$(arg smooth_cmd_vel_topic)"/>
+
+    <!-- Robot velocity feedbacks -->
+    <remap from="$(arg node_name)/robot_cmd_vel"  to="$(arg robot_cmd_vel_topic)"/>
+    <remap from="$(arg node_name)/odometry"       to="$(arg odom_topic)"/>
+  </node>
+  <node name="dashgo_action" pkg="dashgo_tools" type="check_action.py" output="screen" respawn="true"/>
+  <!-- node name="magnetometer" pkg="dashgo_tools" type="magnetometer.py" output="screen" respawn="true"/-->
+ 
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_sonar0"
+   args="-0.091 -0.11  0.15 3.1416 0.0  0.0 /base_footprint /sonar0 40" />
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_sonar1"
+   args="0.265 -0.128 0.15 -0.70 0.0 0.0 /base_footprint /sonar1 40" />
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_sonar2"
+   args="0.27 0.0  0.15 0.0 0.0 0.0 /base_footprint /sonar2 40" />
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_sonar3"
+   args="0.265 0.128 0.15 0.70 0.0 0.0 /base_footprint /sonar3 40" />
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_sonar4"
+   args="-0.091 0.11  0.15 3.1416 0.0  0.0 /base_footprint /sonar4 40" />  
+</launch>
