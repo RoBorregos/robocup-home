@@ -74,7 +74,7 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
 
-  Kinematics::output rpm = kinematics_.getRPM(x, y, z);
+  Kinematics::output rpm = kinematics_.getRPM(x, y, -1*z);
   
   updatePIDKinematics(rpm.motor1, rpm.motor2);
 }

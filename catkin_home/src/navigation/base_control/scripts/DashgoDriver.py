@@ -367,6 +367,9 @@ class BaseController:
         self.v_th = 0
         self.last_cmd_vel = now
 
+        self.emergencybt_val = 0
+        self.emergencybt_pub = rospy.Publisher('emergencybt_status', Int16, queue_size=5)
+
         # Subscriptions
         rospy.Subscriber("smoother_cmd_vel", Twist, self.cmdVelCallback)
         self.robot_cmd_vel_pub = rospy.Publisher('robot_cmd_vel', Twist, queue_size=5)
@@ -392,9 +395,6 @@ class BaseController:
         self.SUCCESS = 0
         self.FAIL = -1
    
-        self.emergencybt_val = 0
-        self.emergencybt_pub = rospy.Publisher('emergencybt_status', Int16, queue_size=5)
-
         rospy.Subscriber("imu_reset", Int16, self.resetImuCallback)
         self.imu_angle_pub = rospy.Publisher('imu_angle_MicroController', Int16, queue_size=5)
         self.imu_pub = rospy.Publisher('imu_val', String, queue_size=5)
