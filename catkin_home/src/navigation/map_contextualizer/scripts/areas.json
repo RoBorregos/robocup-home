@@ -1,0 +1,29 @@
+{
+    "bedroom": {
+        "safe place": [],
+        "bed": [],
+        "couch": [],
+        "small table": []
+    },
+    "dining room": {
+        "safe place": [],
+        "small dinner c1": [],
+        "small dinner c2": [],
+        "trash bin": []
+    },
+    "living room": {
+        "safe place": [],
+        "trash bin": [],
+        "small table": [],
+        "cupboard": [],
+        "bookcase": [],
+        "coat rack": []
+    },
+    "Kitchen": {
+        "safe place": [],
+        "dishwasher": [],
+        "microwave": [],
+        "sink": [],
+        "refrigerator": []
+    }
+}
