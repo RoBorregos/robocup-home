@@ -606,9 +606,9 @@ class BaseController:
             robot_cmd_vel.angular.z = th
         self.robot_cmd_vel_pub.publish(robot_cmd_vel)
 
-        self.v_x = x
-        self.v_y = 0
-        self.v_th = th
+        self.v_x =  robot_cmd_vel.linear.x
+        self.v_y =  robot_cmd_vel.linear.y
+        self.v_th = robot_cmd_vel.angular.z
 
 class MicroControllerROS():
     def __init__(self):
@@ -699,5 +699,6 @@ def testController():
         time.sleep(0.1) 
 
 if __name__ == '__main__':
+    # testController()
     myMicroController = MicroControllerROS()
     

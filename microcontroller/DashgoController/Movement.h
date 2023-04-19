@@ -72,15 +72,15 @@ class Movement {
     double radiansToDegrees(const double radians);
 
     // Pins,
-    static constexpr uint8_t kFwdRevPinRightMotor = 4;
-    static constexpr uint8_t kSpeedPinRightMotor = 8;
-    static constexpr uint8_t kEnablePinRightMotor = 6;
-    static constexpr uint8_t kEncoderPinsRightMotor[2] = {19, 18};
+    static constexpr uint8_t kFwdRevPinLeftMotor = 4;
+    static constexpr uint8_t kSpeedPinLeftMotor = 8;
+    static constexpr uint8_t kEnablePinLeftMotor = 6;
+    static constexpr uint8_t kEncoderPinsLeftMotor[2] = {19, 18};
 
-    static constexpr uint8_t kFwdRevPinLeftMotor = 5;
-    static constexpr uint8_t kSpeedPinLeftMotor = 9;
-    static constexpr uint8_t kEnablePinLeftMotor = 7;
-    static constexpr uint8_t kEncoderPinsLeftMotor[2] = {2, 3};
+    static constexpr uint8_t kFwdRevPinRightMotor = 5;
+    static constexpr uint8_t kSpeedPinRightMotor = 9;
+    static constexpr uint8_t kEnablePinRightMotor = 7;
+    static constexpr uint8_t kEncoderPinsRightMotor[2] = {2, 3};
     
 
     // Velocity maximum.
