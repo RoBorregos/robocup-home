@@ -1,3 +1,6 @@
+[submodule "catkin_home/src/zed-ros-wrapper"]
+	path = catkin_home/src/zed-ros-wrapper
+	url = https://github.com/stereolabs/zed-ros-wrapper.git
 [submodule "catkin_home/src/navigation/hector_slam_roborregos"]
 	path = catkin_home/src/navigation/hector_slam_roborregos
 	url = https://github.com/tu-darmstadt-ros-pkg/hector_slam.git
@@ -10,6 +13,6 @@
 [submodule "dashgob1_noetic"]
 	path = dashgob1_noetic
 	url = https://github.com/Josecisneros001/dashgob1_noetic.git
-[submodule "catkin_home/zed-ros-wrapper"]
-	path = catkin_home/zed-ros-wrapper
-	url = https://github.com/stereolabs/zed-ros-wrapper.git
+[submodule "catkin_home/src/zed-ros-wrapper/zed-ros-interfaces"]
+	path = catkin_home/src/zed-ros-wrapper/zed-ros-interfaces
+	url = https://github.com/stereolabs/zed-ros-interfaces.git
