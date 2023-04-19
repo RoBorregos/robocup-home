@@ -6,7 +6,8 @@
 
   <node pkg="tf" type="static_transform_publisher" name="imu_broadcaster" args="0 0 0 0 0 0 base_footprint imu_base 100" respawn="true" />
 
-  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+  <include file="$(find nav_main)/launch/odom.launch" />
+  <!-- <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
     <param name="output_frame" value="odom_combined"/>
     <param name="base_footprint_frame" value="base_footprint"/>
     <param name="freq" value="10.0"/>
@@ -17,7 +18,7 @@
     <param name="debug" value="true"/>
     <remap from="imu_data" to="imu" />
     <remap from="robot_pose_ekf/odom_combined" to="odom_combined"/>  
-  </node>
+  </node> -->
 
   <arg name="node_name"             value="velocity_smoother"/>
   <arg name="nodelet_manager_name"  value="nodelet_manager"/>
