@@ -10,3 +10,6 @@
 [submodule "dashgob1_noetic"]
 	path = dashgob1_noetic
 	url = https://github.com/Josecisneros001/dashgob1_noetic.git
+[submodule "catkin_home/zed-ros-wrapper"]
+	path = catkin_home/zed-ros-wrapper
+	url = https://github.com/stereolabs/zed-ros-wrapper.git
