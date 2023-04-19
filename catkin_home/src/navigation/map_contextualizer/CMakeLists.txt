@@ -4,6 +4,7 @@ project(map_contextualizer)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   visualization_msgs
+  interactive_markers
   rospy tf
   sensor_msgs
   std_msgs
@@ -51,8 +52,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
- include scripts/map.py
+include_directories(include 
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -66,6 +66,6 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 ## Install ##
 #############
 
-catkin_install_python(PROGRAMS scripts/map_tagger.py scripts/map_tagger_display.py #scripts/map.py
+catkin_install_python(PROGRAMS scripts/map_tagger.py scripts/map_tagger_display.py scripts/map_context.py #scripts/map.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
