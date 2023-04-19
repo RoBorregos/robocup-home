@@ -13,6 +13,7 @@ See [RoboCup @HOME Rules](https://robocupathome.github.io/RuleBook/rulebook/mast
 
    ```bash
    $ git clone --recurse-submodules https://github.com/RoBorregos/Robocup-Home.git
+   $ git submodule update --init --recursive
    ```
 2. [Docker Setup If needed](https://github.com/RoBorregos/Robocup-Home/wiki/Docker-Usage)
 
