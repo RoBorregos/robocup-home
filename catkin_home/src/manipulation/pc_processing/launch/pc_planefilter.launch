@@ -1,0 +1,8 @@
+<launch>
+    <arg name="INPUT_PC" default="/zed2/zed_node/point_cloud/ds_cloud_registered" />
+    <arg name="OUTPUT_PC" default="/zed2/zed_node/point_cloud/ds_no_plane_cloud_registered" />
+    <node pkg="pc_processing" type="PlaneFilter" name="PlaneFilter" output="screen">
+        <remap from="input/points" to="$(arg INPUT_PC)" />
+        <remap from="output/points" to="$(arg OUTPUT_PC)" />
+    </node>
+</launch>
