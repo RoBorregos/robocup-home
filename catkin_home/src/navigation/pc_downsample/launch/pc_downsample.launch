@@ -1,6 +1,6 @@
 <launch>
-    <arg name="INPUT_PC" default="/zed2i/zed_node/point_cloud/cloud_registered" />
-    <arg name="OUTPUT_PC" default="/zed2i/zed_node/point_cloud/ds_cloud_registered" />
+    <arg name="INPUT_PC" default="/zed2/zed_node/point_cloud/cloud_registered" />
+    <arg name="OUTPUT_PC" default="/zed2/zed_node/point_cloud/ds_cloud_registered" />
     <node pkg="pc_downsample" type="DownSamplePC" name="DownSamplePC" output="screen">
         <remap from="input/points" to="$(arg INPUT_PC)" />
         <remap from="output/points" to="$(arg OUTPUT_PC)" />

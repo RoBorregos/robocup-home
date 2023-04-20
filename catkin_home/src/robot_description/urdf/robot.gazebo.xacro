@@ -14,8 +14,8 @@
       <yaw_velocity_p_gain>1.0</yaw_velocity_p_gain>
       <x_velocity_p_gain>15.0</x_velocity_p_gain>
       <y_velocity_p_gain>15.0</y_velocity_p_gain>
-      <max_x_velocity>1.0</max_x_velocity>
-      <max_y_velocity>1.0</max_y_velocity>
+      <max_x_velocity>0.6</max_x_velocity>
+      <max_y_velocity>0.6</max_y_velocity>
       <max_yaw_velocity>0.5</max_yaw_velocity>
     </plugin>
   </gazebo>
@@ -246,27 +246,6 @@
     </sensor>
   </gazebo> -->
 
-  <gazebo reference="imu_link">
-    <gravity>true</gravity>
-    <sensor name="imu_sensor" type="imu">
-      <always_on>true</always_on>
-      <update_rate>100</update_rate>
-      <visualize>true</visualize>
-      <topic>imu</topic>
-      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-        <topicName>imu</topicName>
-        <bodyName>imu_link</bodyName>
-        <updateRateHZ>10.0</updateRateHZ>
-        <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 0 0</xyzOffset>
-        <rpyOffset>0 0 0</rpyOffset>
-        <frameName>imu_link</frameName>
-        <initialOrientationAsReference>false</initialOrientationAsReference>
-      </plugin>
-      <pose>0 0 0 0 0 0</pose>
-    </sensor>
-  </gazebo>
-
   <xacro:macro name="arm_gazebo" params="link">
       <gazebo reference="${link}">
           <material>Gazebo/White</material>
@@ -312,10 +291,6 @@
   <xacro:gazebo-joint joint="Pinza_Garra_D" />
   <xacro:gazebo-joint joint="Pinza_Garra_I" />
   <xacro:gazebo-joint joint="neck_joint" />
-  <xacro:gazebo-joint joint="Chasis_R1" />
-  <xacro:gazebo-joint joint="Chasis_R2" />
-  <xacro:gazebo-joint joint="Chasis_R3" />
-  <xacro:gazebo-joint joint="Chasis_R4" />
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
   </gazebo>

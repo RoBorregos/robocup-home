@@ -57,10 +57,10 @@ obstacle_layer:
 
   camera_depth:
     data_type: PointCloud2
-    topic: /zed2i/zed_node/point_cloud/ds_cloud_registered
+    topic: /zed2/zed_node/point_cloud/ds_no_plane_cloud_registered
     marking: true
     clearing: true
-    min_obstacle_height: 0.5
+    min_obstacle_height: 0.05
     max_obstacle_height: 1.0
 
 inflation_layer:
