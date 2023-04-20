@@ -7,7 +7,7 @@ import numpy as np
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image, CameraInfo
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PoseStamped
 import math
 import sys
 from geometry_msgs.msg import Point, PoseArray, Pose
@@ -24,6 +24,7 @@ class DetectorHumano:
     def __init__(self):
         self.bridge = CvBridge()
         self.posePublisher = rospy.Publisher("/pose_estimation", Point, queue_size=5)
+        self.posePublisher2 = rospy.Publisher("/posestamped", PoseStamped, queue_size=5)
         self.sub = rospy.Subscriber('/zed2i/zed_node/rgb/image_rect_color', Image, self.callback)
         self.subscriberDepth = rospy.Subscriber("/zed2i/zed_node/depth/depth_registered", Image, self.depthImageRosCallback)
         self.subscriberInfo = rospy.Subscriber("/zed2i/zed_node/depth/camera_info", CameraInfo, self.infoImageRosCallback)
@@ -81,9 +82,18 @@ class DetectorHumano:
                         self.mp_pose.POSE_CONNECTIONS,
                         landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style())
                          # publish image to a topic called image_pose w
+                    if results.pose_landmarks:
+                        x = (
+                                results.pose_landmarks.landmark[12].x + results.pose_landmarks.landmark[11].x) / 2
+                        y = (
+                            results.pose_landmarks.landmark[12].y + results.pose_landmarks.landmark[11].y) / 2
+                        x = int(x*image.shape[1])
+                        y = int(y*image.shape[0])
+                        image = cv2.circle(image, (x, y), 20, (255,0,0), 2)
+                        
                     image_pose = Image()
                     image_pose.header.stamp = rospy.Time.now()
-                    image_pose.header.frame_id = "zed2_camera_center"
+                    image_pose.header.frame_id = "zed2i_camera_center"
                     image_pose.height = image.shape[0]
                     image_pose.width = image.shape[1]
                     image_pose.encoding = "rgb8"
@@ -93,10 +103,6 @@ class DetectorHumano:
                     #convert image to ros image
                     self.image_pose_pub.publish(image_pose)
                     if results.pose_landmarks:
-                        x = (
-                            results.pose_landmarks.landmark[12].x + results.pose_landmarks.landmark[11].x) / 2
-                        y = (
-                            results.pose_landmarks.landmark[12].y + results.pose_landmarks.landmark[11].y) / 2
                         rospy.logwarn("pose")
                         point2D  = [x, y]
                         rospy.logwarn(point2D)
@@ -105,10 +111,21 @@ class DetectorHumano:
                         if len(self.depth_image) != 0:
                             depth = self.get_depth(self.depth_image, point2D)
                             point3D_ = self.deproject_pixel_to_point(self.camera_info, point2D, depth)
-                            point3D.x = point3D_[0]
-                            point3D.y = point3D_[1]
-                            point3D.z = point3D_[2]
-                            self.posePublisher.publish(point3D)           
+                            point3D.x = point3D_[2]
+                            point3D.y = point3D_[0]
+                            point3D.z = point3D_[1]
+                            self.posePublisher.publish(point3D)
+                            
+                            a = PoseStamped()
+                            a.header.frame_id = "zed2i_camera_center"
+                            a.pose.position.x = point3D.x
+                            a.pose.position.y = point3D.y
+                            a.pose.position.z = point3D.z
+                            a.pose.orientation.x = 0
+                            a.pose.orientation.y = 0
+                            a.pose.orientation.z = 0
+                            a.pose.orientation.w = 1
+                            self.posePublisher2.publish(a)         
 
         
     def get_depth(self,depth_image, pixel):

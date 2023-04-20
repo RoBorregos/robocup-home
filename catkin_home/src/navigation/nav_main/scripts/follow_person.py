@@ -21,7 +21,7 @@ class ObjectPoseNEDConverter:
         self.quat = np.array([0.0, 0.0, 0.0, 0.0])
 
         # Subscribe to odometry messages
-        self.odom_sub = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, self.odom_callback)
+        self.odom_sub = rospy.Subscriber('/robot_pose', PoseWithCovarianceStamped, self.odom_callback)
 
         # Subscribe to object detection messages
         self.obj_sub = rospy.Subscriber('/object_detection', PointStamped, self.obj_callback)
