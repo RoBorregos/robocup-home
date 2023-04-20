@@ -55,22 +55,26 @@
   </joint>
   <!-- ########################################################################### -->
   <link name="base_link"></link>
+  <joint name="base_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="Base"/>
+  </joint>
 
-  <link
-    name="Base">
+  <link name="Base">
     <inertial>
       <origin
-        xyz="0.00112427313846248 0.0541261508672339 0.24050906361582"
+        xyz="-0.0421641375528847 0.0262460783517876 0.278949374295985"
         rpy="0 0 0" />
       <mass
-        value="5.93374358050292" />
+        value="26.7355250620724" />
       <inertia
-        ixx="0.102381643014475"
-        ixy="-2.49686782363747E-05"
-        ixz="7.32458903286202E-10"
-        iyy="0.103854959010774"
-        iyz="0.000125261050360604"
-        izz="0.0793094023514086" />
+        ixx="0.418467609556011"
+        ixy="0.0235787657447133"
+        ixz="8.3665476036404E-06"
+        iyy="0.302793463787765"
+        iyz="0.000125414849304393"
+        izz="0.482705153704045" />
     </inertial>
     <visual>
       <origin
@@ -96,18 +100,10 @@
       </geometry>
     </collision>
   </link>
-
-  <joint name="base_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <parent link="base_link"/>
-    <child link="Base"/>
-  </joint>
-
-  <link
-    name="Llanta1">
+  <link name="Llanta1">
     <inertial>
       <origin
-        xyz="3.88578058618805E-16 6.52256026967279E-16 0.0200000000000003"
+        xyz="4.02455846426619E-16 6.59194920871187E-16 0.0200000000000003"
         rpy="0 0 0" />
       <mass
         value="0.528918539158378" />
@@ -116,7 +112,7 @@
         ixy="-1.64320882748444E-36"
         ixz="1.72050413075699E-18"
         iyy="0.000631308353030454"
-        iyz="-1.04568558444466E-36"
+        iyz="-1.31827511759964E-36"
         izz="0.00112157176228534" />
     </inertial>
     <visual>
@@ -143,12 +139,11 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Llanta1Cont"
+  <joint name="Llanta1Cont"
     type="continuous">
     <origin
-      xyz="0.145999999999999 0.1155 0.0375"
-      rpy="1.5707963267949 0 1.5707963267949" />
+      xyz="0.146 0.1155 0.0375"
+      rpy="1.5708 0 1.5708" />
     <parent
       link="Base" />
     <child
@@ -156,8 +151,7 @@
     <axis
       xyz="0 0 1" />
   </joint>
-  <link
-    name="Llanta2">
+  <link name="Llanta2">
     <inertial>
       <origin
         xyz="-1.38777878078145E-17 -1.11022302462516E-16 -0.02"
@@ -196,12 +190,11 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Llanta2Cont"
+  <joint name="Llanta2Cont"
     type="continuous">
     <origin
       xyz="-0.146 0.1155 0.0375"
-      rpy="1.5707963267949 0.0209487637131551 1.5707963267949" />
+      rpy="1.5708 0.020949 1.5708" />
     <parent
       link="Base" />
     <child
@@ -209,8 +202,7 @@
     <axis
       xyz="0 0 1" />
   </joint>
-  <link
-    name="Loca1">
+  <link name="Loca1">
     <inertial>
       <origin
         xyz="0 0.0345546529721542 -2.77555756156289E-17"
@@ -219,10 +211,10 @@
         value="0.0167352759899297" />
       <inertia
         ixx="7.54150196205056E-06"
-        ixy="1.16160786447369E-21"
-        ixz="-8.76254817321673E-22"
+        ixy="1.29419148906084E-21"
+        ixz="-8.52898332671465E-22"
         iyy="5.85653067123054E-06"
-        iyz="-1.79120955050736E-21"
+        iyz="-1.78257050125666E-21"
         izz="7.09027556219276E-06" />
     </inertial>
     <visual>
@@ -249,12 +241,11 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Loca1Cont"
+  <joint name="Loca1Cont"
     type="continuous">
     <origin
       xyz="-0.09 -0.072 0"
-      rpy="1.5707963267949 0 0" />
+      rpy="1.5708 0 0" />
     <parent
       link="Base" />
     <child
@@ -262,14 +253,13 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="LlantaLoca1">
+  <link name="LlantaLoca1">
     <inertial>
       <origin
         xyz="1.38777878078145E-17 -0.00741632050454701 1.38777878078145E-17"
         rpy="0 0 0" />
       <mass
-        value="0.0694291976443345" />
+        value="0.0694291976443344" />
       <inertia
         ixx="3.17985725211052E-05"
         ixy="-5.21349495168481E-38"
@@ -302,8 +292,7 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="LlantaLoca1Cont"
+  <joint name="LlantaLoca1Cont"
     type="continuous">
     <origin
       xyz="0 0.01 0"
@@ -315,20 +304,19 @@
     <axis
       xyz="1 0 0" />
   </joint>
-  <link
-    name="Loca2">
+  <link name="Loca2">
     <inertial>
       <origin
-        xyz="1.38777878078145E-17 0.0345546529721542 2.77555756156289E-17"
+        xyz="0 0.0345546529721542 2.77555756156289E-17"
         rpy="0 0 0" />
       <mass
         value="0.0167352759899297" />
       <inertia
         ixx="7.54150196205057E-06"
-        ixy="-2.55901620932607E-21"
+        ixy="-2.82359729101002E-21"
         ixz="3.17637355220363E-22"
         iyy="5.85653067123054E-06"
-        iyz="2.07178253258396E-21"
+        iyz="2.05773707188381E-21"
         izz="7.09027556219276E-06" />
     </inertial>
     <visual>
@@ -355,12 +343,11 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Loca2Cont"
+  <joint name="Loca2Cont"
     type="continuous">
     <origin
       xyz="0.09 -0.072 0"
-      rpy="1.5707963267949 0 0.119243381039157" />
+      rpy="1.5708 0 0.11924" />
     <parent
       link="Base" />
     <child
@@ -368,8 +355,7 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link
-    name="LlantaLoca2">
+  <link name="LlantaLoca2">
     <inertial>
       <origin
         xyz="0 -0.00469061857919597 -0.00574455456677592"
@@ -378,8 +364,8 @@
         value="0.0694291976443344" />
       <inertia
         ixx="3.17985725211052E-05"
-        ixy="-8.78796682776337E-21"
-        ixz="8.470329472543E-22"
+        ixy="-8.15269211732264E-21"
+        ixz="4.2351647362715E-22"
         iyy="1.95153903045283E-05"
         iyz="-1.6940658945086E-21"
         izz="1.95153903045284E-05" />
@@ -408,12 +394,11 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="LlantaLoca2Cont"
+  <joint name="LlantaLoca2Cont"
     type="continuous">
     <origin
       xyz="0 0.01 0"
-      rpy="-0.886055251315474 0 0" />
+      rpy="-0.88606 0 0" />
     <parent
       link="Loca2" />
     <child
@@ -421,8 +406,7 @@
     <axis
       xyz="1 0 0" />
   </joint>
-  <link
-    name="Lidar">
+  <link name="Lidar">
     <inertial>
       <origin
         xyz="-9.49517221724887E-50 0.0125 -1.38777878078145E-17"
@@ -461,32 +445,32 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Lidar1Cont"
-    type="fixed">
+  <joint name="Lidar1Cont"
+    type="continuous">
     <origin
       xyz="0 -0.11 0.12"
-      rpy="1.5707963267949 0 0" />
+      rpy="1.5708 0 0" />
     <parent
       link="Base" />
     <child
       link="Lidar" />
+    <axis
+      xyz="0 1 0" />
   </joint>
-  <link
-    name="RevCam1">
+  <link name="RevCam1">
     <inertial>
       <origin
-        xyz="-0.00218640113558178 0.0383778465870379 -0.00515828443968216"
+        xyz="-0.00218640043520604 0.0373778462346743 0.0578417163847615"
         rpy="0 0 0" />
       <mass
-        value="0.0807173201754215" />
+        value="0.0807173231195892" />
       <inertia
-        ixx="2.37796512993046E-05"
-        ixy="8.55530391588451E-07"
-        ixz="-2.49698267928072E-07"
-        iyy="1.83589770932126E-05"
-        iyz="-4.19202714077016E-06"
-        izz="2.27836705307722E-05" />
+        ixx="2.37796509107372E-05"
+        ixy="8.55528572510069E-07"
+        ixz="-2.49699440783422E-07"
+        iyy="1.83589761907289E-05"
+        iyz="-4.19202686542368E-06"
+        izz="2.27836700405391E-05" />
     </inertial>
     <visual>
       <origin
@@ -512,12 +496,11 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Cam1Rev1"
+  <joint name="Cam1Rev1"
     type="revolute">
     <origin
-      xyz="0.001 0.0505 1.545"
-      rpy="1.5708 0 0.034703" />
+      xyz="-0.16729 0.098455 1.546"
+      rpy="1.5708 0.0 0.13201" />
     <parent
       link="Base" />
     <child
@@ -525,26 +508,25 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-0.5236"
-      upper="0.5236"
+      lower="-0.54"
+      upper="0.54"
       effort="0"
       velocity="0" />
   </joint>
-  <link
-    name="RevCam2">
+  <link name="RevCam2">
     <inertial>
       <origin
-        xyz="-0.00391793043436037 -0.0102932368661919 0.0320850186207662"
+        xyz="0.00149250457233677 -0.00361361108108715 0.0165031514881021"
         rpy="0 0 0" />
       <mass
-        value="0.0649807233686399" />
+        value="0.0702746066702973" />
       <inertia
-        ixx="2.601013236039E-05"
-        ixy="-1.98669220487697E-07"
-        ixz="-5.07308429498073E-06"
-        iyy="4.18390847409689E-05"
-        iyz="3.16753039765753E-07"
-        izz="3.84670102617888E-05" />
+        ixx="3.32748236022629E-05"
+        ixy="5.65176745386308E-06"
+        ixz="-4.55903201425305E-06"
+        iyy="4.5252809651764E-05"
+        iyz="4.8432689106791E-06"
+        izz="4.86199055260646E-05" />
     </inertial>
     <visual>
       <origin
@@ -570,44 +552,42 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Cam1Rev2"
+  <joint name="Cam1Rev2"
     type="revolute">
     <origin
-      xyz="0 0.05 0"
-      rpy="0.0 0.0 0.0" />
+      xyz="-0.0021558 0.0036505 0.085266"
+      rpy="-0.08 -0.13856 0.0010948" />
     <parent
       link="RevCam1" />
     <child
       link="RevCam2" />
     <axis
-      xyz="0.9913 0 0.13162" />
+      xyz="1 0 0" />
     <limit
-      lower="-0.5236"
-      upper="0.5236"
+      lower="-0.54"
+      upper="0.54"
       effort="0"
       velocity="0" />
   </joint>
-  <link
-    name="Cam1">
+  <link name="Cam1">
     <inertial>
       <origin
-        xyz="0.0 0.0 0.0"
+        xyz="-0.0161158990750312 -2.71397957091191E-06 8.43511749604176E-06"
         rpy="0 0 0" />
       <mass
-        value="0.152258268245259" />
+        value="0.152258301511643" />
       <inertia
-        ixx="2.28182702795267E-05"
-        ixy="-2.56241481012795E-09"
-        ixz="-6.38770400261561E-09"
-        iyy="0.000372324880916607"
-        iyz="-3.15065555476608E-08"
-        izz="0.000374741839243315" />
+        ixx="0.00037232470424964"
+        ixy="2.49919563850586E-09"
+        ixz="-3.15602915288441E-08"
+        iyy="2.28180071550079E-05"
+        iyz="6.18457007379358E-09"
+        izz="0.000374741909994746" />
     </inertial>
     <visual>
       <origin
-        xyz="-0.02 0 -0.035"
-        rpy="3.1416 3.1416 1.57" />
+        xyz="0 0 0"
+        rpy="0 0 0" />
       <geometry>
         <mesh
           filename="package://robot_description/meshes/Dashgo/Cam1.STL" />
@@ -615,7 +595,7 @@
       <material
         name="">
         <color
-          rgba="0.176470588235294 0.176470588235294 0.176470588235294 1" />
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -628,34 +608,32 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Cam1Fix"
+  <joint name="Cam1Fix"
     type="fixed">
     <origin
-      xyz="0.001 0.1 1.5325"
-      rpy="0 0.822 -1.54" />
+      xyz="0.0012272 -0.035179 0.037568"
+      rpy="-0.0081734 -0.62147 -1.566" />
     <parent
-      link="Base" />
+      link="RevCam2" />
     <child
       link="Cam1" />
     <axis
       xyz="0 0 0" />
   </joint>
-  <link
-    name="BaseBrazo">
+  <link name="BaseBrazo">
     <inertial>
       <origin
-        xyz="3.67638287580227E-16 4.9999999999939E-05 -6.24500451351651E-17"
+        xyz="-3.80430852558273E-17 -6.24500451351651E-17 -5.000000000005E-05"
         rpy="0 0 0" />
       <mass
         value="0.00121022002997899" />
       <inertia
         ixx="1.17272637070328E-06"
-        ixy="6.31088724176809E-28"
-        ixz="-2.66571877092316E-23"
-        iyy="2.34545072437318E-06"
-        iyz="8.8102553557097E-43"
-        izz="1.17272637070328E-06" />
+        ixy="2.62532909257585E-23"
+        ixz="-6.31088724176809E-28"
+        iyy="1.17272637070328E-06"
+        iyz="8.80890739742394E-43"
+        izz="2.34545072437318E-06" />
     </inertial>
     <visual>
       <origin
@@ -681,11 +659,10 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Bra1Fix"
+  <joint name="Bra1Fix"
     type="fixed">
     <origin
-      xyz="0 0.054 0.458"
+      xyz="0 0.054 0.4581"
       rpy="0 0 0" />
     <parent
       link="Base" />
@@ -694,21 +671,20 @@
     <axis
       xyz="0 0 0" />
   </joint>
-  <link
-    name="Cam2Rev">
+  <link name="Cam2Rev">
     <inertial>
       <origin
-        xyz="0.00682985175837994 -0.000385575645117986 -0.0349999944296163"
+        xyz="0.00682983624522909 -0.000385587206922666 -0.0349999920861893"
         rpy="0 0 0" />
       <mass
-        value="0.034811214257021" />
+        value="0.0348111598620482" />
       <inertia
-        ixx="2.55962188508613E-05"
-        ixy="-2.57231687004444E-08"
-        ixz="-1.01276020904133E-12"
-        iyy="2.69230048658024E-05"
-        iyz="-2.47763740414839E-12"
-        izz="1.54258334654207E-05" />
+        ixx="2.55962147675482E-05"
+        ixy="-2.5718115731198E-08"
+        ixz="-1.41168757122553E-12"
+        iyy="2.69229988150616E-05"
+        iyz="-3.22321270093433E-12"
+        izz="1.54258242876257E-05" />
     </inertial>
     <visual>
       <origin
@@ -734,12 +710,11 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Cam2Rev"
+  <joint name="Cam2Rev"
     type="revolute">
     <origin
-      xyz="0.1175 -0.16539 0.50877"
-      rpy="-1.5708 0.52947 -1.5708" />
+      xyz="-0.0475 -0.16539 0.50877"
+      rpy="-1.5708 1.1309 -1.5708" />
     <parent
       link="Base" />
     <child
@@ -752,21 +727,20 @@
       effort="0"
       velocity="0" />
   </joint>
-  <link
-    name="Cam2">
+  <link name="Cam2">
     <inertial>
       <origin
-        xyz="2.78178449257538E-06 0.0154104478086763 0.043479722430293"
+        xyz="-0.0161159159322545 -2.67749700753883E-06 8.41275410029541E-06"
         rpy="0 0 0" />
       <mass
-        value="0.152258366821035" />
+        value="0.152258232607803" />
       <inertia
-        ixx="2.28178239715899E-05"
-        ixy="-2.07069498673643E-09"
-        ixz="-6.33175797043533E-09"
-        iyy="0.000372337777425285"
-        iyz="-1.79769097625592E-07"
-        izz="0.000374729108133576" />
+        ixx="0.000372324819517498"
+        ixy="2.56638565002235E-09"
+        ixz="-3.15448631037864E-08"
+        iyy="2.28182500829627E-05"
+        iyz="6.19441632492445E-09"
+        izz="0.000374741789457093" />
     </inertial>
     <visual>
       <origin
@@ -779,7 +753,7 @@
       <material
         name="">
         <color
-          rgba="0.176470588235294 0.176470588235294 0.176470588235294 1" />
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
       </material>
     </visual>
     <collision>
@@ -792,16 +766,66 @@
       </geometry>
     </collision>
   </link>
-  <joint
-    name="Cam2Fixed"
+  <joint name="Cam2Fixed"
     type="fixed">
     <origin
-      xyz="-0.0015140313995038 0.0417760943111851 -0.034999943378925"
-      rpy="1.47657636910629 1.5707963267949 0" />
+      xyz="0.034026 0.0014743 -0.035"
+      rpy="1.5708 0 0.032661" />
     <parent
       link="Cam2Rev" />
     <child
       link="Cam2" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link name="Cam3">
+    <inertial>
+      <origin
+        xyz="-0.0161158990646986 -2.71398471196616E-06 8.43515159343333E-06"
+        rpy="0 0 0" />
+      <mass
+        value="0.15225830141293" />
+      <inertia
+        ixx="0.000372324703580476"
+        ixy="2.49921630269361E-09"
+        ixz="-3.15603379522398E-08"
+        iyy="2.28180071728585E-05"
+        iyz="6.18490198100671E-09"
+        izz="0.000374741909293992" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Cam3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Cam3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Cam3Fix"
+    type="fixed">
+    <origin
+      xyz="-0.159 0.063143 1.5387"
+      rpy="0 0.7854 -1.5708" />
+    <parent
+      link="Base" />
+    <child
+      link="Cam3" />
     <axis
       xyz="0 0 0" />
   </joint>
