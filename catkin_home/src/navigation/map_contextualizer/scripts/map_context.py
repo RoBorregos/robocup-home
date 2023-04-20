@@ -41,9 +41,8 @@ from interactive_markers.menu_handler import *
 from visualization_msgs.msg import *
 from geometry_msgs.msg import Point, Pose
 
-
 server = None
-robot_pose = Pose
+robot_pose = Pose()
 marker_z = 0.5
   
 menu_handler = MenuHandler()
@@ -72,7 +71,7 @@ def makeMarker():
 
 def makeMenuMarker( position ):
     global int_marker
-    int_marker.header.frame_id = "pose"
+    int_marker.header.frame_id = "odom"
     int_marker.pose.position = position
     int_marker.scale = 0.5
 
@@ -108,8 +107,8 @@ def poseFeedback( feedback ):
     context = context.split('-')
     last_key1 = context[0]
     last_key2 = context[1]
-    rospy.loginfo("Insert ROI => ROI Room: " + context[0] + " ROI Place" + context[1] + "\nPOSE: x = {} y = {} z = {}\nORIENTATION: x = {} y = {} z = {} w = {}".format(feedback.position.x, feedback.position.y, feedback.position.z - marker_z, feedback.orientation.x, feedback.orientation.y, feedback.orientation.z, feedback.orientation.w))   
-    savePose(context[0], context[1] , feedback.position.x, feedback.position.y, feedback.position.z - marker_z, feedback.orientation.x, feedback.orientation.y, feedback.orientation.z, feedback.orientation.w)
+    rospy.loginfo("Insert ROI => ROI Room: " + context[0] + " ROI Place" + context[1] + "\nPOSE: x = {} y = {} z = {}\nORIENTATION: x = {} y = {} z = {} w = {}".format(feedback.pose.position.x, feedback.pose.position.y, feedback.pose.position.z - marker_z, feedback.pose.orientation.x, feedback.pose.orientation.y, feedback.pose.orientation.z, feedback.pose.orientation.w))   
+    savePose(context[0], context[1] , feedback.pose.position.x, feedback.pose.position.y, feedback.pose.position.z - marker_z, feedback.pose.orientation.x, feedback.pose.orientation.y, feedback.pose.orientation.z, feedback.pose.orientation.w)
 
 def initDict(config_file):
     global roi_dict
@@ -122,7 +121,7 @@ def initDict(config_file):
 def save_points(save):
     # Abre el archivo JSON y escribe el diccionario nuevo en él 
 
-    file = "/home/alexis/robocup-home/catkin_home/src/navigation/map_contextualizaer/scripts/areas.json"
+    file = "/home/jetson/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json"
     with open(file, "w") as outfile:
         json.dump(roi_dict, outfile, indent=4)
 
@@ -152,7 +151,7 @@ if __name__=="__main__":
       rospy.Subscriber("/robot_pose", Pose, pose_callback)
       rospy.loginfo("Subscribed to /robot_pose topic")
 
-      initDict("/home/alexis/robocup-home/catkin_home/src/navigation/map_contextualizaer/scripts/areas.json")
+      initDict("/home/jetson/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json")
       initMenu()
 
       rospy.loginfo("inicializado")
