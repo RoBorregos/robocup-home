@@ -7,11 +7,12 @@ import numpy as np
 import rospy
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image, CameraInfo
-from geometry_msgs.msg import Point, PoseStamped, PointStamped
+from geometry_msgs.msg import Point, PoseStamped, PointStamped, PoseWithCovarianceStamped
 import math
 import sys
 from geometry_msgs.msg import Point, PoseArray, Pose
 import tf2_ros
+import numpy as np
 from sensor_msgs.msg import PointCloud2
 import tf2_geometry_msgs  # Import the tf2_geometry_msgs library
 FLT_EPSILON = sys.float_info.epsilon
@@ -31,7 +32,7 @@ class DetectorHumano:
         self.subscriberDepth = rospy.Subscriber("/zed2/zed_node/depth/depth_registered", Image, self.depthImageRosCallback)
         self.subscriberInfo = rospy.Subscriber("/zed2/zed_node/depth/camera_info", CameraInfo, self.infoImageRosCallback)
         self.pubPoint = rospy.Publisher('transformed_point', PointStamped, queue_size=10)
-
+        self.odom_sub = rospy.Subscriber('/robot_pose', PoseWithCovarianceStamped, self.odom_callback)
         self.mask  = None
         self.cv_image = None
         self.camera_info = None
@@ -43,9 +44,14 @@ class DetectorHumano:
         self.mp_drawing_styles = mp.solutions.drawing_styles
         self.image_pose_pub = rospy.Publisher('/image_pose', Image, queue_size=10)
         self.tf_buffer = tf2_ros.Buffer()
+        # Define NED reference frame origin (change these values to match your use case)
+        self.ned_origin = np.array([0.0, 0.0, 0.0])
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
         self.pub_follow = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
     # Function to handle a ROS depth input.
+    def odom_callback(self, msg):
+        # Extract the position and orientation from the odometry message
+        self.ned_origin = np.array([msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z])
     def depthImageRosCallback(self, data):
         try:
             self.depth_image = self.bridge.imgmsg_to_cv2(data, "32FC1")
@@ -120,24 +126,25 @@ class DetectorHumano:
                             point3D.y = point3D_[0]
                             point3D.z = point3D_[1]
                             point_x = PointStamped()
-                            point_x.header.frame_id = 'zed2i_camera_center'
-                            point_x.point.x = point3D.x 
-                            point_x.point.y = point3D.y
-                            point_x.point.z = point3D.z
+                            point_x.header.frame_id = 'zed2_camera_center'
+                            point_x.point.x = point3D.x + self.ned_origin[0]
+                            point_x.point.y = point3D.y + self.ned_origin[1]
+                            point_x.point.z = point3D.z + self.ned_origin[2]
+                            self.posePublisher2.publish(point_x)
                             a = PointStamped()
-                            a.header.frame_id = "zed2i_camera_center"
-                            # Use the TF buffer to lookup the transform from 'zed2_base_link' to 'map'
-                            transform = self.tf_buffer.lookup_transform('map',"zed2_base_link", rospy.Time(0), rospy.Duration(1.0))
+                            a.header.frame_id = "zed2_camera_center"
+                            # Use the TF buffer to lokup the transform from 'zed2_base_link' to 'map'
+                            #transform = self.tf_buffer.lookup_transform('map',"zed2i_camera_center", rospy.Time(0), rospy.Duration(1.0))
                             # Transform the point to the 'map' frame
-                            point_map = tf2_geometry_msgs.do_transform_point(point_x, transform)
-                            self.posePublisher2.publish(point_map)    
-                            self.posePublisher.publish(point_map.point) 
+                            # point_map = tf2_geometry_msgs.do_transform_point(point_x, transform)
+                            # self.posePublisher2.publish(point_map)    
+                            self.posePublisher.publish(point_x.point) 
                             pose = PoseStamped()
                             pose.header.stamp = rospy.Time.now()
                             pose.header.frame_id = 'map'
-                            pose.pose.position.x = point_map.point.x
-                            pose.pose.position.y =point_map.point.y
-                            pose.pose.position.z = point_map.point.z
+                            pose.pose.position.x = point_x.point.x
+                            pose.pose.position.y = point_x.point.y
+                            pose.pose.position.z = point_x.point.z
                             self.pub_follow.publish(pose)
 
         

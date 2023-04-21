@@ -1,0 +1,4 @@
+<launch>
+	<include file="$(find pc_downsample)/launch/pc_downsample.launch"/>
+	<include file="$(find pc_downsample)/launch/pc_planefilter.launch"/>
+</launch>
