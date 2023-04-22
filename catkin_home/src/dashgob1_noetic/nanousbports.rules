@@ -1,0 +1,8 @@
+# Symlink for Arduino Mega
+ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0042", SYMLINK+="port0"
+
+# Symlink for Dashgo PCBs 0403:6001
+ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", SYMLINK+="port0"
+
+# Symlink for LIDAR
+ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="port1"
