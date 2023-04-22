@@ -7,9 +7,6 @@
 [submodule "catkin_home/src/yocs_velocity_smoother"]
 	path = catkin_home/src/yocs_velocity_smoother
 	url = https://github.com/nlimpert/yocs_velocity_smoother.git
-[submodule "dashgob1_noetic"]
-	path = dashgob1_noetic
-	url = https://github.com/Josecisneros001/dashgob1_noetic.git
 [submodule "catkin_home/src/zed-ros-wrapper"]
 	path = catkin_home/src/zed-ros-wrapper
 	url = https://github.com/stereolabs/zed-ros-wrapper.git

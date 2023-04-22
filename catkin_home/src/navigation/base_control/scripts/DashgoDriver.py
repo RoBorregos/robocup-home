@@ -368,8 +368,8 @@ class BaseController:
         self.last_cmd_vel = now
 
         self.emergencybt_val = 0
-        self.emergencybt_Pdpub = rospy.Publisher('emergencybt_status', Int16, queue_size=5)
-        
+        self.emergencybt_pub = rospy.Publisher('emergencybt_status', Int16, queue_size=5)
+
         # Subscriptions
         rospy.Subscriber("smoother_cmd_vel", Twist, self.cmdVelCallback)
         self.robot_cmd_vel_pub = rospy.Publisher('robot_cmd_vel', Twist, queue_size=5)
@@ -394,7 +394,7 @@ class BaseController:
 
         self.SUCCESS = 0
         self.FAIL = -1
-
+   
         rospy.Subscriber("imu_reset", Int16, self.resetImuCallback)
         self.imu_angle_pub = rospy.Publisher('imu_angle_MicroController', Int16, queue_size=5)
         self.imu_pub = rospy.Publisher('imu_val', String, queue_size=5)
@@ -459,11 +459,11 @@ class BaseController:
 
             try:
                 res  = self.Microcontroller.get_emergency_button()
-                self.emergencybt_val = res
-                self.emergencybt_Pdpub.publish(self.emergencybt_val)
+                self.emergencybt_val = res[1]
+                self.emergencybt_pub.publish(self.emergencybt_val)
             except:
                 self.emergencybt_val = -1
-                self.emergencybt_Pdpub.publish(-1)
+                self.emergencybt_pub.publish(-1)
                 rospy.logerr("get emergencybt  exception")
 
 
@@ -606,9 +606,9 @@ class BaseController:
             robot_cmd_vel.angular.z = th
         self.robot_cmd_vel_pub.publish(robot_cmd_vel)
 
-        self.v_x = x
-        self.v_y = 0
-        self.v_th = th
+        self.v_x =  robot_cmd_vel.linear.x
+        self.v_y =  robot_cmd_vel.linear.y
+        self.v_th = robot_cmd_vel.angular.z
 
 class MicroControllerROS():
     def __init__(self):
@@ -620,7 +620,7 @@ class MicroControllerROS():
         self.port = rospy.get_param("~port", "/dev/ttyUSB0")
         self.baud = int(rospy.get_param("~baud", 115200))
         self.timeout = rospy.get_param("~timeout", 0.5)
-        self.base_frame = rospy.get_param("~base_frame", 'base_footprint')
+        self.base_frame = rospy.get_param("~base_frame", 'base_link')
 
         # Overall loop rate: should be faster than fastest sensor rate
         self.rate = int(rospy.get_param("~rate", 50))
@@ -671,7 +671,7 @@ class MicroControllerROS():
 def testController():
     # Initialize the controlller
     port = "/dev/ttyUSB0"
-    baud = 115200
+    baud = 57600
     timeout = 0.1
     controller = Microcontroller(port, baud, timeout)
     controller.connect()
@@ -680,9 +680,9 @@ def testController():
     print(controller.get_baud())
     print(controller.get_encoder_counts())
     print(controller.reset_IMU())
-    print(controller.get_imu_val())
     print(controller.get_emergency_button())
     print(controller.reset_encoders())
+    
     print(controller.stop())
     
     velocities = [-0.25, 0.25]
@@ -690,10 +690,12 @@ def testController():
     start_time = time.time()
     while(1):
         print(controller.get_imu_val())
+        print(controller.get_emergency_button())
+        print(controller.get_encoder_counts())
         if time.time() - start_time > 2.5:
             index = (index + 1) % 2
             start_time = time.time()
-        controller.drive(velocities[index], 0.0)
+        # controller.drive(velocities[index], 0.0)
         time.sleep(0.1) 
 
 if __name__ == '__main__':
