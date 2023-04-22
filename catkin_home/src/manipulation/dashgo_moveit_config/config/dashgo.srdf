@@ -10,11 +10,7 @@
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="arm">
-        <joint name="joint1"/>
-        <joint name="joint2"/>
-        <joint name="joint3"/>
-        <joint name="joint4"/>
-        <joint name="joint5"/>
+        <chain base_link="link_base" tip_link="end_effector_link" />
     </group>
     <group name="gripper">
         <joint name="Rev1Servo"/>
@@ -24,29 +20,41 @@
         <joint name="Cam1Rev1"/>
         <joint name="Cam1Rev2"/>
     </group>
-    <group name="base">
+    <group name="lineal">
         <joint name="odom_y"/>
-        <joint name="odom_x"/>
+    </group>
+    <group name="rotational">
         <joint name="odom_r"/>
     </group>
-    <group name="whole_body">
+    <group name="whole_body_lineal">
         <group name="arm"/>
-        <group name="base"/>
+        <group name="lineal" />
+    </group>
+    <group name="whole_body_rotational">
+        <group name="arm"/>
+        <group name="rotational" />
     </group>
     <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
     <group_state name="arm_default" group="arm">
-        <joint name="joint1" value="3.10669"/>
-        <joint name="joint2" value="-1.2042"/>
-        <joint name="joint3" value="-0.4188"/>
-        <joint name="joint4" value="-1.4311"/>
-        <joint name="joint5" value="0"/>
+        <joint name="joint1" value="0.0"/>
+        <joint name="joint2" value="0.0"/>
+        <joint name="joint3" value="0.0"/>
+        <joint name="joint4" value="0.0"/>
+        <joint name="joint5" value="0.0"/>
     </group_state>
     <group_state name="home" group="arm">
-        <joint name="joint1" value="3.1416" />
+        <joint name="joint1" value="0" />
         <joint name="joint2" value="0" />
         <joint name="joint3" value="0" />
         <joint name="joint4" value="0" />
         <joint name="joint5" value="0" />
+    </group_state>
+    <group_state name="arm_grasp" group="arm">
+        <joint name="joint1" value="1.57" />
+        <joint name="joint2" value="0.0" />
+        <joint name="joint3" value="-3.9" />
+        <joint name="joint4" value="2.33" />
+        <joint name="joint5" value="-1.57" />
     </group_state>
     <group_state name="close" group="gripper">
         <joint name="Rev1Servo" value="0.0"/>
@@ -58,7 +66,29 @@
     </group_state>
     <group_state name="default_neck" group="head">
         <joint name="Cam1Rev1" value="0"/>
-        <joint name="Cam1Rev2" value="0.3962"/>
+        <joint name="Cam1Rev2" value="0"/>
+    </group_state>
+    <group_state name="default_lineal" group="lineal">
+        <joint name="odom_y" value="0"/>
+    </group_state>
+    <group_state name="default_rotational" group="rotational">
+        <joint name="odom_r" value="0"/>
+    </group_state>
+    <group_state name="default_whole_body_lineal" group="whole_body_lineal">
+        <joint name="joint1" value="0.0"/>
+        <joint name="joint2" value="0.0"/>
+        <joint name="joint3" value="0.0"/>
+        <joint name="joint4" value="0.0"/>
+        <joint name="joint5" value="0.0"/>
+        <joint name="odom_y" value="0"/>
+    </group_state>
+    <group_state name="default_whole_body_rotational" group="whole_body_rotational">
+        <joint name="joint1" value="0.0"/>
+        <joint name="joint2" value="0.0"/>
+        <joint name="joint3" value="0.0"/>
+        <joint name="joint4" value="0.0"/>
+        <joint name="joint5" value="0.0"/>
+        <joint name="odom_r" value="0"/>
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="end_effector_link" parent_link="link5" group="gripper" parent_group="arm"/>
