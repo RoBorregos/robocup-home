@@ -5,35 +5,35 @@ rate: 50
 sensorstate_rate: 10
 slam_project_version: 1.1
 
-useImu: False
-useSonar: True
+useImu: True
+useSonar: False
 use_base_controller: True
 base_controller_rate: 30 #10
 
 
-sonar_height: 0.15
-sonar_safe_distance: 8
-sonar_dec_distance: 40.0  ##decelerate
+# sonar_height: 0.15
+# sonar_safe_distance: 8
+# sonar_dec_distance: 40.0  ##decelerate
 
-sonar0_offset_yaw: 3.14
-sonar0_offset_x: -0.091
-sonar0_offset_y: -0.11
+# sonar0_offset_yaw: 3.14
+# sonar0_offset_x: -0.091
+# sonar0_offset_y: -0.11
 
-sonar1_offset_yaw: -0.70
-sonar1_offset_x: 0.265
-sonar1_offset_y: -0.128
+# sonar1_offset_yaw: -0.70
+# sonar1_offset_x: 0.265
+# sonar1_offset_y: -0.128
 
-sonar2_offset_yaw: 0.0
-sonar2_offset_x: 0.27
-sonar2_offset_y: 0.0
+# sonar2_offset_yaw: 0.0
+# sonar2_offset_x: 0.27
+# sonar2_offset_y: 0.0
 
-sonar3_offset_yaw: 0.70 
-sonar3_offset_x: 0.265
-sonar3_offset_y: 0.128
+# sonar3_offset_yaw: 0.70 
+# sonar3_offset_x: 0.265
+# sonar3_offset_y: 0.128
 
-sonar4_offset_yaw: 3.14
-sonar4_offset_x: -0.091
-sonar4_offset_y: 0.11
+# sonar4_offset_yaw: 3.14
+# sonar4_offset_x: -0.091
+# sonar4_offset_y: 0.11
 
 # For a robot that uses base_footprint, change base_frame to base_footprint
 #base_frame: base_link

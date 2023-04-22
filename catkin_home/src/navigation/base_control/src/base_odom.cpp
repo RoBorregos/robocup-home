@@ -1,12 +1,16 @@
-#include <geometry_msgs/Quaternion.h>
+// This script converts "encoders" messages into proper odom messages.
+
 #include <math.h>
-#include <nav_msgs/Odometry.h>
 #include <ros/console.h>
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
-
+#include <tf/tf.h>
+#include <sensor_msgs/Imu.h>
+#include <nav_msgs/Odometry.h>
 #include "base_control/StampedEncoders.h"
+#include <geometry_msgs/Quaternion.h>
+
 
 // Define Velocity struct for clarity in the code.
 struct Velocity {
@@ -39,6 +43,7 @@ const double encoder_resolution = 4320;
 const double robot_constant = 0.25 + 0.20;
 const double dist_per_tick = wheel_circumference / encoder_resolution;
 const bool publish_odom_message = true;
+const bool publish_odom_frame = true;
 
 // Function to save front encoder data to global variables.
 void feCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
@@ -56,11 +61,19 @@ void reCallBack(const base_control::StampedEncoders::ConstPtr& msg) {
     dt_back = msg->encoders.time_delta;
 }
 
+// Function to save back encoder data to global variables.
+void imuCallBack(const sensor_msgs::Imu::ConstPtr& msg) {
+    ROS_INFO( "Accel: %.3f,%.3f,%.3f [m/s^2] - Ang. vel: %.3f,%.3f,%.3f [deg/sec] - Orient. Quat: %.3f,%.3f,%.3f,%.3f",
+              msg->linear_acceleration.x, msg->linear_acceleration.y, msg->linear_acceleration.z,
+              msg->angular_velocity.x, msg->angular_velocity.y, msg->angular_velocity.z,
+              msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
+}
+
 // Function to initalize Odometry Message.
 void initializeOdometryMessage(nav_msgs::Odometry &odom){
     // Define frame constants.
     odom.header.frame_id = "odom";
-    odom.child_frame_id = "base_link";
+    odom.child_frame_id = "base_footprint";
     
     // Define postiion constants.
     odom.pose.pose.position.z = 0.0;
@@ -91,7 +104,7 @@ void initializeOdometryMessage(nav_msgs::Odometry &odom){
 void initializeOdometryTransform(geometry_msgs::TransformStamped &odom_trans){
     // Define frame constants.
     odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "base_link";
+    odom_trans.child_frame_id = "base_footprint";
     
     // Define postiion constants.
     odom_trans.transform.translation.z = 0.0;
@@ -107,7 +120,7 @@ void computeRobotVelocity(Velocity &robot_velocity){
 
     // Compute the overall velocity of the robot.
     robot_velocity.x = (v_fl + v_fr + v_bl + v_br) / 4.0;
-    robot_velocity.y = (v_fl - v_fr - v_bl + v_br) / 4.0;
+    robot_velocity.y = (-v_fl + v_fr + v_bl - v_br) / 4.0;
     robot_velocity.th = (-v_fl + v_fr - v_bl + v_br) / (4.0 * robot_constant);
 }
 
@@ -119,9 +132,10 @@ void computeRobotDisplacement(const Velocity robot_velocity, Position &robot_pos
     const double delta_th = robot_velocity.th * avg_dt;
 
     // Compute the overall displacement.
-    robot_position.x = robot_position.x + delta_x;
-    robot_position.y = robot_position.y + delta_y;
-    robot_position.th = robot_position.th + delta_th;
+    robot_position.x += delta_x * cos(robot_position.th) - delta_y * sin(robot_position.th);
+    robot_position.y += delta_x * sin(robot_position.th) + delta_y * cos(robot_position.th);
+    robot_position.th += delta_th;
+    robot_position.th = fmod(robot_position.th, 2*M_PI);
 }
 
 int main(int argc, char** argv) {
@@ -132,6 +146,7 @@ int main(int argc, char** argv) {
     ros::Publisher odom_pub = ros_node.advertise<nav_msgs::Odometry>("/base_control/odom", 60);
     ros::Subscriber fr_enc = ros_node.subscribe("/base_control/front/encoders", 100, feCallBack);
     ros::Subscriber rr_enc = ros_node.subscribe("/base_control/back/encoders", 100, reCallBack);
+    //ros::Subscriber subImu = ros_node.subscribe("/sensor/imu", 100, imuCallBack);
     tf::TransformBroadcaster odom_broadcaster;
     ros::Time current_time = ros::Time::now();
     
@@ -172,7 +187,7 @@ int main(int argc, char** argv) {
 
         // Create quaternion created from yaw.
         geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(robot_displacement.th);
-    
+        
         // Update odometry message stamp.
         odom.header.stamp = current_time;
         
@@ -198,9 +213,11 @@ int main(int argc, char** argv) {
         if (publish_odom_message) {
             odom_pub.publish(odom);
         }
-        
+
         // Publish odometry transform.
-        odom_broadcaster.sendTransform(odom_trans);
+        if (publish_odom_frame) {
+            odom_broadcaster.sendTransform(odom_trans);
+        }
 
         ros::spinOnce();
         r.sleep();

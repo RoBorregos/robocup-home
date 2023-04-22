@@ -4,10 +4,7 @@
   <version>0.0.0</version>
   <description>Main package of navigation module. Here it can be found the nav stack configurations, maps, and launchfiles.</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <!-- Example:  -->
-  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="pev@todo.todo">pev</maintainer>
+  <maintainer email="BryanMqz@todo.com">bryan</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->

@@ -620,7 +620,7 @@ class MicroControllerROS():
         self.port = rospy.get_param("~port", "/dev/ttyUSB0")
         self.baud = int(rospy.get_param("~baud", 115200))
         self.timeout = rospy.get_param("~timeout", 0.5)
-        self.base_frame = rospy.get_param("~base_frame", 'base_link')
+        self.base_frame = rospy.get_param("~base_frame", 'base_footprint')
 
         # Overall loop rate: should be faster than fastest sensor rate
         self.rate = int(rospy.get_param("~rate", 50))
@@ -680,6 +680,7 @@ def testController():
     print(controller.get_baud())
     print(controller.get_encoder_counts())
     print(controller.reset_IMU())
+    print(controller.get_imu_val())
     print(controller.get_emergency_button())
     print(controller.reset_encoders())
     
@@ -695,7 +696,7 @@ def testController():
         if time.time() - start_time > 2.5:
             index = (index + 1) % 2
             start_time = time.time()
-        # controller.drive(velocities[index], 0.0)
+        controller.drive(velocities[index], 0.0)
         time.sleep(0.1) 
 
 if __name__ == '__main__':

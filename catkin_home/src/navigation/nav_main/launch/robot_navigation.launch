@@ -1,0 +1,25 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="map_file" default="$(find nav_main)/maps/HomeArea.yaml"/>
+  <arg name="is_sim" default="False" />
+
+  <!-- <include file="$(find robot_description)/launch/display.launch" /> -->
+
+  <!-- Map server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+  <!-- AMCL -->
+  <include file="$(find nav_main)/launch/amcl.launch">
+    <arg name="scan_topic" value="scan_filtered"/>
+  </include>
+
+  <!-- MoveBase -->
+  <include file="$(find nav_main)/launch/move_base.launch">
+    <arg name="base_local_planner" value="teb"/>
+  </include>
+
+  <!-- Laser -->
+  <!-- <include file="$(find nav_main)/launch/lidar.launch">
+    <param name="is_sim" value="$(arg is_sim)"/>
+  </include>  -->
+</launch>
