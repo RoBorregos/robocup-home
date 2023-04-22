@@ -367,6 +367,9 @@ class BaseController:
         self.v_th = 0
         self.last_cmd_vel = now
 
+        self.emergencybt_val = 0
+        self.emergencybt_Pdpub = rospy.Publisher('emergencybt_status', Int16, queue_size=5)
+        
         # Subscriptions
         rospy.Subscriber("smoother_cmd_vel", Twist, self.cmdVelCallback)
         self.robot_cmd_vel_pub = rospy.Publisher('robot_cmd_vel', Twist, queue_size=5)
@@ -391,9 +394,6 @@ class BaseController:
 
         self.SUCCESS = 0
         self.FAIL = -1
-   
-        self.emergencybt_val = 0
-        self.emergencybt_pub = rospy.Publisher('emergencybt_status', Int16, queue_size=5)
 
         rospy.Subscriber("imu_reset", Int16, self.resetImuCallback)
         self.imu_angle_pub = rospy.Publisher('imu_angle_MicroController', Int16, queue_size=5)
@@ -460,10 +460,10 @@ class BaseController:
             try:
                 res  = self.Microcontroller.get_emergency_button()
                 self.emergencybt_val = res
-                self.emergencybt_pub.publish(self.emergencybt_val)
+                self.emergencybt_Pdpub.publish(self.emergencybt_val)
             except:
                 self.emergencybt_val = -1
-                self.emergencybt_pub.publish(-1)
+                self.emergencybt_Pdpub.publish(-1)
                 rospy.logerr("get emergencybt  exception")
 
 
@@ -671,7 +671,7 @@ class MicroControllerROS():
 def testController():
     # Initialize the controlller
     port = "/dev/ttyUSB0"
-    baud = 57600
+    baud = 115200
     timeout = 0.1
     controller = Microcontroller(port, baud, timeout)
     controller.connect()

@@ -1,7 +1,7 @@
 <launch>
   <include file="$(find base_control)/launch/driver_imu.launch"/>
   <include file="$(find ydlidar)/launch/ydlidar1_up.launch"/>
-  <include file="$(find dashgo_description)/launch/dashgo_description.launch"/>
+  <include file="$(find robot_description)/launch/display.dashgo.launch"/>
   <include file="$(find nav_main)/launch/include/imu/gmapping_base.launch"/>
   <include file="$(find nav_main)/launch/include/imu/teb_move_base.launch"/>
   <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" />
@@ -9,6 +9,5 @@
       <rosparam command="load" file="$(find nav_main)/filters/box_filter.yaml" />
   </node>
   <!-- <node name="robot_data" pkg="nav_main" type="robot_data.py" respawn="true" /> -->
-  <!-- <node name="get_scan_data" pkg="dashgo_tools" type="get_scan_data.py" respawn="true" />  -->
   <node name="get_scan_data" pkg="nav_main" type="get_scan_data.py" respawn="true" /> 
 </launch>

@@ -198,7 +198,7 @@ class Stm32:
             else:
                 self.receive_state_ = self.WAITING_FF
         else:
-            self.receive_state_ = self.WAITING_FF;
+            self.receive_state_ = self.WAITING_FF
         return 0
 
     def recv(self, timeout=0.5):
