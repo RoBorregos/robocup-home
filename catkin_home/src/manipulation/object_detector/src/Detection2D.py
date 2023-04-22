@@ -3,6 +3,7 @@
 # python3 Detection2d.py
 
 import numpy as np
+import torch
 import argparse
 import tensorflow as tf
 import cv2
@@ -58,8 +59,12 @@ class CamaraProcessing:
                 2 : 'Coffee',
                 3 : 'Nesquik',
             }
+            
+        def Yolov9Model():
+            self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=ARGS["MODELS_PATH"] + 'model.pt')
 
-        loadTfModel()
+        #loadTfModel()
+        Yolov9Model()
         print("[INFO] Model Loaded")
         
         self.activeFlag = not ARGS["USE_ACTIVE_FLAG"]
@@ -166,7 +171,7 @@ class CamaraProcessing:
         callFpsThread.start()
 
     # Function to run the detection model.
-    def run_inference_on_image(self, frame):
+    def __run_inference_on_image(self, frame):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame_np = np.expand_dims(frame, axis=0)
         input_tensor = tf.convert_to_tensor(frame_np, dtype=tf.uint8)
@@ -190,6 +195,30 @@ class CamaraProcessing:
         detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
         return detections['detection_boxes'], detections['detection_scores'], detections['detection_classes'], detections
+
+    def run_inference_on_image(self, frame):
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        if ARGS["VERBOSE"]:
+            print('Predicting...')
+        start_time = time.time()
+        prediction = self.model(frame)
+        end_time = time.time()
+
+        # for *xyxy, conf, cls in prediction.pandas().xyxy[0].itertuples(index=False):
+        #     print(f"Predicted {cls} at {[round(elem, 2) for elem in xyxy ]} with confidence {conf:.2f}.")
+        #     showimg = cv2.rectangle(showimg, (int(xyxy[0]), int(xyxy[1])), (int(xyxy[2]), int(xyxy[3])), (0, 255, 0), 2)
+        #     showimg = cv2.putText(showimg, f"{cls} {conf:.2f}", (int(xyxy[0]), int(xyxy[1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+        if ARGS["VERBOSE"]:
+            print('Done! Took {} seconds'.format(end_time - start_time))
+        
+        # Fields to return: detections['detection_boxes'], detections['detection_scores'], detections['detection_classes'], detections
+        detections = []
+        for *xyxy, conf, cls in prediction.pandas().xyxy[0].itertuples(index=False):
+            detections.append([[round(elem, 2) for elem in xyxy ], conf, cls])
+        
+        return detections
+
 
     # Handle the detection model input/output.
     def compute_result(self, frame):
