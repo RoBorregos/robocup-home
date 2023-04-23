@@ -5,4 +5,8 @@ ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0042", SYMLINK+="port0"
 ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", SYMLINK+="port0"
 
 # Symlink for LIDAR
+<<<<<<< HEAD
 ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="port1"
+=======
+ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="port1"
+>>>>>>> c3b45006ad9c648767625a9f84aa33288d70ab08
