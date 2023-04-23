@@ -24,7 +24,7 @@ TrajectoryPlannerROS:
    heading_lookahead: 0.325
    heading_scoring: true
    heading_scoring_timestep: 0.8
-   occdist_scale: 0.5
+   occdist_scale: 0.05
    oscillation_reset_dist: 0.05
    publish_cost_grid_pc: false
    prune_plan: true

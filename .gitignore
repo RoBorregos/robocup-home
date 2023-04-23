@@ -64,6 +64,7 @@ out.log
 *.pyc
 .vscode/
 venv/
+*.swp
 
 __ignore__/*
 # End 

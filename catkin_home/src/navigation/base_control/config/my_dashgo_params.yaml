@@ -1,11 +1,11 @@
-port: /dev/ttyUSB0
+port: /dev/port0
 baud: 57600
 timeout: 0.1
 rate: 50
 sensorstate_rate: 10
 slam_project_version: 1.1
 
-useImu: True
+useImu: False
 useSonar: False
 use_base_controller: True
 base_controller_rate: 30 #10
