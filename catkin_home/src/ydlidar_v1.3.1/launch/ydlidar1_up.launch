@@ -1,7 +1,6 @@
 <launch>
   <node name="ydlidar_node"  pkg="ydlidar"  type="ydlidar_node" output="screen">
-    <!-- <param name="port"         type="string" value="/dev/port2"/>   -->
-    <param name="port"         type="string" value="/dev/ttyUSB1"/>  
+    <param name="port"         type="string" value="/dev/port1"/>  
     <param name="baudrate"     type="int"    value="230400"/>
     <param name="frame_id"     type="string" value="laser_frame"/>
     <param name="angle_fixed"  type="bool"   value="true"/>

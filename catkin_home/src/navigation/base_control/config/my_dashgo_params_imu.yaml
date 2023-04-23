@@ -1,5 +1,4 @@
-#port: /dev/ttyUSB0
-port: /dev/ttyACM0 
+port: /dev/port0
 baud: 57600
 timeout: 0.1
 rate: 50

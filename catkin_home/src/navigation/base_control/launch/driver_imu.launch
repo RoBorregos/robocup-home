@@ -20,16 +20,6 @@
   <!-- nodelet manager -->
   <node pkg="nodelet" type="nodelet" name="$(arg nodelet_manager_name)" args="manager" respawn="true"/>
 
-  <!-- velocity smoother -->
-  <!-- <include file="$(find yocs_velocity_smoother)/launch/velocity_smoother.launch">
-    <param name="node_name"             value="$(arg node_name)"/>
-    <param name="nodelet_manager_name"  value="$(arg nodelet_manager_name)"/>
-    <param name="config_file"           value="$(arg config_file)"/>
-    <param name="raw_cmd_vel_topic"     value="$(arg raw_cmd_vel_topic)"/>
-    <param name="smooth_cmd_vel_topic"  value="$(arg smooth_cmd_vel_topic)"/>
-    <param name="robot_cmd_vel_topic"   value="$(arg robot_cmd_vel_topic)"/>
-    <param name="odom_topic"            value="$(arg odom_topic)"/>
-  </include> -->
   <!-- <node name="dashgo_action" pkg="dashgo_tools" type="check_action.py" output="screen" respawn="true"/> -->
   <!-- rosrun teleop_twist_keyboard teleop_twist_keyboard.py _repeat_rate:=10 cmd_vel:=smoother_cmd_vel -->
 
