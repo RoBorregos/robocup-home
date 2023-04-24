@@ -160,6 +160,7 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
+  scripts/door_signal.py
   scripts/follow_person.py  
   scripts/get_scan_data.py  
   scripts/remap_laser.py  
