@@ -47,26 +47,33 @@ obstacle_layer:
     max_obstacle_height: 0.30
 
 
-  other_sensor_data:
-    data_type: PointCloud
-    topic: /other_sensor_data 
-    marking: true
-    clearing: true
-    min_obstacle_height: 0.31
-    max_obstacle_height: 0.4
+  # other_sensor_data:
+  #   data_type: PointCloud
+  #   topic: /other_sensor_data 
+  #   marking: true
+  #   clearing: true
+  #   min_obstacle_height: 0.31
+  #   max_obstacle_height: 0.4
 
   camera_depth:
     data_type: PointCloud2
     topic: /zed2/zed_node/point_cloud/ds_no_plane_cloud_registered
+    update_frequency: 20
+    publish_frequency: 5
     marking: true
     clearing: true
     min_obstacle_height: 0.05
-    max_obstacle_height: 0.5
+    max_obstacle_height: 0.25
+    track_unknown_space: true
+    obstacle_range: 1.5
+    raytrace_range: 2
+    observation_persistence: 1.0
+    decay_time: 1.0
 
 inflation_layer:
   enabled:              true
   #cost_scaling_factor:  2.0 # exponential rate at which the obstacle cost drops off (default: 10)
-  cost_scaling_factor:  0 # exponential rate at which the obstacle cost drops off (default: 10)
+  cost_scaling_factor:  5 # exponential rate at which the obstacle cost drops off (default: 10)
   inflation_radius:     0.05 # max. distance from an obstacle at which costs are incurred for planning paths.
 
 static_layer:
