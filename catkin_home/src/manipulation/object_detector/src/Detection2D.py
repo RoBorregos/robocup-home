@@ -59,7 +59,7 @@ class CamaraProcessing:
                 2 : 'Coffee',
                 3 : 'Nesquik',
             }
-            
+
         def Yolov9Model():
             self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=ARGS["MODELS_PATH"] + 'model.pt')
 
@@ -215,7 +215,11 @@ class CamaraProcessing:
         # Fields to return: detections['detection_boxes'], detections['detection_scores'], detections['detection_classes'], detections
         detections = []
         for *xyxy, conf, cls in prediction.pandas().xyxy[0].itertuples(index=False):
-            detections.append([[round(elem, 2) for elem in xyxy ], conf, cls])
+            detections.append([[round(elem, 2) for elem in xyxy ], conf, cls, {
+                "detection_boxes": [round(elem, 2) for elem in xyxy ],
+                "detection_scores": conf,
+                "detection_classes": cls
+            }])
         
         return detections
 

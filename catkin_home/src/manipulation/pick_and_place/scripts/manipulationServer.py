@@ -34,21 +34,26 @@ class MoveItErrorCodes(Enum):
     TIMED_OUT = -6
     PREEMPTED = -7
 
+# read names from txt file
+OBJECTS_LABELS_PATH = str(pathlib.Path(__file__).parent.absolute()) + "../../object_detector/models/objects.txt"
+with open(OBJECTS_LABELS_PATH, 'r') as f:
+    OBJECTS_NAME = f.read().splitlines()
 
-OBJECTS_NAME= {
-    1 : 'Coca-Cola',
-    2 : 'Coffee',
-    3 : 'Nesquik',
-    4 : 'Zucaritas',
-    5 : 'Harpic'
-}
-OBJECTS_ID= {
-    'Coca-Cola' : 1,
-    'Coffee' : 2,
-    'Nesquik' : 3,
-    'Zucaritas' : 4,
-    'Harpic' : 5
-}
+# OBJECTS_NAME= {
+#     1 : 'Coca-Cola',
+#     2 : 'Coffee',
+#     3 : 'Nesquik',
+#     4 : 'Zucaritas',
+#     5 : 'Harpic'
+# }
+
+# OBJECTS_ID = {
+#     'Coca-Cola' : 1,
+#     'Coffee' : 2,
+#     'Nesquik' : 3,
+#     'Zucaritas' : 4,
+#     'Harpic' : 5
+# }
 class ManipulationGoals(Enum):
     COKE = 1
     COFFEE = 2
@@ -323,7 +328,7 @@ class manipuationServer(object):
                     continue
                 rospy.loginfo("Objects Found:" + str(len(detections.detections)))
                 for detection in detections.detections:
-                    if detection.labelText == OBJECTS_NAME[target.value]:
+                    if detection.labelText == target.value:
                         rospy.loginfo("Target Found:" + detection.labelText)
                         goal = DetectObjects3DGoal(force_object = objectDetectionArray(detections = [detection]))
                         GetObjectsScope.detection = detection
