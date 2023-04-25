@@ -2,8 +2,7 @@
 import rospy
 import actionlib
 import time
-from std_msgs.msg import String
-from std_msgs.msg import Bool
+from std_msgs.msg import String, Bool
 from action_selectors.msg import RawInput
 
 import os
@@ -11,9 +10,9 @@ import openai
 
 
 promts = {
-    "start": "Hello, I'm homie, let's start receptionist task",
+    "start": "Let's start receptionist task",
     "wait": "I am waiting for someone",
-    "self_intro": "Hello, I'm homie, your personal assistant. How can I help you?",
+    "self_intro": "Hello, I'm homie, your personal assistant.",
     "ask_name": "What's your name?",
     "ask_drink": "What is your favorite drink you like to drink?",
 }
@@ -44,17 +43,19 @@ class receptionist(object):
         self.currentState =  INITIALIZATION_STATE
 
         # GPT API
-        self.GPT_API = openai.Completion.create(
-            model="text-davinci-003",
-            prompt="",
-            temperature=0.7,
-            max_tokens=1024,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0
-            )
+        
+        self.GPT_model="text-davinci-003",
+        self.GPT_temperature=0.7,
+        self.GPT_top_p=1,
+        self.GPT_frequency_penalty=0,
+        self.GPT_presence_penalty=0
+            
         rospy.logdebug("GPT API initialized")
+        self.inputText = ""
         self.speech_enable = rospy.Publisher("inputAudioActive", Bool, queue_size=10)
+        self.saying = False
+
+        self.say_listener = rospy.Subscriber("sayer", Bool, self.say_callback)
         self.speech_enable.publish(Bool(False))
 
         #Nav subscribers 
@@ -75,49 +76,96 @@ class receptionist(object):
         # wait for the robot to be ready
         time.sleep(1)
         # start the main loop
-        self.run()
 
+        self.run()
+        rospy.spin()
+
+
+    def say_callback(self, data):
+        self.saying = data.data
+        rospy.logwarn("saying: " + str(self.saying))
 
     
     def run(self):
+        rospy.loginfo("-----------------------------------------RUN-----------------------------------------")
 
         while not rospy.is_shutdown():
+            rospy.loginfo("-----------------------------------------RUN-----------------------------------------")
 
             if self.currentState == START_STATE:
                 self.speech_enable.publish(Bool(False))
 
                 rospy.loginfo("Receptionist is ready to start")
                 self.say_publisher.publish(promts["start"])
-                time.sleep(3)
+                time.sleep(1)
 
-                rospy.loginfo("Receptionist is waiting for user to start")
-                time.sleep(3)
-                self.say_publisher.publish(promts["self_intro"])
-
+                rospy.logwarn("here it shiuld the speech end") 
+                i = 0
                 self.currentState = WAIT_STATE
 
                 
             elif self.currentState == WAIT_STATE:
+                i += 1
                 if self.is_someone():
+                    self.say_publisher.publish(promts["self_intro"])
                     self.currentState = IDENTIFY_STATE
                 else:
+                    #if there is no one, wait for 3 seconds and check again
                     time.sleep(3)
-                    self.say_publisher.publish(promts["wait"])
+
+                    if i%10:
+                        self.say_publisher.publish(promts["wait"])
+                        i = 0
+                        
+
                 
             elif self.currentState == IDENTIFY_STATE:
-                name = self.get_name()                
+                name = self.get_name()
+                if name != "":
+                    self.currentState = GOING_STATE
+                else:
+                    self.currentState = IDENTIFY_STATE       
 
+            elif self.currentState == GOING_STATE:
+                rospy.loginfo("Receptionist is going to the person")
 
 
     def get_name(self):
+        name = ""
         # get the name from the user
         rospy.loginfo("Receptionist is getting name")
+        i = 0
+        # wait for the user to say something
+        rospy.logwarn("Waiting for user input")
         self.say_publisher.publish(promts["ask_name"])
-        response = self.parser(self)
-        rospy.logwarn(response)
+        time.sleep(5)
+        rospy.logdebug("speech enable")
+        self.speech_enable.publish(Bool(True))
+        rospy.logdebug("speech enabled")
+        rospy.logwarn("name1: " + name)
+        rospy.logwarn(name  != "" and not rospy.is_shutdown())
+        while not rospy.is_shutdown() and name == "":
+            i+=1
+            time.sleep(1)
+            rospy.logdebug(name)
+            if self.inputText != "":
+                    name  = self.parser(calls["get_name"])
+            if i%28 == 0:
+                self.speech_enable.publish(Bool(False))
+                self.say_publisher.publish(promts["ask_name"])
+                time.sleep(4)
+                self.speech_enable.publish(Bool(True))
+                i = 0
+                
+        rospy.logwarn("name2: " + name)
+
+        self.speech_enable.publish(Bool(False))
+        
+
+        rospy.logwarn(name)
 
         time.sleep(3)
-        return "Ahmed"
+        return name
     
 
 
@@ -125,47 +173,50 @@ class receptionist(object):
         # check for a new detection in vision topic
         rospy.loginfo("checking if someone is there")
         time.sleep(5)
-        return False
+        return True
 
 
 
-    def parser(self):
+    def parser(self, command):
         rospy.loginfo("Receptionist is parsing")
+        rospy.logwarn(self.inputText)
+        time.sleep(1)
+        intent = ""
         try:
-            intent = self.callGPT(self, self.inputText)
-
+            rospy.logwarn(command + self.inputText)
+            intent = self.callGPT(command + " " + self.inputText)
+            # rospy,logwarn(intent)
+            
+            rospy.loginfo("Intent: " + intent)
+            
         except:
-            self.say("I'm sorry, Could you rephrase?")
-            self.debug("Failed response")
+            self.say_publisher.publish("I'm sorry, Could you rephrase?")
+            rospy.logdebug("Failed response")
+        rospy.logwarn(intent)
         
         return intent
 
             
 
     def input_callback(self, msg):
-            inputText = msg.inputText
-            self.debug("I heard: " + inputText)
-            self.parser(self)
+        self.inputText = msg.inputText
+        rospy.logdebug("I heard: " + self.inputText)
             
-    def callGPT(self, prompt):
+    def callGPT(self, pr, t_max=256):
+        rospy.logdebug("I am parsing in: GPT " + prompt )
+
         response = openai.Completion.create(
-            engine=self.GPT_API.engine,
-            prompt=prompt,
-            max_tokens=self.GPT_API.max_tokens,
+            model=self.GPT_API.model,
+            prompt=pr,
+            max_tokens=t_max,
             n=1,
             temperature=self.GPT_API.temperature,
-            frequency_penalty=self.GPT_API.frequency_penalty,
-            presence_penalty=self.GPT_API.presence_penalty
+            frequency_penalty=self.self.GPT_API.frequency_penalty,
+            presence_penalty=self.self.GPT_API.presence_penalty,    
         )
-        return response.choices[0].text.strip()
+        rospy.logdebug("RESPONSE IS: response")
+        return response.choices[0].text
 
-
-                    
-
-
-        
-
-        
 
 
 
@@ -173,7 +224,6 @@ def main():
     rospy.init_node('receptionist', anonymous=True)
     rospy.loginfo("Receptionist task created.")
     receptionist()
-    rospy.spin()
 
 
 if __name__ == '__main__':
