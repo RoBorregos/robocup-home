@@ -16,6 +16,7 @@ import tf2_ros
 import numpy as np
 from sensor_msgs.msg import PointCloud2
 import tf2_geometry_msgs  # Import the tf2_geometry_msgs library
+from actionlib_msgs.msg import GoalStatusArray
 FLT_EPSILON = sys.float_info.epsilon
 
 
@@ -35,10 +36,14 @@ class DetectorHumano:
         self.pubPoint = rospy.Publisher('transformed_point', PointStamped, queue_size=10)
         self.odom_sub = rospy.Subscriber('/robot_pose', Pose, self.odom_callback)
         self.activate_follow =  rospy.Subscriber('/follow_person',Bool,self.callback_follow)
+        self.goal_sub = rospy.Subscriber('/move_base/status', GoalStatusArray, self.goal_callback)
         self.follow_person=False
         self.mask  = None
         self.cv_image = None
         self.camera_info = None
+        self.goal_status = -1
+        self.latest_pose = [-1, -1,-1,-1]
+        self.angle = 0
         rospy.loginfo("Subscribed to image")
         # Calling the pose solution from MediaPipe
         self.mp_pose = mp.solutions.pose
@@ -52,6 +57,24 @@ class DetectorHumano:
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
         self.pub_follow = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
         self.x, self.y =0,0
+    def get_quaternion_from_euler(self, roll, pitch, yaw):
+        """
+        Convert an Euler angle to a quaternion.
+        
+        Input
+            :param roll: The roll (rotation around x-axis) angle in radians.
+            :param pitch: The pitch (rotation around y-axis) angle in radians.
+            :param yaw: The yaw (rotation around z-axis) angle in radians.
+        
+        Output
+            :return qx, qy, qz, qw: The orientation in quaternion [x,y,z,w] format
+        """
+        qx = np.sin(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) - np.cos(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        qy = np.cos(roll/2) * np.sin(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.cos(pitch/2) * np.sin(yaw/2)
+        qz = np.cos(roll/2) * np.cos(pitch/2) * np.sin(yaw/2) - np.sin(roll/2) * np.sin(pitch/2) * np.cos(yaw/2)
+        qw = np.cos(roll/2) * np.cos(pitch/2) * np.cos(yaw/2) + np.sin(roll/2) * np.sin(pitch/2) * np.sin(yaw/2)
+        
+        return [qx, qy, qz, qw]
     def callback_follow(self, msg):
         self.follow_person = msg.data
     # Function to handle a ROS depth input.
@@ -73,8 +96,9 @@ class DetectorHumano:
     def callback(self, data):
         self.cv_image = data#self.bridge.imgmsg_to_cv2(data,desired_encoding="rgb8")
         self.get_objects()
-
-
+        
+    def goal_callback(self, data):
+        self.goal_status = data.status_list
 
     def get_objects(self):
         point3D = Point()
@@ -146,12 +170,33 @@ class DetectorHumano:
                                 pose.pose.position.x = object_pose_map.point.x
                                 pose.pose.position.y = object_pose_map.point.y
                                 pose.pose.position.z = 0
-                                pose.pose.orientation.x = 0
-                                pose.pose.orientation.y = 0
-                                pose.pose.orientation.z = 0
-                                pose.pose.orientation.w = 1
-                                #Publish nav goal
-                                self.pub_follow.publish(pose)
+                                self.angle = math.atan((object_pose_map.point.y - self.ned_origin[1])/(object_pose_map.point.x - self.ned_origin[0]))
+                                quat = self.get_quaternion_from_euler(0,0,self.angle)
+                                pose.pose.orientation.x = quat[0]
+                                pose.pose.orientation.y = quat[1]
+                                pose.pose.orientation.z = quat[2]
+                                pose.pose.orientation.w = quat[3]
+                                if (self.goal_status == 3 or self.goal_status == -1  or self.goal_status ==4) and  (pose.pose.position.x - self.ned_origin[0])<=4:
+                                    #Publish nav goal
+                                    self.pub_follow.publish(pose)
+                                elif  (pose.pose.position.x - self.ned_origin[0]) <=4 :
+                                    self.latest_pose = [object_pose_map.point.x, object_pose_map.point.y,self.angle,pose.pose.position.x - self.ned_origin[0]]
+                                print(pose.pose.position.x - self.ned_origin[0])
+                    else:
+                        if self.latest_pose[0] != -1 and self.latest_pose[1] != -1 and self.follow_person and self.latest_pose[3] <= 4:
+                            pose = PoseStamped()
+                            pose.header.stamp = rospy.Time.now()
+                            pose.header.frame_id = 'map'
+                            pose.pose.position.x = self.latest_pose[0]
+                            pose.pose.position.y = self.latest_pose[1]
+                            pose.pose.position.z = 0
+                            quat = self.get_quaternion_from_euler(0,0,self.latest_pose[2])
+                            pose.pose.orientation.x = quat[0]
+                            pose.pose.orientation.y = quat[1]
+                            pose.pose.orientation.z = quat[2]
+                            pose.pose.orientation.w = quat[3]
+                            #Publish latest nav goal saved
+                            self.pub_follow.publish(pose) 
               
                     image = cv2.circle(image, (self.x, self.y), 20, (255,0,0), 2)
                     image_pose = Image()
