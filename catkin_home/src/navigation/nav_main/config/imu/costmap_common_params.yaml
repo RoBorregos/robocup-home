@@ -56,19 +56,25 @@ obstacle_layer:
     max_obstacle_height: 0.4
 
   camera_depth:
+    enabled: true
     data_type: PointCloud2
     topic: /zed2/zed_node/point_cloud/ds_no_plane_cloud_registered
     update_frequency: 10
-    publish_frequency: 5
-    marking: true
-    clearing: true
-    min_obstacle_height: 0.05
+    publish_frequency: 10
+    # marking: true
+    # clearing: true
+    min_obstacle_height: 0.03
     max_obstacle_height: 0.2
-    track_unknown_space: true
+    # track_unknown_space: true #If false, each pixel has one of 2 states: lethal obstacle or free. If true, each pixel has one of 3 states: lethal obstacle, free, or unknown
     obstacle_range: 1.5
     raytrace_range: 2
+    expected_update_rate: 0.0    # default 0, if not updating at this rate at least, remove from buffer
     observation_persistence: 0.0
-    # decay_time: 1.0
+    # voxel_decay: 0.75     #seconds if linear, e^n if exponential
+    decay_model: 0      #0=linear, 1=exponential, -1=persistent
+    decay_acceleration: 1
+    inf_is_valid: true #default false, for laser scans
+    clear_after_reading: true
     
 inflation_layer:
   enabled:              true

@@ -1,7 +1,7 @@
 <launch>
   <include file="$(find dashgo_driver)/launch/driver_imu.launch"/>
   <include file="$(find ydlidar)/launch/ydlidar1_up.launch"/>
-  <include file="$(find robot_description)/launch/display.dashgo.launch"/>
+  <!-- <include file="$(find robot_description)/launch/display.dashgo.launch"/> -->
   <include file="$(find nav_main)/launch/include/imu/gmapping_base.launch"/>
   <include file="$(find nav_main)/launch/include/imu/teb_move_base.launch"/>
   <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" />
