@@ -1,0 +1,33 @@
+<launch>
+    <!-- ObjectDetection -->
+    <arg name="SOURCE" default="/zed2/zed_node/rgb/image_rect_color" /> 
+    <arg name="DEPTH_INPUT" default="/zed2/zed_node/depth/depth_registered" />
+    <arg name="CAMERA_INFO" default="/zed2/zed_node/depth/camera_info" />
+    <arg name="ROS_INPUT" default="True" />
+    <arg name="USE_ACTIVE_FLAG" default="False" />
+    <arg name="VERBOSE" default="True" />
+    <arg name="DEPTH_ACTIVE" default="True" />
+    <arg name="USE_YOLO" default="True" />
+    <arg name="YOLO_MODEL_PATH" default="$(find object_detector)/models/tmr2023/yolo9ClassHome.pt" />
+    <arg name="MODELS_PATH" default="$(find object_detector)/models/gazebo/" />
+    <arg name="LABELS_PATH" default="$(find object_detector)/models/gazebo/label_map.pbtxt" />
+    <arg name="CAMERA_FRAME" default="zed2_left_camera_optical_frame" />
+    <arg name="USE_FAKE_DETECTOR" default="False" />
+
+    <node name="Detection2D" pkg="object_detector" type="Detection2D.py" respawn="true" output="screen" unless="$(arg USE_FAKE_DETECTOR)">
+        <param name="SOURCE" value="$(arg SOURCE)" />
+        <param name="ROS_INPUT" value="$(arg ROS_INPUT)" />
+        <param name="USE_ACTIVE_FLAG" value="$(arg USE_ACTIVE_FLAG)" />
+        <param name="VERBOSE" value="$(arg VERBOSE)" />
+        <param name="USE_YOLO" value="$(arg USE_YOLO)" />
+        <param name="YOLO_MODEL_PATH" value="$(arg YOLO_MODEL_PATH)" />
+        <param name="MODELS_PATH" value="$(arg MODELS_PATH)" />
+        <param name="LABELS_PATH" value="$(arg LABELS_PATH)" />
+        <param name="DEPTH_ACTIVE" value="$(arg DEPTH_ACTIVE)" />
+        <param name="DEPTH_INPUT" value="$(arg DEPTH_INPUT)" />
+        <param name="CAMERA_INFO" value="$(arg CAMERA_INFO)" />
+        <param name="CAMERA_FRAME" value="$(arg CAMERA_FRAME)" />
+    </node>
+
+    <node name="Detection2DFake" pkg="object_detector" type="Detection2DFake.py" respawn="true" output="screen" if="$(arg USE_FAKE_DETECTOR)" />
+</launch>

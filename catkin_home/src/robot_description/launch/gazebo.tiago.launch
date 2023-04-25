@@ -49,7 +49,7 @@
   </include>
 
   <!-- add custom base launch file -->
-  <include file="$(find robot_moveit_config)/launch/moveitBaseController.launch" />
+  <!-- <include file="$(find robot_moveit_config)/launch/moveitBaseController.launch" /> -->
 
   <!-- bring up robot -->
   <include file="$(find tiago_gazebo)/launch/simulation_tiago_bringup.launch">

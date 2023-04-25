@@ -7,6 +7,17 @@
   <rosparam file="$(find pick_and_place)/config/params_DASHGO.yaml" command="load" />
 
   <!-- Manipulation Server -->
-  <node name="manipulationServer" pkg="pick_and_place" type="manipulationServer.py" output="screen" />
+  <include file="$(find object_detector)/launch/object_2D.launch">
+    <arg name="SOURCE" value="/xtion/rgb/image_raw" />
+    <arg name="DEPTH_INPUT" value="/xtion/depth_registered/image_raw" />
+    <arg name="CAMERA_INFO" value="/xtion/rgb/camera_info" />
+    <arg name="ROS_INPUT" value="True" />
+    <arg name="USE_ACTIVE_FLAG" value="False" />
+    <arg name="VERBOSE" value="True" />
+    <arg name="DEPTH_ACTIVE" value="True" />
+    <arg name="MODELS_PATH" default="$(find object_detector)/models/gazebo/" />
+    <arg name="LABELS_PATH" default="$(find object_detector)/models/gazebo/label_map.pbtxt" />
+    <arg name="CAMERA_FRAME" value="xtion_rgb_optical_frame" />
+  </include>
   
 </launch>

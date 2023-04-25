@@ -4,6 +4,7 @@
 
 import numpy as np
 import argparse
+import torch
 import tensorflow as tf
 import cv2
 import pathlib
@@ -39,6 +40,8 @@ ARGS= {
     "MIN_SCORE_THRESH": 0.6,
     "VERBOSE": True,
     "CAMERA_FRAME": "xtion_rgb_optical_frame",
+    "USE_YOLO": False,
+    "YOLO_MODEL_PATH": str(pathlib.Path(__file__).parent) + "/../models/yolov5s.pt",
 }
 
 class CamaraProcessing:
@@ -53,14 +56,28 @@ class CamaraProcessing:
         
         def loadTfModel():
             self.detect_fn = tf.saved_model.load(ARGS["MODELS_PATH"])
-            self.category_index = {
-                1 : 'Coca-Cola',
-                2 : 'Coffee',
-                3 : 'Nesquik',
-            }
 
-        loadTfModel()
-        print("[INFO] Model Loaded")
+        def loadYoloModel():
+            self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=ARGS["YOLO_MODEL_PATH"], force_reload=True)
+        
+        self.category_index = {
+            1 : 'CocaCola',
+            2 : 'Principe',
+            3 : 'Leche',
+            4 : 'Pringles',
+            5 : 'zucaritas',
+            6 : 'Lysol',
+            7 : 'Harpic',
+        }
+        
+        if ARGS["USE_YOLO"]:
+            print("[INFO] Loading Yolo Model")
+            loadYoloModel()
+            print("[INFO] Yolo Model Loaded")
+        else:
+            print("[INFO] Loading TF Model")
+            loadTfModel()
+            print("[INFO] TF Model Loaded")
         
         self.activeFlag = not ARGS["USE_ACTIVE_FLAG"]
         self.runThread = None
@@ -165,6 +182,37 @@ class CamaraProcessing:
         callFpsThread = threading.Timer(2.0, self.callFps, args=())
         callFpsThread.start()
 
+    def yolo_run_inference_on_image(self, frame):
+        results = self.model(frame)
+        output = {
+            'detection_boxes': [],  # Normalized ymin, xmin, ymax, xmax
+            'detection_classes': [], # ClassID 
+            'detection_scores': [] # Confidence
+        }
+        for *xyxy, conf, cls in results.pandas().xyxy[0].itertuples(index=False):
+            # Normalized [0-1] ymin, xmin, ymax, xmax
+            height = frame.shape[1]
+            width = frame.shape[0]
+            output['detection_boxes'].append([xyxy[1]/width, xyxy[0]/height, xyxy[3]/width, xyxy[2]/height])
+            # ClassID
+            found = False
+            count = 1
+            for i in self.category_index.values():
+                if i == cls:
+                    found = True
+                    break
+                count += 1
+            if not found:
+                self.category_index[count] = cls
+
+            output['detection_classes'].append(count)
+            # Confidence
+            output['detection_scores'].append(conf)
+        output['detection_boxes'] = np.array(output['detection_boxes'])
+        output['detection_classes'] = np.array(output['detection_classes'])
+        output['detection_scores'] = np.array(output['detection_scores'])
+        return output
+
     # Function to run the detection model.
     def run_inference_on_image(self, frame):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -189,12 +237,25 @@ class CamaraProcessing:
 
         detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
 
-        return detections['detection_boxes'], detections['detection_scores'], detections['detection_classes'], detections
+        output = {
+            'detection_boxes': detections['detection_boxes'],
+            'detection_classes': detections['detection_classes'],
+            'detection_scores': detections['detection_scores']
+        }
+        return output
 
     # Handle the detection model input/output.
     def compute_result(self, frame):
-        (boxes, scores, classes, detections) = self.run_inference_on_image(frame)
-        return self.get_objects(boxes, scores, classes, frame.shape[0], frame.shape[1], frame), detections, frame, self.category_index
+        if ARGS["USE_YOLO"]:
+            detections = self.yolo_run_inference_on_image(frame)
+        else:
+            detections = self.run_inference_on_image(frame)
+        return self.get_objects(detections["detection_boxes"],
+                                detections["detection_scores"],
+                                detections["detection_classes"],
+                                frame.shape[0],
+                                frame.shape[1],
+                                frame), detections, frame, self.category_index
 
     # This function creates the output array of the detected objects with its 2D & 3D coordinates.
     def get_objects(self, boxes, scores, classes, height, width, frame):
@@ -213,9 +274,9 @@ class CamaraProcessing:
                         continue
                 
                 point3D = Point()
-                point2D = get2DCentroid(boxes[index], self.depth_image)
                 
                 if ARGS["DEPTH_ACTIVE"] and len(self.depth_image) != 0:
+                    point2D = get2DCentroid(boxes[index], self.depth_image)
                     depth = get_depth(self.depth_image, point2D)
                     point3D_ = deproject_pixel_to_point(self.imageInfo, point2D, depth)
                     point3D.x = point3D_[0]
@@ -254,43 +315,44 @@ class CamaraProcessing:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         
         # Loop over all detections
-        for i in range(min(max_boxes_to_draw, boxes.shape[0])):
-            # Extract bounding box coordinates and class ID
-            ymin, xmin, ymax, xmax = tuple(boxes[i].tolist())
-            class_id = int(classes[i])
-            
-            # If agnostic mode is enabled, set class ID to 1 (i.e. "object")
-            if agnostic_mode:
-                class_id = 1
-            
-            # Extract class name and score
-            class_name = category_index[class_id]
-            score = scores[i]
-            
-            # Ignore detections below the minimum score threshold
-            if score < min_score_thresh:
-                continue
-            
-            # Convert bounding box coordinates to pixel coordinates if normalized coordinates are used
-            if use_normalized_coordinates:
-                height, width, _ = image.shape
-                ymin, xmin = ymin * height, xmin * width
-                ymax, xmax = ymax * height, xmax * width
+        if len(boxes) != 0:
+            for i in range(min(max_boxes_to_draw, boxes.shape[0])):
+                # Extract bounding box coordinates and class ID
+                ymin, xmin, ymax, xmax = tuple(boxes[i].tolist())
+                class_id = int(classes[i])
                 
-            # Draw bounding box on image
-            label = "{}: {:.2f}".format(class_name, score)
-            # Set Green Color
-            color = (0, 255, 0)
-            cv2.rectangle(image, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, thickness=2)
-            
-            # Draw label on image
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            font_scale = 0.5
-            text_size, _ = cv2.getTextSize(label, font, font_scale, thickness=1)
-            text_bottom_left = (int(xmin), int(ymin) - 5)
-            text_top_right = (text_bottom_left[0] + text_size[0] + 10, text_bottom_left[1] - text_size[1] - 10)
-            cv2.rectangle(image, text_bottom_left, text_top_right, color, cv2.FILLED)
-            cv2.putText(image, label, (text_bottom_left[0] + 5, text_bottom_left[1] - 5), font, font_scale, (255, 255, 255), thickness=1)
+                # If agnostic mode is enabled, set class ID to 1 (i.e. "object")
+                if agnostic_mode:
+                    class_id = 1
+                
+                # Extract class name and score
+                class_name = category_index[class_id]
+                score = scores[i]
+                
+                # Ignore detections below the minimum score threshold
+                if score < min_score_thresh:
+                    continue
+                
+                # Convert bounding box coordinates to pixel coordinates if normalized coordinates are used
+                if use_normalized_coordinates:
+                    height, width, _ = image.shape
+                    ymin, xmin = ymin * height, xmin * width
+                    ymax, xmax = ymax * height, xmax * width
+                    
+                # Draw bounding box on image
+                label = "{}: {:.2f}".format(class_name, score)
+                # Set Green Color
+                color = (0, 255, 0)
+                cv2.rectangle(image, (int(xmin), int(ymin)), (int(xmax), int(ymax)), color, thickness=2)
+                
+                # Draw label on image
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                font_scale = 0.5
+                text_size, _ = cv2.getTextSize(label, font, font_scale, thickness=1)
+                text_bottom_left = (int(xmin), int(ymin) - 5)
+                text_top_right = (text_bottom_left[0] + text_size[0] + 10, text_bottom_left[1] - text_size[1] - 10)
+                cv2.rectangle(image, text_bottom_left, text_top_right, color, cv2.FILLED)
+                cv2.putText(image, label, (text_bottom_left[0] + 5, text_bottom_left[1] - 5), font, font_scale, (255, 255, 255), thickness=1)
             
         # Convert image back to RGB format
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

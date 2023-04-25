@@ -4,6 +4,3 @@
 [submodule "catkin_home/src/manipulation/gpd_ros"]
 	path = catkin_home/src/manipulation/gpd_ros
 	url = https://github.com/RoBorregos/gpd_ros.git
-[submodule "catkin_home/src/manipulation/bio_ik"]
-	path = catkin_home/src/manipulation/bio_ik
-	url = https://github.com/TAMS-Group/bio_ik.git
