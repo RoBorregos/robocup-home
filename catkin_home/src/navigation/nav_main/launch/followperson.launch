@@ -1,0 +1,10 @@
+<launch>
+  <!-- <node name="follow_person" pkg="nav_main" type="pose_estimation.py" respawn="true" /> -->
+  <!-- Temporarily tf for small objects -->
+  <!-- <node pkg="tf" type="static_transform_publisher" name="base_link_to_zed"
+        args="0.25 -0.12 0.50 0.29 0.48 0.0 /base_footprint /base_link_zed 40" /> -->
+  <!-- Temporarily tf for follow person -->
+    <node pkg="tf" type="static_transform_publisher" name="base_link_to_zed"
+        args="0.25 -0.12 0.42 0.21 0 0.0 /base_footprint /base_link_zed 40" />
+  <include file="$(find zed_wrapper)/launch/zed2.launch"/>
+</launch>

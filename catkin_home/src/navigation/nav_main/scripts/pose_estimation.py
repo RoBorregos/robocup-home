@@ -10,6 +10,7 @@ from sensor_msgs.msg import Image, CameraInfo
 from geometry_msgs.msg import Point, PoseStamped, PointStamped, PoseWithCovarianceStamped
 import math
 import sys
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Point, PoseArray, Pose
 import tf2_ros
 import numpy as np
@@ -27,12 +28,14 @@ class DetectorHumano:
     def __init__(self):
         self.bridge = CvBridge()
         self.posePublisher = rospy.Publisher("/pose_estimation", Point, queue_size=5)
-        self.posePublisher2 = rospy.Publisher("/posestamped", PointStamped, queue_size=5)
+        self.posePublisher2 = rospy.Publisher("/person_pose", PointStamped, queue_size=5)
         self.sub = rospy.Subscriber('/zed2/zed_node/rgb/image_rect_color', Image, self.callback)
         self.subscriberDepth = rospy.Subscriber("/zed2/zed_node/depth/depth_registered", Image, self.depthImageRosCallback)
         self.subscriberInfo = rospy.Subscriber("/zed2/zed_node/depth/camera_info", CameraInfo, self.infoImageRosCallback)
         self.pubPoint = rospy.Publisher('transformed_point', PointStamped, queue_size=10)
-        self.odom_sub = rospy.Subscriber('/robot_pose', PoseWithCovarianceStamped, self.odom_callback)
+        self.odom_sub = rospy.Subscriber('/robot_pose', Pose, self.odom_callback)
+        self.activate_follow =  rospy.Subscriber('/follow_person',Bool,self.callback_follow)
+        self.follow_person=False
         self.mask  = None
         self.cv_image = None
         self.camera_info = None
@@ -48,10 +51,13 @@ class DetectorHumano:
         self.ned_origin = np.array([0.0, 0.0, 0.0])
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
         self.pub_follow = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
+        self.x, self.y =0,0
+    def callback_follow(self, msg):
+        self.follow_person = msg.data
     # Function to handle a ROS depth input.
     def odom_callback(self, msg):
         # Extract the position and orientation from the odometry message
-        self.ned_origin = np.array([msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z])
+        self.ned_origin = np.array([msg.position.x, msg.position.y, msg.position.z])
     def depthImageRosCallback(self, data):
         try:
             self.depth_image = self.bridge.imgmsg_to_cv2(data, "32FC1")
@@ -72,7 +78,7 @@ class DetectorHumano:
 
     def get_objects(self):
         point3D = Point()
-        if self.cv_image is not None and self.camera_info is not None:
+        if self.cv_image is not None and self.camera_info is not None :
             with self.mp_pose.Pose(
                     min_detection_confidence=0.5,
                     min_tracking_confidence=0.5) as pose:
@@ -94,14 +100,60 @@ class DetectorHumano:
                         landmark_drawing_spec=self.mp_drawing_styles.get_default_pose_landmarks_style())
                          # publish image to a topic called image_pose w
                     if results.pose_landmarks:
-                        x = (
+                        self.x = (
                                 results.pose_landmarks.landmark[12].x + results.pose_landmarks.landmark[11].x) / 2
-                        y = (
+                        self.y = (
                             results.pose_landmarks.landmark[12].y + results.pose_landmarks.landmark[11].y) / 2
-                        x = int(x*image.shape[1])
-                        y = int(y*image.shape[0])
-                        image = cv2.circle(image, (x, y), 20, (255,0,0), 2)
-                        
+                        self.x = int(self.x*image.shape[1])
+                        self.y = int(self.y*image.shape[0])
+                        point2D  = [self.x, self.y]
+                        if len(self.depth_image) != 0:
+                            depth = self.get_depth(self.depth_image, point2D)
+                            point3D_ = self.deproject_pixel_to_point(self.camera_info, point2D, depth)
+                            point3D.x = point3D_[2]
+                            point3D.y = point3D_[0]
+                            point3D.z = point3D_[1]
+                            point_x = PointStamped()
+                            point_x.header.frame_id = 'zed2_camera_center'
+                            point_x.point.x = point3D.x 
+                            point_x.point.y = -point3D.y 
+                            point_x.point.z = 0
+                            # Use the TF buffer to lokup the transform from 'zed2_base_link' to 'map'
+                            #transform = self.tf_buffer.lookup_transform('map',"zed2_camera_center", rospy.Time(0), rospy.Duration(1.0))
+                            # Transform the point to the 'map' frame
+                            #point_map = tf2_geometry_msgs.do_transform_point(point_x, transform)
+                            try:
+                                self.tf_buffer.can_transform('map', 'zed2_camera_center', rospy.Time())
+                            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                                rospy.logerr('Transformation from body_frame to map_frame is not available')
+                                rospy.signal_shutdown('Transformation not available')
+
+                            # Convert the object pose from the body frame to the map frame
+                            try:
+                                object_pose_map = self.tf_buffer.transform(point_x, 'map', rospy.Duration(1.0))
+                                self.posePublisher2.publish(object_pose_map)
+                            except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+                                rospy.logerr('Failed to transform object pose from body_frame to map_frame')
+                                rospy.signal_shutdown('Transformation failed')
+                            # point_x.point.x = point3D.x 
+                            # point_x.point.y = point3D.y 
+                            # point_x.point.z = point3D.z
+                            # Publish point
+                            if self.follow_person:
+                                pose = PoseStamped()
+                                pose.header.stamp = rospy.Time.now()
+                                pose.header.frame_id = 'map'
+                                pose.pose.position.x = object_pose_map.point.x
+                                pose.pose.position.y = object_pose_map.point.y
+                                pose.pose.position.z = 0
+                                pose.pose.orientation.x = 0
+                                pose.pose.orientation.y = 0
+                                pose.pose.orientation.z = 0
+                                pose.pose.orientation.w = 1
+                                #Publish nav goal
+                                self.pub_follow.publish(pose)
+              
+                    image = cv2.circle(image, (self.x, self.y), 20, (255,0,0), 2)
                     image_pose = Image()
                     image_pose.header.stamp = rospy.Time.now()
                     image_pose.header.frame_id = "zed2_camera_center"
@@ -113,39 +165,6 @@ class DetectorHumano:
                     image_pose.data = image.tobytes()
                     #convert image to ros image
                     self.image_pose_pub.publish(image_pose)
-                    if results.pose_landmarks:
-                        rospy.logwarn("pose")
-                        point2D  = [x, y]
-                        rospy.logwarn(point2D)
-                        # Dummy point2d
-
-                        if len(self.depth_image) != 0:
-                            depth = self.get_depth(self.depth_image, point2D)
-                            point3D_ = self.deproject_pixel_to_point(self.camera_info, point2D, depth)
-                            point3D.x = point3D_[2]
-                            point3D.y = point3D_[0]
-                            point3D.z = point3D_[1]
-                            point_x = PointStamped()
-                            point_x.header.frame_id = 'zed2_camera_center'
-                            point_x.point.x = point3D.x + self.ned_origin[0]
-                            point_x.point.y = point3D.y + self.ned_origin[1]
-                            point_x.point.z = point3D.z + self.ned_origin[2]
-                            self.posePublisher2.publish(point_x)
-                            a = PointStamped()
-                            a.header.frame_id = "zed2_camera_center"
-                            # Use the TF buffer to lokup the transform from 'zed2_base_link' to 'map'
-                            #transform = self.tf_buffer.lookup_transform('map',"zed2i_camera_center", rospy.Time(0), rospy.Duration(1.0))
-                            # Transform the point to the 'map' frame
-                            # point_map = tf2_geometry_msgs.do_transform_point(point_x, transform)
-                            # self.posePublisher2.publish(point_map)    
-                            self.posePublisher.publish(point_x.point) 
-                            pose = PoseStamped()
-                            pose.header.stamp = rospy.Time.now()
-                            pose.header.frame_id = 'map'
-                            pose.pose.position.x = point_x.point.x
-                            pose.pose.position.y = point_x.point.y
-                            pose.pose.position.z = point_x.point.z
-                            self.pub_follow.publish(pose)
 
         
     def get_depth(self,depth_image, pixel):

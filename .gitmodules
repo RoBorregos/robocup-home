@@ -7,3 +7,4 @@
 [submodule "catkin_home/src/zed-ros-wrapper"]
 	path = catkin_home/src/zed-ros-wrapper
 	url = https://github.com/stereolabs/zed-ros-wrapper.git
+	
