@@ -25,16 +25,16 @@ from vision_utils import *
 SOURCES = {
     "VIDEO": str(pathlib.Path(__file__).parent) + "/../resources/test.mp4",
     "CAMERA": 0,
-    "ROS_IMG": "/camaras/0",
+    "ROS_IMG": "/zed2/zed_node/rgb/image_rect_color",
 }
 
 ARGS= {
-    "SOURCE": SOURCES["VIDEO"],
-    "ROS_INPUT": False,
-    "USE_ACTIVE_FLAG": True,
+    "SOURCE": SOURCES["ROS_IMG"],
+    "ROS_INPUT": True,
+    "USE_ACTIVE_FLAG": False,
     "DEPTH_ACTIVE": False,
     "DEPTH_INPUT": "/camera/depth/image_raw",
-    "CAMERA_INFO": "/camera/depth/camera_info",
+    "CAMERA_INFO": "/zed2/zed_node/rgb/image_rect_color",
     "MODELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/",
     "LABELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/label_map.pbtxt",
     "MIN_SCORE_THRESH": 0.6,
@@ -55,13 +55,17 @@ class CamaraProcessing:
         def loadTfModel():
             self.detect_fn = tf.saved_model.load(ARGS["MODELS_PATH"])
             self.category_index = {
-                1 : 'Coca-Cola',
-                2 : 'Coffee',
-                3 : 'Nesquik',
+                1 : 'CocaCola',
+                2 : 'Principe',
+                3 : 'Leche',
+                4 : 'Pringles',
+                5 : 'Zucaritas',
+                6 : 'Lysol',
+                7 : 'Harpic',
             }
 
         def Yolov9Model():
-            self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=ARGS["MODELS_PATH"] + 'model.pt')
+            self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=ARGS["MODELS_PATH"] + 'yolo9ClassHome.pt',force_reload=True)
 
         #loadTfModel()
         Yolov9Model()
@@ -86,9 +90,11 @@ class CamaraProcessing:
             self.detections_frame = []
             rate = rospy.Rate(60)
             while not rospy.is_shutdown():
+                #print('holiivan')
                 if ARGS["VERBOSE"] and len(self.detections_frame) != 0:
+                    #print('holialdo')
                     cv2.imshow("Detections", self.detections_frame)
-                    cv2.waitKey(1)
+                #print('holi')
                 rate.sleep()
         except KeyboardInterrupt:
             pass
@@ -198,6 +204,8 @@ class CamaraProcessing:
 
     def run_inference_on_image(self, frame):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        cv2.imshow('frame', frame)
+    
         if ARGS["VERBOSE"]:
             print('Predicting...')
         start_time = time.time()
@@ -213,19 +221,34 @@ class CamaraProcessing:
             print('Done! Took {} seconds'.format(end_time - start_time))
         
         # Fields to return: detections['detection_boxes'], detections['detection_scores'], detections['detection_classes'], detections
-        detections = []
+        detections = {
+            "detection_boxes": [],
+            "detection_scores": [],
+            "detection_classes": []
+        }
+        detections_boxes = []
+        detections_scores = []
+        detections_classes = []
         for *xyxy, conf, cls in prediction.pandas().xyxy[0].itertuples(index=False):
-            detections.append([[round(elem, 2) for elem in xyxy ], conf, cls, {
-                "detection_boxes": [round(elem, 2) for elem in xyxy ],
-                "detection_scores": conf,
-                "detection_classes": cls
-            }])
+            detections_boxes.extend(xyxy)
+            #detections_boxes.extend([round(elem, 2) for elem in xyxy ])
+            #detections_boxes.append([round(elem, 2) for elem in xyxy ])
+            detections_scores.append(conf)
+            detections_classes.append(cls)
+        detections['detection_boxes'] = np.array(detections_boxes)
+        detections['detection_scores'] = np.array(detections_scores)
+        detections['detection_classes'] = np.array(detections_classes)
+
+        return np.array(detections_boxes), np.array(detections_scores), np.array(detections_classes), detections
         
-        return detections
+        return detections_boxes, detections_scores, detections_classes, detections
 
 
     # Handle the detection model input/output.
     def compute_result(self, frame):
+        print('compute_result')
+
+
         (boxes, scores, classes, detections) = self.run_inference_on_image(frame)
         return self.get_objects(boxes, scores, classes, frame.shape[0], frame.shape[1], frame), detections, frame, self.category_index
 
