@@ -16,6 +16,11 @@ from actionlib_msgs.msg import GoalID
 import os
 import openai
 
+import os
+import json
+import sys
+
+
 START_STATE = "start"
 SPEECH_STATE = "speech"
 NAVIGATION1_STATE = "navigation1"
@@ -46,20 +51,14 @@ response = openai.Completion.create(
   frequency_penalty=0,
   presence_penalty=0
 )
-    TEA = 2
-    COKE = 3
-    JUICE = 4
 
 class Tmr2022Main(object):
 
     def __init__(self):
         self.currentState =  START_STATE
-
         # Conversation/Speech
         self.speech_enable = rospy.Publisher("inputAudioActive", Bool, queue_size=10)
         self.parser_listener = rospy.Subscriber('action/bring_something', bring_something_cmd, self.listen_parser)
-        self.targetPlace = None
-        self.targetObject = None
         
         # Navigation
         self.cancel_move = rospy.Publisher("/move_base/cancel", GoalID, queue_size=10)
@@ -70,8 +69,8 @@ class Tmr2022Main(object):
         self.move_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.move_client.wait_for_server()
         rospy.loginfo("MoveBase AS Loaded ...")
-        self.nav_client = actionlib.SimpleActionClient('navServer', navServAction)
-        self.nav_client.wait_for_server()
+        # self.nav_client = actionlib.SimpleActionClient('navServer', navServAction)
+        # self.nav_client.wait_for_server()
 
         # Vision
         self.vision2D_enable = rospy.Publisher("detectionsActive", Bool, queue_size=10)

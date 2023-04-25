@@ -34,7 +34,7 @@ class MoveGoals(Enum):
 class ManipulationGoals(Enum):
     VEGETABLES = 1
     TEA = 2
-    COKE = 3
+    COKE = 3    
     JUICE = 4
 
 class Tmr2022Main(object):

@@ -23,7 +23,7 @@ DOCKER_GPU_ARGS="--env DISPLAY --env QT_X11_NO_MITSHM=1 --volume=/tmp/.X11-unix:
 dpkg -l | grep nvidia-container-toolkit &> /dev/null
 HAS_NVIDIA_TOOLKIT=$?
 which nvidia-docker > /dev/null
-HAS_NVIDIA_DOCKER=$?
+HAS_NVIDIA_DOCKER=$?env
 if [ $HAS_NVIDIA_TOOLKIT -eq 0 ]; then
   docker_version=`docker version --format '{{.Client.Version}}' | cut -d. -f1`
   if [ $docker_version -ge 19 ]; then
@@ -68,8 +68,8 @@ $DOCKER_COMMAND -it -d\
   -v "$PWD/catkin_home/src:/catkin_home/src" \
   -v "$PWD/catkin_home/typings:/catkin_home/typings" \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  --name=ros-home \
-  ros:home \
+  --name=ros-hometgo \
+  ros:hometgo \
   bash
 
 if [ $# -eq 1 ]; then
