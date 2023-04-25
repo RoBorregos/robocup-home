@@ -57,13 +57,12 @@ class ManipulationClient(object):
         self.client = actionlib.SimpleActionClient('manipulationServer', manipulationServAction)
         self.client.wait_for_server()
         rospy.loginfo("Connected to Manipulation Server")
+        
+        rospy.sleep(7)
 
         result = False
-        x = OBJECTS_ID['Coca-Cola']
-        while not result and not rospy.is_shutdown():
-            if x == 0:
-                break
-            result = self.manipulation_goal(ManipulationGoals(x))
+        in_ = -1
+        while not result and not rospy.is_shutdown() and in_ != 0:
             ## Wait for user input
             in_ = handleIntInput("(1) Zucaritas, (2) Coca-Cola, (3) Harpic", range=(0, 3))
             if in_ == 0:
@@ -75,6 +74,7 @@ class ManipulationClient(object):
             elif in_ == 3:
                 x = OBJECTS_ID['Harpic']
             
+            result = self.manipulation_goal(ManipulationGoals(x))    
 
     def manipulation_goal(self, target = ManipulationGoals.COKE):
         class ManipulationGoalScope:

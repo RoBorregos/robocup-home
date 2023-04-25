@@ -5,11 +5,12 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /MotionPlanning1
         - /PointCloud21
-        - /PointCloud21/Status1
+        - /PoseArray2
+        - /TF1/Frames1
+        - /Pose1
       Splitter Ratio: 0.7425600290298462
-    Tree Height: 814
+    Tree Height: 760
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -44,7 +45,7 @@ Visualization Manager:
       Value: true
     - Acceleration_Scaling_Factor: 1
       Class: moveit_rviz_plugin/MotionPlanning
-      Enabled: false
+      Enabled: true
       Move Group Namespace: ""
       MoveIt_Allow_Approximate_IK: false
       MoveIt_Allow_External_Program: false
@@ -95,6 +96,11 @@ Visualization Manager:
             Show Trail: false
             Value: true
           Cam2Rev:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam3:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -249,7 +255,7 @@ Visualization Manager:
         Goal State Color: 250; 128; 0
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
-        Planning Group: gripper
+        Planning Group: arm
         Query Goal State: true
         Query Start State: false
         Show Workspace: false
@@ -294,6 +300,11 @@ Visualization Manager:
             Show Trail: false
             Value: true
           Cam2Rev:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam3:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -428,7 +439,7 @@ Visualization Manager:
         Robot Alpha: 0.5
         Show Robot Collision: false
         Show Robot Visual: true
-      Value: false
+      Value: true
       Velocity_Scaling_Factor: 1
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -442,7 +453,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: RGB8
       Decay Time: 0
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
@@ -453,11 +464,11 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: /zed2/zed_node/point_cloud/cloud_registered
+      Topic: /zed2/zed_node/point_cloud/ds_cloud_registered
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -490,6 +501,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         Cam2Rev:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Cam3:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -630,21 +646,21 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
+        Max Value: 0.9585530161857605
+        Min Value: 0.7429208159446716
         Value: true
       Axis: Z
       Channel Name: intensity
       Class: rviz/PointCloud2
-      Color: 255; 255; 255
-      Color Transformer: ""
+      Color: 255; 0; 0
+      Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
       Name: PointCloud2
-      Position Transformer: ""
+      Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
@@ -654,7 +670,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -665,29 +681,397 @@ Visualization Manager:
       Channel Name: intensity
       Class: rviz/PointCloud2
       Color: 255; 255; 255
-      Color Transformer: ""
+      Color Transformer: RGB8
       Decay Time: 0
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
       Name: PointCloud2
-      Position Transformer: ""
+      Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: /test_pc_2
+      Topic: /zed2/zed_node/point_cloud/ds_cloud_registered
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /detect_grasps_server/plot_grasps
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.30000001192092896
+      Axes Radius: 0.009999999776482582
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.07000000029802322
+      Head Radius: 0.029999999329447746
+      Name: PoseArray
+      Queue Size: 10
+      Shaft Length: 0.23000000417232513
+      Shaft Radius: 0.009999999776482582
+      Shape: Arrow (Flat)
+      Topic: /pose_array/object
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.30000001192092896
+      Axes Radius: 0.009999999776482582
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.03999999910593033
+      Head Radius: 0.019999999552965164
+      Name: PoseArray
+      Queue Size: 10
+      Shaft Length: 0.05999999865889549
+      Shaft Radius: 0.009999999776482582
+      Shape: Arrow (3D)
+      Topic: /fk_poses
+      Unreliable: false
+      Value: true
+    - Class: moveit_rviz_plugin/PlanningScene
+      Enabled: true
+      Move Group Namespace: ""
+      Name: PlanningScene
+      Planning Scene Topic: move_group/monitored_planning_scene
+      Robot Description: robot_description
+      Scene Geometry:
+        Scene Alpha: 0.8999999761581421
+        Scene Color: 50; 230; 50
+        Scene Display Time: 0.009999999776482582
+        Show Scene Geometry: true
+        Voxel Coloring: Z-Axis
+        Voxel Rendering: Occupied Voxels
+      Scene Robot:
+        Attached Body Color: 150; 50; 150
+        Links:
+          All Links Enabled: true
+          Base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          BaseBrazo:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Base_Gripper:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam2Rev:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Dedo1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Dedo2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Lidar:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Link Tree Style: Links in Alphabetic Order
+          Llanta1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Llanta2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          LlantaLoca1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          LlantaLoca2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Loca1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Loca2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          RevCam1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          RevCam2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Servo1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Servo2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          end_effector_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          internal_odom:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          internal_odom_inertia:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          link1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link4:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link5:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link_eef:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          odom_xr_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          odom_yx_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+        Robot Alpha: 1
+        Show Robot Collision: false
+        Show Robot Visual: true
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        Base:
+          Value: false
+        BaseBrazo:
+          Value: false
+        Base_Gripper:
+          Value: false
+        Cam1:
+          Value: false
+        Cam2:
+          Value: false
+        Cam2Rev:
+          Value: false
+        Cam3:
+          Value: false
+        Dedo1:
+          Value: false
+        Dedo2:
+          Value: false
+        Lidar:
+          Value: false
+        Llanta1:
+          Value: false
+        Llanta2:
+          Value: false
+        LlantaLoca1:
+          Value: false
+        LlantaLoca2:
+          Value: false
+        Loca1:
+          Value: false
+        Loca2:
+          Value: false
+        RevCam1:
+          Value: true
+        RevCam2:
+          Value: true
+        Servo1:
+          Value: false
+        Servo2:
+          Value: false
+        base_link:
+          Value: false
+        end_effector_link:
+          Value: false
+        internal_odom:
+          Value: false
+        internal_odom_inertia:
+          Value: false
+        link1:
+          Value: false
+        link2:
+          Value: false
+        link3:
+          Value: false
+        link4:
+          Value: false
+        link5:
+          Value: false
+        link_base:
+          Value: false
+        link_eef:
+          Value: false
+        odom:
+          Value: false
+        odom_xr_link:
+          Value: false
+        odom_yx_link:
+          Value: false
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        odom:
+          internal_odom:
+            internal_odom_inertia:
+              odom_yx_link:
+                odom_xr_link:
+                  base_link:
+                    Base:
+                      BaseBrazo:
+                        link_base:
+                          link1:
+                            link2:
+                              link3:
+                                link4:
+                                  link5:
+                                    link_eef:
+                                      Base_Gripper:
+                                        Servo1:
+                                          Dedo1:
+                                            {}
+                                        Servo2:
+                                          Dedo2:
+                                            {}
+                                        end_effector_link:
+                                          {}
+                      Cam2Rev:
+                        Cam2:
+                          {}
+                      Cam3:
+                        {}
+                      Lidar:
+                        {}
+                      Llanta1:
+                        {}
+                      Llanta2:
+                        {}
+                      Loca1:
+                        LlantaLoca1:
+                          {}
+                      Loca2:
+                        LlantaLoca2:
+                          {}
+                      RevCam1:
+                        RevCam2:
+                          Cam1:
+                            {}
+      Update Interval: 0
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 0; 255; 255
+      Enabled: false
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Queue Size: 10
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic: fk_pose
+      Unreliable: false
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: Base
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -695,11 +1079,14 @@ Visualization Manager:
       Hide Inactive Objects: true
     - Class: rviz/MoveCamera
     - Class: rviz/Select
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
   Value: true
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 3.9459755420684814
+      Distance: 3.07912278175354
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -707,22 +1094,22 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.18517708778381348
-        Y: -0.2729493975639343
+        X: -0.18105030059814453
+        Y: -0.0775107741355896
         Z: -7.301563300643465e-07
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.47979697585105896
+      Pitch: -0.03520453721284866
       Target Frame: world
-      Yaw: 2.686760663986206
+      Yaw: 0.21677719056606293
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1043
+  Height: 1016
   Help:
     collapsed: false
   Hide Left Dock: false
@@ -731,9 +1118,9 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002ad000003bdfc0200000006fc0000003b000003bd000000c700fffffffa000000010100000002fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670000000000ffffffff000001ca00fffffffb000000100044006900730070006c0061007900730100000000000002ad0000015600fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000a0056006900650077007300000003b0000000b0000000a000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000001600000016000004cd000003bd00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000002ad000003a2fc0200000006fc0000003b000003a2000001840100001afa000000010100000002fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000000ffffffff000001ca00fffffffb000000100044006900730070006c0061007900730100000000000002ad0000015600fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000a0056006900650077007300000003b0000000b0000000a000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff000000160000001600000485000003a200000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
-  Width: 1920
-  X: 0
-  Y: 0
+  Width: 1848
+  X: 72
+  Y: 27

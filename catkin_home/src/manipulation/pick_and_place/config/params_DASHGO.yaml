@@ -1,19 +1,27 @@
-ARM_GROUP: "xarm5"
+MANIPULATION_ENABLE: true
+PICK_GROUPS: [arm] #, whole_body, whole_body_rotational
+ARM_GROUP: "arm"
 ARM_JOINTS: [joint1, joint2, joint3, joint4, joint5]
-ARM_GRASP: [3.10669, -1.20428, -0.418879, -1.43117, 0.0]
+ARM_GRASP: [1.57, 0.0, -3.9, 2.33, -1.57]
+ARM_INIT: [0.0, 0.0, 0.0, 0.0, 0.0]
+HEAD_ENABLE: false
 HEAD_GROUP: "head"
 HEAD_JOINTS: [Cam1Rev1, Cam1Rev2]
-HEAD_LOOK_DOWN: [0.0, 0.3962]
-HEAD_LOOK_FRONT: [0.0, 0.3962]
+HEAD_LOOK_DOWN: [0.0, 0.0]
+HEAD_LOOK_FRONT: [0.0, 0.0]
 HEAD_LEFT: [0.0, 0.0]
 HEAD_RIGHT: [0.0, 0.0]
 GRIPPER_GROUP: "gripper"
 GRIPPER_JOINTS: [ "Rev1Servo", "Rev2Servo"]
-GRIPPER_OPEN: [-0.0734, 0.5403]
-GRIPPER_CLOSED: [0.4, 0.06]
+GRIPPER_OPEN: [-0.32, 0.32]
+GRIPPER_CLOSED: [0.0, 0.0]
 GRASP_POSTURES_FRAME_ID: "end_effector_link"
 ALLOW_CONTACT: [
   "<octomap>",
+  "Servo1",
+  "Servo2",
+  "Dedo1",
+  "Dedo2"
 ]
 CAMERA_DEPTH_FRAME: zed2_left_camera_optical_frame
 CAMERA_PC_FRAME: zed2_left_camera_frame

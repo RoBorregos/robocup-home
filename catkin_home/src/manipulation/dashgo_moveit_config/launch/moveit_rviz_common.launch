@@ -21,12 +21,11 @@
   <!-- option to show rviz or not -->
   <arg name="show_rviz" default="true" />
 
-  <!-- Load the URDF, SRDF and other .yaml configuration files on the param server, limit joint range within [-pi, pi] -->
-  <include file="$(find dashgo_moveit_config)/launch/planning_context.launch">
-    <arg name="load_robot_description" value="true"/>
-  </include>
+  <!-- option to publish static odom tf -->
+  <arg name="pub_static_odom" default="false" />
 
   <!-- If needed, broadcast static tf for robot root -->
+  <node if="$(arg pub_static_odom)" pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 odom internal_odom" />
 
   <!-- publish /joint_states from specified source topic -->
   <!-- Remove -->
@@ -42,6 +41,7 @@
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
   <include if="$(arg load_move_group)" file="$(find dashgo_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="load_robot_description" value="true"/>
     <arg name="info" value="true"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>

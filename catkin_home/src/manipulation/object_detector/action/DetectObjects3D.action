@@ -4,6 +4,7 @@ object_detector/objectDetectionArray force_object
 #result definition
 bool success
 gpd_ros/CloudSamples object_cloud
+gpd_ros/CloudIndexed object_cloud_indexed
 geometry_msgs/PoseStamped object_pose
 float64 x_plane
 float64 y_plane

@@ -11,23 +11,22 @@ controller_list:
     type: $(arg fake_execution_type)
     joints:
       - Rev1Servo
-      - Rev2Servo
   - name: fake_head_controller
     type: $(arg fake_execution_type)
     joints:
       - Cam1Rev1
       - Cam1Rev2
-  - name: fake_base_controller
+  - name: fake_base
     type: $(arg fake_execution_type)
     joints:
-      - odom_y
       - odom_x
+      - odom_y
       - odom_r
-  - name: fake_whole_body_controller
+  - name: fake_whole_body
     type: $(arg fake_execution_type)
     joints:
-      - odom_y
       - odom_x
+      - odom_y
       - odom_r
       - joint1
       - joint2
@@ -41,3 +40,5 @@ initial:  # Define initial robot poses per group
     pose: close
   - group: head
     pose: default_neck
+  - group: whole_body
+    pose: default_whole_body

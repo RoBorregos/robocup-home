@@ -23,6 +23,6 @@ controller_list:
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
     joints:
-      - odom_y
       - odom_x
+      - odom_y
       - odom_r

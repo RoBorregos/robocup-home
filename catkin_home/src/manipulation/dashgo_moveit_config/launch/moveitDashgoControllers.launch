@@ -2,6 +2,11 @@
 <launch>
      <arg name="hw_ns" default="DASHGO" />
 
+     <!-- Fix Base TFs -->
+     <!-- <node name="MoveitBase"
+          pkg="dashgo_moveit_config" type="MoveItBase.py" output="screen"
+     /> -->
+
      <!-- Run HardwareInterface -->
      <node name="MyController"
           pkg="dashgo_moveit_config" type="MyController" output="screen"
@@ -18,5 +23,5 @@
      />
      <remap from="base_controller/follow_joint_trajectory" to="$(arg hw_ns)/base_controller/follow_joint_trajectory"/>
      <remap from="head_controller/follow_joint_trajectory" to="$(arg hw_ns)/head_controller/follow_joint_trajectory"/>
-     <!-- <remap from="gripper_controller/follow_joint_trajectory" to="$(arg hw_ns)/gripper_controller/follow_joint_trajectory"/> -->
+     <remap from="gripper_controller/follow_joint_trajectory" to="$(arg hw_ns)/gripper_controller/follow_joint_trajectory"/>
 </launch>

@@ -9,15 +9,17 @@ import tf.transformations as transformations
 import moveit_commander
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from moveit_commander import PlanningSceneInterface
-from moveit_msgs.msg import Grasp, GripperTranslation, PickupAction, PickupGoal, PickupResult, MoveItErrorCodes
+from moveit_msgs.srv import GetPositionFK, GetPositionFKRequest, GetPositionFKResponse
+from moveit_msgs.msg import Constraints, PositionConstraint, OrientationConstraint, Grasp, GripperTranslation, PickupAction, PickupGoal, PickupResult, MoveItErrorCodes
 from moveit_msgs.msg import PlaceAction, PlaceGoal, PlaceResult, PlaceLocation, AllowedCollisionEntry, PlanningSceneComponents
 from geometry_msgs.msg import Pose, PoseStamped, PoseArray, Vector3Stamped, Vector3, Quaternion
 from nav_msgs.msg import Odometry
 from pick_and_place.msg import PickAndPlaceAction, PickAndPlaceGoal, PickAndPlaceResult, PickAndPlaceFeedback
-from moveit_msgs.srv import GetPlanningScene, GetPlanningSceneRequest, GetPlanningSceneResponse
+from moveit_msgs.srv import ApplyPlanningScene, GetPlanningScene, GetPlanningSceneRequest, GetPlanningSceneResponse
 from std_srvs.srv import Empty, EmptyRequest
 from std_msgs.msg import Header
 from gpd_ros.msg import GraspConfig, GraspConfigList
+from sensor_msgs.msg import JointState
 import numpy
 import math
 import copy
@@ -28,9 +30,9 @@ for name in MoveItErrorCodes.__dict__.keys():
         code = MoveItErrorCodes.__dict__[name]
         moveit_error_dict[code] = name
 
-
 class PickAndPlaceServer(object):
     ARM_GROUP = "whole_body"
+    PICK_GROUPS = ["whole_body"]
     GRIPPER_GROUP="gripper"
     GRASP_POSTURES_FRAME_ID="arm_tool_link"
     GRIPPER_JOINTS = ["gripper_left_finger_joint", "gripper_right_finger_joint"]
@@ -44,6 +46,7 @@ class PickAndPlaceServer(object):
         
         # Load parameters
         PickAndPlaceServer.ARM_GROUP = rospy.get_param("ARM_GROUP", PickAndPlaceServer.ARM_GROUP)
+        PickAndPlaceServer.PICK_GROUPS = rospy.get_param("PICK_GROUPS", PickAndPlaceServer.PICK_GROUPS)
         PickAndPlaceServer.GRIPPER_GROUP = rospy.get_param("GRIPPER_GROUP", PickAndPlaceServer.GRIPPER_GROUP)
         PickAndPlaceServer.GRASP_POSTURES_FRAME_ID = rospy.get_param("GRASP_POSTURES_FRAME_ID", PickAndPlaceServer.GRASP_POSTURES_FRAME_ID)
         PickAndPlaceServer.ALLOW_CONTACT = rospy.get_param("ALLOW_CONTACT", PickAndPlaceServer.ALLOW_CONTACT)
@@ -64,15 +67,26 @@ class PickAndPlaceServer(object):
         rospy.loginfo("Connecting to /get_planning_scene service")
         self.scene_srv = rospy.ServiceProxy(
             '/get_planning_scene', GetPlanningScene)
+        self.apply_scene_srv = rospy.ServiceProxy(
+            '/apply_planning_scene', ApplyPlanningScene)
         self.scene_srv.wait_for_service(timeout=100)
+        self.apply_scene_srv.wait_for_service(timeout=100)
         rospy.loginfo("Connected.")
         print("Current allowed collisions:")
-        self.curr_collision_matrix = self.scene_srv(PlanningSceneComponents(components=PlanningSceneComponents.ALLOWED_COLLISION_MATRIX)).scene.allowed_collision_matrix
-        self.curr_collision_matrix.entry_names.append("<octomap>")
-        for entry in self.curr_collision_matrix.entry_values:
-            entry.enabled.append(True)
-        self.curr_collision_matrix.entry_values.append(AllowedCollisionEntry(enabled=[True for i in range(len(self.curr_collision_matrix.entry_names))]))
+        self.curr_scene = self.scene_srv(PlanningSceneComponents()).scene
+        # self.curr_scene.allowed_collision_matrix.entry_names.append("<octomap>")
+        # for entry in self.curr_scene.allowed_collision_matrix.entry_values:
+        #     entry.enabled.append(True)
+        # self.curr_scene.allowed_collision_matrix.entry_values.append(AllowedCollisionEntry(enabled=[True for i in range(len(self.curr_scene.allowed_collision_matrix.entry_names))]))
+        self.curr_collision_matrix = self.curr_scene.allowed_collision_matrix
+        self.apply_scene_srv(scene=self.curr_scene)
+        # self.curr_collision_matrix = self.scene_srv(PlanningSceneComponents(components=PlanningSceneComponents.ALLOWED_COLLISION_MATRIX)).scene.allowed_collision_matrix
+        # self.curr_collision_matrix.entry_names.append("<octomap>")
+        # for entry in self.curr_collision_matrix.entry_values:
+        #     entry.enabled.append(True)
+        # self.curr_collision_matrix.entry_values.append(AllowedCollisionEntry(enabled=[True for i in range(len(self.curr_collision_matrix.entry_names))]))
         
+
         rospy.loginfo("Connecting to clear octomap service...")
         self.clear_octomap_srv = rospy.ServiceProxy(
             '/clear_octomap', Empty)
@@ -96,11 +110,38 @@ class PickAndPlaceServer(object):
         self.pose_array_p = rospy.Publisher("pose_array/object", PoseArray, queue_size=10)
 
         rospy.loginfo("Waiting for MoveGroupCommander...")
-        self.arm_group = moveit_commander.MoveGroupCommander(PickAndPlaceServer.ARM_GROUP, wait_for_servers = 0)
-        
+        self.pick_groups = []
+        for group in PickAndPlaceServer.PICK_GROUPS:
+            self.pick_groups.append(moveit_commander.MoveGroupCommander(group, wait_for_servers = 0))
+            self.pick_groups[-1].set_goal_orientation_tolerance(0.11)
+            self.pick_groups[-1].set_goal_position_tolerance(0.01)
+
         rospy.loginfo("Action Server Pick & Place Up!")
 
-    
+    def testPose(self):
+        t = PoseStamped()
+        t.header.frame_id = "base_link"
+        t.header.stamp = rospy.Time.now()
+        t.pose.position.x = -0.10729249562597369
+        t.pose.position.y = 0.25381871209802137
+        t.pose.position.z = 0.5271093439390989
+        t.pose.orientation.x = 0.9103444808785343
+        t.pose.orientation.y = 0.41385133335390073
+        t.pose.orientation.z = 3.883465277565029e-06
+        t.pose.orientation.w = -3.3049841971737527e-07
+        
+
+
+        x = PoseArray()
+        x.header = t.header
+        x.poses.append(t.pose)
+        self.pose_array_p.publish(x)
+        
+        self.pick_groups[0].set_pose_target(t.pose)
+        self.pick_groups[0].plan()
+        res = self.pick_groups[0].go(wait=True)
+        self.pick_groups[0].stop()
+
     # Function to handle pickup callback.
     def pick_cb(self, goal):
         """
@@ -112,32 +153,63 @@ class PickAndPlaceServer(object):
         
         pa = PoseArray()
         pS = PoseStamped()
-        TEST_ORIENTATION = False
         for grasp in grasps:
             pS = grasp.grasp_pose
-            
-            if TEST_ORIENTATION:
-                pS.pose.position.z += 0.2 # Avoid Collision with table increasing Z.
             
             pa.header = pS.header
             pa.poses.append(pS.pose)
 
-            if TEST_ORIENTATION:
-                break # Only test one pose.
-
+        TEST_ORIENTATION = False
         if TEST_ORIENTATION:
+            # self.testPose()
+
+            # p_res = PickAndPlaceResult()
+            # p_res.error_code = -1
+            # self.pick_as.set_succeeded(p_res)
+            # return
+
             rospy.loginfo("Confirming Orientation")
-            self.arm_group.set_pose_target(pS)
-            self.arm_group.plan()
-            self.arm_group.go(wait=True)
-            self.arm_group.stop()
-            self.pose_array_p.publish(pa)
+            for grasp in grasps:
+                # Increase z to avoid collision with table
+                # grasp.grasp_pose.pose.position.z -= 0.17
+                # Closer to the robot.
+                grasp.grasp_pose.pose.position.x -= 0.225
+                # grasp.grasp_pose.pose.orientation = Quaternion(*transformations.quaternion_from_euler(0.0, -1.5707963267948966, 0.0))
+
+                x = PoseArray()
+                x.header = grasp.grasp_pose.header
+                x.poses.append(grasp.grasp_pose.pose)
+
+                self.pose_array_p.publish(x)
+
+                count = 0
+                for group in self.pick_groups:
+                    # group.set_end_effector_link("end_effector_link")
+                    rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
+                    group.set_pose_target(grasp.grasp_pose.pose)
+                    group.set_goal_orientation_tolerance(numpy.deg2rad(20))
+                    group.set_goal_position_tolerance(0.03)
+                    group.plan()
+                    res = group.go(wait=True)
+                    group.stop()
+                    rospy.loginfo("Result: " + str(res))
+                    if res == True:
+                        break
+                    count += 1
+
+            p_res = PickAndPlaceResult()
+            p_res.error_code = -1
             self.pick_as.set_succeeded(p_res)
             return
         
         self.pose_array_p.publish(pa)
 
-        error_code = self.grasp_object(grasps, goal.object_name, links_to_allow_contact)
+        error_code = -1
+        for group in PickAndPlaceServer.PICK_GROUPS:
+            rospy.loginfo("Trying to pick object with group: " + group)
+            error_code = self.grasp_object(grasps, goal.object_name, links_to_allow_contact, group)
+            if error_code == 1:
+                break
         p_res = PickAndPlaceResult()
         p_res.error_code = error_code
         if error_code != 1:
@@ -150,7 +222,11 @@ class PickAndPlaceServer(object):
         """
         :type goal: PickAndPlaceGoal
         """
-        error_code = self.place_object(goal.target_pose, goal.object_name, goal.allow_contact_with)
+        error_code = -1
+        for group in PickAndPlaceServer.PICK_GROUPS:
+            error_code = self.place_object(goal.target_pose, goal.object_name, goal.allow_contact_with, group)
+            if error_code == 1:
+                break
         p_res = PickAndPlaceResult()
         p_res.error_code = error_code
         if error_code != 1:
@@ -178,17 +254,102 @@ class PickAndPlaceServer(object):
         return code_error
 
     # Function to grasp an object.
-    def grasp_object(self, grasps, object_name, allow_contact_with = []):
+    def grasp_object(self, grasps, object_name, allow_contact_with = [], pick_group = "arm"):
         # Confirm if not attached already
         scene_attached_objects = self.scene.get_attached_objects([object_name])
         rospy.loginfo("Attached objects:" + str(scene_attached_objects))
         if object_name in scene_attached_objects:
             return
+        
+        # Plan to Object with the following steps:
+        # - Open Gripper
+        # - Move to Object
+        # - Close Gripper
+        
+        # Open Gripper
+        rospy.loginfo("Opening gripper")
+        joint_state = JointState()
+        joint_state.name = ["Rev1Servo", "Rev2Servo"]
+        joint_state.position = [0.32, -0.32]
+        self.gripper_group.go(joint_state, wait=True)
+        self.gripper_group.stop()
+        rospy.sleep(0.5)
+
+        # Move to Object
+        rospy.loginfo("Planning to object")
+        success = False
+        for grasp in grasps:
+            if success:
+                break
+            count = 0
+            for group in self.pick_groups:
+                rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
+                group.set_pose_target(grasp.grasp_pose.pose)
+                group.set_goal_orientation_tolerance(numpy.deg2rad(20))
+                group.set_goal_position_tolerance(0.03)
+                group.plan()
+                res = group.go(wait=True)
+                group.stop()
+                rospy.loginfo("Result: " + str(res))
+                # if res == False:
+                    # curr_pose = group.get_current_pose()
+                    # rospy.loginfo(str(curr_pose))
+                    # rospy.loginfo(str(grasp.grasp_pose.pose))
+
+                if res == True:
+                    success = True
+                    break
+                count += 1
+
+        if not success:
+            return 99999
+        
+        # Close Gripper
+        attempts = 0
+        success = False
+        while attempts < 5:
+            rospy.loginfo("Closing gripper")
+            joint_state = JointState()
+            joint_state.name = ["Rev1Servo", "Rev2Servo"]
+            joint_state.position = [0.0, 0.0]
+            res = self.gripper_group.go(joint_state, wait=True)
+            self.gripper_group.stop()
+            attempts += 1
+            if res == True:
+                success = True
+                break
+
+        if success:
+            rospy.sleep(0.5)
+        # Plan to Object
+        # rospy.loginfo("Planning to object")
+        # count = 0
+        # success = False
+        # for grasp in grasps:
+        #     if success:
+        #         break
+        #     for group in self.pick_groups:
+        #         rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
+        #         group.set_pose_target(grasp.grasp_pose.pose)
+        #         group.set_goal_orientation_tolerance(numpy.deg2rad(20))
+        #         group.set_goal_position_tolerance(0.03)
+        #         group.plan()
+        #         res = group.go(wait=True)
+        #         group.stop()
+        #         rospy.loginfo("Result: " + str(res))
+        #         if res == True:
+        #             success = True
+        #             break
+        #         count += 1
+
+        if not success:
+            return 99999
+        return 1
 
         possible_grasps = grasps
 
         goal = createPickupGoal(
-            PickAndPlaceServer.ARM_GROUP, object_name, possible_grasps, allow_contact_with, "<octomap>" , self.curr_collision_matrix)
+            pick_group, object_name, possible_grasps, allow_contact_with, "<octomap>" , self.curr_collision_matrix)
         
         error_code = self.handle_pick_as(goal)
 
@@ -255,7 +416,7 @@ class PickAndPlaceServer(object):
         return PlaceScope.error_code
     
     # Function to place an object.
-    def place_object(self, object_pose, object_name, allow_contact_with = []):
+    def place_object(self, object_pose, object_name, allow_contact_with = [], place_group = "arm"):
 
         links_to_allow_contact = PickAndPlaceServer.ALLOW_CONTACT
         links_to_allow_contact.extend(allow_contact_with)
@@ -267,7 +428,7 @@ class PickAndPlaceServer(object):
         rospy.loginfo("Trying to place with arm and torso")
         
         goal = createPlaceGoal(
-            possible_placings, PickAndPlaceServer.ARM_GROUP, object_name, links_to_allow_contact, "<octomap>", self.curr_collision_matrix)
+            possible_placings, place_group, object_name, links_to_allow_contact, "<octomap>", self.curr_collision_matrix)
 
         error_code = self.handle_place_as(goal)
     
@@ -304,6 +465,27 @@ def createPickupGoal(group=PickAndPlaceServer.ARM_GROUP, target="part",
     pug.attached_object_touch_links = ['<octomap>']
     pug.attached_object_touch_links.extend(links_to_allow_contact)
     pug.planning_options.planning_scene_diff.allowed_collision_matrix = curr_collision_matrix
+    pug.path_constraints = Constraints()
+    pug.path_constraints.position_constraints = []
+    pug.path_constraints.orientation_constraints = []
+
+    position_constraints = PositionConstraint()
+    position_constraints.link_name = "end_effector_link"
+    position_constraints.header.frame_id = "end_effector_link"
+    position_constraints.target_point_offset = Vector3(x=0.03, y=0.03, z=0.03)
+    position_constraints.weight = 1.0
+    pug.path_constraints.position_constraints.append(position_constraints)
+
+    orientation_constraints = OrientationConstraint()
+    orientation_constraints.link_name = "end_effector_link"
+    orientation_constraints.header.frame_id = "base_link"
+    orientation_constraints.orientation = Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)
+    orientation_constraints.absolute_x_axis_tolerance = numpy.deg2rad(10)
+    orientation_constraints.absolute_y_axis_tolerance = numpy.deg2rad(10)
+    orientation_constraints.absolute_z_axis_tolerance = numpy.deg2rad(10)
+    orientation_constraints.weight = 1.0
+    # pug.path_constraints.orientation_constraints.append(orientation_constraints)
+
     return pug
 
 # Function to create a PlaceGoal with the provided data..
@@ -383,7 +565,7 @@ def create_grasp(poseStamped, allowed_touch_objects, grasp_config):
     #         width_angle = elem[1]
 
     gripper_pre_grasp_positions = PickAndPlaceServer.GRIPPER_OPEN
-    fix_tool_frame_to_grasping_frame_roll = -90.0
+    fix_tool_frame_to_grasping_frame_roll = 0.0
     fix_tool_frame_to_grasping_frame_pitch = 0
     fix_tool_frame_to_grasping_frame_yaw = 0.0
     grasp_desired_distance = 0.20
@@ -468,6 +650,7 @@ def gpd_to_moveit_new(grasp_config_list, allow_contact_with):
     res = []
     for grasp_config in grasp_config_list.grasps:
         if grasp_config.score.data < kThresholdScore:
+                rospy.loginfo("Grasp Ignored, It's score is %f", grasp_config.score.data)
                 continue
         rospy.loginfo("grasp score is %f", grasp_config.score.data)
         rospy.loginfo("grasp required width %f", grasp_config.width.data)

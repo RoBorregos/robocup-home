@@ -4,24 +4,9 @@
   <arg name="rviz"  default="false"/>
 
   <!-- Load Params According to Robot -->
-  <rosparam file="$(find pick_and_place)/config/params_TIAGO.yaml" command="load" />
+  <rosparam file="$(find pick_and_place)/config/params_DASHGO.yaml" command="load" />
 
-  <!-- GPD -->
-	<node name="detect_grasps_server_samples" pkg="gpd_ros" type="detect_grasps_server_samples" output="screen" respawn="true">
-    <param name="config_file" value="/catkin_home/src/manipulation/pick_and_place/config/ros_eigen_params.cfg" />
-    <param name="rviz_topic" value="plot_grasps" />
-  </node>
-
-
-  <!-- depth_image_proc/point_cloud_xyzrgb -->
-  <!-- Nodelet manager for this pipeline -->
-  <!-- <node pkg="nodelet" type="nodelet" args="manager"
-        name="record_player_manager" output="screen"/>
-  <node pkg="nodelet" type="nodelet" name="generate_pointcloudrgb"
-        args="load depth_image_proc/point_cloud_xyzrgb record_player_manager">
-    <remap from="depth_registered/points" to="/xtion/depth_registered/rgb_points"/>
-    <remap from="depth_registered/image_rect" to="/xtion/depth_registered/image_raw"/>
-    <remap from="rgb/image_rect_color" to="/xtion/rgb/image_rect_color"/>
-    <remap from="rgb/camera_info" to="/xtion/rgb/camera_info"/>
-  </node> -->
+  <!-- Manipulation Server -->
+  <node name="manipulationServer" pkg="pick_and_place" type="manipulationServer.py" output="screen" />
+  
 </launch>

@@ -157,7 +157,6 @@ arm:
   projection_evaluator: joints(joint1,joint2)
   longest_valid_segment_fraction: 0.005
 gripper:
-  default_planner_config: RRTConnect
   planner_configs:
     - AnytimePathShortening
     - SBL
@@ -213,8 +212,7 @@ head:
     - SPARStwo
   projection_evaluator: joints(Cam1Rev1,Cam1Rev2)
   longest_valid_segment_fraction: 0.005
-base:
-  default_planner_config: RRTConnect
+whole_body:
   planner_configs:
     - AnytimePathShortening
     - SBL
@@ -242,8 +240,7 @@ base:
     - SPARStwo
   projection_evaluator: joints(odom_y,odom_x)
   longest_valid_segment_fraction: 0.005
-whole_body:
-  default_planner_config: RRTConnect
+base:
   planner_configs:
     - AnytimePathShortening
     - SBL

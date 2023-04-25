@@ -22,7 +22,7 @@
       <axis xyz="0 1 0" />
       <parent link="internal_odom_inertia" />
       <child link="odom_yx_link" />
-      <limit effort="1" lower="0" upper="0" velocity="0.4" />
+      <limit effort="1" lower="0.0" upper="0.0" velocity="0.08" />
       <dynamics damping="0.7" friction="2" />
   </joint>
   <link name="odom_yx_link">
@@ -36,7 +36,7 @@
       <axis xyz="1 0 0" />
       <parent link="odom_yx_link" />
       <child link="odom_xr_link" />
-      <limit effort="1" lower="-10" upper="10" velocity="0.4" />
+      <limit effort="1" lower="-1.0" upper="1.0" velocity="0.08" />
       <dynamics damping="0.7" friction="2" />
   </joint>
   <link name="odom_xr_link">
@@ -50,13 +50,13 @@
       <axis xyz="0 0 1" />
       <parent link="odom_xr_link" />
       <child link="base_link" />
-      <limit effort="1" lower="-6.2832" upper="6.2832" velocity="0.4" />
+      <limit effort="1" lower="0" upper="0" velocity="0.18" />
       <dynamics damping="0.7" friction="2" />
   </joint>
   <!-- ########################################################################### -->
   <link name="base_link"></link>
   <joint name="base_joint" type="fixed">
-    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 1.57"/>
     <parent link="base_link"/>
     <child link="Base"/>
   </joint>
@@ -96,7 +96,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://robot_description/meshes/Dashgo/Base.STL" />
+          filename="package://robot_description/meshes/Dashgo/Base_Collisions.STL" />
       </geometry>
     </collision>
   </link>
@@ -496,6 +496,47 @@
       </geometry>
     </collision>
   </link>
+  
+
+  <!-- <joint name="Cam1X"
+    type="prismatic">
+    <origin
+      xyz="-0.16729 0.098455 1.546"
+      rpy="1.5708 0.0 0.13201" />
+    <parent
+      link="Base" />
+    <child
+      link="RevCam1" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      lower="-0.54"
+      upper="0.54"
+      effort="0"
+      velocity="0" />
+
+  <joint name="cam_y" type="prismatic">
+      <axis xyz="0 1 0" />
+      <parent link="cam" />
+      <child link="cam_yx_link" />
+      <limit effort="1" lower="0.0" upper="0.0" velocity="0.08" />
+      <dynamics damping="0.7" friction="2" />
+  </joint>
+  <link name="cam_yx_link">
+      <inertial>
+          <mass value="0.10" />
+          <inertia ixx="0.000729" ixy="0" ixz="0" iyy="0.000729" iyz="0" izz="0.000729" />
+      </inertial>
+  </link>
+  <joint name="cam_x" type="prismatic">
+      <axis xyz="1 0 0" />
+      <parent link="cam_y_link" />
+      <child link="cam_x_link" />
+      <limit effort="1" lower="-1.0" upper="1.0" velocity="0.08" />
+      <dynamics damping="0.7" friction="2" />
+  </joint> -->
+
+
   <joint name="Cam1Rev1"
     type="revolute">
     <origin
@@ -569,6 +610,9 @@
       effort="0"
       velocity="0" />
   </joint>
+
+
+
   <link name="Cam1">
     <inertial>
       <origin
@@ -870,6 +914,8 @@
 
   <!-- load gripper -->
   <xacro:include filename="$(find robot_description)/urdf/gripper/gripper.urdf.xacro" />
-  <xacro:load_gripper attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="0 0 1.57" />
+  <xacro:include filename="$(find robot_description)/urdf/gripper/gripperP.urdf.xacro" />
+  <!-- <xacro:load_gripper attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="0 0 1.57" /> -->
+  <xacro:load_gripperP attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="0 0 1.57" />
 
 </robot>

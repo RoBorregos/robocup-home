@@ -20,10 +20,12 @@
 #include <pcl/surface/gp3.h>
 #include <pcl/common/transforms.h>
 #include <pcl_ros/transforms.h>
+#include <pcl/filters/voxel_grid.h>
 
 #include <object_detector/objectDetectionArray.h>
 
 #include <gpd_ros/CloudSamples.h>
+#include <gpd_ros/CloudIndexed.h>
 #include <gpd_ros/CloudSources.h>
 
 #include <actionlib/server/simple_action_server.h>
@@ -45,11 +47,28 @@
 
 #include <math.h>
 #include <limits>
+#include <set>
 
 #include <octomap/octomap.h>
 #include <octomap/OcTree.h>
 
 using namespace octomap;
+
+struct PointXYZComparator {
+  bool operator()(const pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs) const {
+    if (lhs.x < rhs.x)
+      return true;
+    if (lhs.x > rhs.x)
+      return false;
+    if (lhs.y < rhs.y)
+      return true;
+    if (lhs.y > rhs.y)
+      return false;
+    if (lhs.z < rhs.z)
+      return true;
+    return false;
+  }
+};
 
 struct ObjectParams
 {
@@ -98,6 +117,7 @@ class Detect3D
   ros::Publisher pose_pub_;
   geometry_msgs::PoseArray pose_pub_msg_;
   gpd_ros::CloudSamples gpd_msg_;
+  gpd_ros::CloudIndexed gpd_msg_indexed_;
   ros::Publisher pc_pub_1_;
   ros::Publisher pc_pub_2_;
   ros::ServiceClient clear_octomap;
@@ -135,6 +155,7 @@ public:
     feedback_.status = 0;
     result_.success = true;
     result_.object_cloud = gpd_ros::CloudSamples();
+    result_.object_cloud_indexed = gpd_ros::CloudIndexed();
     result_.object_pose = geometry_msgs::PoseStamped();
     result_.x_plane = 0;
     result_.y_plane = 0;
@@ -145,6 +166,9 @@ public:
 
     gpd_msg_.cloud_sources = gpd_ros::CloudSources();
     gpd_msg_.samples.clear();
+
+    gpd_msg_indexed_.cloud_sources = gpd_ros::CloudSources();
+    gpd_msg_indexed_.indices.clear();
 
     if (as_.isPreemptRequested() || !ros::ok())
     {
@@ -160,7 +184,6 @@ public:
     pc = *(ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_));
     pc.header.frame_id = CAMERA_FRAME;
     pcl_ros::transformPointCloud(MAP_FRAME, pc, t_pc, *tf_listener);
-
     Detect3D::cloudCB(t_pc);
     as_.setSucceeded(result_);
     pose_pub_.publish(pose_pub_msg_);
@@ -337,6 +360,7 @@ public:
   void extractObjectDetails(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, ObjectParams& object_found, const ObjectParams &table_params, bool isCluster = true)
   {
     ROS_INFO_STREAM("Extracting Object Details " << cloud->points.size());
+    object_found.cluster_original = *cloud;
     double max_z_ = cloud->points[0].z;
     double min_z_ = cloud->points[0].z;
     double max_y_ = cloud->points[0].y;
@@ -408,7 +432,6 @@ public:
         return;
       }
 
-      object_found.cluster_original = *cloud;
       // Change point cloud origin to object centroid and save it.
       for (auto &point : cloud->points)
       {
@@ -509,6 +532,8 @@ public:
       ROS_INFO_STREAM("Table Found at MaxZ:" << plane_params.max_z << ", MinZ:" << plane_params.min_z << "\n");      
       pcl::io::savePCDFile("pcl_table.pcd", *planeCloud);
       ROS_INFO_STREAM("File saved: " << "pcl_table.pcd");
+      pcl::io::savePCDFile("pcl_no_table.pcd", *cloud);
+      ROS_INFO_STREAM("File saved: " << "pcl_no_table.pcd");
     }
 
     if (!isTheTable) {
@@ -547,7 +572,7 @@ public:
     }
   }
 
-  void addGraspInfo(const sensor_msgs::PointCloud2& input, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, ObjectParams &object) {
+  void addGraspInfo(const sensor_msgs::PointCloud2& input, ObjectParams &object) {
     sensor_msgs::PointCloud2 tmp;
     pcl::toROSMsg(object.cluster_original, tmp);
     tmp.header.frame_id = input.header.frame_id;
@@ -559,7 +584,7 @@ public:
     gpd_ros::CloudSources cloud_sources;
     cloud_sources.cloud = input;
     std_msgs::Int64 tmpInt; tmpInt.data = 0;
-    cloud_sources.camera_source.assign(cloud->points.size(), tmpInt);
+    cloud_sources.camera_source.assign(input.width * input.height, tmpInt);
 
     geometry_msgs::TransformStamped tf_to_cam;
     tf_to_cam = buffer_.lookupTransform(MAP_FRAME, CAMERA_FRAME, ros::Time(0), ros::Duration(1.0));
@@ -567,21 +592,37 @@ public:
     tmpPoint.x = tf_to_cam.transform.translation.x;
     tmpPoint.y = tf_to_cam.transform.translation.y;
     tmpPoint.z = tf_to_cam.transform.translation.z;
+    ROS_INFO_STREAM("Camera Position: " << tmpPoint.x << ", " << tmpPoint.y << ", " << tmpPoint.z);
     cloud_sources.view_points.push_back(tmpPoint);
 
     gpd_msg_.cloud_sources = cloud_sources;
+    gpd_msg_indexed_.cloud_sources = cloud_sources;
 
     ROS_INFO_STREAM("Finding Grasps");
     // Samples
     gpd_msg_.samples.clear();
+    std::set<pcl::PointXYZ, PointXYZComparator> unique_points;
     for (auto &point : object.cluster_original.points)
     {
       tmpPoint.x = point.x;
       tmpPoint.y = point.y;
       tmpPoint.z = point.z;
       gpd_msg_.samples.push_back(tmpPoint);
+      unique_points.insert(point);
     }
+    // Indices
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_original(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromROSMsg(input, *cloud_original);
+    gpd_msg_indexed_.indices.clear();
+    for (int i=0;i<cloud_original->points.size();i++) {
+      if (unique_points.find(cloud_original->points[i]) != unique_points.end()) {
+        tmpInt.data = i;
+        gpd_msg_indexed_.indices.push_back(tmpInt);
+      }
+    }
+
     result_.object_cloud = gpd_msg_;
+    result_.object_cloud_indexed = gpd_msg_indexed_;
   }
 
   /** \brief PointCloud callback. */
@@ -596,26 +637,12 @@ public:
     // clear_octomap.call(emptyCall);
 
     // Get cloud ready
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_original(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
     pcl::PointIndices::Ptr inliers_plane(new pcl::PointIndices); // Indices that correspond to a plane.
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
     pcl::fromROSMsg(input, *cloud);
-    pcl::fromROSMsg(input, *cloud_original);
-
-    // sensor_msgs::PointCloud2 tmp;
-    // pcl::toROSMsg(*cloud, tmp);
-    // tmp.header.frame_id = input.header.frame_id;
-    // tmp.header.stamp = input.header.stamp;
-    // pc_pub_1_.publish(tmp);
 
     passThroughFilter(cloud);
-
-    // pcl::toROSMsg(*cloud, tmp);
-    // tmp.header.frame_id = input.header.frame_id;
-    // tmp.header.stamp = input.header.stamp;
-    // pc_pub_2_.publish(tmp);
-    
 
     computeNormals(cloud, cloud_normals);
 
@@ -646,7 +673,7 @@ public:
       extractObjectDetails(clusters[i], tmp, table_params);
       ROS_INFO_STREAM("File saved: " << "pcl_object_"+std::to_string(i)+".pcd");
       tmp.file_id = i;
-      pcl::io::savePCDFile("pcl_object_"+std::to_string(i)+".pcd", *clusters[i]);
+      pcl::io::savePCDFile("pcl_object_"+std::to_string(i)+".pcd", tmp.cluster_original);
       if (tmp.isValid) {
         objects.push_back(tmp);
       }
@@ -664,7 +691,7 @@ public:
     ObjectParams selectedObject = objects[0];
 
     ROS_INFO_STREAM("STARTED - Building Grasping Info");
-    addGraspInfo(input, cloud_original, selectedObject);
+    addGraspInfo(input, selectedObject);
     ROS_INFO_STREAM("ENDED - Building Grasping Info");
 
     std::string id = "current";
@@ -680,9 +707,9 @@ public:
     //Set parameters for the clustering
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance(0.02); // 2cm
-    ec.setMinClusterSize(100);
-    ec.setMaxClusterSize(30000);
+    ec.setClusterTolerance(0.035); // 3.5cm
+    ec.setMinClusterSize(25);
+    ec.setMaxClusterSize(20000);
     ec.setSearchMethod(tree);
     ec.setInputCloud(cloud);
     ec.extract(cluster_indices);
@@ -694,7 +721,7 @@ public:
         cloud_cluster->points.push_back(cloud->points[*pit]); //*
 
       // Discard Noise
-      if (cloud_cluster->points.size() < 1000){
+      if (cloud_cluster->points.size() < 25){
         continue; 
       }
       cloud_cluster->width = cloud_cluster->points.size();

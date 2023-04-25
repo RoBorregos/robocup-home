@@ -7,12 +7,17 @@
 #include <sensor_msgs/JointState.h>
 #include <xarm_msgs/SetDigitalIO.h>
 #include <xarm_msgs/GetDigitalIO.h>
+#include <tf/transform_listener.h>
+#include <tf/transform_broadcaster.h>
 
 class MyRobot : public hardware_interface::RobotHW
 {
 public:
   MyRobot(ros::NodeHandle nh) : nh(nh)
   {
+    pubTwist = nh.advertise<geometry_msgs::Twist>("/smoother_cmd_vel", 1);
+    pubJoint = nh.advertise<sensor_msgs::JointState>("/DASHGO/joint_states", 1);
+    
     const int num_joints = 6;
     
     // Initialize joint state
@@ -62,12 +67,20 @@ public:
     registerInterface(&jnt_state_interface_);
     registerInterface(&jnt_pos_interface_);
 
-    pubTwist = nh.advertise<geometry_msgs::Twist>("/mobile_base_controller/cmd_vel", 1);
-    pubJoint = nh.advertise<sensor_msgs::JointState>("DASHGO/joint_states", 1);
     prev_time_ = ros::Time::now();
   }
 
-  void baseRead() {
+  void getOdomTf(tf::StampedTransform &transform) {
+    try {
+        listener.lookupTransform("odom", "base_footprint", ros::Time(0), transform);
+    } catch (tf::TransformException &ex) {
+        transform.setOrigin(tf::Vector3(0.0, 0.0, 0.0));
+        transform.setRotation(tf::Quaternion(0.0, 0.0, 0.0, 1.0));
+    }
+    ROS_INFO_STREAM("odom: " << transform.getOrigin().x() << ", " << transform.getOrigin().y() << ", " << tf::getYaw(transform.getRotation()));
+  }
+
+  void readBase() {
     // Calculate velocity from change in position over time
     ros::Time time = ros::Time::now();
     ros::Duration period = time - prev_time_;
@@ -81,23 +94,44 @@ public:
     base_joint_position_[2] = base_joint_position_command_[2];
   }
 
-  void headRead() {
+  void readBase2() {
+    static tf::StampedTransform initial;
+    static bool isActive = false;
+    static bool isInitialized = false;
+    if (!isInitialized) {
+      getOdomTf(initial);
+      isInitialized = true;
+    }
+    if (!isActive && abs(base_joint_position_command_[0]-base_joint_position_[0])>0.001 || abs(base_joint_position_command_[1]-base_joint_position_[1])>0.001 || abs(base_joint_position_command_[2]-base_joint_position_[2])>0.001) {
+      isActive = true;
+      getOdomTf(initial);
+    }
+    if (isActive && base_joint_position_[0] <  0.001 && base_joint_position_[1] < 0.001 && base_joint_position_[2] < 0.001) {
+      isActive = false;
+    }
+    tf::StampedTransform transform;
+    getOdomTf(transform);
+    base_joint_position_[0] = transform.getOrigin().x() - initial.getOrigin().x();
+    base_joint_position_[1] = transform.getOrigin().y() - initial.getOrigin().y();
+    base_joint_position_[2] = tf::getYaw(transform.getRotation()) - tf::getYaw(initial.getRotation());
+  }
+
+  void readHead() {
     head_joint_position_[0] = head_joint_position_command_[0];
     head_joint_position_[1] = head_joint_position_command_[1];
   }
 
-  void gripperRead() {
+  void readGripper() {
     if (gripper_joint_position_[0] != gripper_joint_position_command_[0]) {
       gripper_changed_ = true;
     }
     gripper_joint_position_[0] = gripper_joint_position_command_[0];
-    // ROS_INFO("Gripper position: %f", gripper_joint_position_[0]);
   }
 
   void read() {
-    baseRead();
-    headRead();
-    gripperRead();
+    readBase();
+    readHead();
+    readGripper();
     std::vector<std::string> joint_names = {"odom_x", "odom_y", "odom_r", "Cam1Rev1", "Cam1Rev2", "Rev1Servo", "Rev2Servo"};
     sensor_msgs::JointState joint_state;
     joint_state.header = std_msgs::Header();
@@ -125,6 +159,43 @@ public:
     twist.angular.z = base_joint_velocity_[2];
     pubTwist.publish(twist);
   }
+  
+  void publishBaseTF() {
+    tf::StampedTransform transform;
+    tf::TransformBroadcaster broadcaster;
+
+    getOdomTf(transform);
+    try {
+        tf::StampedTransform trans_diff;
+        listener.lookupTransform("base_link", "internal_odom", ros::Time(0), trans_diff);
+        transform *= trans_diff;
+        broadcaster.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "odom", "internal_odom"));
+    } catch (tf::TransformException &ex) {
+        ROS_WARN("%s",ex.what());
+    }
+  }
+
+  void writeBase2() {
+    publishBaseTF();
+
+    // Calculate velocity from change in position over time
+    ros::Time time = ros::Time::now();
+    ros::Duration period = time - prev_time_;
+    static std::vector<double> pre_base_joint_position_command_(3, 0.0);
+    prev_time_ = time;
+    base_joint_velocity_[0] = (base_joint_position_command_[0] - pre_base_joint_position_command_[0]) / period.toSec();
+    base_joint_velocity_[1] = (base_joint_position_command_[1] - pre_base_joint_position_command_[1]) / period.toSec();
+    base_joint_velocity_[2] = (base_joint_position_command_[2] - pre_base_joint_position_command_[2]) / period.toSec();
+    pre_base_joint_position_command_[0] = base_joint_position_command_[0];
+    pre_base_joint_position_command_[1] = base_joint_position_command_[1];
+    pre_base_joint_position_command_[2] = base_joint_position_command_[2];
+
+    geometry_msgs::Twist twist;
+    twist.linear.x = base_joint_velocity_[0];
+    twist.linear.y = base_joint_velocity_[1];
+    twist.angular.z = base_joint_velocity_[2];
+    pubTwist.publish(twist);
+  }
 
   void writeHead() {
     return;
@@ -135,18 +206,18 @@ public:
     ros::ServiceClient gripper_client = nh.serviceClient<xarm_msgs::SetDigitalIO>("/xarm/set_digital_out");
     if (gripper_client.exists() && gripper_changed_) {
       gripper_changed_ = false;
-      if (gripper_joint_position_[0] < -0.1) {
+      if (gripper_joint_position_[0] > 0.1) { // Open
         xarm_msgs::SetDigitalIO srv;
         srv.request.io_num = 1;
-        srv.request.value = 1;
+        srv.request.value = 0;
         if (!gripper_client.call(srv)) {
           ROS_ERROR("Failed to call service");
         }
       } else {
         xarm_msgs::SetDigitalIO srv;
         srv.request.io_num = 1;
-        srv.request.value = 0;
-        if (!gripper_client.call(srv)) {
+        srv.request.value = 1;
+        if (!gripper_client.call(srv)) { // Close
           ROS_ERROR("Failed to call service");
         }
       }
@@ -178,6 +249,7 @@ private:
   std::vector<double> gripper_joint_effort_;
   std::vector<double> gripper_joint_position_command_;
   ros::Time prev_time_;
+  tf::TransformListener listener;
   bool gripper_changed_;
 };
 

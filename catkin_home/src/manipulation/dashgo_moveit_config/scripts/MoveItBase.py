@@ -34,12 +34,14 @@ class MoveitBaseController:
 
     def run(self):
       while not rospy.is_shutdown():
-
         # Fix Transforms
         try:
-          (trans,rot) = self.listener.lookupTransform('nav/odom', 'nav/base_footprint', rospy.Time(0))
+          (trans,rot) = self.listener.lookupTransform('odom', 'base_footprint', rospy.Time(0))
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+          (trans,rot) = ([0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1])
+        try:
           transform = tfs.concatenate_matrices(tfs.translation_matrix(trans), tfs.quaternion_matrix(rot))
-          (trans_diff,rot_diff) = self.listener.lookupTransform('base_footprint', 'internal_odom', rospy.Time(0))
+          (trans_diff,rot_diff) = self.listener.lookupTransform('base_link', 'internal_odom', rospy.Time(0))
           transform_diff = tfs.concatenate_matrices(tfs.translation_matrix(trans_diff), tfs.quaternion_matrix(rot_diff))
           transform = numpy.matmul(transform, transform_diff)
           self.broadcaster.sendTransform(tfs.translation_from_matrix(transform),
