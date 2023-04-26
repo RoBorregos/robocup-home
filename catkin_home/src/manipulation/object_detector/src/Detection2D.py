@@ -277,7 +277,8 @@ class CamaraProcessing:
                 
                 if ARGS["DEPTH_ACTIVE"] and len(self.depth_image) != 0:
                     point2D = get2DCentroid(boxes[index], self.depth_image)
-                    depth = get_depth(self.depth_image, point2D)
+                    depth = get_depth(self.depth_image, point2D) ## in mm
+                    depth = depth / 1000 ## in m
                     point3D_ = deproject_pixel_to_point(self.imageInfo, point2D, depth)
                     point3D.x = point3D_[0]
                     point3D.y = point3D_[1]

@@ -23,21 +23,3 @@ base_controller:
       d: 1
       i: 1
       i_clamp: 1
-head_controller:
-  type: position_controllers/JointTrajectoryController
-  joints:
-    - rev_1
-    - rev_2
-  constraints:
-    stopped_velocity_tolerance: 0
-  gains:
-    rev_1:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    rev_2:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1

@@ -554,64 +554,12 @@
   <xacro:load_gripperP attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="0 0 1.57" />
 
 
-  <!-- Cameras -->
-  <!-- <link name="Cam3">
-    <inertial>
-      <origin
-        xyz="-0.0161158990646986 -2.71398471196616E-06 8.43515159343333E-06"
-        rpy="0 0 0" />
-      <mass
-        value="0.15225830141293" />
-      <inertia
-        ixx="0.000372324703580476"
-        ixy="2.49921630269361E-09"
-        ixz="-3.15603379522398E-08"
-        iyy="2.28180071728585E-05"
-        iyz="6.18490198100671E-09"
-        izz="0.000374741909293992" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/Cam3.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/Cam3.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="Cam3Fix"
-    type="fixed">
-    <origin
-      xyz="-0.159 0.063143 1.5387"
-      rpy="0 0.7854 -1.5708" />
-    <parent
-      link="Base" />
-    <child
-      link="Cam3" />
-    <axis
-      xyz="0 0 0" />
-  </joint>
-   -->
   <xacro:include filename="$(find robot_description)/urdf/camera.urdf.xacro" />
   <!-- <xacro:load_camera name="Cam1" attach_to="Base" x="-0.159" y="0.063143" z="1.56" r_r="0.174533" r_p="0" r_y="-1.5708" />
   <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.27" z="0.51" r_r="0.698132" r_p="0" r_y="-1.5708" /> -->
-  <xacro:load_camera name="Cam1" attach_to="Base" x="-0.159" y="-0.01" z="1.57" r_r="0.244533" r_p="0" r_y="-1.5708" />
-  <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.27" z="0.48" r_r="0.538132" r_p="0" r_y="-1.5708" />
+  <xacro:load_camera name="Cam1" attach_to="Base" x="-0.25" y="-0.17" z="1.57" r_r="0.224533" r_p="0" r_y="-1.5708" />
+  <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.24" z="0.48" r_r="0.538132" r_p="0" r_y="-1.5708" />
    
-
+  <!-- <xacro:load_camera name="Cam1" attach_to="base_link" x="0.02" y="0.0" z="1.57" r_r="0" r_p="0.224533" r_y="0" />
+  <xacro:load_camera name="Cam2" attach_to="base_link" x="0.185" y="0.2" z="0.48" r_r="0" r_p="0.538132" r_y="0" /> -->
 </robot>

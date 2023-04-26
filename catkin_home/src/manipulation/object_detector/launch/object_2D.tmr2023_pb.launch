@@ -1,14 +1,14 @@
 <launch>
     <!-- ObjectDetection -->
-    <arg name="SOURCE" default="$(find object_detector)/models/tmr2023/test.mp4" />
+    <arg name="SOURCE" default="/zed2/zed_node/rgb/image_rect_color" /> 
     <arg name="DEPTH_INPUT" default="/zed2/zed_node/depth/depth_registered" />
     <arg name="CAMERA_INFO" default="/zed2/zed_node/depth/camera_info" />
     <arg name="ROS_INPUT" default="True" />
     <arg name="USE_ACTIVE_FLAG" default="False" />
     <arg name="VERBOSE" default="True" />
     <arg name="DEPTH_ACTIVE" default="True" />
-    <arg name="USE_YOLO" default="True" />
-    <arg name="YOLO_MODEL_PATH" default="$(find object_detector)/models/tmr_2023_vrga/yolo11classes.pt" />
+    <arg name="USE_YOLO" default="False" />
+    <arg name="YOLO_MODEL_PATH" default="$(find object_detector)/models/tmr2023/yolo9ClassHome.pt" />
     <arg name="MODELS_PATH" default="$(find object_detector)/models/gazebo/" />
     <arg name="LABELS_PATH" default="$(find object_detector)/models/gazebo/label_map.pbtxt" />
     <arg name="CAMERA_FRAME" default="zed2_left_camera_optical_frame" />

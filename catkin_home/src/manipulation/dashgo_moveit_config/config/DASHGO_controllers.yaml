@@ -22,24 +22,6 @@ base_controller:
       d: 1
       i: 1
       i_clamp: 1
-head_controller:
-  type: position_controllers/JointTrajectoryController
-  joints:
-    - Cam1Rev1
-    - Cam1Rev2
-  constraints:
-    stopped_velocity_tolerance: 0
-  gains:
-    Cam1Rev1:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    Cam1Rev2:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
 gripper_controller:
   type: position_controllers/JointTrajectoryController
   # position_controllers/GripperActionController

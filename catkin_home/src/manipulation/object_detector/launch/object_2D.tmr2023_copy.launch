@@ -1,6 +1,6 @@
 <launch>
     <!-- ObjectDetection -->
-    <arg name="SOURCE" default="$(find object_detector)/models/tmr2023/test.mp4" />
+    <arg name="SOURCE" default="/zed2/zed_node/rgb/image_rect_color" /> 
     <arg name="DEPTH_INPUT" default="/zed2/zed_node/depth/depth_registered" />
     <arg name="CAMERA_INFO" default="/zed2/zed_node/depth/camera_info" />
     <arg name="ROS_INPUT" default="True" />

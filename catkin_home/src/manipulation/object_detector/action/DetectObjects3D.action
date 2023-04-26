@@ -1,5 +1,7 @@
 #goal definition
 object_detector/objectDetectionArray force_object
+int32 side
+bool ignore_moveit
 ---
 #result definition
 bool success

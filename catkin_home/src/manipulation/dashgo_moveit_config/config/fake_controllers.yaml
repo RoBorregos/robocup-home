@@ -11,11 +11,6 @@ controller_list:
     type: $(arg fake_execution_type)
     joints:
       - Rev1Servo
-  - name: fake_head_controller
-    type: $(arg fake_execution_type)
-    joints:
-      - Cam1Rev1
-      - Cam1Rev2
   - name: fake_base
     type: $(arg fake_execution_type)
     joints:

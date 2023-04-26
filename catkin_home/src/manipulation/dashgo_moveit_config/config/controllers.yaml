@@ -13,12 +13,6 @@ controller_list:
     type: FollowJointTrajectory
     joints:
       - Rev1Servo
-  - name: /DASHGO/head_controller
-    action_ns: follow_joint_trajectory
-    type: FollowJointTrajectory
-    joints:
-      - Cam1Rev1
-      - Cam1Rev2
   - name: /DASHGO/base_controller
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
