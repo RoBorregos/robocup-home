@@ -457,213 +457,8 @@
     <axis
       xyz="0 1 0" />
   </joint>
-  <link name="RevCam1">
-    <inertial>
-      <origin
-        xyz="-0.00218640043520604 0.0373778462346743 0.0578417163847615"
-        rpy="0 0 0" />
-      <mass
-        value="0.0807173231195892" />
-      <inertia
-        ixx="2.37796509107372E-05"
-        ixy="8.55528572510069E-07"
-        ixz="-2.49699440783422E-07"
-        iyy="1.83589761907289E-05"
-        iyz="-4.19202686542368E-06"
-        izz="2.27836700405391E-05" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/RevCam1.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/RevCam1.STL" />
-      </geometry>
-    </collision>
-  </link>
-  
-
-  <!-- <joint name="Cam1X"
-    type="prismatic">
-    <origin
-      xyz="-0.16729 0.098455 1.546"
-      rpy="1.5708 0.0 0.13201" />
-    <parent
-      link="Base" />
-    <child
-      link="RevCam1" />
-    <axis
-      xyz="0 1 0" />
-    <limit
-      lower="-0.54"
-      upper="0.54"
-      effort="0"
-      velocity="0" />
-
-  <joint name="cam_y" type="prismatic">
-      <axis xyz="0 1 0" />
-      <parent link="cam" />
-      <child link="cam_yx_link" />
-      <limit effort="1" lower="0.0" upper="0.0" velocity="0.08" />
-      <dynamics damping="0.7" friction="2" />
-  </joint>
-  <link name="cam_yx_link">
-      <inertial>
-          <mass value="0.10" />
-          <inertia ixx="0.000729" ixy="0" ixz="0" iyy="0.000729" iyz="0" izz="0.000729" />
-      </inertial>
-  </link>
-  <joint name="cam_x" type="prismatic">
-      <axis xyz="1 0 0" />
-      <parent link="cam_y_link" />
-      <child link="cam_x_link" />
-      <limit effort="1" lower="-1.0" upper="1.0" velocity="0.08" />
-      <dynamics damping="0.7" friction="2" />
-  </joint> -->
 
 
-  <joint name="Cam1Rev1"
-    type="revolute">
-    <origin
-      xyz="-0.16729 0.098455 1.546"
-      rpy="1.5708 0.0 0.13201" />
-    <parent
-      link="Base" />
-    <child
-      link="RevCam1" />
-    <axis
-      xyz="0 1 0" />
-    <limit
-      lower="-0.54"
-      upper="0.54"
-      effort="0"
-      velocity="0" />
-  </joint>
-  <link name="RevCam2">
-    <inertial>
-      <origin
-        xyz="0.00149250457233677 -0.00361361108108715 0.0165031514881021"
-        rpy="0 0 0" />
-      <mass
-        value="0.0702746066702973" />
-      <inertia
-        ixx="3.32748236022629E-05"
-        ixy="5.65176745386308E-06"
-        ixz="-4.55903201425305E-06"
-        iyy="4.5252809651764E-05"
-        iyz="4.8432689106791E-06"
-        izz="4.86199055260646E-05" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/RevCam2.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/RevCam2.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="Cam1Rev2"
-    type="revolute">
-    <origin
-      xyz="-0.0021558 0.0036505 0.085266"
-      rpy="-0.08 -0.13856 0.0010948" />
-    <parent
-      link="RevCam1" />
-    <child
-      link="RevCam2" />
-    <axis
-      xyz="1 0 0" />
-    <limit
-      lower="-0.54"
-      upper="0.54"
-      effort="0"
-      velocity="0" />
-  </joint>
-
-
-
-  <link name="Cam1">
-    <inertial>
-      <origin
-        xyz="-0.0161158990750312 -2.71397957091191E-06 8.43511749604176E-06"
-        rpy="0 0 0" />
-      <mass
-        value="0.152258301511643" />
-      <inertia
-        ixx="0.00037232470424964"
-        ixy="2.49919563850586E-09"
-        ixz="-3.15602915288441E-08"
-        iyy="2.28180071550079E-05"
-        iyz="6.18457007379358E-09"
-        izz="0.000374741909994746" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/Cam1.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/Cam1.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="Cam1Fix"
-    type="fixed">
-    <origin
-      xyz="0.0012272 -0.035179 0.037568"
-      rpy="-0.0081734 -0.62147 -1.566" />
-    <parent
-      link="RevCam2" />
-    <child
-      link="Cam1" />
-    <axis
-      xyz="0 0 0" />
-  </joint>
   <link name="BaseBrazo">
     <inertial>
       <origin
@@ -715,114 +510,52 @@
     <axis
       xyz="0 0 0" />
   </joint>
-  <link name="Cam2Rev">
-    <inertial>
-      <origin
-        xyz="0.00682983624522909 -0.000385587206922666 -0.0349999920861893"
-        rpy="0 0 0" />
-      <mass
-        value="0.0348111598620482" />
-      <inertia
-        ixx="2.55962147675482E-05"
-        ixy="-2.5718115731198E-08"
-        ixz="-1.41168757122553E-12"
-        iyy="2.69229988150616E-05"
-        iyz="-3.22321270093433E-12"
-        izz="1.54258242876257E-05" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/Cam2Rev.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/Cam2Rev.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="Cam2Rev"
-    type="revolute">
-    <origin
-      xyz="-0.0475 -0.16539 0.50877"
-      rpy="-1.5708 1.1309 -1.5708" />
-    <parent
-      link="Base" />
-    <child
-      link="Cam2Rev" />
-    <axis
-      xyz="0 0 1" />
-    <limit
-      lower="-0.5236"
-      upper="0.5236"
-      effort="0"
-      velocity="0" />
-  </joint>
-  <link name="Cam2">
-    <inertial>
-      <origin
-        xyz="-0.0161159159322545 -2.67749700753883E-06 8.41275410029541E-06"
-        rpy="0 0 0" />
-      <mass
-        value="0.152258232607803" />
-      <inertia
-        ixx="0.000372324819517498"
-        ixy="2.56638565002235E-09"
-        ixz="-3.15448631037864E-08"
-        iyy="2.28182500829627E-05"
-        iyz="6.19441632492445E-09"
-        izz="0.000374741789457093" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/Cam2.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://robot_description/meshes/Dashgo/Cam2.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="Cam2Fixed"
-    type="fixed">
-    <origin
-      xyz="0.034026 0.0014743 -0.035"
-      rpy="1.5708 0 0.032661" />
-    <parent
-      link="Cam2Rev" />
-    <child
-      link="Cam2" />
-    <axis
-      xyz="0 0 0" />
-  </joint>
-  <link name="Cam3">
+
+  <!-- XARM -->
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="ros_namespace" default="xarm"/>
+  <xacro:arg name="limited" default="false"/>
+  <xacro:arg name="effort_control" default="false"/>
+  <xacro:arg name="velocity_control" default="false"/>
+
+  <xacro:arg name="add_other_geometry" default="false"/>
+  <xacro:arg name="geometry_type" default="box"/>
+  <xacro:arg name="geometry_mass" default="0.1"/>
+  <xacro:arg name="geometry_height" default="0.1"/>
+  <xacro:arg name="geometry_radius" default="0.1"/>
+  <xacro:arg name="geometry_length" default="0.1"/>
+  <xacro:arg name="geometry_width" default="0.1"/>
+  <xacro:arg name="geometry_mesh_filename" default=""/>
+  <xacro:arg name="geometry_mesh_origin_xyz" default="0 0 0"/>
+  <xacro:arg name="geometry_mesh_origin_rpy" default="0 0 0"/>
+  <xacro:arg name="geometry_mesh_tcp_xyz" default="0 0 0"/>
+  <xacro:arg name="geometry_mesh_tcp_rpy" default="0 0 0"/>
+
+  <xacro:arg name="add_realsense_d435i" default="false"/>
+
+  <!-- load xarm5 robot -->
+  <xacro:include filename="$(find xarm_description)/urdf/xarm5_robot_macro.xacro" />
+  <xacro:xarm5_robot prefix="$(arg prefix)" namespace="$(arg ros_namespace)" limited="$(arg limited)" 
+    effort_control="$(arg effort_control)" velocity_control="$(arg velocity_control)"
+    rs_d435i="$(arg add_realsense_d435i)"
+    attach_to="BaseBrazo"
+    add_other_geometry="$(arg add_other_geometry)" 
+    geometry_type="$(arg geometry_type)" geometry_mass="$(arg geometry_mass)"
+    geometry_height="$(arg geometry_height)" geometry_radius="$(arg geometry_radius)"
+    geometry_length="$(arg geometry_length)" geometry_width="$(arg geometry_width)"
+    geometry_mesh_filename="$(arg geometry_mesh_filename)"
+    geometry_mesh_origin_xyz="$(arg geometry_mesh_origin_xyz)" geometry_mesh_origin_rpy="$(arg geometry_mesh_origin_rpy)"
+    geometry_mesh_tcp_xyz="$(arg geometry_mesh_tcp_xyz)" geometry_mesh_tcp_rpy="$(arg geometry_mesh_tcp_rpy)" />
+
+  <!-- load gripper -->
+  <xacro:include filename="$(find robot_description)/urdf/gripper/gripper.urdf.xacro" />
+  <xacro:include filename="$(find robot_description)/urdf/gripper/gripperP.urdf.xacro" />
+  <!-- <xacro:load_gripper attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="0 0 1.57" /> -->
+  <xacro:load_gripperP attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="0 0 1.57" />
+
+
+  <!-- Cameras -->
+  <!-- <link name="Cam3">
     <inertial>
       <origin
         xyz="-0.0161158990646986 -2.71398471196616E-06 8.43515159343333E-06"
@@ -873,49 +606,12 @@
     <axis
       xyz="0 0 0" />
   </joint>
-
-
-
-  <!-- XARM -->
-  <xacro:arg name="prefix" default=""/>
-  <xacro:arg name="ros_namespace" default="xarm"/>
-  <xacro:arg name="limited" default="false"/>
-  <xacro:arg name="effort_control" default="false"/>
-  <xacro:arg name="velocity_control" default="false"/>
-
-  <xacro:arg name="add_other_geometry" default="false"/>
-  <xacro:arg name="geometry_type" default="box"/>
-  <xacro:arg name="geometry_mass" default="0.1"/>
-  <xacro:arg name="geometry_height" default="0.1"/>
-  <xacro:arg name="geometry_radius" default="0.1"/>
-  <xacro:arg name="geometry_length" default="0.1"/>
-  <xacro:arg name="geometry_width" default="0.1"/>
-  <xacro:arg name="geometry_mesh_filename" default=""/>
-  <xacro:arg name="geometry_mesh_origin_xyz" default="0 0 0"/>
-  <xacro:arg name="geometry_mesh_origin_rpy" default="0 0 0"/>
-  <xacro:arg name="geometry_mesh_tcp_xyz" default="0 0 0"/>
-  <xacro:arg name="geometry_mesh_tcp_rpy" default="0 0 0"/>
-
-  <xacro:arg name="add_realsense_d435i" default="false"/>
-
-  <!-- load xarm5 robot -->
-  <xacro:include filename="$(find xarm_description)/urdf/xarm5_robot_macro.xacro" />
-  <xacro:xarm5_robot prefix="$(arg prefix)" namespace="$(arg ros_namespace)" limited="$(arg limited)" 
-    effort_control="$(arg effort_control)" velocity_control="$(arg velocity_control)"
-    rs_d435i="$(arg add_realsense_d435i)"
-    attach_to="BaseBrazo"
-    add_other_geometry="$(arg add_other_geometry)" 
-    geometry_type="$(arg geometry_type)" geometry_mass="$(arg geometry_mass)"
-    geometry_height="$(arg geometry_height)" geometry_radius="$(arg geometry_radius)"
-    geometry_length="$(arg geometry_length)" geometry_width="$(arg geometry_width)"
-    geometry_mesh_filename="$(arg geometry_mesh_filename)"
-    geometry_mesh_origin_xyz="$(arg geometry_mesh_origin_xyz)" geometry_mesh_origin_rpy="$(arg geometry_mesh_origin_rpy)"
-    geometry_mesh_tcp_xyz="$(arg geometry_mesh_tcp_xyz)" geometry_mesh_tcp_rpy="$(arg geometry_mesh_tcp_rpy)" />
-
-  <!-- load gripper -->
-  <xacro:include filename="$(find robot_description)/urdf/gripper/gripper.urdf.xacro" />
-  <xacro:include filename="$(find robot_description)/urdf/gripper/gripperP.urdf.xacro" />
-  <!-- <xacro:load_gripper attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="0 0 1.57" /> -->
-  <xacro:load_gripperP attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="0 0 1.57" />
+   -->
+  <xacro:include filename="$(find robot_description)/urdf/camera.urdf.xacro" />
+  <!-- <xacro:load_camera name="Cam1" attach_to="Base" x="-0.159" y="0.063143" z="1.56" r_r="0.174533" r_p="0" r_y="-1.5708" />
+  <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.27" z="0.51" r_r="0.698132" r_p="0" r_y="-1.5708" /> -->
+  <xacro:load_camera name="Cam1" attach_to="Base" x="-0.159" y="-0.01" z="1.57" r_r="0.244533" r_p="0" r_y="-1.5708" />
+  <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.27" z="0.48" r_r="0.538132" r_p="0" r_y="-1.5708" />
+   
 
 </robot>
