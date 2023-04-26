@@ -3,11 +3,11 @@
 # - acceleration limits are just low enough to avoid jerking
 
 # Mandatory parameters
-speed_lim_v_x: 0.35
+speed_lim_v_x: 0.25
 speed_lim_v_y: 0.05
 speed_lim_w: 0.3
 
-accel_lim_v_x: 0.2
+accel_lim_v_x: 0.15
 accel_lim_v_y: 0.01
 accel_lim_w: 0.5
 

@@ -162,12 +162,12 @@ include_directories(
 install(PROGRAMS
   scripts/door_signal.py
   scripts/follow_person.py  
-  scripts/get_scan_data.py  
-  scripts/remap_laser.py  
+  scripts/get_scan_data.py
   scripts/pose_estimation.py  
   scripts/robot_data.py
   scripts/small_obj_det.py
   scripts/obj_det.py
+  scripts/recovery_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

@@ -11,20 +11,22 @@ import openai
 
 promts = {
     "start": "Let's start carry my luggage task",
-    "wait": "I am waiting for someone",
+    "wait": "I am waiting for you to talk to me",
     "self_intro": "Hello, I'm homie, your personal assistant.",
-    "point_to_bag" : "Which bag should I carry?"
-    "right": "You said right, is that correct?",
-    "left": "You said left, is that correct?",
-    "grasp": "I will now pick your luggage"
+    "point_to_bag" : "Which bag should I carry?",
+    "right": "The one on your right, is that correct?",
+    "left": "The one on your left, is that correct?",
+    "grasp": "I will now pick your luggage",
     "follow" : "I am ready to follow you",
+    "car" : "Is this the car?",
     "deliver" : "Please take your bag",
-    "car" : "Is this the car?"
+    "returning" : "I am heading back home",
+    "home" : "I am already back home"
 }
 
 calls = {
-    "get_name": "get me the name of the person on the next message:",
     "confirm" : "True or False, the next message is a confirmation"
+    "salute" : "True or False, the next message is talking to me"
 }
 
 
@@ -35,7 +37,7 @@ INITIALIZATION_STATE = "init"
 START_STATE = "start"
 WAIT_STATE = "waiting for operator"
 IDENTIFY_STATE = "identifying the bag"
-GOING_STATE = "going somewhere"
+GOING_STATE = "going to the car"
 DELIVER_STATE = "deliver bag"
 RETURN_STATE = "returning to the arena"
 END_STATE = "done"
@@ -104,7 +106,7 @@ class receptionist(object):
                 self.say_publisher.publish(promts["start"])
                 time.sleep(1)
 
-                rospy.logwarn("here it should end the speech") 
+                # rospy.logwarn("here it should end the speech") 
                 i = 0
                 self.currentState = WAIT_STATE
 
@@ -116,63 +118,128 @@ class receptionist(object):
                     self.currentState = IDENTIFY_STATE
                 else:
                     #if there is no one, wait for 3 seconds and check again
-                    time.sleep(3)
-
-                    if i%10:
+                    time.sleep(1)
+                    if self.saying == False:
+                        self.saying == True
                         self.say_publisher.publish(promts["wait"])
-                        i = 0
-                        
-
+                    time.sleep(1)            
                 
             elif self.currentState == IDENTIFY_STATE:
+                rospy.loginfo("Starting pick of luggage")
                 grasped = self.get_bag()
                 if grasped != "":
                     self.currentState = GOING_STATE
                 else:
-                    self.currentState = IDENTIFY_STATE       
+                    self.currentState = IDENTIFY_STATE   
 
             elif self.currentState == GOING_STATE:
-                rospy.loginfo("Receptionist is going to the person")
+                rospy.loginfo("Following the person to the car")
+                reached = self.go_state()
+                if reached != "":
+                    self.currentState = RETURN_STATE #DELIVER_STATE
+                else:
+                    self.currentState == GOING_STATE
+            
+            elif self.currentState == RETURN_STATE:
+                rospy.loginfo("Going back home")
+                returned = self.return_to()
+                if returned != "":
+                    self.currentState = END_STATE
+                else:
+                    self.currentState == RETURN_STATE
+                    
+            
     
     def get_bag(self):
         grasped = ""
         rospy.logwarn("Waiting for operator")
         self.say_publisher.publish(promts["point_to_bag"])
-        #como poner aqui algo, como suscribirse a un nodo
+        #como poner aqui algo, como suscribirse a un topico
         #que le indique a donde apunto
+        #flag = var->subscriber()
         flag = ""
         if flag == "right":
             self.say_publisher.publish(promts["right"])
         elif flag == "left":
             self.say_publisher.publish(promts["left"])
         else: #flag == ""
-            return
+            return grasped
         time.sleep(5)
         rospy.logdebug("speech enabled")
         self.speech_enable.publish(Bool(True))
-        confirm_ = self.callGPT(calls["confirm"] + ": " + self.inputText)
+        confirm_ = self.parser(calls["confirm"])
+        rospy.logdebug("speech disabled")
+        self.speech_enable.publish(Bool(False))
         if confirm_ == "False":
-            #settear la variable al lado de la bag correcto
+            #settear la variable con el lado de la bag correcto
+            flag = "left" if flag == "right" else "right"
         #Indicar que ya tomara la bag
         self.say_publisher.publish(promts["grasp"])
+        
+        #Aqui podria ir una flag que indique si lo tomo o no (if true then set grasped as true)
         #aqui tiene que saber que ya lo tomo
         self.say_publisher.publish(promts["follow"])
+        grasped = "True"
+        return grasped
         
-        #Falta el #3 de calls[confirm] para saber si si llegamos
-        self.say_publisher.publish(promts["car"])
         
-        #4
-        self.say_publisher.publish(promts["deliver"])
+    def go_state(self):
+        reached = ""
+        # una manera de saber que la persona se paro
+        
+            ##3 de calls[confirm] para saber si si llegamos
+            self.say_publisher.publish(promts["car"])
+            time.sleep(5)
+            rospy.logdebug("speech enabled")
+            self.speech_enable.publish(Bool(True))
+            dest = self.parser(calls["confirm"])
+            rospy.logdebug("speech disabled")
+            self.speech_enable.publish(Bool(False))
+            if dest == "False":
+                # en caso que aun no lleguen que 
+                self.go_state()
+            #Si si llegaron entonces paso #4
+            self.say_publisher.publish(promts["deliver"])
+            #escuchar algo? o no, o nada
+            reached = "True"
+            return reached
             
+    def return_to(self):
+        returned = ""
+        self.say_publisher.publish(promts["returning"])
+        #checar si ya llego y si si
+        self.say_publisher.publish(promts["home"])
+        returned = "True"
+        return returned
         
 
     def is_someone(self):
-        check for a new detection in vision topic
-        # rospy.loginfo("checking if someone is there")
-        # time.sleep(5)
-        return True
+        time.sleep(5)
+        rospy.logdebug("speech enabled")
+        self.speech_enable.publish(Bool(True))
+        salute_ = self.parser(calls["salute"])
+        rospy.logdebug("speech disabled")
+        self.speech_enable.publish(Bool(False))
+        return salute_
 
+    def parser(self, command):
+        rospy.loginfo("Receptionist is parsing")
+        rospy.logwarn(self.inputText)
+        time.sleep(1)
+        intent = ""
+        try:
+            rospy.logwarn(command + self.inputText)
+            intent = self.callGPT(command + ": " + self.inputText)
+            # rospy,logwarn(intent)
             
+            rospy.loginfo("Intent: " + intent)
+            
+        except:
+            self.say_publisher.publish("I'm sorry, Could you rephrase?")
+            rospy.logdebug("Failed response")
+        rospy.logwarn(intent)
+        
+        return intent
 
     def input_callback(self, msg):
         self.inputText = msg.inputText
