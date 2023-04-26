@@ -157,10 +157,10 @@ class receptionist(object):
         #como poner aqui algo, como suscribirse a un topico
         #que le indique a donde apunto
         #flag = var->subscriber()
-        flag = ""
-        if flag == "right":
+        flag = 0 #for tests in 0, should be on -1
+        if flag == "0":
             self.say_publisher.publish(promts["right"])
-        elif flag == "left":
+        elif flag == "1":
             self.say_publisher.publish(promts["left"])
         else: #flag == ""
             return grasped
@@ -186,7 +186,8 @@ class receptionist(object):
     def go_state(self):
         reached = ""
         # una manera de saber que la persona se paro
-        
+        person = 1 #for tests 1, should be 0
+        if person:
             ##3 de calls[confirm] para saber si si llegamos
             self.say_publisher.publish(promts["car"])
             time.sleep(5)
@@ -202,7 +203,7 @@ class receptionist(object):
             self.say_publisher.publish(promts["deliver"])
             #escuchar algo? o no, o nada
             reached = "True"
-            return reached
+        return reached
             
     def return_to(self):
         returned = ""
