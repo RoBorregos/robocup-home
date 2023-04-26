@@ -4,6 +4,7 @@ import actionlib
 import time
 from std_msgs.msg import String, Bool
 from action_selectors.msg import RawInput
+from humanAnalyzer.msg import face_array
 
 import os
 import openai
@@ -14,11 +15,16 @@ promts = {
     "wait": "I am waiting for someone",
     "self_intro": "Hello, I'm homie, your personal assistant.",
     "ask_name": "What's your name?",
-    "ask_drink": "What is your favorite drink you like to drink?",
+    "ask_drink": "What is your favorite drink?",
+    "repeat": "i think i didn't get that, can you repeat it?",
 }
 
 calls = {
-    "get_name": "get me the name of the person on the next message:"
+    "get_name": "get me the name of the person on the next message: ",
+    "get_drink": "get me the name of a  drink on the next message: ",
+    "describe": "describe a person with the next attributes: ",
+    "confirm" : "tell me True or False, the next message is a confirmation:",
+    "reached": "tell me True or False, the next message is a confirmation that you reached a place:",
 
 }
 
@@ -30,10 +36,29 @@ INITIALIZATION_STATE = "init"
 START_STATE = "start"
 WAIT_STATE = "waiting for someone"
 IDENTIFY_STATE = "identifying the person"
+GETTING_DRINK= "getting his favorite drink"
 GOING_STATE = "going somewhere"
 ASSIGN_STATE = "assing a seat to someone"
 RETURN_STATE = "returning to the reception"
 END_STATE = "done"
+
+
+
+class person(object):
+    def __init__(self, name):
+        self.id = None
+        self.name = name
+        self.drink = None
+        self.seat = None
+        self.age = None
+        self.gender = None
+        self.race = None
+
+        
+
+
+
+    
 
 class receptionist(object):
     def __init__(self):
@@ -55,7 +80,7 @@ class receptionist(object):
         self.speech_enable = rospy.Publisher("inputAudioActive", Bool, queue_size=10)
         self.saying = False
 
-        self.say_listener = rospy.Subscriber("sayer", Bool, self.say_callback)
+        self.say_listener = rospy.Subscriber("saying", Bool, self.say_callback)
         self.speech_enable.publish(Bool(False))
 
         #Nav subscribers 
@@ -64,6 +89,9 @@ class receptionist(object):
         #self.initial_pose_sub = rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.initial_pose_cb)
         self.is_moving = False
 
+        #Face detection
+
+        self.faces_subscriber = rospy.Subscriber("/faces", face_array, self.face_callback)
         rospy.loginfo("Receptionist initialized")
 
         # Conversation dependencies
@@ -76,6 +104,10 @@ class receptionist(object):
         # wait for the robot to be ready
         time.sleep(1)
         # start the main loop
+        # 
+        # Array of persons
+        self.faces = None
+        self.persons = [] 
 
         self.run()
         rospy.spin()
@@ -85,9 +117,10 @@ class receptionist(object):
         self.saying = data.data
         rospy.logwarn("saying: " + str(self.saying))
 
-    
+    def face_callback(self, data):
+        self.faces = data.faces
+
     def run(self):
-        rospy.loginfo("-----------------------------------------RUN-----------------------------------------")
 
         while not rospy.is_shutdown():
             rospy.loginfo("-----------------------------------------RUN-----------------------------------------")
@@ -105,17 +138,16 @@ class receptionist(object):
 
                 
             elif self.currentState == WAIT_STATE:
-                i += 1
                 if self.is_someone():
                     self.say_publisher.publish(promts["self_intro"])
                     self.currentState = IDENTIFY_STATE
                 else:
                     #if there is no one, wait for 3 seconds and check again
-                    time.sleep(3)
-
-                    if i%10:
+                    time.sleep(1)
+                    if self.saying == False:
+                        self.saying == True
                         self.say_publisher.publish(promts["wait"])
-                        i = 0
+                    time.sleep(1)
                         
 
                 
@@ -124,10 +156,12 @@ class receptionist(object):
                 if name != "":
                     self.currentState = GOING_STATE
                 else:
-                    self.currentState = IDENTIFY_STATE       
+                    self.currentState = IDENTIFY_STATE
 
             elif self.currentState == GOING_STATE:
-                rospy.loginfo("Receptionist is going to the person")
+                rospy.loginfo("Receptionist is going to the living room")
+                self.say_publisher.publish("Come with me " + name)
+                time.sleep(5)
 
 
     def get_name(self):
@@ -171,9 +205,11 @@ class receptionist(object):
 
     def is_someone(self):
         # check for a new detection in vision topic
-        rospy.loginfo("checking if someone is there")
-        time.sleep(5)
-        return True
+        # check if any faces have been detected
+        if self.faces is not None and len(self.faces) > 0:
+            return True
+        else:
+            return False
 
 
 
@@ -203,7 +239,7 @@ class receptionist(object):
         rospy.logdebug("I heard: " + self.inputText)
             
     def callGPT(self, pr, t_max=256):
-        rospy.logdebug("I am parsing in: GPT " + prompt )
+        rospy.logdebug("I am parsing in: GPT " + pr )
 
         response = openai.Completion.create(
             model=self.GPT_API.model,
