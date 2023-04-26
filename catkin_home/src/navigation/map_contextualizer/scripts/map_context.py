@@ -39,22 +39,28 @@ import os
 from interactive_markers.interactive_marker_server import *
 from interactive_markers.menu_handler import *
 from visualization_msgs.msg import *
-from geometry_msgs.msg import Point, Pose
+from geometry_msgs.msg import Point
+from nav_msgs.msg import Odometry
+
+from math import sin
+
 
 server = None
-robot_pose = Pose()
+odom_pose = None
 marker_z = 0.5
+
+using_pose = False
   
 menu_handler = MenuHandler()
-int_marker = InteractiveMarker()
+not_moving_marker = InteractiveMarker()
 
 #roi_dict = {"Test 1" : {"test1.1": "1.1", "Test1.2":"1.2"}, "Test 2" : {"test2.1": "2.1", "Test2.2":"2.2"}, "Test 3" : {"test3.1": "3.1", "Test3.2":"3.2"}}
 
-def pose_callback(data):
-    global robot_pose, int_marker
-    robot_pose = data
-    robot_pose.position.z += marker_z
-    server.setPose( int_marker.name, robot_pose)
+def odom_callback(data):
+    global odom_pose, not_moving_marker
+    odom_pose = data.pose.pose
+    odom_pose.position.z += marker_z
+    server.setPose( not_moving_marker.name, odom_pose)
     server.applyChanges()
 
 def makeMarker():
@@ -69,26 +75,89 @@ def makeMarker():
     marker.color.a = 1.0 
     return marker
 
-def makeMenuMarker( position ):
-    global int_marker
-    int_marker.header.frame_id = "odom"
+def makeBox(  ):
+    marker = Marker()
+
+    marker.type = Marker.CUBE
+    marker.scale.x = 0.45
+    marker.scale.y = 0.45
+    marker.scale.z = 0.45
+    marker.color.r = 0.5
+    marker.color.g = 0.5
+    marker.color.b = 0.5
+    marker.color.a = 1.0
+
+    return marker
+
+def normalizeQuaternion( quaternion_msg ):
+    norm = quaternion_msg.x**2 + quaternion_msg.y**2 + quaternion_msg.z**2 + quaternion_msg.w**2
+    s = norm**(-0.5)
+    quaternion_msg.x *= s
+    quaternion_msg.y *= s
+    quaternion_msg.z *= s
+    quaternion_msg.w *= s
+
+
+def processFeedback( feedback ):
+    server.applyChanges()
+
+def makeMovingMarker(position):
+    int_marker = InteractiveMarker()
+    int_marker.header.frame_id = "base_link"
     int_marker.pose.position = position
     int_marker.scale = 0.5
 
     int_marker.name = "robot_context_menu"
+    int_marker.description = "Marker Attached to a\nMoving Frame"
+
+    control = InteractiveMarkerControl()
+    control.orientation.w = 1
+    control.orientation.x = 0
+    control.orientation.y = 1
+    control.orientation.z = 0
+    normalizeQuaternion(control.orientation)
+    control.interaction_mode = InteractiveMarkerControl.ROTATE_AXIS
+    int_marker.controls.append(copy.deepcopy(control))
+
+
+    control.orientation.w = 1
+    control.orientation.x = 0
+    control.orientation.y = 1
+    control.orientation.z = 0
+    normalizeQuaternion(control.orientation)
+    control.interaction_mode = InteractiveMarkerControl.MOVE_PLANE
+    control.always_visible = True
+    control.markers.append( makeBox())
+    int_marker.controls.append(control)
+
+    control = InteractiveMarkerControl()
+    control.interaction_mode = InteractiveMarkerControl.MENU
+    control.description="Options"
+    control.name = "menu_only_control"
+    int_marker.controls.append(copy.deepcopy(control))
+
+    server.insert(int_marker, processFeedback)
+
+def makeMenuMarker( position ):
+    global not_moving_marker
+    not_moving_marker.header.frame_id = "odom"
+    not_moving_marker.pose.position = position
+    not_moving_marker.scale = 0.5
+
+    not_moving_marker.name = "robot_context_menu"
 
     # make one control using default visuals
     control = InteractiveMarkerControl()
     control.interaction_mode = InteractiveMarkerControl.MENU
     control.description="Options"
     control.name = "menu_only_control"
-    int_marker.controls.append(copy.deepcopy(control))
+    not_moving_marker.controls.append(copy.deepcopy(control))
     
     control.markers.append( makeMarker() )
     control.always_visible = True
-    int_marker.controls.append(control)
+    not_moving_marker.controls.append(control)
 
-    server.insert( int_marker )
+    server.insert( not_moving_marker )
     
 def savePose(key1, key2, p_x, p_y, p_z, o_x, o_y, o_z, o_w):
     roi_dict[key1][key2] = [p_x, p_y, p_z, o_x, o_y, o_z, o_w]
@@ -102,7 +171,7 @@ def deleteLastPoint(delete):
 def poseFeedback( feedback ):
     global last_key1, last_key2
     last_entry = feedback.menu_entry_id
-    rospy.loginfo('%s \n', last_entry)
+    #rospy.loginfo('%s \n', last_entry)
     context = menu_handler.entry_contexts_[last_entry].title
     context = context.split('-')
     last_key1 = context[0]
@@ -120,8 +189,7 @@ def initDict(config_file):
 
 def save_points(save):
     # Abre el archivo JSON y escribe el diccionario nuevo en él 
-
-    file = "/home/jetson/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json"
+    file = "/home/alexis/testin_ws/src/visualization_tutorials/interactive_marker_tutorials/areas.json"
     with open(file, "w") as outfile:
         json.dump(roi_dict, outfile, indent=4)
 
@@ -148,16 +216,21 @@ if __name__=="__main__":
       except rospy.ServiceException as e:
           rospy.loginfo("Service call failed: %s" % (e,))
 
-      rospy.Subscriber("/robot_pose", Pose, pose_callback)
-      rospy.loginfo("Subscribed to /robot_pose topic")
+      
 
-      initDict("/home/jetson/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json")
+      initDict("/home/alexis/testin_ws/src/visualization_tutorials/interactive_marker_tutorials/areas.json")
       initMenu()
 
       rospy.loginfo("inicializado")
       
-      position = Point(0, 0, 0.5)
-      makeMenuMarker( position )
+      if using_pose:
+        rospy.Subscriber("/odom", Odometry, odom_callback)
+        rospy.loginfo("Subscribed to /odom topic")
+        position = Point(0, 0, 0.5)
+        makeMenuMarker( position )
+      else:
+        position = Point(0, 0, 0)
+        makeMovingMarker( position )
 
       menu_handler.apply( server, "robot_context_menu" )
       server.applyChanges()
