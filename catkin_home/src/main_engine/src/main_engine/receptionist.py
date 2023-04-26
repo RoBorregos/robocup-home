@@ -176,6 +176,8 @@ class receptionist(object):
                 self.say("Hey" + name + promts["assign"])
                 self.speech_enable.publish(Bool(True))
                 intent = self.parser(calls["confirm"])
+                if intent == "True":
+                    self.currentState = RETURN_STATE
                 intent = bool(intent)
                 rospy.logwarn("intent: ")
                 rospy.logwarn(intent)
@@ -195,23 +197,39 @@ class receptionist(object):
                 else:
                     self.currentState = WAIT_STATE
 
+            elif self.currentState == END_STATE:
+                self.say(promts["end"])
+
                 
                 
 
 
     def say(self, text):
-        time.sleep(1)
+        time.sleep(1)   
         if self.saying == False:
             self.saying == True
             self.say_publisher.publish(text)
         time.sleep(len(text)/8 )
     
     def describe(self):
+        rospy.logwarn("_____________describe_______________")
+        for person in self.persons:
+            if person.name !="":
+                rospy.logwarn(person.name)
+                rospy.logwarn(person.drink)
+                rospy.logwarn(person.race)
+        # self.say(promts["describe"])
+        intent = self.parser(calls["describe"] + " " + str(self.persons[0].name) + " " + str(self.persons[0].race) + " " + str(self.persons[0].age))
+        self.say(intent)
+        
         rospy.logwarn("describe")
-        time.sleep(19)
+        time.sleep(1)
 
     def get_name(self):
+        self.speech_enable.publish(Bool(False))
+
         name = ""
+        self.inputText = ""
         # get the name from the user
         rospy.loginfo("Receptionist is getting name")
         i = 0
@@ -240,7 +258,7 @@ class receptionist(object):
         rospy.logwarn(name)
 
         time.sleep(3)
-        return name
+        return name.rstrip('\n')
     
     def get_drink(self):
         self.inputText = ""
@@ -263,7 +281,7 @@ class receptionist(object):
                 i = 0
         # rospy.logwarn("drink: " + drink)
         self.speech_enable.publish(Bool(False))
-        return drink
+        return drink.rstrip('\n')
 
 
 
