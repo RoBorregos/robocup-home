@@ -49,7 +49,7 @@ server = None
 odom_pose = None
 marker_z = 0.5
 
-using_pose = False # True if using robot pose, False for free movement
+using_pose = True # True if using robot pose, False for free movement
   
 menu_handler = MenuHandler()
 not_moving_marker = InteractiveMarker()
@@ -233,7 +233,7 @@ def initDict(config_file):
 
 def save_points(save):
     # Abre el archivo JSON y escribe el diccionario nuevo en él 
-    file = "/home/bryan/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json"
+    file = "/home/jetson/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json"
     with open(file, "w") as outfile:
         json.dump(roi_dict, outfile, indent=4)
 
@@ -262,7 +262,7 @@ if __name__=="__main__":
 
       
 
-      initDict("/home/bryan/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json")
+      initDict("/home/jetson/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json")
       initMenu()
 
       rospy.loginfo("inicializado")
