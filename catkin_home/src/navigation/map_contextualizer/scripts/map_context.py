@@ -39,7 +39,7 @@ import os
 from interactive_markers.interactive_marker_server import *
 from interactive_markers.menu_handler import *
 from visualization_msgs.msg import *
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, Pose
 from nav_msgs.msg import Odometry
 
 from math import sin
@@ -49,10 +49,11 @@ server = None
 odom_pose = None
 marker_z = 0.5
 
-using_pose = False
+using_pose = False # True if using robot pose, False for free movement
   
 menu_handler = MenuHandler()
 not_moving_marker = InteractiveMarker()
+arrow_marker = InteractiveMarker()
 
 #roi_dict = {"Test 1" : {"test1.1": "1.1", "Test1.2":"1.2"}, "Test 2" : {"test2.1": "2.1", "Test2.2":"2.2"}, "Test 3" : {"test3.1": "3.1", "Test3.2":"3.2"}}
 
@@ -63,12 +64,19 @@ def odom_callback(data):
     server.setPose( not_moving_marker.name, odom_pose)
     server.applyChanges()
 
+def pose_callback(data):
+    global robot_pose, int_marker
+    robot_pose = data
+    robot_pose.position.z += marker_z
+    server.setPose( int_marker.name, robot_pose)
+    server.applyChanges()
+
 def makeMarker():
     marker = Marker()
     marker.type = Marker.SPHERE
-    marker.scale.x = 0.25
-    marker.scale.y = 0.25
-    marker.scale.z = 0.25
+    marker.scale.x = 0.20
+    marker.scale.y = 0.20
+    marker.scale.z = 0.20
     marker.color.r = 1.0
     marker.color.g = 0.0
     marker.color.b = 0.0
@@ -79,9 +87,23 @@ def makeBox(  ):
     marker = Marker()
 
     marker.type = Marker.CUBE
-    marker.scale.x = 0.45
-    marker.scale.y = 0.45
-    marker.scale.z = 0.45
+    marker.scale.x = 0.20
+    marker.scale.y = 0.20
+    marker.scale.z = 0.20
+    marker.color.r = 0.5
+    marker.color.g = 0.5
+    marker.color.b = 0.5
+    marker.color.a = 1.0
+
+    return marker
+
+def makeArrow(  ):
+    marker = Marker()
+
+    marker.type = Marker.ARROW
+    marker.scale.x = 0.4
+    marker.scale.y = 0.1
+    marker.scale.z = 0.1
     marker.color.r = 0.5
     marker.color.g = 0.5
     marker.color.b = 0.5
@@ -99,6 +121,8 @@ def normalizeQuaternion( quaternion_msg ):
 
 
 def processFeedback( feedback ):
+    global arrow_marker
+    server.setPose(arrow_marker.name, feedback.pose)
     server.applyChanges()
 
 def makeMovingMarker(position):
@@ -138,9 +162,29 @@ def makeMovingMarker(position):
 
     server.insert(int_marker, processFeedback)
 
+
+def makeArrowMarker( position ):
+    global arrow_marker
+    arrow_marker.header.frame_id = "base_link"
+    arrow_marker.pose.position = position
+    arrow_marker.scale = 0.5
+
+    arrow_marker.name = "ARROW"
+
+    # make one control using default visuals
+    control = InteractiveMarkerControl()
+    control.interaction_mode = InteractiveMarkerControl.NONE
+    arrow_marker.controls.append(copy.deepcopy(control))
+    
+    control.markers.append( makeArrow() )
+    control.always_visible = True
+    arrow_marker.controls.append(control)
+
+    server.insert( arrow_marker )    
+
 def makeMenuMarker( position ):
     global not_moving_marker
-    not_moving_marker.header.frame_id = "odom"
+    not_moving_marker.header.frame_id = "odom" # pose
     not_moving_marker.pose.position = position
     not_moving_marker.scale = 0.5
 
@@ -189,7 +233,7 @@ def initDict(config_file):
 
 def save_points(save):
     # Abre el archivo JSON y escribe el diccionario nuevo en él 
-    file = "/home/alexis/testin_ws/src/visualization_tutorials/interactive_marker_tutorials/areas.json"
+    file = "/home/bryan/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json"
     with open(file, "w") as outfile:
         json.dump(roi_dict, outfile, indent=4)
 
@@ -218,19 +262,20 @@ if __name__=="__main__":
 
       
 
-      initDict("/home/alexis/testin_ws/src/visualization_tutorials/interactive_marker_tutorials/areas.json")
+      initDict("/home/bryan/robocup-home/catkin_home/src/navigation/map_contextualizer/scripts/areas.json")
       initMenu()
 
       rospy.loginfo("inicializado")
       
       if using_pose:
-        rospy.Subscriber("/odom", Odometry, odom_callback)
-        rospy.loginfo("Subscribed to /odom topic")
+        rospy.Subscriber("/robot_pose", Pose, pose_callback)
+        rospy.loginfo("Subscribed to /robot_pose topic")
         position = Point(0, 0, 0.5)
         makeMenuMarker( position )
       else:
         position = Point(0, 0, 0)
         makeMovingMarker( position )
+        makeArrowMarker( position )
 
       menu_handler.apply( server, "robot_context_menu" )
       server.applyChanges()
