@@ -49,7 +49,7 @@ server = None
 odom_pose = None
 marker_z = 0.5
 
-using_pose = True # True if using robot pose, False for free movement
+using_pose = False # True if using robot pose, False for free movement
   
 menu_handler = MenuHandler()
 not_moving_marker = InteractiveMarker()
@@ -57,18 +57,11 @@ arrow_marker = InteractiveMarker()
 
 #roi_dict = {"Test 1" : {"test1.1": "1.1", "Test1.2":"1.2"}, "Test 2" : {"test2.1": "2.1", "Test2.2":"2.2"}, "Test 3" : {"test3.1": "3.1", "Test3.2":"3.2"}}
 
-def odom_callback(data):
-    global odom_pose, not_moving_marker
-    odom_pose = data.pose.pose
-    odom_pose.position.z += marker_z
-    server.setPose( not_moving_marker.name, odom_pose)
-    server.applyChanges()
-
 def pose_callback(data):
-    global robot_pose, int_marker
+    global robot_pose, not_moving_marker
     robot_pose = data
     robot_pose.position.z += marker_z
-    server.setPose( int_marker.name, robot_pose)
+    server.setPose( not_moving_marker.name, robot_pose)
     server.applyChanges()
 
 def makeMarker():
@@ -127,7 +120,7 @@ def processFeedback( feedback ):
 
 def makeMovingMarker(position):
     int_marker = InteractiveMarker()
-    int_marker.header.frame_id = "base_link"
+    int_marker.header.frame_id = "base_footprint"
     int_marker.pose.position = position
     int_marker.scale = 0.5
 
@@ -165,7 +158,7 @@ def makeMovingMarker(position):
 
 def makeArrowMarker( position ):
     global arrow_marker
-    arrow_marker.header.frame_id = "base_link"
+    arrow_marker.header.frame_id = "base_footprint"
     arrow_marker.pose.position = position
     arrow_marker.scale = 0.5
 
