@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="dashgo">
+  <virtual_joint child_link="base_link" name="world_joint" parent_frame="odom" type="planar" />
+  <!-- ########################################################################### -->
+  <link name="base_link"></link>
+  <joint name="base_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 1.57"/>
+    <parent link="base_link"/>
+    <child link="Base"/>
+  </joint>
+
+  <link name="Base">
+    <inertial>
+      <origin
+        xyz="-0.0421641375528847 0.0262460783517876 0.278949374295985"
+        rpy="0 0 0" />
+      <mass
+        value="26.7355250620724" />
+      <inertia
+        ixx="0.418467609556011"
+        ixy="0.0235787657447133"
+        ixz="8.3665476036404E-06"
+        iyy="0.302793463787765"
+        iyz="0.000125414849304393"
+        izz="0.482705153704045" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Base.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://robot_description/meshes/Dashgo/Base_Collisions.STL" />
+      </geometry>
+    </collision>
+  </link>
+  
+  
+  <xacro:include filename="$(find robot_description)/urdf/camera.urdf.xacro" />
+  <!-- <xacro:load_camera name="Cam1" attach_to="Base" x="-0.159" y="0.063143" z="1.56" r_r="0.174533" r_p="0" r_y="-1.5708" />
+  <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.27" z="0.51" r_r="0.698132" r_p="0" r_y="-1.5708" /> -->
+  <xacro:load_camera name="Cam1" attach_to="Base" x="-0.25" y="-0.17" z="1.57" r_r="0.224533" r_p="0" r_y="-1.5708" />
+  <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.24" z="0.48" r_r="0.538132" r_p="0" r_y="-1.5708" />
+   
+  <!-- <xacro:load_camera name="Cam1" attach_to="base_link" x="0.02" y="0.0" z="1.57" r_r="0" r_p="0.224533" r_y="0" />
+  <xacro:load_camera name="Cam2" attach_to="base_link" x="0.185" y="0.2" z="0.48" r_r="0" r_p="0.538132" r_y="0" /> -->
+</robot>
