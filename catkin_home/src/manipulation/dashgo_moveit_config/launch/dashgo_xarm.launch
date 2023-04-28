@@ -54,7 +54,7 @@
     <arg name="jnt_stat_source" value="[$(arg xarm_hw_ns)/joint_states, DASHGO/joint_states]" />
     <arg name="jnt_stat_pub_rate" value="$(arg jnt_stat_pub_rate)"/>
     <arg name="show_rviz" value="$(arg show_rviz)" />
-    <arg name="pub_static_odom" default="true" />
+    <arg name="pub_static_odom" default="false" />
   </include>
 
   <!-- Run Octomap Toggle Service -->

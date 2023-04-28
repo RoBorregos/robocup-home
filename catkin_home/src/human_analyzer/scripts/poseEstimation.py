@@ -16,7 +16,6 @@ FLT_EPSILON = sys.float_info.epsilon
 
 # indexToName = ["nose", "leftEyeInner", "leftEye", "leftEyeOuter", "rightEyeInner", "rightEye", "rightEyeOuter", "leftEar", "rightEar", "mouthLeft", "mouthRight", "leftShoulder", "rightShoulder", "leftElbow", "rightElbow", "leftWrist", "rightWrist", "leftPinky", "rightPinky", "leftIndex", "rightIndex", "leftThumb", "rightThumb", "leftHip", "rightHip", "leftKnee", "rightKnee", "leftAnkle", "rightAnkle", "leftHeel", "rightHeel", "leftFootIndex", "rightFootIndex"]
 
-
 PublisherPoints = [
     {"name": "shoulderLeft", "index": 11}, {"name": "shoulderRight", "index": 12}, {"name": "elbowLeft", "index": 13}, {"name": "elbowRight", "index": 14}, {"name": "wristLeft", "index": 15},  {"name": "wristRight", "index": 16}, {"name": "pinkyLeft", "index": 17}, {"name": "pinkyRight", "index": 18}, {"name": "indexLeft", "index": 19}, {"name": "indexRight", "index": 20}, {"name": "thumbLeft", "index": 21},{"name": "thumbRight", "index": 22}, {"name": "hipLeft", "index": 23}, {"name": "hipRight", "index": 24}, # {"name": "chest", "index": 33},
 ]
@@ -137,13 +136,13 @@ class PoseDetector:
                         left_out = left_index.x*w > left_shoulder.x*w + m*w
 
                         if right_out and left_out :
-                            pointing.data = 2
+                            pointing.data = 0 # Undefined
                         elif right_out:
-                            pointing.data = 0
+                            pointing.data = 1 # Right
                         elif left_out:
-                            pointing.data = 1
+                            pointing.data = -1 # Left
                         else:
-                            pointing.data = 2
+                            pointing.data = 0
                         if pointing.data == 0:
                             color = (0, 0, 255)
                         elif pointing.data == 1:
@@ -193,7 +192,7 @@ class PoseDetector:
                     if cv2.waitKey(1) & 0xFF == 27:
                         break
                 else:
-                    print("Image not received")
+                    pass
                 rospy.Rate(30).sleep()
 
     def get_depth(self, depth_image, pixel):

@@ -54,7 +54,6 @@
 
 using namespace octomap;
 
-#define MOVEIT_ENABLE false
 #define ENABLE_RANSAC false
 
 struct PointXYZComparator {
@@ -130,11 +129,10 @@ public:
     listener_(buffer_),
     as_(nh_, name, boost::bind(&Detect3DFloor::handleActionServer, this, _1), false)
   {
-    if (MOVEIT_ENABLE) {
-      planning_scene_interface_ = new moveit::planning_interface::PlanningSceneInterface();
-      clear_octomap = nh_.serviceClient<std_srvs::Empty>("/clear_octomap");
-      clear_octomap.waitForExistence();
-    }
+    planning_scene_interface_ = new moveit::planning_interface::PlanningSceneInterface();
+    clear_octomap = nh_.serviceClient<std_srvs::Empty>("/clear_octomap");
+    clear_octomap.waitForExistence();
+    
     tf_listener = new tf::TransformListener();
     as_.start();
     pose_pub_ = nh_.advertise<geometry_msgs::PoseArray>("/test/objectposes", 10);
@@ -159,6 +157,7 @@ public:
     force_object_ = !biggest_object_ ? goal->force_object.detections[0] : object_detector::objectDetection();
     side_ = goal->side;
     ignore_moveit_ = goal->ignore_moveit;
+    ROS_INFO_STREAM("Ignore Moveit: " << ignore_moveit_);
     feedback_.status = 0;
     result_.success = true;
     result_.object_cloud = gpd_ros::CloudSamples();
@@ -214,7 +213,7 @@ public:
     pose_pub_msg_.poses.push_back(object_pose.pose);
     result_.object_pose = object_pose;
     
-    if (MOVEIT_ENABLE) {
+    if (!ignore_moveit_) {
       // Adding Object to Planning Scene
       moveit_msgs::CollisionObject collision_object;
       collision_object.header.frame_id = BASE_FRAME;
@@ -439,7 +438,13 @@ public:
         return;
       }
 
-      if (MOVEIT_ENABLE) {
+      if (abs(object_found.max_z - object_found.min_z) < 0.1) {
+        ROS_INFO_STREAM("Object rejected due to height.");
+        object_found.isValid = false;
+        return;
+      }
+
+      if (!ignore_moveit_) {
         // Store mesh.
         ROS_INFO_STREAM("Reconstructing Mesh Started");
         reconstructMesh(cloud, object_found.mesh);
@@ -472,9 +477,9 @@ public:
     pcl::PassThrough<pcl::PointXYZ> pass;
     pass.setInputCloud(cloud);
     pass.setFilterFieldName("y");
-    if (side == -1) {
+    if (side == -1) {     // Left
       pass.setFilterLimits(0, 2.50);
-    } else {
+    } else {              // Right
       pass.setFilterLimits(-2.50, 0.0);
     }
     pass.filter(*cloud);
@@ -644,7 +649,7 @@ public:
   void cloudCB(const sensor_msgs::PointCloud2& input)
   {
     ROS_INFO_STREAM("Received PointCloud");
-    if (MOVEIT_ENABLE) {
+    if (!ignore_moveit_) {
       // Reset Planning Scene Interface
       std::vector<std::string> object_ids = planning_scene_interface_->getKnownObjectNames();
       planning_scene_interface_->removeCollisionObjects(object_ids);
@@ -658,7 +663,7 @@ public:
     pcl::fromROSMsg(input, *cloud);
     computeNormals(cloud, cloud_normals);
 
-    if (side_ == -1) {
+    if (side_ != 0) {
       passThroughFilterSide(cloud, side_);
     }
 
@@ -724,7 +729,7 @@ public:
     ObjectParams selectedObject = objects[selectedId];
     ROS_INFO_STREAM("Selected Object " << selectedObject.file_id);
 
-    if (MOVEIT_ENABLE) {
+    if (!ignore_moveit_) {
       ROS_INFO_STREAM("STARTED - Building Grasping Info");
       addGraspInfo(input, selectedObject);
       ROS_INFO_STREAM("ENDED - Building Grasping Info");

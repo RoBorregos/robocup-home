@@ -2,6 +2,12 @@
 <launch>
 
   <arg name="rviz"  default="false"/>
+  <arg name="init_xarm" default="false" />
+
+  <!-- roslaunch dashgo_moveit_config dashgo_xarm.launch robot_ip:=192.168.31.180 -->
+  <include if="$(arg init_xarm)" file="$(find dashgo_moveit_config)/launch/dashgo_xarm.launch">
+    <arg name="robot_ip" value="192.168.31.180" />
+  </include>
 
   <!-- Load Params According to Robot -->
   <rosparam file="$(find pick_and_place)/config/params_DASHGO.yaml" command="load" />
@@ -23,6 +29,12 @@
     <arg name="CAMERA_FRAME" value="zed2_left_camera_optical_frame" />
     <arg name="USE_FAKE_DETECTOR" value="True" />
   </include> -->
+  
+  <!-- Follow Point -->
+  <node name="follow_point" pkg="nav_main" type="FollowPoint.py" output="screen" respawn="true" args="" />
+  
+  <!-- MediaPipe - Human Pose -->
+  <node name="poseEstimation" pkg="human_analyzer" type="poseEstimation.py" output="screen" respawn="true" args="" />
 
   <!-- 3D Detector -->
   <include file="$(find object_detector)/launch/object_3D_BAG.launch">
@@ -30,7 +42,7 @@
     <arg name="CAMERA_FRAME" default="zed2_down_left_camera_frame" />
     <arg name="BASE_FRAME" default="base_link" />
     <arg name="map_to_odom"  default="true"/>
-    <arg name="odom_to_internal_odom"  default="true"/>
+    <arg name="odom_to_base_footprint"  default="true"/>
     <arg name="POINT_CLOUD_TOPIC" default="/zed2_down/zed_down_node/point_cloud/ds_no_plane_cloud_registered" />
   </include>
 
@@ -38,11 +50,12 @@
   <node name="CarryMyLuggage" pkg="main_engine" type="CarryMyLuggage.py" output="screen" />
   
   <!-- GPD -->
-	<!-- <node name="detect_grasps_server_samples" pkg="gpd_ros" type="detect_grasps_server_samples" output="screen" respawn="true" args="">
+	<node name="detect_grasps_server_samples" pkg="gpd_ros" type="detect_grasps_server_samples" output="screen" respawn="true" args="">
     <param name="config_file" value="/catkin_home/src/manipulation/pick_and_place/config/dashgo_eigen_params.cfg" />
     <param name="rviz_topic" value="plot_grasps" />
   </node>
-   -->
+  
+
   <!-- Manipulation Client | Running in separate shell -->
   <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)"
           args="-d $(find pick_and_place)/config/all.rviz"/>

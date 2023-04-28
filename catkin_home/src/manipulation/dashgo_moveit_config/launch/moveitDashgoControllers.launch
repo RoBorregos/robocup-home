@@ -18,9 +18,8 @@
      <!-- spawn controller -->
      <node name="controllers_spawner_base" 
           pkg="controller_manager" type="spawner" output="screen" 
-          args="base_controller gripper_controller"
+          args="gripper_controller"
           ns="$(arg hw_ns)"
      />
-     <remap from="base_controller/follow_joint_trajectory" to="$(arg hw_ns)/base_controller/follow_joint_trajectory"/>
      <remap from="gripper_controller/follow_joint_trajectory" to="$(arg hw_ns)/gripper_controller/follow_joint_trajectory"/>
 </launch>

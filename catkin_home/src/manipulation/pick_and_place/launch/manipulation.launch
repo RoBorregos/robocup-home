@@ -28,7 +28,7 @@
     <arg name="MAP_FRAME" default="map" />
     <arg name="CAMERA_FRAME" default="xtion_rgb_optical_frame" />
     <arg name="map_to_odom"  default="false"/>
-    <arg name="odom_to_internal_odom"  default="false"/>
+    <arg name="odom_to_base_footprint"  default="false"/>
     <arg name="POINT_CLOUD_TOPIC" default="/xtion/depth_registered/points" />
   </include>
 

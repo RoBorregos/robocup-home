@@ -2,7 +2,8 @@ MANIPULATION_ENABLE: true
 PICK_GROUPS: [arm] #, whole_body, whole_body_rotational
 ARM_GROUP: "arm"
 ARM_JOINTS: [joint1, joint2, joint3, joint4, joint5]
-ARM_GRASP: [1.57, 0.0, -3.9, 2.33, -1.57]
+272 -6 4 -88 -274
+ARM_GRASP: [-1.57, 0.0, 0.0, -1.57, -1.57]
 ARM_INIT: [0.0, 0.0, 0.0, 0.0, 0.0]
 HEAD_ENABLE: false
 HEAD_GROUP: "head"

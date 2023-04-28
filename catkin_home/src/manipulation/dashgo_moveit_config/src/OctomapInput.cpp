@@ -16,7 +16,7 @@ public:
   {
     tf_listener = new tf::TransformListener();
     state_ = true;
-    sub_ = nh_.subscribe("/zed2/zed_node/point_cloud/ds_cloud_registered", 1, &OctomapService::cloudCallback, this);
+    sub_ = nh_.subscribe("/zed2_down/zed_down_node/point_cloud/ds_cloud_registered", 1, &OctomapService::cloudCallback, this);
     pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/octomap/points", 10);
     service_ = nh_.advertiseService("/toggle_octomap", &OctomapService::toggleOctomap, this);
     state_pub_ = nh_.advertise<std_msgs::Bool>("/octomap/state", 10);
@@ -30,7 +30,7 @@ public:
     pass.setInputCloud(cloud);
     pass.setFilterFieldName("z");
     // min and max values in z axis to keep
-    pass.setFilterLimits(0.2, 2.5);
+    pass.setFilterLimits(0, 2.5);
     pass.filter(*cloud);
   }
 
@@ -48,7 +48,7 @@ public:
       t_pc.header.frame_id = "base_link";
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
       pcl::fromROSMsg(t_pc, *cloud);
-      passThroughFilter(cloud);
+      // passThroughFilter(cloud);
       pcl::toROSMsg(*cloud, t_pc);
       pub_.publish(t_pc);
     }

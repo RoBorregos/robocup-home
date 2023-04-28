@@ -129,8 +129,6 @@ class PickAndPlaceServer(object):
         t.pose.orientation.y = 0.41385133335390073
         t.pose.orientation.z = 3.883465277565029e-06
         t.pose.orientation.w = -3.3049841971737527e-07
-        
-
 
         x = PoseArray()
         x.header = t.header
@@ -281,25 +279,21 @@ class PickAndPlaceServer(object):
         for grasp in grasps:
             if success:
                 break
-            count = 0
-            for group in self.pick_groups:
-                rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
-                group.set_pose_target(grasp.grasp_pose.pose)
-                group.set_goal_orientation_tolerance(numpy.deg2rad(20))
-                group.set_goal_position_tolerance(0.03)
-                group.plan()
-                res = group.go(wait=True)
-                group.stop()
-                rospy.loginfo("Result: " + str(res))
-                # if res == False:
-                    # curr_pose = group.get_current_pose()
-                    # rospy.loginfo(str(curr_pose))
-                    # rospy.loginfo(str(grasp.grasp_pose.pose))
-
-                if res == True:
-                    success = True
-                    break
-                count += 1
+            attempts = 0
+            while attempts < 5:
+                for group in self.pick_groups:
+                    rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
+                    group.set_pose_target(grasp.grasp_pose.pose)
+                    group.set_goal_orientation_tolerance(numpy.deg2rad(20))
+                    group.set_goal_position_tolerance(0.03)
+                    group.plan()
+                    res = group.go(wait=True)
+                    group.stop()
+                    rospy.loginfo("Result: " + str(res))
+                    if res == True:
+                        success = True
+                        break
+                    attempts += 1
 
         if not success:
             return 99999
@@ -321,29 +315,10 @@ class PickAndPlaceServer(object):
 
         if success:
             rospy.sleep(0.5)
-        # Plan to Object
-        # rospy.loginfo("Planning to object")
-        # count = 0
-        # success = False
-        # for grasp in grasps:
-        #     if success:
-        #         break
-        #     for group in self.pick_groups:
-        #         rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
-        #         group.set_pose_target(grasp.grasp_pose.pose)
-        #         group.set_goal_orientation_tolerance(numpy.deg2rad(20))
-        #         group.set_goal_position_tolerance(0.03)
-        #         group.plan()
-        #         res = group.go(wait=True)
-        #         group.stop()
-        #         rospy.loginfo("Result: " + str(res))
-        #         if res == True:
-        #             success = True
-        #             break
-        #         count += 1
 
         if not success:
             return 99999
+        
         return 1
 
         possible_grasps = grasps

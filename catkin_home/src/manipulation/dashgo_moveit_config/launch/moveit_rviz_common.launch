@@ -25,7 +25,7 @@
   <arg name="pub_static_odom" default="false" />
 
   <!-- If needed, broadcast static tf for robot root -->
-  <node if="$(arg pub_static_odom)" pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 odom internal_odom" />
+  <node if="$(arg pub_static_odom)" pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 odom base_footprint" />
 
   <!-- publish /joint_states from specified source topic -->
   <!-- Remove -->

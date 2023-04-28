@@ -17,6 +17,11 @@ noetic.objectDetection.prod.build:
 	@docker login ghcr.io
 	@docker build -t ros:home -f docker/noetic/Dockerfile.objectDetection.prod .
 
+tiago.create:
+	@./docker/run_scripts/tiagoNvidiaGpu.bash
+tiago.shell:
+	@docker exec -it ros-tiago bash
+
 #: Create Generic Docker container
 noetic.create: 
 	@./docker/run_scripts/run.bash
