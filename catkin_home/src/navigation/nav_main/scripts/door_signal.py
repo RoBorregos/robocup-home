@@ -11,7 +11,7 @@ class DoorDetector:
         self.firstIteration = True
         # Subscribe to the LiDAR data topic
         rospy.Subscriber('/scan_filtered', LaserScan, self.lidar_callback)
-
+                       # '/scan'
         # Create a publisher for the movement command topic
         self.cmd_pub = rospy.Publisher('/move_command', String, queue_size=10)
 
@@ -19,11 +19,6 @@ class DoorDetector:
         # Filter the LiDAR data to only include points near the door
         door_angle = 1.6  # Replace with the angle of the door in the LiDAR data (rad) 1.6 is straight of our robot
         #door_distance = 0.3  # Replace with the distance of the door in the LiDAR data (m)
-        if self.firstIteration:
-            self.firstIteration = False
-            door_distance = 0.3  # Replace with the distance of the door in the LiDAR data (m)
-        else:
-            self.last_distance
         door_idx = int(door_angle / msg.angle_increment)
         min_idx = max(0, door_idx - 10)
         max_idx = min(len(msg.ranges), door_idx + 10)
@@ -42,9 +37,10 @@ class DoorDetector:
         while not rospy.is_shutdown():
             if self.door_opened:
                 # Send a message to the robot's control node to start moving
-                cmd_msg = String()
-                cmd_msg.data = "start_moving"
-                self.cmd_pub.publish(cmd_msg)
+                # cmd_msg = String()
+                # cmd_msg.data = "start_moving"
+                # self.cmd_pub.publish(cmd_msg)
+                return True
             rate.sleep()
 
 if __name__ == '__main__':
