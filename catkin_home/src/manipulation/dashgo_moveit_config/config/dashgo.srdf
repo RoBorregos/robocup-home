@@ -52,6 +52,8 @@
         <joint name="joint4" value="2.33"/>
         <joint name="joint5" value="-1.57"/>
     </group_state>
+    <!-- Gripper 90 -->
+    <!--     
     <group_state name="close" group="gripper">
         <joint name="Rev1Servo" value="0"/>
         <joint name="Rev2Servo" value="0"/>
@@ -59,7 +61,17 @@
     <group_state name="open" group="gripper">
         <joint name="Rev1Servo" value="0.32"/>
         <joint name="Rev2Servo" value="-0.32"/>
+    </group_state> -->
+    <!-- Gripper Straight -->
+    <group_state name="close" group="gripper">
+        <joint name="Rev1Servo" value="0"/>
+        <joint name="Rev2Servo" value="0"/>
     </group_state>
+    <group_state name="open" group="gripper">
+        <joint name="Rev1Servo" value="-0.32"/>
+        <joint name="Rev2Servo" value="0.32"/>
+    </group_state>
+
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="eef" parent_link="end_effector_link" group="gripper" parent_group="arm"/>
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
