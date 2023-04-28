@@ -8,6 +8,7 @@ class DoorDetector:
         self.last_distance = None
         self.door_opened = False
 
+        self.firstIteration = True
         # Subscribe to the LiDAR data topic
         rospy.Subscriber('/scan_filtered', LaserScan, self.lidar_callback)
 
@@ -17,7 +18,12 @@ class DoorDetector:
     def lidar_callback(self, msg):
         # Filter the LiDAR data to only include points near the door
         door_angle = 1.6  # Replace with the angle of the door in the LiDAR data (rad) 1.6 is straight of our robot
-        door_distance = 0.4  # Replace with the distance of the door in the LiDAR data (m)
+        #door_distance = 0.3  # Replace with the distance of the door in the LiDAR data (m)
+        if self.firstIteration:
+            self.firstIteration = False
+            door_distance = 0.3  # Replace with the distance of the door in the LiDAR data (m)
+        else:
+            self.last_distance
         door_idx = int(door_angle / msg.angle_increment)
         min_idx = max(0, door_idx - 10)
         max_idx = min(len(msg.ranges), door_idx + 10)
@@ -27,7 +33,7 @@ class DoorDetector:
         door_distance = sorted(door_ranges)[len(door_ranges)//2]
         #rospy.loginfo("Door: %f", door_distance)
         # Check if the distance has changed significantly since the last scan
-        if self.last_distance is not None and abs(door_distance - self.last_distance) > 0.12:
+        if self.last_distance is not None and abs(door_distance - self.last_distance) > 0.30:   #> #.## (m) how much difference from door_distance
             self.door_opened = True
         self.last_distance = door_distance
 

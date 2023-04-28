@@ -1,13 +1,13 @@
 <launch>
-	<include file="$(find dashgo_driver)/launch/driver_imu.launch"/>
-	<include file="$(find ydlidar)/launch/ydlidar1_up.launch"/>
+	<include file="$(find dashgo_driver)/launch/driver_sim.launch"/>
+	<!-- <include file="$(find ydlidar)/launch/ydlidar1_up.launch"/> -->
 	<!-- <include file="$(find dashgo_description)/launch/dashgo_description.launch"/> -->
 		<arg name="map_file" default="$(find nav_main)/maps/TMR2023_Context1.yaml"/>
 		<node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 		<rosparam file="$(arg map_file)" command="load" ns="map" />
 		<arg name="initial_pose_x" default="0.0"/> 
 		<arg name="initial_pose_y" default="0.0"/> 
-		<arg name="initial_pose_a" default="0.0"/>
+		<arg name="initial_pose_a" default="-0.5"/>
 	<include file="$(find nav_main)/launch/include/imu/amcl.launch.xml">
 		<arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
 		<arg name="initial_pose_y" value="$(arg initial_pose_y)"/>

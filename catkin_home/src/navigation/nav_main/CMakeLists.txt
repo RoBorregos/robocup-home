@@ -168,6 +168,8 @@ install(PROGRAMS
   scripts/small_obj_det.py
   scripts/obj_det.py
   scripts/recovery_node.py
+  scripts/test_goals.py
+  scripts/TMR_Initial_Test.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
