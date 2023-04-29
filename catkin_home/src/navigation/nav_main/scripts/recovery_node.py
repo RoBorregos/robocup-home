@@ -18,7 +18,7 @@ class ClearCostmap(smach.State):
     def execute(self, userdata):
         # Code to clear the costmap
         try:
-            #self.clear_costmaps_service()
+            self.clear_costmaps_service()
             return 'clear_done'
         except Exception as e:
             return 'clear_error'
@@ -101,6 +101,11 @@ class MoveToSafeLocation(smach.State):
             else:
                 result = self.client.get_result()
                 if result==3:
+<<<<<<< HEAD
+=======
+                    
+>>>>>>> 94715a36c22a1f512e261a21bc098c54e7b6bd26
+
                     return 'move_done'
                 else:
                     return 'move_error'
@@ -125,7 +130,11 @@ def main():
         smach.StateMachine.add('ROTATE_IN_PLACE', RotateInPlace(), 
                                transitions={'rotate_done':'MOVE_TO_SAFE_LOCATION','rotate_error':'BACKUP_AND_RETRY'})
         smach.StateMachine.add('MOVE_TO_SAFE_LOCATION', MoveToSafeLocation(), 
+<<<<<<< HEAD
                                transitions={'move_done':'BACKUP_AND_RETRY', 'move_error': 'ROTATE_IN_PLACE'})
+=======
+                               transitions={'move_done':'success', 'move_error': 'ROTATE_IN_PLACE'})
+>>>>>>> 94715a36c22a1f512e261a21bc098c54e7b6bd26
 
     # # Create and start the introspection server
     sis = smach_ros.IntrospectionServer('recovery_behavior', sm, '/SM_ROOT')
