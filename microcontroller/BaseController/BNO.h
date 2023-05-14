@@ -18,23 +18,26 @@ class BNO {
     // Function that return a value between '0' (uncalibrated data) and '3' (fully calibrated).
     uint8_t orientationStatus();
 
+    void reset();
+
 
     //////////////////////////////////Get Functions//////////////////////////////////////
-    // Returns the angle in X axis considering bno_set_point_ and it is in a range of 0-360.
-    int getCurrentXAngle();
-    
-    // Returns the angle in X axis.
-    double getAngleX();
-    
-    // Returns the angle in Y axis.
-    double getAngleY();
-    
-    // Returns the angle in Z axis.
-    double getAngleZ();
+    void updateBNO();
+    float getYaw();
+    float getYawVel();
+    float getXAccel();
+    float getYAccel();
+    float getZAccel();
 
     
   private:
     Adafruit_BNO055 bno_;
-    int bno_set_point_ = 0;
+    int reset_pin_ = 22;
+
+    float yaw_ = -1.1;
+    float yaw_vel_ = -1.1;
+    float x_accel = -1.1;
+    float y_accel = -1.1;
+    float z_accel = -1.1;
 };
 #endif

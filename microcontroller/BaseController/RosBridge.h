@@ -1,34 +1,22 @@
 // This class has all the functions related to the ROS connection. It receives the velocity
 // commands and publish the encoders ticks for Odometry.
-#ifndef Odometry_h
-#define Odometry_h
-
-#include <ros.h>
-#include <geometry_msgs/Quaternion.h>
-#include <ros/node_handle.h>
-#include <geometry_msgs/Twist.h>
-#include <base_control/StampedEncoders.h>
-#include <base_control/Encoders.h>
+#ifndef RosBridge_h
+#define RosBridge_h
 
 #include <stdint.h>
 #include <math.h>
+#include "BNO.h"
 #include <Arduino.h>
 
-#include "BNO.h"
 #include "Movement.h"
+#include "Plot.h"
 
 inline int sign(int a) { return min(1, max(-1, a)); };
 
-enum class OdometryState {
-    Linear = 1, 
-    Angular = 2, 
-    Stop = 3
-};
-
-class Odometry{
+class RosBridge{
     public:
         //////////////////////////////////Constructor//////////////////////////////////////
-        Odometry(Movement *move_all,ros::NodeHandle *nh);
+        RosBridge(Movement *move_all, BNO *bno, Plot *plot);
         
         
         //////////////////////////////////Run//////////////////////////////////////
@@ -38,47 +26,60 @@ class Odometry{
     private:
         //////////////////////////////////Velocity Suscriber//////////////////////////////////////
         // Receives velocity commands.
-        void velocityCallback(const geometry_msgs::Twist& cmdvel);
-        
-        // Process velocity commands.
-        void cmdVelocity(const double linearx, const double lineary,  const double angularz);
-        
+        void velocityCallback(double linearx, double lineary, double angularz);
+
         //////////////////////////////////Encoders Publisher//////////////////////////////////////
         // Process encoder and return message.
         void getEncoderCounts();
-        
-        // Publish encoder message.
-        void publish();
-        
-        Movement *move_all_;
-        OdometryState odom_state_ = OdometryState::Stop;
-        static constexpr uint8_t kCountMotors = 4;
 
-        // Node.
-        ros::NodeHandle  *nh_;
+        // Get Emergency Btn.
+        void getEmergencyBtn();
+
+        // Set Cmd Velocity.
+        void setCmdVelocity();
         
+        // Get Encoders.
+        void getEncoders();
+
+        void readSerial();
+
+        Movement *move_all_;
+        BNO *bno_;
+
+        static constexpr uint8_t kCountMotors = 4;
+        
+        // Plot.
+        Plot *plot_;
+
         // Suscriber.
-        ros::Subscriber<geometry_msgs::Twist, Odometry> velocity_subscriber_;
-        static constexpr double kLinearXMaxVelocity = 0.19;
-        static constexpr double kLinearYMaxVelocity = 0.19;
-        static constexpr double kAngularZMaxVelocity = 0.19;
         static constexpr uint16_t kWatchdogPeriod = 500;
         
         // Publisher.
-        ros::Publisher front_encoder_publisher_;
-        ros::Publisher back_encoder_publisher_;
-        base_control::StampedEncoders front_encoders_msg_;
-        base_control::StampedEncoders back_encoders_msg_;
+        int back_left_encoders = 0.0;
+        int back_right_encoders = 0.0;
+        int front_left_encoders = 0.0;
+        int front_right_encoders = 0.0;
+        float time_delta = 0.0;
+        int emergency_btn_pin = 13;
+
         int last_encoder_counts_[kCountMotors];
         static constexpr uint8_t kOdomPeriod = 40;
         static constexpr uint16_t kIntMax = 65535;
         static constexpr uint16_t kCountReset = 250;
+        static constexpr uint16_t kCountMax = 600;
         static constexpr uint16_t kCountOverflow = 16374;        
 
         // Timers.
         unsigned long odom_timer_ = 0;
         unsigned long watchdog_timer_ = 0;
 
+        // CMD Velocity.
+        double linearX_ = 0;
+        double linearY_ = 0;
+        double angularZ_ = 0;
+
+        void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
+        void writeSerial(bool success, uint8_t* payload, int elements);
         
 };
 

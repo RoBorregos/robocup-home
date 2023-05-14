@@ -79,7 +79,7 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
   updatePIDKinematics(rpm.motor1, rpm.motor2);
 }
 
-void Movement::updatePIDKinematics(double rm_speed, double lm_speed) {
-  right_motor_.constantRPM(rm_speed);
+void Movement::updatePIDKinematics(double lm_speed, double rm_speed) {
   left_motor_.constantRPM(lm_speed);
+  right_motor_.constantRPM(rm_speed);
 }

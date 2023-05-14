@@ -95,9 +95,10 @@ void Motor::stop() {
   current_state_ = MotorState::Stop;
 }
 
+
 //////////////////////////////////Velocity//////////////////////////////////////
 double Motor::getTargetRps(const double velocity) {
-  return MsToRps(velocity) + velocity_adjustment_;
+  return MsToRps(velocity);
 }
 
 double Motor::getTargetTicks(const double velocity) {
@@ -120,6 +121,10 @@ double Motor::MsToRps(const double ms) {
   return  (ms / ( M_PI * kWheelDiameter));
 }
 
+uint8_t Motor::getPWM(){
+  return pwm_;
+}
+
 void Motor::changePwm(const uint8_t pwm) {
   pwm_ = pwm;
   switch(current_state_) {
@@ -135,13 +140,28 @@ void Motor::changePwm(const uint8_t pwm) {
   }
 }
 
-void Motor::constantSpeed(const double velocity) {
+void Motor::constantRPM(double velocity) {
+  target_speed_ = RpsToMs(velocity / kSecondsInMinute);
+  int speed_sign = fmin(1, fmax(-1, velocity));
+  velocity = fabs(velocity);
   double tmp_pwm = pwm_;
+  switch (speed_sign)
+  {
+    case 0:
+      stop();
+      break;
+    case 1:
+      forward();
+      break;
+    case -1:
+      backward();
+      break;
+  }
   pid_.compute(
-    getTargetRps(velocity), current_speed_, tmp_pwm, pid_ticks_,
+    velocity / kSecondsInMinute, current_speed_, tmp_pwm, pid_ticks_,
     kPulsesPerRevolution, kPidCountTimeSamplesInOneSecond
   );
-
+ 
   changePwm(tmp_pwm);
 }
 
@@ -154,11 +174,16 @@ void Motor::setOdomTicks(const int odom_ticks) {
   odom_ticks_ = odom_ticks;
 }
 
-void Motor::setVelocityAdjustment(const double velocity_adjustment) {
-  velocity_adjustment_ = velocity_adjustment;
+void Motor::setEncodersDir(const int encoders_dir){
+  encoders_dir_ = encoders_dir;
 }
 
+
 //////////////////////////////////Get Methods//////////////////////////////////////
+int Motor::getEncodersDir(){
+  return encoders_dir_;
+}
+
 int Motor::getPidTicks() {
   return pid_ticks_;
 }
@@ -171,10 +196,22 @@ double Motor::getLastTicks() {
   return last_ticks_;
 }
 
+double Motor::getTargetSpeed() {
+  return target_speed_;
+}
+
 double Motor::getCurrentSpeed() {
   return current_speed_;
 }
 
 MotorState Motor::getCurrentState() {
   return current_state_;
+}
+
+uint8_t Motor::getEncoderOne() {
+  return encoder_one_;
+}
+
+uint8_t Motor::getEncoderTwo() {
+  return encoder_two_;
 }

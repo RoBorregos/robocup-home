@@ -15,6 +15,10 @@ enum class MotorState {
 
 class Motor {
   public:
+    // Motor Characteristics.
+    static constexpr double kPulsesPerRevolution = 4320.0;
+    static constexpr double kWheelDiameter = 0.1;
+    
     //////////////////////////////////Constructor//////////////////////////////////////
     Motor();
     Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
@@ -63,7 +67,7 @@ class Motor {
     void changePwm(const uint8_t pwm);
     
     // Compute Pid controller and update pwm. 
-    void constantSpeed(const double velocity);
+    void constantRPM(const double velocity);
 
 
     //////////////////////////////////Set Methods//////////////////////////////////////
@@ -73,11 +77,14 @@ class Motor {
     // Set the count of ticks of the encoders, the count used in Odometry.
     void setOdomTicks(const int odom_ticks);
     
-    // Set an adjustment to the velocity.
-    void setVelocityAdjustment(const double velocity_adjustment);    
+    // Set the direction of the wheels according to encoders.
+    void setEncodersDir(const int encoders_dir);
 
 
     //////////////////////////////////Get Methods//////////////////////////////////////
+    // Get the direction of the wheels according to encoders.
+    int getEncodersDir();
+
     // Return the count of ticks of the encoders, the count used in Pid.
     int getPidTicks();
     
@@ -87,19 +94,27 @@ class Motor {
     // Return the last count of ticks of the encoders, before it was reset in Pid process.
     double getLastTicks();
     
+    // Return the target Speed of the motor in meters per second.
+    double getTargetSpeed();
+
     // Return the current speed of the motor in meteres per second.
     double getCurrentSpeed();
     
     // Return the current state of the motor.
     MotorState getCurrentState();
 
+    // Get Encoder One pin.
+    uint8_t getEncoderOne();
+
+    // Get Encoder Two pin.
+    uint8_t getEncoderTwo();
+
+    // Get PWM
+    uint8_t getPWM();
+
   private:
     MotorId id_;
     MotorState current_state_ = MotorState::Forward;
-    
-    // Motor Characteristics.
-    static constexpr double kPulsesPerRevolution = 4320.0;
-    static constexpr double kWheelDiameter = 0.1;
     
     // Robot Movement Limits.
     static constexpr uint16_t kMaxTicks = 286;
@@ -114,11 +129,12 @@ class Motor {
 
     // Velocity.
     uint8_t pwm_ = 0;
+    int encoders_dir_ = 0;
     int pid_ticks_ = 0;
     int odom_ticks_ = 0;
     double last_ticks_ = 0;
     double current_speed_ = 0;
-    double velocity_adjustment_ = 0;
+    double target_speed_ = 0;
     
     // PID.
     PID pid_;
