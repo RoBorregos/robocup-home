@@ -62,7 +62,7 @@ class Movement {
     
     //////////////////////////////////PID//////////////////////////////////////
     // Robot linear velocity to rpm per motor. 
-    void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
+    void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
     
     // Set motors to velocity. 
     void updatePIDKinematics(double fl_speed, double fr_speed, double bl_speed, double br_speed);

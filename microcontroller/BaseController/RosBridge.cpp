@@ -60,11 +60,11 @@ void RosBridge::getEncoderCounts() {
 void RosBridge::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer) {
   switch (command) {
     case 0x04: // Velocity command
-      if (packet_size == 9) { // Check packet size
+      if (packet_size == 13) { // Check packet size
         float x, y, angular;
         memcpy(&x, buffer, sizeof(x));
-        y = 0.0;
-        memcpy(&angular, buffer + sizeof(x), sizeof(angular));
+        memcpy(&y, buffer + sizeof(x), sizeof(y));
+        memcpy(&angular, buffer + sizeof(x) + sizeof(y), sizeof(angular));
         velocityCallback(x, y, angular);
         writeSerial(true, nullptr, 0);
       }
@@ -96,13 +96,13 @@ void RosBridge::executeCommand(uint8_t packet_size, uint8_t command, uint8_t* bu
       break;
     case 0x05: // Get IMU
       if (packet_size == 1) { // Check packet size
-        float data[] = {bno_->getYaw(), bno_->getYawVel(), bno_-> getXAccel(), bno_->getYAccel(), bno_->getZAccel()};
+        float data[] = {bno_->getYaw(), bno_->getYawVel(), bno_->getXAccel(), bno_->getYAccel(), bno_->getZAccel()};
         writeSerial(true, (uint8_t*)data, sizeof(data));
       }
       break;
     case 0x15: // Get Emergency Button
       if (packet_size == 1) { // Check packet size
-          uint8_t status[] = {0}; // Read the button status
+          uint8_t status[] = {digitalRead(emergency_btn_pin)}; // Read the button status
           writeSerial(true, (uint8_t*)status, sizeof(status));
       }
       break;
@@ -125,7 +125,7 @@ void RosBridge::writeSerial(bool success, uint8_t* payload, int elements) {
   uint8_t ack = success ? 0x00 : 0x01;
   Serial.write(0xFF);
   Serial.write(0xAA);
-  Serial.write(sizeof(uint8_t) * elements + 1); // Packet size
+  Serial.write(((int)sizeof(uint8_t)) * elements + 1); // Packet size
   Serial.write(ack); // ACK
   
   // Send payload bytes
@@ -137,7 +137,7 @@ void RosBridge::writeSerial(bool success, uint8_t* payload, int elements) {
 
 }
 void RosBridge::readSerial() {
-  static uint8_t buffer[18];
+  static uint8_t buffer[20];
   static uint8_t index = 0;
   static uint8_t packet_size = 0;
   static uint8_t command = 0;
@@ -145,7 +145,6 @@ void RosBridge::readSerial() {
   
   while (Serial.available()) {
     buffer[index++] = Serial.read();
-
     // Check packet header
     if (index == 1 && buffer[0] != 0xFF) {
       index = 0;
@@ -195,6 +194,6 @@ void RosBridge::run() {
             watchdog_timer_ = millis();
         }
         move_all_->cmdVelocity(linearX_, linearY_, angularZ_);
-        plot_->plotTargetandCurrent();
+        bno_->updateBNO();
     }
 }

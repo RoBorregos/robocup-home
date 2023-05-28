@@ -58,7 +58,7 @@ class Microcontroller:
     ''' Configuration Parameters
     '''
     
-    def __init__(self, port="/dev/ttyUSB0", baudrate=115200, timeout=0.5):
+    def __init__(self, port="/dev/ttyUSB0", baudrate=57600, timeout=0.5):
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -237,7 +237,6 @@ class Microcontroller:
            val, = struct.unpack('I', self.payload_args)
            return  self.SUCCESS, val 
         else:
-           # print("ACK", self.payload_ack, self.payload_ack == b'\x00', self.execute(cmd_str)==1)
            return self.FAIL, 0
 
     def get_encoder_counts(self):
@@ -256,14 +255,11 @@ class Microcontroller:
            return self.FAIL
 
     def get_imu_val(self):
-        return  self.SUCCESS, 0, 0, 0, 0, 0
         cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x01, 0x05) + struct.pack("B", 0x06)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
-           print(self.payload_args, self.payload_ack)
            yaw, yaw_vel, x_acc, y_acc, z_acc, = struct.unpack('5f', self.payload_args)
            return  self.SUCCESS, yaw, yaw_vel, x_acc, y_acc, z_acc
         else:
-           print(self.payload_args, self.payload_ack)
            return self.FAIL, 0, 0, 0, 0, 0
 
     def get_emergency_button(self):
@@ -289,14 +285,14 @@ class Microcontroller:
         cs=cs%255
         return cs
 
-    def drive(self, x, th):
+    def drive(self, x, y, th):
         # data1 = struct.pack("h", x)
         # data2 = struct.pack("h", th)
         # d1, d2 = struct.unpack("BB", data1)
         # c1, c2 = struct.unpack("BB", data2)
         # self.check_list = [0x05,0x04, d1, d2, c1, c2]
         # self.check_num = self.get_check_sum(self.check_list)
-        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x09, 0x04) + struct.pack("ff", x, th) + struct.pack("B", 0x05)
+        cmd_str=struct.pack("4B", self.HEADER0, self.HEADER1, 0x0D, 0x04) + struct.pack("fff", x, y, th) + struct.pack("B", 0x05)
         if (self.execute(cmd_str))==1 and self.payload_ack == b'\x00':
            return  self.SUCCESS
         else:
@@ -305,7 +301,7 @@ class Microcontroller:
     def stop(self):
         ''' Stop both motors.
         '''
-        return self.drive(0, 0)
+        return self.drive(0, 0, 0)
 
     def get_hardware_version(self):
         ''' Get the current version of the hardware.
@@ -323,8 +319,8 @@ class BaseController:
     def __init__(self, Microcontroller, base_frame):
         self.Microcontroller = Microcontroller
         self.base_frame = base_frame
-        self.rate = float(rospy.get_param("~base_controller_rate", 10))
-        self.timeout = rospy.get_param("~base_controller_timeout", 1.0)
+        self.rate = float(rospy.get_param("~base_controller_rate", 20))
+        self.timeout = rospy.get_param("~base_controller_timeout", 0.1)
         self.stopped = False
         self.useImu = rospy.get_param("~useImu", False)
         
@@ -409,7 +405,7 @@ class BaseController:
         self.lwheel_ele_pub = rospy.Publisher('lwheel_ele', Int32, queue_size=5)
         self.rwheel_ele_pub = rospy.Publisher('rwheel_ele', Int32, queue_size=5)
 
-
+        self.last_time = time.time()
         self.micro_version=0
         _,version=self.Microcontroller.get_hardware_version()
         self.slam_project_version = rospy.get_param("~slam_project_version",0)
@@ -583,13 +579,13 @@ class BaseController:
 
             # Set motor speeds in encoder ticks per PID loop
             if ((not self.stopped)):
-                self.Microcontroller.drive(self.v_x, self.v_th)
+                self.Microcontroller.drive(self.v_x, self.v_y, self.v_th)
                 
             self.t_next = now + self.t_delta
             
     def stop(self):
         self.stopped = True
-        self.Microcontroller.drive(0, 0)
+        self.Microcontroller.drive(0, 0, 0)
             
     def cmdVelCallback(self, req):
         # Handle velocity-based movement requests
@@ -597,6 +593,7 @@ class BaseController:
         
         robot_cmd_vel = Twist()
         x = req.linear.x         # m/s
+        y = req.linear.y         # m/s
         th = req.angular.z       # rad/s
 
         if self.emergencybt_val == 1:
@@ -605,7 +602,7 @@ class BaseController:
             robot_cmd_vel.angular.z = 0
         else:
             robot_cmd_vel.linear.x = x
-            robot_cmd_vel.linear.y = 0
+            robot_cmd_vel.linear.y = y
             robot_cmd_vel.angular.z = th
         self.robot_cmd_vel_pub.publish(robot_cmd_vel)
 
@@ -622,7 +619,7 @@ class MicroControllerROS():
         
         self.port = rospy.get_param("~port", "/dev/ttyUSB0")
         self.baud = int(rospy.get_param("~baud", 57600))
-        self.timeout = rospy.get_param("~timeout", 0.5)
+        self.timeout = rospy.get_param("~timeout", 0.25)
         self.base_frame = rospy.get_param("~base_frame", 'base_footprint')
 
         # Overall loop rate: should be faster than fastest sensor rate
@@ -679,12 +676,15 @@ def testController():
     controller = Microcontroller(port, baud, timeout)
     controller.connect()
     rospy.loginfo("Connected to Microcontroller on port " + port + " at " + str(baud) + " baud")
+    print("IMU", controller.get_imu_val())
     print(controller.get_hardware_version())
     print(controller.get_baud())
-    print(controller.get_encoder_counts())
-    print(controller.reset_IMU())
-    print(controller.get_imu_val())
-    print(controller.get_emergency_button())
+    print("EC", controller.get_encoder_counts())
+    print("EC", controller.get_encoder_counts())
+    print("IMU", controller.get_imu_val())
+    print("EB", controller.get_emergency_button())
+    print("EB", controller.get_emergency_button())
+    print("EB", controller.get_emergency_button())
     print(controller.reset_encoders())
     
     print(controller.stop())
@@ -699,8 +699,8 @@ def testController():
         if time.time() - start_time > 2.5:
             index = (index + 1) % 2
             start_time = time.time()
-        controller.drive(velocities[index], 0.0)
-        time.sleep(0.1) 
+        controller.drive(velocities[index], 0*velocities[index], 0.0)
+        time.sleep(0.1)
 
 if __name__ == '__main__':
     # testController()

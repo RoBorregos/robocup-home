@@ -60,7 +60,7 @@ class RosBridge{
         int front_left_encoders = 0.0;
         int front_right_encoders = 0.0;
         float time_delta = 0.0;
-        int emergency_btn_pin = 13;
+        int emergency_btn_pin = 46;
 
         int last_encoder_counts_[kCountMotors];
         static constexpr uint8_t kOdomPeriod = 40;
@@ -80,7 +80,9 @@ class RosBridge{
 
         void executeCommand(uint8_t packet_size, uint8_t command, uint8_t* buffer);
         void writeSerial(bool success, uint8_t* payload, int elements);
-        
+
+        // Debug
+        bool debug_ = false;
 };
 
 

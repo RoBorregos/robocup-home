@@ -19,7 +19,7 @@ void PID::compute(const double setpoint, double &input, double &output, int &res
   if(millis()-time_ < sample_time_) {
       return;
   }
-  
+  // Improvement: Change Time to millis() instead of fixed variable.
   input = (reset_variable / pulses_per_rev) * count_time_samples_in_one_second;
   reset_variable = 0;
   

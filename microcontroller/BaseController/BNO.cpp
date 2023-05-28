@@ -15,9 +15,6 @@ BNO::BNO() {
 
 //////////////////////////////////Calibration//////////////////////////////////////
 uint8_t BNO::orientationStatus() {
-  if (!bno_.begin()) {
-    return 0;
-  }
   uint8_t system, gyro, accel, mag = 0;
   bno_.getCalibration(&system, &gyro, &accel, &mag);
 
@@ -25,12 +22,9 @@ uint8_t BNO::orientationStatus() {
 }
 
 void BNO::updateBNO() {
-  if (!bno_.begin()) {
-    return;
-  }
   static long long last_time = 0;
   static sensors_event_t orientationData , angVelocityData, accelerometerData;
-  if (millis() - last_time > 50) {
+  if (millis() - last_time > 100) {
     last_time = millis();
     bno_.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
     bno_.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
@@ -44,23 +38,18 @@ void BNO::updateBNO() {
 }
 
 float BNO::getYaw() {
-  updateBNO();
   return yaw_;
 }
 float BNO::getYawVel() {
-  updateBNO();
   return yaw_vel_;
 }
 float BNO::getXAccel() {
-  updateBNO();
   return x_accel;
 }
 float BNO::getYAccel() {
-  updateBNO();
   return y_accel;
 }
 float BNO::getZAccel() {
-  updateBNO();
   return z_accel;
 }
 

@@ -12,7 +12,7 @@ bool CHECK_ENCODERS = false;
 void setup() {
     Serial.begin(57600);
     Serial2.begin(57600);
-    
+
     Movement initRobot;
     robot = &initRobot;
     robot->initEncoders();
