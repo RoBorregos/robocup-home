@@ -69,200 +69,10 @@ Visualization Manager:
         Interrupt Display: false
         Links:
           All Links Enabled: true
-          Base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          BaseBrazo:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Base_Gripper:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Cam1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Cam1_rx_ry:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_ry_rz:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_rz_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_x_y:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_y_z:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_z_rx:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Cam2_rx_ry:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_ry_rz:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_rz_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_x_y:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_y_z:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_z_rx:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Dedo1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Dedo2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           Expand Joint Details: false
           Expand Link Details: false
           Expand Tree: false
-          Lidar:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           Link Tree Style: Links in Alphabetic Order
-          Llanta1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Llanta2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          LlantaLoca1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          LlantaLoca2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Loca1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Loca2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Servo1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Servo2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_footprint:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          end_effector_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          internal_odom:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          internal_odom_inertia:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          link1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link3:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link4:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link5:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link_base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link_eef:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          odom_xr_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          odom_yx_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
         Loop Animation: false
         Robot Alpha: 0.5
         Robot Color: 150; 50; 150
@@ -305,200 +115,10 @@ Visualization Manager:
         Attached Body Color: 150; 50; 150
         Links:
           All Links Enabled: true
-          Base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          BaseBrazo:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Base_Gripper:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Cam1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Cam1_rx_ry:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_ry_rz:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_rz_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_x_y:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_y_z:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam1_z_rx:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Cam2_rx_ry:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_ry_rz:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_rz_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_x_y:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_y_z:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Cam2_z_rx:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          Dedo1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Dedo2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           Expand Joint Details: false
           Expand Link Details: false
           Expand Tree: false
-          Lidar:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           Link Tree Style: Links in Alphabetic Order
-          Llanta1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Llanta2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          LlantaLoca1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          LlantaLoca2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Loca1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Loca2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Servo1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          Servo2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          base_footprint:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          base_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          end_effector_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          internal_odom:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          internal_odom_inertia:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          link1:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link2:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link3:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link4:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link5:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link_base:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
-          link_eef:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          odom_xr_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          odom_yx_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
         Robot Alpha: 0.5
         Show Robot Collision: false
         Show Robot Visual: true
@@ -682,14 +302,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        internal_odom:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        internal_odom_inertia:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
         link1:
           Alpha: 1
           Show Axes: false
@@ -721,14 +333,6 @@ Visualization Manager:
           Show Trail: false
           Value: true
         link_eef:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        odom_xr_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        odom_yx_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -928,14 +532,6 @@ Visualization Manager:
           Value: false
         end_effector_link:
           Value: false
-        imu_base:
-          Value: true
-        internal_odom:
-          Value: false
-        internal_odom_inertia:
-          Value: false
-        laser_frame:
-          Value: true
         link1:
           Value: false
         link2:
@@ -950,46 +546,8 @@ Visualization Manager:
           Value: false
         link_eef:
           Value: false
-        map:
-          Value: true
         odom:
           Value: false
-        odom_xr_link:
-          Value: false
-        odom_yx_link:
-          Value: false
-        sonar0:
-          Value: true
-        sonar1:
-          Value: true
-        sonar2:
-          Value: true
-        sonar3:
-          Value: true
-        sonar4:
-          Value: true
-        zed2_down_baro_link:
-          Value: true
-        zed2_down_base_link:
-          Value: true
-        zed2_down_camera_center:
-          Value: true
-        zed2_down_imu_link:
-          Value: true
-        zed2_down_left_camera_frame:
-          Value: true
-        zed2_down_left_camera_optical_frame:
-          Value: true
-        zed2_down_mag_link:
-          Value: true
-        zed2_down_right_camera_frame:
-          Value: true
-        zed2_down_right_camera_optical_frame:
-          Value: true
-        zed2_down_temp_left_link:
-          Value: true
-        zed2_down_temp_right_link:
-          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -997,91 +555,54 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          odom:
-            base_footprint:
-              base_link:
-                Base:
-                  BaseBrazo:
-                    link_base:
-                      link1:
-                        link2:
-                          link3:
-                            link4:
-                              link5:
-                                link_eef:
-                                  Base_Gripper:
-                                    Servo1:
-                                      Dedo1:
-                                        {}
-                                    Servo2:
-                                      Dedo2:
-                                        {}
-                                    end_effector_link:
+        odom:
+          base_footprint:
+            base_link:
+              Base:
+                BaseBrazo:
+                  link_base:
+                    link1:
+                      link2:
+                        link3:
+                          link4:
+                            link5:
+                              link_eef:
+                                Base_Gripper:
+                                  Servo1:
+                                    Dedo1:
                                       {}
-                  Cam1_x_y:
-                    Cam1_y_z:
-                      Cam1_z_rx:
-                        Cam1_rx_ry:
-                          Cam1_ry_rz:
-                            Cam1_rz_link:
-                              Cam1:
-                                {}
-                  Cam2_x_y:
-                    Cam2_y_z:
-                      Cam2_z_rx:
-                        Cam2_rx_ry:
-                          Cam2_ry_rz:
-                            Cam2_rz_link:
-                              Cam2:
-                                zed2_down_base_link:
-                                  zed2_down_camera_center:
-                                    zed2_down_baro_link:
+                                  Servo2:
+                                    Dedo2:
                                       {}
-                                    zed2_down_left_camera_frame:
-                                      zed2_down_imu_link:
-                                        {}
-                                      zed2_down_left_camera_optical_frame:
-                                        {}
-                                      zed2_down_temp_left_link:
-                                        {}
-                                    zed2_down_mag_link:
-                                      {}
-                                    zed2_down_right_camera_frame:
-                                      zed2_down_right_camera_optical_frame:
-                                        {}
-                                      zed2_down_temp_right_link:
-                                        {}
-                  Lidar:
+                                  end_effector_link:
+                                    {}
+                Cam1_x_y:
+                  Cam1_y_z:
+                    Cam1_z_rx:
+                      Cam1_rx_ry:
+                        Cam1_ry_rz:
+                          Cam1_rz_link:
+                            Cam1:
+                              {}
+                Cam2_x_y:
+                  Cam2_y_z:
+                    Cam2_z_rx:
+                      Cam2_rx_ry:
+                        Cam2_ry_rz:
+                          Cam2_rz_link:
+                            Cam2:
+                              {}
+                Lidar:
+                  {}
+                Llanta1:
+                  {}
+                Llanta2:
+                  {}
+                Loca1:
+                  LlantaLoca1:
                     {}
-                  Llanta1:
-                    {}
-                  Llanta2:
-                    {}
-                  Loca1:
-                    LlantaLoca1:
-                      {}
-                  Loca2:
-                    LlantaLoca2:
-                      {}
-              imu_base:
-                {}
-              laser_frame:
-                {}
-              sonar0:
-                {}
-              sonar1:
-                {}
-              sonar2:
-                {}
-              sonar3:
-                {}
-              sonar4:
-                {}
-            internal_odom:
-              internal_odom_inertia:
-                odom_yx_link:
-                  odom_xr_link:
+                Loca2:
+                  LlantaLoca2:
                     {}
       Update Interval: 0
       Value: true
@@ -1183,7 +704,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: map
+    Fixed Frame: Base
     Frame Rate: 30
   Name: root
   Tools:

@@ -58,7 +58,7 @@ class ManipulationGoals(Enum):
     HARPIC = 5
     BIGGEST = 6
 
-ARM_ENABLE = True
+ARM_ENABLE = False
 HEAD_ENABLE = False
 VISION_ENABLE = True
 MANIPULATION_ENABLE = True
@@ -84,7 +84,7 @@ class manipuationServer(object):
         self.ARM_GROUP = rospy.get_param("ARM_GROUP", "arm_torso")
         self.HEAD_GROUP = rospy.get_param("HEAD_GROUP", "head")
 
-        if VISION_ENABLE and ARM_ENABLE:
+        if VISION_ENABLE and MANIPULATION_ENABLE:
             # Toggle Octomap Service
             self.toggle_octomap = rospy.ServiceProxy('/toggle_octomap', SetBool)
 
@@ -117,7 +117,7 @@ class manipuationServer(object):
         if VISION_ENABLE:
             self.vision2D_enable = rospy.Publisher("detectionsActive", Bool, queue_size=10)
             rospy.loginfo("Waiting for ComputerVision 3D AS...")
-            self.vision3D_as = actionlib.SimpleActionClient("Detect3D", DetectObjects3DAction)
+            self.vision3D_as = actionlib.SimpleActionClient("Detect3DFloor", DetectObjects3DAction)
             self.vision3D_as.wait_for_server()
 
         # # Manipulation

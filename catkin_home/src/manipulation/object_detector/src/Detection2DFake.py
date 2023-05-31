@@ -5,9 +5,10 @@ from object_detector.msg import objectDetection, objectDetectionArray
 from geometry_msgs.msg import Point
 
 dicPoints = {
-    'Coca-Cola': Point(x=0.45, y=0.33, z=0.73),
-    'Zucaritas': Point(x=0.45, y=-0.02256786823272705, z=0.73),
-    'Harpic':    Point(x=0.45, y=-0.23, z=0.73),
+    'Coca-Cola': Point(x=0.45, y=-0.73, z=0.88),
+    'Zucaritas': Point(x=0.45, y=-0.73, z=0.88),
+    'Harpic':    Point(x=0.45, y=-0.73, z=0.88),
+    'Principe':  Point(x=0.42, y=-0.73, z=0.88)
 }
 
 activeFlag = True

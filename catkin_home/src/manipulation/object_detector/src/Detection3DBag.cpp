@@ -54,7 +54,7 @@
 
 using namespace octomap;
 
-#define ENABLE_RANSAC false
+#define ENABLE_RANSAC true
 
 struct PointXYZComparator {
   bool operator()(const pcl::PointXYZ& lhs, const pcl::PointXYZ& rhs) const {
