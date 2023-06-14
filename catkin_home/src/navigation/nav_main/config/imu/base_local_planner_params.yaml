@@ -1,39 +1,39 @@
-controller_frequency: 3.0
-recovery_behavior_enabled: true
-clearing_rotation_allowed: true
+controller_frequency: 3.0  # Sets the frequency of the controller. (Default: 3.0)
+recovery_behavior_enabled: true  # Enables recovery behavior when the trajectory planner fails. (Default: true)
+clearing_rotation_allowed: true  # Allows rotation for obstacle clearing. (Default: true)
 
-TrajectoryPlannerROS:
-   max_vel_x: 0.2
-   min_vel_x: 0.05
-   max_vel_y: 0.0  # zero for a differential drive robot
-   min_vel_y: 0.0
-   min_in_place_vel_theta: 0.5
-   escape_vel: -0.1
-   acc_lim_x: 0.5
-   acc_lim_y: 0.0 # zero for a differential drive robot
-   acc_lim_theta: 0.5
+TrajectoryPlannerROS:  # Configuration for the TrajectoryPlannerROS module.
+   max_vel_x: 0.25  # Maximum linear velocity in the x-axis. (Default: 0.25)
+   min_vel_x: 0.05  # Minimum linear velocity in the x-axis. (Default: 0.05)
+   max_vel_y: 0.0  # Maximum linear velocity in the y-axis (zero for a differential drive robot). (Default: 0.0)
+   min_vel_y: 0.0  # Minimum linear velocity in the y-axis. (Default: 0.0)
+   min_in_place_vel_theta: 0.5  # Minimum velocity for in-place rotation. (Default: 0.5)
+   escape_vel: -0.1  # Velocity used for escaping from a failed trajectory. (Default: -0.1)
+   acc_lim_x: 0.5  # Maximum linear acceleration in the x-axis. (Default: 0.5)
+   acc_lim_y: 0.0  # Maximum linear acceleration in the y-axis (zero for a differential drive robot). (Default: 0.0)
+   acc_lim_theta: 0.5  # Maximum angular acceleration. (Default: 0.5)
 
-   holonomic_robot: false
-   yaw_goal_tolerance: 0.1 # about 6 degrees
-   xy_goal_tolerance: 0.1  # 10 cm
-   latch_xy_goal_tolerance: false
-   pdist_scale: 0.4
-   gdist_scale: 0.8
-   meter_scoring: true
+   holonomic_robot: false  # Indicates whether the robot is holonomic (able to move freely) or not. (Default: false)
+   yaw_goal_tolerance: 0.1  # Tolerance for reaching the goal orientation (in radians). (Default: 0.1)
+   xy_goal_tolerance: 0.1  # Tolerance for reaching the goal position in the x and y axes (in meters). (Default: 0.1)
+   latch_xy_goal_tolerance: false  # Determines whether to maintain the xy_goal_tolerance after reaching it. (Default: false)
+   pdist_scale: 0.4  # Scaling factor for the path distance cost. (Default: 0.4)
+   gdist_scale: 0.8  # Scaling factor for the goal distance cost. (Default: 0.8)
+   meter_scoring: true  # Determines whether to use meters as the unit for scoring. (Default: true)
 
-   heading_lookahead: 0.325
-   heading_scoring: true
-   heading_scoring_timestep: 0.8
-   occdist_scale: 0.05
-   oscillation_reset_dist: 0.05
-   publish_cost_grid_pc: false
-   prune_plan: true
+   heading_lookahead: 0.325  # Distance to look ahead for heading scoring. (Default: 0.325)
+   heading_scoring: true  # Enables heading scoring. (Default: true)
+   heading_scoring_timestep: 0.8  # Time step for heading scoring. (Default: 0.8)
+   occdist_scale: 0.05  # Scaling factor for the obstacle distance cost. (Default: 0.05)
+   oscillation_reset_dist: 0.05  # Distance threshold for resetting oscillation flags. (Default: 0.05)
+   publish_cost_grid_pc: false  # Determines whether to publish cost grid as point cloud. (Default: false)
+   prune_plan: true  # Enables plan pruning. (Default: true)
 
-   sim_time: 1.0
-   sim_granularity: 0.025
-   angular_sim_granularity: 0.025
-   vx_samples: 8
-   vy_samples: 0 # zero for a differential drive robot
-   vtheta_samples: 20
-   dwa: true
-   simple_attractor: false
+   sim_time: 1.0  # Simulation time for trajectory generation. (Default: 1.0)
+   sim_granularity: 0.025  # Granularity for linear simulation. (Default: 0.025)
+   angular_sim_granularity: 0.025  # Granularity for angular simulation. (Default: 0.025)
+   vx_samples: 8  # Number of linear velocity samples. (Default: 8)
+   vy_samples: 0  # Number of linear velocity samples in the y-axis (zero for a differential drive robot). (Default: 0)
+   vtheta_samples: 20  # Number of angular velocity samples. (Default: 20)
+   dwa: true  # Enables the Dynamic Window Approach. (Default: true)
+   simple_attractor: false  # Determines whether to use a simple attractor or not. (Default: false)

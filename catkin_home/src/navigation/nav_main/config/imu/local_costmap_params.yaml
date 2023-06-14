@@ -1,19 +1,18 @@
 local_costmap:
-   global_frame: odom
-   # global_frame: odom_combined
-   robot_base_frame: base_footprint
-   update_frequency: 10.0 #3.0
-   publish_frequency: 5.0 #1.0
-   static_map: false
-   rolling_window: true
-   width: 3.0
-   height: 3.0
-   resolution: 0.05
-   transform_tolerance: 1.0
-   map_type: costmap
+   global_frame: odom  # The name of the global frame used for the local costmap.
+   robot_base_frame: base_footprint  # The name of the robot base frame used in the local costmap.
+   update_frequency: 10.0  # The frequency (in Hz) at which the local costmap is updated.
+   publish_frequency: 5.0  # The frequency (in Hz) at which the local costmap is published.
+   static_map: false  # Flag indicating whether the local costmap uses a static map as a base.
+   rolling_window: true  # Flag indicating whether to use a rolling window approach for the local costmap.
+   width: 3.0  # The width (in meters) of the local costmap.
+   height: 3.0  # The height (in meters) of the local costmap.
+   resolution: 0.05  # The resolution (in meters per cell) of the local costmap.
+   transform_tolerance: 1.0  # The tolerance (in seconds) for waiting on transform data.
+   map_type: costmap  # The type of the local costmap.
 
    plugins:
-   - {name: static_layer,        type: "costmap_2d::StaticLayer"}
-   - {name: obstacle_layer,      type: "costmap_2d::VoxelLayer"}
-#   - {name: virtualWall_layer,   type: "costmap_2d::VirtualWallLayer"}
-   - {name: inflation_layer,     type: "costmap_2d::InflationLayer"}
+   - {name: static_layer,        type: "costmap_2d::StaticLayer"}  # Plugin configuration for the static layer.
+   - {name: obstacle_layer,      type: "costmap_2d::VoxelLayer"}  # Plugin configuration for the obstacle layer.
+   # - {name: virtualWall_layer,   type: "costmap_2d::VirtualWallLayer"}  # Plugin configuration for the virtual wall layer.
+   - {name: inflation_layer,     type: "costmap_2d::InflationLayer"}  # Plugin configuration for the inflation layer.

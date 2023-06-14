@@ -1,59 +1,51 @@
-footprint: [[-0.085, -0.20], [-0.085, 0.2],[0.315, 0.2], [0.315, -0.2]]
+footprint: [[-0.085, -0.20], [-0.085, 0.2],[0.315, 0.2], [0.315, -0.2]]  # Defines the footprint of the robot.
 
 obstacle_layer:
-  enabled: true
-  max_obstacle_height: 1.6
-  min_obstacle_height: 0.0
-  obstacle_range: 2.0
-  raytrace_range: 2.0
-  inflation_radius: 0.10
-  combination_method: 1
-  observation_sources: laser_scan_sensor  camera_depth
-  track_unknown_space: true
- 
-  origin_z: 0.0
-  z_resolution: 0.1
-  z_voxels: 10
-  unknown_threshold: 15
-  mark_threshold: 0
-  publish_voxel_map: true
-  footprint_clearing_enabled: true
+  enabled: true  # Enables the obstacle layer.
+  max_obstacle_height: 1.6  # Maximum height of the obstacles.
+  min_obstacle_height: 0.0  # Minimum height of the obstacles.
+  obstacle_range: 3.0  # Maximum range at which obstacles are detected.
+  raytrace_range: 3.5  # Maximum range for raytracing to clear out space.
+  inflation_radius: 0.10  # Maximum distance from an obstacle at which costs are incurred for planning paths.
+  combination_method: 1  # Method used to combine costmap layers.
+  observation_sources: laser_scan_sensor  camera_depth  # Sources of observations for the obstacle layer.
+  track_unknown_space: true  # Determines whether to track unknown space in the costmap.
 
-  laser_scan_sensor_2:
-    data_type: LaserScan
-    topic: /scan_2
-    marking: true
-    clearing: true
-    expected_update_rate: 0
-    min_obstacle_height: 0.01
-    max_obstacle_height: 0.1
+  origin_z: 0.0  # Origin height of the obstacle layer.
+  z_resolution: 0.1  # Resolution of the obstacle layer in the z-axis.
+  z_voxels: 10  # Number of voxels in the z-axis. (Default: 10)
+  unknown_threshold: 15  # Threshold value for considering a cell as unknown.
+  mark_threshold: 0  # Threshold value for marking a cell as an obstacle.
+  publish_voxel_map: true  # Determines whether to publish the voxel map.
+  footprint_clearing_enabled: true  # Enables footprint clearing.
+
 
   sonar_scan_sensor:
     data_type: PointCloud2
     topic: /sonar_cloudpoint
-    marking: true
-    clearing: true
-    min_obstacle_height: 0.11
-    max_obstacle_height: 0.2
-    observation_persistence: 0.0
+    marking: true # Enables marking of costmap cells as obstacles based on sonar sensor observations.
+    clearing: true  # Enables clearing of costmap cells that are observed to be free from obstacles by the sonar sensor.
+    min_obstacle_height: 0.11  # Minimum height of obstacles detected by the sonar sensor.
+    max_obstacle_height: 0.2  # Maximum height of obstacles detected by the sonar sensor.
+    observation_persistence: 0.0  # Time persistence of the sonar observations.
 
-  laser_scan_sensor:
+laser_scan_sensor:
     data_type: LaserScan
     topic: /scan
-    marking: true
-    clearing: true
-    expected_update_rate: 0
-    min_obstacle_height: 0.21
-    max_obstacle_height: 0.30
+    marking: true  # Enables marking of costmap cells as obstacles based on laser scan sensor observations.
+    clearing: true  # Enables clearing of costmap cells
+    expected_update_rate: 0  # Expected update rate of the laser scan sensor.
+    min_obstacle_height: 0.21  # Minimum height of obstacles detected by the laser scan sensor.
+    max_obstacle_height: 0.30  # Maximum height of obstacles detected by the laser scan sensor.
 
-
-  other_sensor_data:
+other_sensor_data:
     data_type: PointCloud
-    topic: /other_sensor_data 
-    marking: true
-    clearing: true
-    min_obstacle_height: 0.31
-    max_obstacle_height: 0.4
+    topic: /other_sensor_data
+    marking: true # The costmap cells covered by the sensor's observations will be marked as obstacles. 
+    clearing: true  # The costmap cells that are observed to be free from obstacles by that sensor will be cleared. 
+    min_obstacle_height: 0.31  # Minimum height of obstacles detected by the other sensor data.
+    max_obstacle_height: 0.4  # Maximum height of obstacles detected by the other sensor data.
+
 
   camera_depth:
     enabled: true
@@ -93,7 +85,7 @@ virtualWall_layer:
   map_topic:            "/map"
 
 # sonar_layer:
-#   enabled:            true
+  # enabled:            true
 #   clear_threshold:    0.2
 #   mark_threshold:     0.8
 #   topics: ["/sonar0", "/sonar1", "/sonar2", "/sonar3", "/sonar4"]

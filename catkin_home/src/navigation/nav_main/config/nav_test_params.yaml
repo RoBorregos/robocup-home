@@ -1,6 +1,6 @@
 TrajectoryPlannerROS:
-  yaw_goal_tolerance: 6.28 # We don't care about orientation
-  xy_goal_tolerance: 0.1   # 10 cm
-  pdist_scale: 0.8
-  gdist_scale: 0.4
-  occdist_scale: 0.1
+  yaw_goal_tolerance: 6.28  # (default: 0.05) The tolerance (in radians) for the goal orientation. (We don't care about orientation)
+  xy_goal_tolerance: 0.1  # (default: 0.15) The tolerance (in meters) for the goal position.
+  pdist_scale: 0.8  # (default: 0.6) The scaling factor for the distance to the path (proportional term).
+  gdist_scale: 0.4  # (default: 0.8) The scaling factor for the orientation error to the path (proportional term).
+  occdist_scale: 0.1  # (default: 0.02) The scaling factor for the obstacle cost (proportional term).

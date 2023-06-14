@@ -1,59 +1,57 @@
-shutdown_costmaps: false
+shutdown_costmaps: false  # Flag indicating whether to shutdown the costmaps.
 
-controller_frequency: 4.0
-controller_patience: 3.0 # 3.0
+controller_frequency: 4.0  # The frequency (in Hz) at which the controller operates.
+controller_patience: 3.0  # The maximum time (in seconds) to wait for the controller to reach a goal.
 
-planner_frequency: 1.0
-planner_patience: 3.0
+planner_frequency: 1.0  # The frequency (in Hz) at which the planner operates.
+planner_patience: 3.0  # The maximum time (in seconds) to wait for the planner to generate a plan.
 
-oscillation_timeout: 0.0
-oscillation_distance: 0.2
+oscillation_timeout: 0.0  # The time (in seconds) after which an oscillation is detected.
+oscillation_distance: 0.2  # The distance (in meters) considered as an oscillation.
 
 # Planner selection
-base_global_planner: "global_planner/GlobalPlanner"  
-base_local_planner: "teb_local_planner/TebLocalPlannerROS"
+base_global_planner: "global_planner/GlobalPlanner"  # The base global planner plugin used for path planning.
+base_local_planner: "teb_local_planner/TebLocalPlannerROS"  # The base local planner plugin used for trajectory generation.
 
-max_planning_retries: 1
+max_planning_retries: 1  # The maximum number of planning retries in case of failures.
 
-recovery_behavior_enabled: true
-clearing_rotation_allowed: true
+recovery_behavior_enabled: true  # Flag indicating whether recovery behaviors are enabled.
+clearing_rotation_allowed: true  # Flag indicating whether clearing rotation is allowed.
 
-useMagnetometer: false
-auto_update_: false
-particle_range: 1.0
-angle_tolerance: 0.15
+useMagnetometer: false  # Flag indicating whether to use a magnetometer for navigation.
+auto_update_: false  # Flag indicating whether to automatically update parameters.
+particle_range: 1.0  # The range (in meters) of particles used for localization.
+angle_tolerance: 0.15  # The angle tolerance (in radians) for navigation goals.
 
-recovery_behaviors:
- #- name: 'conservative_reset'
-  #  type: 'clear_costmap_recovery/ClearCostmapRecovery'
+recovery_behaviors:  # Configuration of recovery behaviors.
+  # - name: 'conservative_reset'
+    # type: 'clear_costmap_recovery/ClearCostmapRecovery'
   - name: 'aggressive_reset'
     type: 'clear_costmap_recovery/ClearCostmapRecovery'
-  #- name: 'super_reset'
-   # type: 'clear_costmap_recovery/ClearCostmapRecovery'
+  # - name: 'super_reset'
+    # type: 'clear_costmap_recovery/ClearCostmapRecovery'
   - name: 'clearing_rotation'
     type: 'rotate_recovery/RotateRecovery'
-  #- name: 'move_slow_and_clear'
-    #type: 'move_slow_and_clear/MoveSlowAndClear'
-    
+  # - name: 'move_slow_and_clear'
+    # type: 'move_slow_and_clear/MoveSlowAndClear'
+
 conservative_reset:
   reset_distance: 3.0
   #layer_names: [static_layer, obstacle_layer, inflation_layer]
   layer_names: [obstacle_layer]
 
-aggressive_reset:
-  reset_distance: 1.0
+aggressive_reset:  # Configuration for the aggressive reset recovery behavior.
+  reset_distance: 1.0  # The distance (in meters) to reset the costmap.
   #layer_names: [static_layer, obstacle_layer, inflation_layer]
-  layer_names: [obstacle_layer]
+  layer_names: [obstacle_layer]  # The names of the layers to reset.
 
-super_reset:
-  reset_distance: 5.0
+super_reset:  # Configuration for the clearing rotation recovery behavior.
+  reset_distance: 5.0  # The distance (in meters) to reset the costmap.
   #layer_names: [static_layer, obstacle_layer, inflation_layer]
-  layer_names: [obstacle_layer]
+  layer_names: [obstacle_layer]  # The names of the layers to reset.
 
-move_slow_and_clear:
-  clearing_distance: 0.5
-  limited_trans_speed: 0.1
-  limited_rot_speed: 0.4
-  limited_distance: 0.3
-
-
+move_slow_and_clear:  # Configuration for the move slow and clear recovery behavior.
+  clearing_distance: 0.5  # The distance (in meters) to clear the costmap.
+  limited_trans_speed: 0.1  # The limited translational speed (in m/s) for moving slowly.
+  limited_rot_speed: 0.4  # The limited rotational speed (in rad/s) for moving slowly.
+  limited_distance: 0.3  # The limited distance (in meters) for moving slowly.
