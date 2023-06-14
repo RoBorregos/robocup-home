@@ -2,7 +2,7 @@
   <node pkg="robot_localization" type="ekf_localization_node"
       name="robot_localization_ekf_node_odom"
       clear_params="true">
-    <param name="frequency" value="10." />
+    <param name="frequency" value="20.0" />
     <param name="sensor_timeout" value="0.2" />
     <param name="two_d_mode" value="true" />
     <param name="publish_tf" value="true" />
