@@ -14,7 +14,6 @@
 		<arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
 	</include>
 	<include file="$(find nav_main)/launch/include/imu/teb_move_base.launch"/>
-	<!-- <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" /> -->
 	<arg name="base_frame" default="base_footprint"/> 
   	<node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" >
       <param name="base_frame" value="$(arg base_frame)"/>
