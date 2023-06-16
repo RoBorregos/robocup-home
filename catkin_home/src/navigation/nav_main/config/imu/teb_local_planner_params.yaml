@@ -1,77 +1,76 @@
 TebLocalPlannerROS:
 
- odom_topic: odom
- #odom_topic: /robot_pose_ekf/odom_combined
- map_frame: odom
- #map_frame: odom_combined
+ odom_topic: odom  # The topic name for odometry data.
+  map_frame: odom  # The frame ID of the map (referenced to it).
 
  # Trajectory
-
- teb_autosize: True
- dt_ref: 0.45
- dt_hysteresis: 0.1
- global_plan_overwrite_orientation: True
- max_global_plan_lookahead_dist: 3.0
- feasibility_check_no_poses: 5
+ teb_autosize: True  # Flag indicating whether to automatically adjust the trajectory size.
+ dt_ref: 0.45  # (default: 0.3) The reference time resolution (in seconds) for the trajectory.
+ dt_hysteresis: 0.1  # (default: 0.1) The hysteresis time resolution (in seconds) for the trajectory.
+ global_plan_overwrite_orientation: True  # Flag indicating whether to overwrite the orientation of the global plan.
+ max_global_plan_lookahead_dist: 5.0  # (default: 3.0) The maximum lookahead distance (in meters) for the global plan.
+ feasibility_check_no_poses: 5  # (default: 4) The number of poses for checking trajectory feasibility.
 
  # Robot
-
- max_vel_x: 0.5
- max_vel_x_backwards: 0.2
- max_vel_theta: 0.35
- acc_lim_x: 0.2
- acc_lim_theta: 0.2
- min_turning_radius: 0.0
+ max_vel_x: 0.4  # (default: 0.4) The maximum linear velocity (in m/s) in the forward direction.
+ max_vel_x_backwards: 0.2  # (default: 0.2) The maximum linear velocity (in m/s) in the backward direction.
+ max_vel_theta: 0.35  # (default: 0.3) The maximum angular velocity (in rad/s).
+ acc_lim_x: 0.2  # (default: 0.5) The maximum linear acceleration (in m/s^2).
+ acc_lim_theta: 0.2  # (default: 0.5) The maximum angular acceleration (in rad/s^2).
+ min_turning_radius: 0.0  # (default: 0.0) The minimum turning radius (in meters).
  footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
    #radius: 0.23 # for type "circular"
-   #vertices: [[-0.1, -0.26], [-0.1, 0.26],[0.287, 0.26], [0.287, -0.26]]
-   vertices: [[-0.085, -0.20], [-0.085, 0.2],[0.315, 0.2], [0.315, -0.2]]
+   #vertices: [[-0.085, -0.20], [-0.085, 0.4],[0.315, 0.4], [0.315, -0.2]]  #Including gripper
+   vertices: [[-0.085, -0.20], [-0.085, 0.2],[0.315, 0.2], [0.315, -0.2]] # The vertices of the robot's footprint.
 
  # GoalTolerance
-
- xy_goal_tolerance: 0.1
- yaw_goal_tolerance: 0.1
- free_goal_vel: False
+ xy_goal_tolerance: 0.1  # (default: 0.2) The tolerance (in meters) for the goal position.
+ yaw_goal_tolerance: 0.1  # (default: 0.2) The tolerance (in radians) for the goal orientation.
+ free_goal_vel: False  # (default: false) Flag indicating whether the goal velocity is unconstrained.
 
  # Obstacles
-
- min_obstacle_dist: 0.32
- include_costmap_obstacles: True
- costmap_obstacles_behind_robot_dist: 1.0
- obstacle_poses_affected: 12
- costmap_converter_plugin: ""
- costmap_converter_spin_thread: True
- costmap_converter_rate: 5
+ min_obstacle_dist: 0.3  # (default: 0.5) The minimum distance (in meters) to obstacles.
+ include_costmap_obstacles: True  # (default: true) Flag indicating whether to include costmap obstacles.
+ costmap_obstacles_behind_robot_dist: 1.0  # (default: 1.0) The distance (in meters) behind the robot to consider costmap obstacles.
+ obstacle_poses_affected: 12  # (default: 30) The number of obstacle poses considered for optimization.
+ costmap_converter_plugin: ""  # (default: "")The plugin for converting costmap obstacles.
+ costmap_converter_spin_thread: True  # (default: true) Flag indicating whether to spin the costmap converter in a separate thread.
+ costmap_converter_rate: 5  # (default: 5.0) The rate (in Hz) for the costmap converter.
 
  # Optimization
-
- no_inner_iterations: 5
- no_outer_iterations: 4
- optimization_activate: True
- optimization_verbose: False
- penalty_epsilon: 0.1
- weight_max_vel_x: 1
- weight_max_vel_theta: 1
- weight_acc_lim_x: 1
- weight_acc_lim_theta: 1
- weight_kinematics_nh: 1000
- weight_kinematics_forward_drive: 100
- weight_kinematics_turning_radius: 1
- weight_optimaltime: 1
- weight_obstacle: 50
- weight_dynamic_obstacle: 10 # not in use yet
- selection_alternative_time_cost: False # not in use yet
+ no_inner_iterations: 5  # (default: 5) The number of inner iterations for optimization.
+ no_outer_iterations: 4  # (default: 4) The number of outer iterations for optimization.
+ optimization_activate: True  # Flag indicating whether optimization is activated.
+ optimization_verbose: False  # Flag indicating whether optimization verbose mode is enabled.
+ penalty_epsilon: 0.1  # The penalty epsilon for optimization.
+ weight_max_vel_x: 1  # (default: 2.0) The weight for the maximum linear velocity in optimization.
+ weight_max_vel_theta: 1  # (default: 1.0) The weight for the maximum angular velocity in optimization.
+ weight_acc_lim_x: 1  # (default: 1.0) The weight for linear acceleration limit in optimization.
+ weight_acc_lim_theta: 1  # (default: 1.0) The weight for angular acceleration limit in optimization.
+ weight_kinematics_nh: 1000  # (default: 1000.0) The weight for non-holonomic kinematics in optimization.
+ 
+ #Optimization weight for forcing the robot to choose only forward directions (positive transl. velocities). 
+ #A small weight (e.g. 1.0) still allows driving backwards. A value around 1000 almost prevents backward driving (but cannot be guaranteed). 
+ weight_kinematics_forward_drive: 100  # (default: 1.0) The weight for forward drive kinematics in optimization.
+ weight_kinematics_turning_radius: 1  # (default: 1.0) The weight for turning radius kinematics in optimization.
+ weight_optimaltime: 1  # (default: 1.0) Optimization weight for contracting the trajectory w.r.t transition/execution time 
+ weight_obstacle: 50  # (default: 50.0) Optimization weight for keeping a minimum distance from obstacles 
+ weight_dynamic_obstacle: 10  # (not in use yet) The weight for dynamic obstacle cost in optimization.
+ selection_alternative_time_cost: False  # (def: false) If true, time cost (sum of squared time differences) is replaced by the total transition time (sum of time differences). 
 
  # Homotopy Class Planner
-
- enable_homotopy_class_planning: False
- enable_multithreading: True
- simple_exploration: False
- max_number_classes: 4
- roadmap_graph_no_samples: 15
- roadmap_graph_area_width: 5
- h_signature_prescaler: 0.5
- h_signature_threshold: 0.1
- obstacle_keypoint_offset: 0.1
- obstacle_heading_threshold: 0.45
- visualize_hc_graph: False
+ enable_homotopy_class_planning: False  # (default: true) Activate parallel planning in distinctive topologies (requires much more CPU resources, since multiple trajectories are optimized at once) 
+ enable_multithreading: True  # (default: true) Activate multiple threading in order to plan each trajectory in a different thread 
+ simple_exploration: False  # Flag indicating whether to use simple exploration for planning.
+ max_number_classes: 4  # (default: 4) Specify the maximum number of distinctive trajectories taken into account.
+ roadmap_graph_no_samples: 15  # The number of samples for the roadmap graph.
+ roadmap_graph_area_width: 5  # (default: 6) Random keypoints/waypoints are sampled in a rectangular region between start and goal. Specify the width of that region in meters. 
+ 
+ #Scale internal parameter (H-signature) that is used to distinguish between homotopy classes. 
+ #Warning: reduce this parameter only, if you observe problems with too many obstacles in the 
+ #local cost map, do not choose it extremly low, otherwise obstacles cannot be distinguished from each other (0.2<value<=1). 
+ h_signature_prescaler: 0.5  # (default: 1.0) The prescaler for the h-signature.
+ h_signature_threshold: 0.1  # (default: 0.1) Two H-signatures are assumed to be equal, if both the difference of real parts and complex parts are below the specified threshold. 
+ obstacle_keypoint_offset: 0.1  # The offset for obstacle keypoints.
+ obstacle_heading_threshold: 0.45  # (default: 1.0) Specify the value of the scalar product between obstacle heading and goal heading in order to take them (obstacles) into account for exploration. 
+ visualize_hc_graph: False  # Visualize the graph that is created for exploring distinctive trajectories (check marker message in rviz) 

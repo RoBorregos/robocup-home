@@ -2,7 +2,7 @@
 	<include file="$(find dashgo_driver)/launch/driver_imu.launch"/>
 	<include file="$(find ydlidar)/launch/ydlidar1_up.launch"/>
 	<!-- <include file="$(find dashgo_description)/launch/dashgo_description.launch"/> -->
-		<arg name="map_file" default="$(find nav_main)/maps/TMR2023_Context1.yaml"/>
+		<arg name="map_file" default="$(find nav_main)/maps/LLab1_fix2.yaml"/>
 		<node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 		<rosparam file="$(arg map_file)" command="load" ns="map" />
 		<arg name="initial_pose_x" default="0.0"/> 
@@ -14,7 +14,6 @@
 		<arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
 	</include>
 	<include file="$(find nav_main)/launch/include/imu/teb_move_base.launch"/>
-	<!-- <node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" /> -->
 	<arg name="base_frame" default="base_footprint"/> 
   	<node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" >
       <param name="base_frame" value="$(arg base_frame)"/>

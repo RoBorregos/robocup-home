@@ -2,10 +2,10 @@ scan_filter_chain:
 - name: box_filter
   type: laser_filters/LaserScanBoxFilter
   params:
-    box_frame: base_footprint
-    max_x: 0.5
-    max_y: 0.22
-    max_z: 0.5
-    min_x: 0.22
-    min_y: -0.22
-    min_z: 0.05
+    box_frame: base_footprint  # The frame ID of the box filter.
+    max_x: 0.5  # (default: 1.0) The maximum value for the x-axis of the filter box.
+    max_y: 0.22  # (default: 1.0) The maximum value for the y-axis of the filter box.
+    max_z: 0.5  # (default: 1.0) The maximum value for the z-axis of the filter box.
+    min_x: 0.22  # (default: -1.0) The minimum value for the x-axis of the filter box.
+    min_y: -0.22  # (default: -1.0) The minimum value for the y-axis of the filter box.
+    min_z: 0.05  # (default: -1.0) The minimum value for the z-axis of the filter box.

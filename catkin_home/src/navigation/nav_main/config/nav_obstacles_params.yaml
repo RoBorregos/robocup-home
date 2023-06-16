@@ -1,5 +1,5 @@
 TrajectoryPlannerROS:
-  max_vel_x: 0.3
-  pdist_scale: 0.8
-  gdist_scale: 0.4
+  max_vel_x: 0.3  # (default: 0.5) The maximum linear velocity (in m/s) in the forward direction.
+  pdist_scale: 0.8  # (default: 0.6) The scaling factor for the distance to the path (proportional term).
+  gdist_scale: 0.4  # (default: 0.8) The scaling factor for the orientation error to the path (proportional term).
   

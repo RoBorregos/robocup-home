@@ -1,16 +1,18 @@
-track_unknown_space: true
-global_frame: map
-rolling_window: false
+track_unknown_space: true  # Flag indicating whether to track unknown space in the costmap.
+
+global_frame: map  # The name of the global frame used for the costmap.
+
+rolling_window: false  # Flag indicating whether to use a rolling window approach for the costmap.
 
 plugins: 
-- {name: external,            type: "costmap_2d::StaticLayer"}
-- {name: explore_boundary,    type: "frontier_exploration::BoundedExploreLayer"}
+- {name: external,            type: "costmap_2d::StaticLayer"}  # Plugin configuration for the external layer.
+- {name: explore_boundary,    type: "frontier_exploration::BoundedExploreLayer"}  # Plugin configuration for the explore boundary layer.
 #Can disable sensor layer if gmapping is fast enough to update scans
-- {name: obstacles_laser,     type: "costmap_2d::ObstacleLayer"}
-- {name: inflation,           type: "costmap_2d::InflationLayer"}
+- {name: obstacles_laser,     type: "costmap_2d::ObstacleLayer"}  # Plugin configuration for the laser obstacles layer.
+- {name: inflation,           type: "costmap_2d::InflationLayer"}  # Plugin configuration for the inflation layer.
 
 explore_boundary:
-  resize_to_boundary: true
-  frontier_travel_point: middle
+  resize_to_boundary: true  # Flag indicating whether to resize the costmap to fit the boundary.
+  frontier_travel_point: middle  # The point used for frontier travel in the explore boundary layer.
   #set to false for gmapping, true if re-exploring a known area
-  explore_clear_space: false
+  explore_clear_space: false  # Flag indicating whether to explore clear space. Set to true if re-exploring a known area.
