@@ -8,12 +8,12 @@
 		<arg name="initial_pose_x" default="0.0"/> 
 		<arg name="initial_pose_y" default="0.0"/> 
 		<arg name="initial_pose_a" default="0.0"/>
-	<include file="$(find nav_main)/launch/include/imu2/amcl.launch.xml">
+	<include file="$(find nav_main)/launch/include/imu_base_control/amcl.launch.xml">
 		<arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
 		<arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
 		<arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
 	</include>
-	<include file="$(find nav_main)/launch/include/imu2/teb_move_base.launch"/>
+	<include file="$(find nav_main)/launch/include/imu_base_control/teb_move_base.launch"/>
 	<node name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher" />
 	<!-- <node pkg="laser_filters" type="scan_to_scan_filter_chain" output="screen" name="laser_filter">
 		<rosparam command="load" file="$(find dashgo_tools)/conf/box_filter.yaml" />

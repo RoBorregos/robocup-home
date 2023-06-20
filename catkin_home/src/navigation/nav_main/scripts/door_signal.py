@@ -11,7 +11,6 @@ class DoorDetector:
         self.firstIteration = True
         # Subscribe to the LiDAR data topic
         rospy.Subscriber('/scan', LaserScan, self.lidar_callback)
-                       # '/scan'
         # Create a publisher for the movement command topic
         self.cmd_pub = rospy.Publisher('/move_command', String, queue_size=10)
 
