@@ -65,7 +65,7 @@ promts = {
 }
 
 calls = {
-    "get_name": "if there is nos name return ''get me the name of the person on the next message: ",
+    "get_name": "if there is no name return ''get me the name of the person on the next message: ",
     "get_drink": "get me the name of the beverage on the next message: ",
     "describe": "describe a person with the next attributes: ",
     "confirm" : "tell me onlyTrue or False, the next message is a general confirmation, like ues, OK, got it:",
