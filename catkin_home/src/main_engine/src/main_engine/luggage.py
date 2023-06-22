@@ -7,7 +7,7 @@ from action_selectors.msg import RawInput
 
 import os
 import openai
-
+import json
 
 promts = {
     "start": "Let's start carry my luggage task",
@@ -26,8 +26,8 @@ promts = {
 }
 
 calls = {
-    "confirm" : "True or False, the next message is a confirmation",
-    "salute" : "True or False, the next message is talking to me"
+    "confirm" : "True or False the next message is a confirmation: ",
+    "salute" : "True or False the next message is talking to me: "
 }
 
 
@@ -46,10 +46,10 @@ class receptionist(object):
         self.currentState =  INITIALIZATION_STATE
         self.iteration = 0
         # GPT API
-        self.GPT_model="text-davinci-003",
-        self.GPT_temperature=0.7,
-        self.GPT_top_p=1,
-        self.GPT_frequency_penalty=0,
+        self.GPT_model="text-davinci-003"
+        self.GPT_temperature=0.7
+        self.GPT_top_p=1
+        self.GPT_frequency_penalty=0
         self.GPT_presence_penalty=0 
         rospy.logdebug("GPT API initialized")
         # Conversation initialization
@@ -90,7 +90,7 @@ class receptionist(object):
             if self.currentState == START_STATE:
                 self.speech_enable.publish(Bool(False))
 
-                rospy.loginfo("Carrier is ready to start")
+                rospy.loginfo("Carry mu luggage is ready to start")
                 self.say(promts["start"])
                 self.currentState = WAIT_STATE
                 
@@ -260,12 +260,13 @@ class receptionist(object):
         intent = ""
         try:
             rospy.logwarn(command + self.inputText)
-            intent = self.callGPT(command + ": " + self.inputText)
+            intent = self.callGPT((command + " " + self.inputText))
             # rospy,logwarn(intent)
             
             rospy.loginfo("Intent: " + intent)
             
-        except:
+        except Exception as e:
+            rospy.logwarn(e)
             self.say("I'm sorry, Could you rephrase?")
             rospy.logdebug("Failed response")
         rospy.logwarn(intent)
@@ -277,18 +278,18 @@ class receptionist(object):
         rospy.logdebug("I heard: " + self.inputText)
             
     def callGPT(self, pr, t_max=256):
-        rospy.logdebug("I am parsing in: GPT " + pr )
+        rospy.logwarn("**************I am parsing in GPT: " + "'" + pr + "'"  + "*****************")
 
         response = openai.Completion.create(
-            model=self.GPT_API.model,
+            model=self.GPT_model,
             prompt=pr,
+            temperature=self.GPT_temperature,
             max_tokens=t_max,
-            n=1,
-            temperature=self.GPT_API.temperature,
-            frequency_penalty=self.self.GPT_API.frequency_penalty,
-            presence_penalty=self.self.GPT_API.presence_penalty,    
+            top_p=1,
+            frequency_penalty=self.GPT_frequency_penalty,
+            presence_penalty=self.GPT_presence_penalty, 
         )
-        rospy.logdebug("RESPONSE IS: response")
+        print
         return response.choices[0].text
 
 def main():

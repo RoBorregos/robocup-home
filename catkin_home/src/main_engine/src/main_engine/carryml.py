@@ -5,8 +5,6 @@ import time
 from std_msgs.msg import String, Bool
 from action_selectors.msg import RawInput
 from humanAnalyzer.msg import face_array
-from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-import actionlib 
 
 import os
 import openai
@@ -66,10 +64,6 @@ class receptionist(object):
         openai.api_key = os.getenv("OPENAI_API_KEY")
         self.currentState =  INITIALIZATION_STATE
         self.iteration = 0
-
-        self.move_base_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
-        self.move_base_client.wait_for_server()
-        
         # GPT API
         self.GPT_model="text-davinci-003"
         self.GPT_temperature=0.7
@@ -114,29 +108,7 @@ class receptionist(object):
         self.run()
         rospy.spin()
 
-    def moveTo(self, option):
-        move_base_goal = MoveBaseGoal()
-        if option == 1: 
-            move_base_goal.target_pose.header.frame_id = 'map'
-            move_base_goal.target_pose.pose.position.x = 2.59
-            move_base_goal.target_pose.pose.position.y = -0.1526
-            move_base_goal.target_pose.pose.position.z = 0.0
-            move_base_goal.target_pose.pose.orientation.x = 0
-            move_base_goal.target_pose.pose.orientation.y = 0
-            move_base_goal.target_pose.pose.orientation.z = 0.99
-            move_base_goal.target_pose.pose.orientation.w = 0.0678
-        else: 
-            move_base_goal.target_pose.header.frame_id = 'map'
-            move_base_goal.target_pose.pose.position.x = 2.805
-            move_base_goal.target_pose.pose.position.y = -0.3707
-            move_base_goal.target_pose.pose.position.z = 0.0
-            move_base_goal.target_pose.pose.orientation.x = 0
-            move_base_goal.target_pose.pose.orientation.y = 0
-            move_base_goal.target_pose.pose.orientation.z = -0.782
-            move_base_goal.target_pose.pose.orientation.w = 0.622
-        self.move_base_client.send_goal(move_base_goal)
-        self.move_base_client.wait_for_result()
-        
+
     def say_callback(self, data):
         self.saying = data.data
         rospy.logwarn("saying: " + str(self.saying))
@@ -193,7 +165,7 @@ class receptionist(object):
                 #     rospy.loginfo(person.gender)
                 rospy.loginfo("Receptionist is going to the living room")
                 self.say(promts["come"] + name)
-                go = self.moveTo(1)
+                go = self.go_to("living_room")
                 if go:
                     self.currentState = ASSIGN_STATE
                 else:
@@ -212,14 +184,13 @@ class receptionist(object):
             
                 if intent == True:
                     if self.iteration == 1:
-                        #self.introduce()
                         self.describe()
                     self.currentState = RETURN_STATE
                 else:
                     self.currentState = ASSIGN_STATE
             
             elif self.currentState == RETURN_STATE:
-                self.moveTo(0)
+                self.go_to("reception")
                 self.iteration += 1
                 if self.iteration == 2:
                     self.currentState = END_STATE
@@ -253,17 +224,6 @@ class receptionist(object):
         
         rospy.logwarn("describe")
         time.sleep(1)
-
-    def introduce(self):
-        for person in self.persons:
-            if person.name !="":
-                rospy.logwarn(person.name)
-                rospy.logwarn(person.drink)
-                rospy.logwarn(person.race)
-
-        intent = self.parser(calls["introdyce"] + " " + str(self.persons[0].name) + " to " + str(self.persons[0].race) + " " + str(self.persons[0].age))
-
-        pass
 
     def get_name(self):
         self.speech_enable.publish(Bool(False))
@@ -395,7 +355,7 @@ class receptionist(object):
             
     def callGPT(self, pr, t_max=256):
         # rospy.logwarn("**************I am parsing in GPT: " + "'" + pr + "'"  + "*****************")
-        
+
         response = openai.Completion.create(
             model=self.GPT_model,
             prompt=pr,
