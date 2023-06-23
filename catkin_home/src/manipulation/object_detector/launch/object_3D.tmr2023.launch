@@ -1,10 +1,10 @@
 <launch>
     <arg name="MAP_FRAME" default="map" />
-    <arg name="CAMERA_FRAME" default="zed2_down_left_camera_frame" />
+    <arg name="CAMERA_FRAME" default="zed2_up_left_camera_frame" />
     <arg name="BASE_FRAME" default="base_link" />
-    <arg name="map_to_odom"  default="true"/>
-    <arg name="odom_to_base_footprint"  default="true"/>
-    <arg name="POINT_CLOUD_TOPIC" default="/zed2_down/zed_down_node/point_cloud/ds_no_plane_cloud_registered" />
+    <arg name="map_to_odom" default="true"/>
+    <arg name="odom_to_base_footprint" default="true"/>
+    <arg name="POINT_CLOUD_TOPIC" default="/zed2_up/zed_up_node/point_cloud/ds_cloud_registered" />
     <node 
         pkg="tf" 
         type="static_transform_publisher" 
@@ -19,7 +19,7 @@
         args="0 0 0 0 0 0 1 odom base_footprint 20"
         if="$(arg odom_to_base_footprint)"
     />
-    <node name="Detection3DBag" pkg="object_detector" type="Detection3DBag" respawn="true" output="screen">
+    <node name="Detection3D" pkg="object_detector" type="Detection3D" respawn="true" output="screen">
         <param name="POINT_CLOUD_TOPIC" value="$(arg POINT_CLOUD_TOPIC)"/>
         <param name="MAP_FRAME" value="$(arg MAP_FRAME)" />
         <param name="BASE_FRAME" value="$(arg BASE_FRAME)" />

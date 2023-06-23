@@ -2,6 +2,8 @@
 object_detector/objectDetectionArray force_object
 int32 side
 bool ignore_moveit
+float64 plane_min_height
+float64 plane_max_height
 ---
 #result definition
 bool success

@@ -15,12 +15,15 @@ import time
 from imutils.video import FPS
 from sensor_msgs.msg import CompressedImage, Image, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
-from geometry_msgs.msg import Point, PoseArray, Pose
+from std_msgs.msg import Header
+from geometry_msgs.msg import Point, PointStamped, PoseArray, Pose
 from std_msgs.msg import Bool
 from object_detector.msg import objectDetection, objectDetectionArray
 import sys
 sys.path.append(str(pathlib.Path(__file__).parent) + '/../include')
 from vision_utils import *
+import tf2_ros
+import tf2_geometry_msgs
 
 SOURCES = {
     "VIDEO": str(pathlib.Path(__file__).parent) + "/../resources/test.mp4",
@@ -58,7 +61,7 @@ class CamaraProcessing:
             self.detect_fn = tf.saved_model.load(ARGS["MODELS_PATH"])
 
         def loadYoloModel():
-            self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=ARGS["YOLO_MODEL_PATH"], force_reload=True)
+            self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=ARGS["YOLO_MODEL_PATH"], force_reload=False)
         
         self.category_index = {
             1 : 'CocaCola',
@@ -84,7 +87,13 @@ class CamaraProcessing:
         self.subscriber = None
         self.handleSource()
         self.publisher = rospy.Publisher('detections', objectDetectionArray, queue_size=5)
+        self.image_publisher = rospy.Publisher('detections_image', Image, queue_size=5)
         self.posePublisher = rospy.Publisher("/test/detectionposes", PoseArray, queue_size=5)
+
+        # TFs
+        self.tfBuffer = tf2_ros.Buffer()
+        self.listener = tf2_ros.TransformListener(self.tfBuffer)
+
         if ARGS["USE_ACTIVE_FLAG"]:
             rospy.Subscriber('detectionsActive', Bool, self.activeFlagSubscriber)
 
@@ -101,6 +110,10 @@ class CamaraProcessing:
                 if ARGS["VERBOSE"] and len(self.detections_frame) != 0:
                     cv2.imshow("Detections", self.detections_frame)
                     cv2.waitKey(1)
+
+                if len(self.detections_frame) != 0:
+                    self.image_publisher.publish(self.bridge.cv2_to_imgmsg(self.detections_frame, "bgr8"))
+                    
                 rate.sleep()
         except KeyboardInterrupt:
             pass
@@ -183,13 +196,15 @@ class CamaraProcessing:
         callFpsThread.start()
 
     def yolo_run_inference_on_image(self, frame):
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.model(frame)
         output = {
             'detection_boxes': [],  # Normalized ymin, xmin, ymax, xmax
             'detection_classes': [], # ClassID 
             'detection_scores': [] # Confidence
         }
-        for *xyxy, conf, cls in results.pandas().xyxy[0].itertuples(index=False):
+        
+        for *xyxy, conf, _ ,cls in results.pandas().xyxy[0].itertuples(index=False):
             # Normalized [0-1] ymin, xmin, ymax, xmax
             height = frame.shape[1]
             width = frame.shape[0]
@@ -273,17 +288,18 @@ class CamaraProcessing:
                     if objects[value]['score'] > scores[index]:
                         continue
                 
-                point3D = Point()
-                
+                point3D = PointStamped(header=Header(frame_id=ARGS["CAMERA_FRAME"]), point=Point())
+
                 if ARGS["DEPTH_ACTIVE"] and len(self.depth_image) != 0:
                     point2D = get2DCentroid(boxes[index], self.depth_image)
                     depth = get_depth(self.depth_image, point2D) ## in mm
                     depth = depth / 1000 ## in m
                     point3D_ = deproject_pixel_to_point(self.imageInfo, point2D, depth)
-                    point3D.x = point3D_[0]
-                    point3D.y = point3D_[1]
-                    point3D.z = point3D_[2]
-                    pa.poses.append(Pose(position=point3D))
+                    point3D.point.x = point3D_[0]
+                    point3D.point.y = point3D_[1]
+                    point3D.point.z = point3D_[2]
+                    pa.poses.append(Pose(position=point3D.point))
+
                 objects[value] = {
                     "score": float(scores[index]),
                     "ymin": float(boxes[index][0]),
@@ -362,7 +378,8 @@ class CamaraProcessing:
 
     # Main function to run the detection model.
     def run(self, frame):
-        frame_processed = imutils.resize(frame, width=500)
+        frame_processed = frame
+        # frame_processed = imutils.resize(frame, width=500)
 
         detected_objects, detections, image, category_index = self.compute_result(frame_processed)
 
