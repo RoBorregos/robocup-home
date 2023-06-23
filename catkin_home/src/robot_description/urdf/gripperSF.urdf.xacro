@@ -5,7 +5,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="dashgo">
  
   <!-- load gripper -->
-  <xacro:include filename="$(find robot_description)/urdf/gripper/gripper.urdf.xacro" />
-  <xacro:load_gripper attach_to="" xyz="0 0 0" rpy="0 0 0" />
+  <xacro:include filename="$(find robot_description)/urdf/gripper/gripperSF.urdf.xacro" />
+  <xacro:load_gripperSF attach_to="" xyz="0 0 0" rpy="0 0 0" />
 
 </robot>

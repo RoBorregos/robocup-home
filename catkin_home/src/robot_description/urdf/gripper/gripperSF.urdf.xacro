@@ -3,7 +3,7 @@
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="Gripper">
-  <xacro:macro name="load_gripperP" params="attach_to:='' xyz:='0 0 0' rpy:='0 0 0'">
+  <xacro:macro name="load_gripperSF" params="attach_to:='' xyz:='0 0 0' rpy:='0 0 0'">
     <xacro:unless value="${attach_to == ''}">
       <joint name="gripper_fix" type="fixed">
         <parent link="${attach_to}"/>
@@ -11,68 +11,29 @@
         <origin xyz="${xyz}" rpy="${rpy}"/>
       </joint>
     </xacro:unless>
-    <link
-      name="Base_Gripper">
-      <inertial>
-        <origin
-          xyz="0.0235336388798847 -0.000229446948367704 0.0267925511331642"
-          rpy="0 0 0" />
-        <mass
-          value="0.256752989485429" />
-        <inertia
-          ixx="0.000284254820291498"
-          ixy="6.39914341640259E-07"
-          ixz="6.8196058010128E-06"
-          iyy="0.000115396784193605"
-          iyz="-5.5770176736161E-07"
-          izz="0.000297324024700765" />
-      </inertial>
-      <visual>
-        <origin
-          xyz="0 0 0"
-          rpy="0 0 0" />
-        <geometry>
-          <mesh
-            filename="package://robot_description/meshes/GripperP/BaseGri.STL" />
-        </geometry>
-        <material
-          name="">
-          <color
-            rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-        </material>
-      </visual>
-      <collision>
-        <origin
-          xyz="0 0 0"
-          rpy="0 0 0" />
-        <geometry>
-          <mesh
-            filename="package://robot_description/meshes/GripperP/BaseGri.STL" />
-        </geometry>
-      </collision>
-    </link>
+
     <link name="end_effector_link">
     </link>
     <joint name="end_effector_joint" type="fixed">
       <parent link="Base_Gripper" />
       <child link="end_effector_link" />
-      <origin xyz="0.156 0 0.04" rpy="0 0 0" />
+      <origin xyz="0.0 -0.14 0" rpy="1.57 0 -1.57" />
     </joint>
-    <link
-      name="Servo1">
+
+    <link name="Base_Gripper">
       <inertial>
         <origin
-          xyz="0.0186297249994027 -4.50497350604206E-08 -0.0319399514116179"
+          xyz="-0.00600744878247479 0.000229447019284631 0.0275811003234641"
           rpy="0 0 0" />
         <mass
-          value="0.0250047254852252" />
+          value="0.25675298967361" />
         <inertia
-          ixx="1.22463749616552E-05"
-          ixy="-1.64997983105085E-19"
-          ixz="-1.80956359903934E-06"
-          iyy="1.36408467918994E-05"
-          iyz="1.59449099201962E-19"
-          izz="3.54946158391805E-06" />
+          ixx="0.000297324022723542"
+          ixy="5.57701217289319E-07"
+          ixz="6.8196059580779E-06"
+          iyy="0.000115396784513201"
+          iyz="-6.39913613193201E-07"
+          izz="0.000284254818153183" />
       </inertial>
       <visual>
         <origin
@@ -80,7 +41,7 @@
           rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://robot_description/meshes/GripperP/Servo1.STL" />
+            filename="package://robot_description/meshes/GripperSF/Base_Gripper.STL" />
         </geometry>
         <material
           name="">
@@ -94,43 +55,79 @@
           rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://robot_description/meshes/GripperP/Servo1.STL" />
+            filename="package://robot_description/meshes/GripperSF/Base_Gripper.STL" />
         </geometry>
       </collision>
     </link>
-    <joint
-      name="Rev1Servo"
-      type="revolute">
+    <link name="Servo1">
+      <inertial>
+        <origin
+          xyz="-4.50497350465429E-08 0.00440252858837645 0.0186297249994028"
+          rpy="0 0 0" />
+        <mass
+          value="0.0250047254852253" />
+        <inertia
+          ixx="1.36408467918995E-05"
+          ixy="1.57389452627317E-19"
+          ixz="-1.65284737063933E-19"
+          iyy="3.54946158391806E-06"
+          iyz="-1.80956359903934E-06"
+          izz="1.22463749616553E-05" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://robot_description/meshes/GripperSF/Servo1.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://robot_description/meshes/GripperSF/Servo1.STL" />
+        </geometry>
+      </collision>
+    </link>
+    <joint name="Rev1Servo" type="revolute">
       <origin
-        xyz="0.056595 0.034832 0.069142"
-        rpy="0 0 0" />
+        xyz="0 -0.048595 0.035167"
+        rpy="1.5708 1.5708 0" />
       <parent
         link="Base_Gripper" />
       <child
         link="Servo1" />
       <axis
-        xyz="0 0 1" />
+        xyz="0 1 0" />
       <limit
-        lower="-0.02"
-        upper="0.39"
+        lower="-0.5"
+        upper="0.5"
         effort="0"
         velocity="0" />
     </joint>
-    <link
-      name="Dedo1">
+    <link name="Dedo1">
       <inertial>
         <origin
-          xyz="-0.0339571348134267 -9.21108600088205E-08 0.148247426657738"
+          xyz="-0.0339571348134233 -9.21108558320401E-08 0.148247426657733"
           rpy="0 0 0" />
         <mass
-          value="0.0622996894008648" />
+          value="0.0622996894009069" />
         <inertia
-          ixx="0.000123327723316811"
-          ixy="-1.34450244791909E-10"
-          ixz="-5.84363068828124E-06"
-          iyy="0.000126724002658958"
-          iyz="1.56255677980962E-10"
-          izz="1.60491252999105E-05" />
+          ixx="0.000123327723316758"
+          ixy="-1.34450246244474E-10"
+          ixz="-5.84363068828583E-06"
+          iyy="0.00012672400265891"
+          iyz="1.56255674072228E-10"
+          izz="1.60491252999285E-05" />
       </inertial>
       <visual>
         <origin
@@ -138,7 +135,7 @@
           rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://robot_description/meshes/GripperP/Dedo1.STL" />
+            filename="package://robot_description/meshes/GripperSF/Dedo1.STL" />
         </geometry>
         <material
           name="">
@@ -152,16 +149,14 @@
           rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://robot_description/meshes/GripperP/Dedo1.STL" />
+            filename="package://robot_description/meshes/GripperSF/Dedo1.STL" />
         </geometry>
       </collision>
     </link>
-    <joint
-      name="Fix1Dedo"
-      type="fixed">
+    <joint name="Fix1Dedo" type="fixed">
       <origin
-        xyz="-0.0685 -0.035 -0.0342"
-        rpy="-1.5708 0 -1.5708" />
+        xyz="0.035 0.0021425 -0.0985"
+        rpy="0 0 0" />
       <parent
         link="Servo1" />
       <child
@@ -169,21 +164,20 @@
       <axis
         xyz="0 0 0" />
     </joint>
-    <link
-      name="Servo2">
+    <link name="Servo2">
       <inertial>
         <origin
-          xyz="0.0186297249994028 -4.50497350534818E-08 -0.0319399514116179"
+          xyz="-4.50497350534818E-08 0.00440252858837659 0.0186297249994028"
           rpy="0 0 0" />
         <mass
-          value="0.0250047254852252" />
+          value="0.0250047254852253" />
         <inertia
-          ixx="1.22463749616552E-05"
-          ixy="-1.65063023348749E-19"
-          ixz="-1.80956359903934E-06"
-          iyy="1.36408467918994E-05"
-          iyz="1.57491079497996E-19"
-          izz="3.54946158391805E-06" />
+          ixx="1.36408467918995E-05"
+          ixy="1.57699642761219E-19"
+          ixz="-1.65780172575981E-19"
+          iyy="3.54946158391805E-06"
+          iyz="-1.80956359903934E-06"
+          izz="1.22463749616553E-05" />
       </inertial>
       <visual>
         <origin
@@ -191,7 +185,7 @@
           rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://robot_description/meshes/GripperP/Servo2.STL" />
+            filename="package://robot_description/meshes/GripperSF/Servo2.STL" />
         </geometry>
         <material
           name="">
@@ -205,25 +199,23 @@
           rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://robot_description/meshes/GripperP/Servo2.STL" />
+            filename="package://robot_description/meshes/GripperSF/Servo2.STL" />
         </geometry>
       </collision>
     </link>
-    <joint
-      name="Rev2Servo"
-      type="revolute">
+    <joint name="Rev2Servo" type="revolute">
       <origin
-        xyz="0.056595 -0.035167 0.069142"
-        rpy="0 0 0" />
+        xyz="0 -0.048595 -0.034832"
+        rpy="1.5708 1.5708 0" />
       <parent
         link="Base_Gripper" />
       <child
         link="Servo2" />
       <axis
-        xyz="0 0 1" />
+        xyz="0 1 0" />
       <limit
-        lower="-0.39"
-        upper="0.02"
+        lower="-0.5"
+        upper="0.5"
         effort="0"
         velocity="0" />
       <mimic
@@ -231,21 +223,20 @@
         multiplier="-1"
         offset="0" />
     </joint>
-    <link
-      name="Dedo2">
+    <link name="Dedo2">
       <inertial>
         <origin
-          xyz="-0.033957134813415 -9.21108604737264E-08 0.148247426657736"
+          xyz="-0.0339566917270822 -9.21107859009999E-08 0.148247426657711"
           rpy="0 0 0" />
         <mass
-          value="0.0622996894008928" />
+          value="0.0622996894008418" />
         <inertia
-          ixx="0.0001233277233168"
-          ixy="-1.34450243117476E-10"
-          ixz="-5.8436306883091E-06"
-          iyy="0.000126724002658963"
-          iyz="1.56255678549431E-10"
-          izz="1.60491252999305E-05" />
+          ixx="0.000123327723316674"
+          ixy="-1.34450244755006E-10"
+          ixz="-5.84363068828243E-06"
+          iyy="0.000126724002658815"
+          iyz="1.56255677499792E-10"
+          izz="1.60491252999025E-05" />
       </inertial>
       <visual>
         <origin
@@ -253,7 +244,7 @@
           rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://robot_description/meshes/GripperP/Dedo2.STL" />
+            filename="package://robot_description/meshes/GripperSF/Dedo2.STL" />
         </geometry>
         <material
           name="">
@@ -267,22 +258,25 @@
           rpy="0 0 0" />
         <geometry>
           <mesh
-            filename="package://robot_description/meshes/GripperP/Dedo2.STL" />
+            filename="package://robot_description/meshes/GripperSF/Dedo2.STL" />
         </geometry>
       </collision>
     </link>
-    <joint
-      name="Fix2Dedo"
-      type="fixed">
+    <joint name="Fix2Dedo" type="fixed">
       <origin
-        xyz="-0.0685 0.035 -0.0342"
-        rpy="1.5708 0 1.5708" />
+        xyz="-0.035 0.0021425 -0.0985"
+        rpy="0 0 3.1416" />
       <parent
         link="Servo2" />
       <child
         link="Dedo2" />
       <axis
         xyz="0 0 0" />
+      <limit
+        lower="0"
+        upper="0"
+        effort="0"
+        velocity="0" />
     </joint>
   </xacro:macro>
 </robot>
