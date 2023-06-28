@@ -21,6 +21,9 @@
   <!-- option to show rviz or not -->
   <arg name="show_rviz" default="true" />
 
+  <!-- Pipeline -->
+  <arg name="pipeline" default="ompl" />
+
   <!-- option to publish static odom tf -->
   <arg name="pub_static_odom" default="false" />
 
@@ -41,6 +44,7 @@
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
   <include if="$(arg load_move_group)" file="$(find dashgo_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="pipeline" value="$(arg pipeline)"/>
     <arg name="load_robot_description" value="true"/>
     <arg name="info" value="true"/>
     <arg name="debug" value="$(arg debug)"/>

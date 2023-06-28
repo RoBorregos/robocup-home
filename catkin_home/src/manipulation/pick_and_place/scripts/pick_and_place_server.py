@@ -16,6 +16,7 @@ from geometry_msgs.msg import Pose, PoseStamped, PoseArray, Vector3Stamped, Vect
 from nav_msgs.msg import Odometry
 from pick_and_place.msg import PickAndPlaceAction, PickAndPlaceGoal, PickAndPlaceResult, PickAndPlaceFeedback
 from moveit_msgs.srv import ApplyPlanningScene, GetPlanningScene, GetPlanningSceneRequest, GetPlanningSceneResponse
+from moveit_msgs.msg import PlanningScene, CollisionObject, AttachedCollisionObject
 from std_srvs.srv import Empty, EmptyRequest
 from std_msgs.msg import Header
 from gpd_ros.msg import GraspConfig, GraspConfigList
@@ -23,6 +24,9 @@ from sensor_msgs.msg import JointState
 import numpy
 import math
 import copy
+import time
+from shape_msgs.msg import SolidPrimitive
+from geometry_msgs.msg import Point
 
 moveit_error_dict = {}
 for name in MoveItErrorCodes.__dict__.keys():
@@ -108,6 +112,7 @@ class PickAndPlaceServer(object):
         self.place_as.start()
         
         self.pose_array_p = rospy.Publisher("pose_array/object", PoseArray, queue_size=10)
+        self.pose_p = rospy.Publisher("planning_pose", PoseStamped, queue_size=10)
 
         rospy.loginfo("Waiting for MoveGroupCommander...")
         self.pick_groups = []
@@ -156,58 +161,17 @@ class PickAndPlaceServer(object):
             
             pa.header = pS.header
             pa.poses.append(pS.pose)
-
-        TEST_ORIENTATION = False
-        if TEST_ORIENTATION:
-            # self.testPose()
-
-            # p_res = PickAndPlaceResult()
-            # p_res.error_code = -1
-            # self.pick_as.set_succeeded(p_res)
-            # return
-
-            rospy.loginfo("Confirming Orientation")
-            for grasp in grasps:
-                # Increase z to avoid collision with table
-                # grasp.grasp_pose.pose.position.z -= 0.17
-                # Closer to the robot.
-                grasp.grasp_pose.pose.position.x -= 0.225
-                # grasp.grasp_pose.pose.orientation = Quaternion(*transformations.quaternion_from_euler(0.0, -1.5707963267948966, 0.0))
-
-                x = PoseArray()
-                x.header = grasp.grasp_pose.header
-                x.poses.append(grasp.grasp_pose.pose)
-
-                self.pose_array_p.publish(x)
-
-                count = 0
-                for group in self.pick_groups:
-                    # group.set_end_effector_link("end_effector_link")
-                    rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
-                    group.set_pose_target(grasp.grasp_pose.pose)
-                    group.set_goal_orientation_tolerance(numpy.deg2rad(20))
-                    group.set_goal_position_tolerance(0.03)
-                    group.plan()
-                    res = group.go(wait=True)
-                    group.stop()
-                    rospy.loginfo("Result: " + str(res))
-                    if res == True:
-                        break
-                    count += 1
-
-            p_res = PickAndPlaceResult()
-            p_res.error_code = -1
-            self.pick_as.set_succeeded(p_res)
-            return
         
         self.pose_array_p.publish(pa)
 
         error_code = -1
+        count = 0
         for group in PickAndPlaceServer.PICK_GROUPS:
-            rospy.loginfo("Trying to pick object with group: " + group)
+            rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
             error_code = self.grasp_object(grasps, goal.object_name, links_to_allow_contact, group)
             if error_code == 1:
                 break
+            count += 1
         p_res = PickAndPlaceResult()
         p_res.error_code = error_code
         if error_code != 1:
@@ -263,79 +227,245 @@ class PickAndPlaceServer(object):
         # - Open Gripper
         # - Move to Object
         # - Close Gripper
-        
-        # Open Gripper
-        rospy.loginfo("Opening gripper")
-        joint_state = JointState()
-        joint_state.name = ["Rev1Servo", "Rev2Servo"]
-        joint_state.position = [0.32, -0.32]
-        self.gripper_group.go(joint_state, wait=True)
-        self.gripper_group.stop()
-        rospy.sleep(0.5)
-
-        # Move to Object
-        rospy.loginfo("Planning to object")
-        success = False
-        for grasp in grasps:
-            if success:
-                break
-            attempts = 0
-            while attempts < 5:
-                for group in self.pick_groups:
-                    rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
-                    group.set_pose_target(grasp.grasp_pose.pose)
-                    group.set_goal_orientation_tolerance(numpy.deg2rad(20))
-                    group.set_goal_position_tolerance(0.03)
-                    group.plan()
-                    res = group.go(wait=True)
-                    group.stop()
-                    rospy.loginfo("Result: " + str(res))
-                    if res == True:
-                        success = True
-                        break
-                    attempts += 1
-
-        if not success:
-            return 99999
-        
-        # Close Gripper
-        attempts = 0
-        success = False
-        while attempts < 5:
-            rospy.loginfo("Closing gripper")
-            joint_state = JointState()
-            joint_state.name = ["Rev1Servo", "Rev2Servo"]
-            joint_state.position = [0.0, 0.0]
-            res = self.gripper_group.go(joint_state, wait=True)
+        PICK_DEBUG = True
+        if PICK_DEBUG:
+            # Open Gripper
+            rospy.loginfo("Opening gripper")
+            self.gripper_group.set_named_target("open")
+            self.gripper_group.go(wait=True)
             self.gripper_group.stop()
-            attempts += 1
-            if res == True:
-                success = True
-                break
+            rospy.sleep(0.25)
 
-        if success:
+
+            self.curr_scene = self.scene_srv(PlanningSceneComponents()).scene
+            old_allowed_collision_matrix = copy.deepcopy(self.curr_scene.allowed_collision_matrix)
+            self.curr_scene.allowed_collision_matrix.entry_names.append("current_box")
+            for entry in self.curr_scene.allowed_collision_matrix.entry_values:
+                entry.enabled.append(True)
+            self.curr_scene.allowed_collision_matrix.entry_values.append(AllowedCollisionEntry(enabled=[True for i in range(len(self.curr_scene.allowed_collision_matrix.entry_names))]))
+            self.apply_scene_srv(scene=self.curr_scene)
+
             rospy.sleep(0.5)
 
-        if not success:
-            return 99999
-        
-        return 1
+            # Move to Object
+            rospy.loginfo("Planning to object")
+            success = False
+            pose_stamped_used = None
+            for grasp in grasps:
+                if success:
+                    break
+                attempts = 0
+                while attempts < 1 and not success:
+                    count = 0
+                    for group in self.pick_groups:
+                        planners = ["ompl"]
+                        for planner in planners:
+                            rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
+                            
+                            pose_st = PoseStamped()
+                            pose_st.header = grasp.grasp_pose.header
+                            pose_st.pose = grasp.grasp_pose.pose
+                            self.pose_p.publish(pose_st)
+                            grasp.grasp_pose.pose.position.z += 0.04
+                            group.set_pose_target(grasp.grasp_pose.pose)
+                            group.set_goal_orientation_tolerance(numpy.deg2rad(5))
+                            group.set_goal_position_tolerance(0.012)
+                            group.set_max_velocity_scaling_factor(0.1)
+                            group.set_max_acceleration_scaling_factor(0.025)
+                            group.set_planning_pipeline_id(planner)
+                            group.set_planning_time(3)
 
-        possible_grasps = grasps
+                            t = time.time()
+                            res = group.plan()
+                            rospy.loginfo("Planning time 1: " + str(time.time() - t))
+                            if res[0] == False:
+                                rospy.loginfo("Planning failed")
+                                continue
+                            t = time.time()
+                            res = group.go(wait=True)
+                            rospy.loginfo("Execution time 1: " + str(time.time() - t))
+                            
+                            group.stop()
+                            rospy.loginfo("Result: " + str(res))
+                            if res != True:
+                                break
+                            
+                            grasp.grasp_pose.pose.position.z -= 0.04
+                            pose_st = PoseStamped()
+                            pose_st.header = grasp.grasp_pose.header
+                            pose_st.pose = grasp.grasp_pose.pose
+                            self.pose_p.publish(pose_st)
+                            group.set_pose_target(grasp.grasp_pose.pose)
+                            group.set_goal_orientation_tolerance(numpy.deg2rad(5))
+                            group.set_goal_position_tolerance(0.012)
+                            group.set_max_velocity_scaling_factor(0.1)
+                            group.set_max_acceleration_scaling_factor(0.025)
+                            group.set_planning_pipeline_id(planner)
+                            group.set_planning_time(3)
+                            
+                            t = time.time()
+                            res = group.plan()
+                            rospy.loginfo("Planning time 2: " + str(time.time() - t))
+                            if res[0] == False:
+                                rospy.loginfo("Planning failed")
+                                continue
+                            t = time.time()
+                            res = group.go(wait=True)
+                            rospy.loginfo("Execution time 2: " + str(time.time() - t))
+                            
+                            group.stop()
+                            rospy.loginfo("Result: " + str(res))
+                            if res == True:
+                                pose_stamped_used = pose_st
+                                success = True
+                                break
 
-        goal = createPickupGoal(
-            pick_group, object_name, possible_grasps, allow_contact_with, "<octomap>" , self.curr_collision_matrix)
-        
-        error_code = self.handle_pick_as(goal)
+                        if success:
+                            break
+                        count += 1
+                    attempts += 1
 
-        # Confirm STATUS looking into attached objects
-        error_code = self.confirm_status_with_attached_objects(error_code, object_name, True)
+            if not success:
+                # Restore scene
+                self.curr_scene = self.scene_srv(PlanningSceneComponents()).scene
+                self.curr_scene.allowed_collision_matrix = old_allowed_collision_matrix
+                self.apply_scene_srv(scene=self.curr_scene)
+                return 99999
+            
 
-        rospy.logwarn(
-            "Pick result: " +
-        str(moveit_error_dict[error_code]))
+            self.curr_scene = self.scene_srv(PlanningSceneComponents()).scene
+            self.curr_scene.allowed_collision_matrix.entry_names.append("current")
+            for entry in self.curr_scene.allowed_collision_matrix.entry_values:
+                entry.enabled.append(True)
+            self.curr_scene.allowed_collision_matrix.entry_values.append(AllowedCollisionEntry(enabled=[True for i in range(len(self.curr_scene.allowed_collision_matrix.entry_names))]))
+            self.apply_scene_srv(scene=self.curr_scene)
 
-        return error_code
+            # Close Gripper
+            attempts = 0
+            success = False
+            while attempts < 5:
+                rospy.loginfo("Closing gripper")
+                self.gripper_group.set_named_target("close")
+                res = self.gripper_group.go(wait=True)
+                self.gripper_group.stop()
+                attempts += 1
+                if res == True:
+                    success = True
+                    break
+                    
+
+            
+            # Restore scene
+            self.curr_scene = self.scene_srv(PlanningSceneComponents()).scene
+            self.curr_scene.allowed_collision_matrix = old_allowed_collision_matrix
+            self.apply_scene_srv(scene=self.curr_scene)
+            
+
+            if success:
+                rospy.loginfo("Attaching object to gripper")
+                self.curr_scene = self.scene_srv(PlanningSceneComponents()).scene
+                
+                collision_mesh = self.scene.get_objects(["current"])["current"]
+
+                # Attach an Enclosing Box of the mesh
+                box_factor = 1.1
+                vertices = collision_mesh.meshes[0].vertices
+                minPt = Point(vertices[0].x, vertices[0].y, vertices[0].z)
+                maxPt = Point(vertices[0].x, vertices[0].y, vertices[0].z)
+                for vertex in vertices:
+                    if vertex.x < minPt.x:
+                        minPt.x = vertex.x
+                    if vertex.y < minPt.y:
+                        minPt.y = vertex.y
+                    if vertex.z < minPt.z:
+                        minPt.z = vertex.z
+                    if vertex.x > maxPt.x:
+                        maxPt.x = vertex.x
+                    if vertex.y > maxPt.y:
+                        maxPt.y = vertex.y
+                    if vertex.z > maxPt.z:
+                        maxPt.z = vertex.z
+                
+                width = maxPt.x - minPt.x
+                height = maxPt.y - minPt.y
+                depth = maxPt.z - minPt.z
+                collision_object = CollisionObject(
+                    header = collision_mesh.header,
+                    id = "current_box",
+                    pose = collision_mesh.pose,
+                    primitives = [SolidPrimitive(
+                        type=SolidPrimitive.BOX,
+                        dimensions=[width * box_factor, height * box_factor, depth * box_factor]
+                    )],
+                    primitive_poses = [collision_mesh.mesh_poses[0]],
+                    operation = CollisionObject.ADD
+                )
+
+
+
+                self.curr_scene.robot_state.attached_collision_objects.append(
+                    AttachedCollisionObject(
+                        link_name="Base_Gripper",
+                        object=collision_object,
+                        touch_links=["Base_Gripper", "Servo1", "Servo2", "Dedo1", "Dedo2"],
+                        detach_posture= JointTrajectory(
+                            joint_names=["Rev1Servo", "Rev2Servo"],
+                            points=[JointTrajectoryPoint(
+                                positions=[-0.50, 0.50],
+                                time_from_start=rospy.Duration(0.5)
+                            )]
+                        ),
+                        weight=0.0
+                    )
+                )
+
+                # Remove Current
+                self.scene.remove_world_object("current")
+                self.scene.remove_world_object("current_box")
+                rospy.sleep(0.2)
+
+                self.apply_scene_srv(scene=self.curr_scene)
+                rospy.loginfo("Attached object to gripper")
+
+
+                pose_st = PoseStamped()
+                pose_st.header = grasp.grasp_pose.header
+                pose_st.pose = grasp.grasp_pose.pose
+                pose_st.pose.position.z += 0.08
+                self.pose_p.publish(pose_st)
+                grasp.grasp_pose.pose.position.z += 0.08
+                group.set_pose_target(grasp.grasp_pose.pose)
+                group.set_goal_orientation_tolerance(numpy.deg2rad(5))
+                group.set_goal_position_tolerance(0.012)
+                group.set_max_velocity_scaling_factor(0.1)
+                group.set_max_acceleration_scaling_factor(0.025)
+                group.set_planning_pipeline_id("ompl")
+                group.set_planning_time(3)
+                res = group.plan()
+                res = group.go(wait=True)
+                group.stop()
+                
+                return 1
+
+            if not success:
+                return 99999
+
+        else:
+            possible_grasps = grasps
+
+            goal = createPickupGoal(
+                pick_group, object_name, possible_grasps, allow_contact_with, "<octomap>" , None)
+            
+            error_code = self.handle_pick_as(goal)
+
+            # Confirm STATUS looking into attached objects
+            error_code = self.confirm_status_with_attached_objects(error_code, object_name, True)
+
+            rospy.logwarn(
+                "Pick result: " +
+            str(moveit_error_dict[error_code]))
+
+            return error_code
 
     # Function to handle pick action server call.
     def handle_pick_as(self, goal):
@@ -403,7 +533,7 @@ class PickAndPlaceServer(object):
         rospy.loginfo("Trying to place with arm and torso")
         
         goal = createPlaceGoal(
-            possible_placings, place_group, object_name, links_to_allow_contact, "<octomap>", self.curr_collision_matrix)
+            possible_placings, place_group, object_name, links_to_allow_contact, "<octomap>", None)
 
         error_code = self.handle_place_as(goal)
     
@@ -428,39 +558,38 @@ def createPickupGoal(group=PickAndPlaceServer.ARM_GROUP, target="part",
     pug.group_name = group
     pug.possible_grasps.extend(possible_grasps)
     pug.support_surface_name = support_surface_name
-    pug.allow_gripper_support_collision = True
+    pug.allow_gripper_support_collision = False
     pug.allowed_planning_time = 30.0
     pug.planning_options.planning_scene_diff.is_diff = True
     pug.planning_options.planning_scene_diff.robot_state.is_diff = True
     pug.planning_options.plan_only = False
     pug.planning_options.replan = True
     pug.planning_options.replan_attempts = 3
-    pug.allowed_touch_objects = ['<octomap>']
+    pug.allowed_touch_objects = []
     pug.allowed_touch_objects.extend(links_to_allow_contact)
-    pug.attached_object_touch_links = ['<octomap>']
+    pug.attached_object_touch_links = []
     pug.attached_object_touch_links.extend(links_to_allow_contact)
-    pug.planning_options.planning_scene_diff.allowed_collision_matrix = curr_collision_matrix
-    pug.path_constraints = Constraints()
-    pug.path_constraints.position_constraints = []
-    pug.path_constraints.orientation_constraints = []
+    # pug.planning_options.planning_scene_diff.allowed_collision_matrix = curr_collision_matrix
+    
+    # pug.path_constraints = Constraints()
+    # pug.path_constraints.position_constraints = []
+    # pug.path_constraints.orientation_constraints = []
 
-    position_constraints = PositionConstraint()
-    position_constraints.link_name = "end_effector_link"
-    position_constraints.header.frame_id = "end_effector_link"
-    position_constraints.target_point_offset = Vector3(x=0.03, y=0.03, z=0.03)
-    position_constraints.weight = 1.0
-    pug.path_constraints.position_constraints.append(position_constraints)
+    # position_constraints = PositionConstraint()
+    # position_constraints.link_name = "end_effector_link"
+    # position_constraints.header.frame_id = "end_effector_link"
+    # position_constraints.target_point_offset = Vector3(x=0.03, y=0.03, z=0.03)
+    # position_constraints.weight = 1.0
+    # pug.path_constraints.position_constraints.append(position_constraints)
 
-    orientation_constraints = OrientationConstraint()
-    orientation_constraints.link_name = "end_effector_link"
-    orientation_constraints.header.frame_id = "base_link"
-    orientation_constraints.orientation = Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)
-    orientation_constraints.absolute_x_axis_tolerance = numpy.deg2rad(10)
-    orientation_constraints.absolute_y_axis_tolerance = numpy.deg2rad(10)
-    orientation_constraints.absolute_z_axis_tolerance = numpy.deg2rad(10)
-    orientation_constraints.weight = 1.0
-    # pug.path_constraints.orientation_constraints.append(orientation_constraints)
-
+    # orientation_constraints = OrientationConstraint()
+    # orientation_constraints.link_name = "end_effector_link"
+    # orientation_constraints.header.frame_id = "base_link"
+    # orientation_constraints.orientation = Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)
+    # orientation_constraints.absolute_x_axis_tolerance = numpy.deg2rad(10)
+    # orientation_constraints.absolute_y_axis_tolerance = numpy.deg2rad(10)
+    # orientation_constraints.absolute_z_axis_tolerance = numpy.deg2rad(10)
+    # orientation_constraints.weight = 1.0
     return pug
 
 # Function to create a PlaceGoal with the provided data..
@@ -531,20 +660,14 @@ def create_grasp(poseStamped, allowed_touch_objects, grasp_config):
     time_pre_grasp_posture = 0.8
     time_grasp_posture = 0.2
     time_grasp_posture_final = 0.5
-    gripper_grasp_positions = PickAndPlaceServer.GRIPPER_CLOSED
-
-    # mapToAngel = [(0.15, 1.239), (0.102, 0.75), (0.09, 0.506145), (0.05, 0.314159)]
-    # width_angle = 1.239
-    # for elem in mapToAngel:
-    #     if grasp_config.width.data < elem[0]:
-    #         width_angle = elem[1]
 
     gripper_pre_grasp_positions = PickAndPlaceServer.GRIPPER_OPEN
+    gripper_grasp_positions = PickAndPlaceServer.GRIPPER_CLOSED
     fix_tool_frame_to_grasping_frame_roll = 0.0
-    fix_tool_frame_to_grasping_frame_pitch = 0
+    fix_tool_frame_to_grasping_frame_pitch = 0.0
     fix_tool_frame_to_grasping_frame_yaw = 0.0
-    grasp_desired_distance = 0.20
-    grasp_min_distance = 0.0
+    grasp_desired_distance = 0.07
+    grasp_min_distance = 0.03
     max_contact_force = 0.0
     g = Grasp()
     
@@ -567,8 +690,8 @@ def create_grasp(poseStamped, allowed_touch_objects, grasp_config):
         time_grasp_posture + time_grasp_posture_final)
     grasp_posture.points.append(jtpoint2)
 
-    g.pre_grasp_posture = pre_grasp_posture
-    g.grasp_posture = grasp_posture
+    # g.pre_grasp_posture = pre_grasp_posture
+    # g.grasp_posture = grasp_posture
 
     header = poseStamped.header
     q = [poseStamped.pose.orientation.x, poseStamped.pose.orientation.y,
@@ -583,16 +706,16 @@ def create_grasp(poseStamped, allowed_touch_objects, grasp_config):
     fixed_pose = copy.deepcopy(poseStamped.pose)
     fixed_pose.orientation = Quaternion(*q)
 
-    g.grasp_pose = PoseStamped(header, fixed_pose)
+    g.grasp_pose = poseStamped # PoseStamped(header, fixed_pose)
     g.grasp_quality = grasp_config.score.data # min(1000, max(0, grasp_quality)) / 1000
 
-    g.pre_grasp_approach = createGripperTranslation(
-        Vector3(1.0, 0.0, 0.0), desired_distance = grasp_desired_distance,
-        min_distance = grasp_min_distance)
+    # g.pre_grasp_approach = createGripperTranslation(
+    #     Vector3(1.0, 0.0, 0.0), desired_distance = grasp_desired_distance,
+    #     min_distance = grasp_min_distance)
     
-    g.post_grasp_retreat = createGripperTranslation(
-        Vector3(-1.0, -0.35, 0.0), desired_distance = grasp_desired_distance,
-        min_distance = grasp_min_distance)
+    # g.post_grasp_retreat = createGripperTranslation(
+    #     Vector3(-1.0, -0.0, 0.0), desired_distance = grasp_desired_distance,
+    #     min_distance = grasp_min_distance)
 
     g.max_contact_force = max_contact_force
     g.allowed_touch_objects = allowed_touch_objects
@@ -620,7 +743,7 @@ def createGripperTranslation(direction_vector, desired_distance, min_distance):
 # Function that converts from GPD to MoveIt! Grasp message.
 def gpd_to_moveit_new(grasp_config_list, allow_contact_with):
     header = Header()
-    header.frame_id = "map"
+    header.frame_id = "Base"
     kThresholdScore = 1.0
     res = []
     for grasp_config in grasp_config_list.grasps:
@@ -636,7 +759,7 @@ def gpd_to_moveit_new(grasp_config_list, allow_contact_with):
         
         grasp_pose.pose.position.x = grasp_config.position.x
         grasp_pose.pose.position.y = grasp_config.position.y
-        grasp_pose.pose.position.z = grasp_config.position.z # +0.15
+        grasp_pose.pose.position.z = grasp_config.position.z # + 0.40
 
         # Rotation Matrix
         rot = numpy.array([[grasp_config.approach.x, grasp_config.binormal.x, grasp_config.axis.x],
@@ -647,10 +770,11 @@ def gpd_to_moveit_new(grasp_config_list, allow_contact_with):
         quat = transformations.quaternion_from_matrix(R)
 
         # EEF yaw-offset to its parent-link (last link of arm)
-        eef_yaw_offset = 0.0
-        offquat = transformations.quaternion_about_axis(eef_yaw_offset, (0, 0, 1))
-        quat = transformations.quaternion_multiply(quat, offquat)
-        quat = transformations.unit_vector(quat)
+        # eef_yaw_offset = 0.0
+        # offquat = transformations.quaternion_about_axis(eef_yaw_offset, (0, 0, 1))
+        # quat = transformations.quaternion_multiply(quat, offquat)
+        # quat = transformations.unit_vector(quat)
+
         # Set grasp orientation
         grasp_pose.pose.orientation.x = quat[0]
         grasp_pose.pose.orientation.y = quat[1]

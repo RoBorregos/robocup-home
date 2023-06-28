@@ -53,11 +53,16 @@
   <include file="$(find dashgo_moveit_config)/launch/moveit_rviz_common.launch">
     <arg name="jnt_stat_source" value="[$(arg xarm_hw_ns)/joint_states, DASHGO/joint_states]" />
     <arg name="jnt_stat_pub_rate" value="$(arg jnt_stat_pub_rate)"/>
+    <arg name="pipeline" default="ompl" />
     <arg name="show_rviz" value="$(arg show_rviz)" />
     <arg name="pub_static_odom" default="false" />
   </include>
 
   <!-- Run Octomap Toggle Service -->
   <node name="OctomapInput" pkg="dashgo_moveit_config" type="OctomapInput" output="screen" />
+
+  <!-- If needed, broadcast static tf for robot root -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 odom base_footprint" />
+  <!-- <node name="azureSpeechText" pkg="action_selectors" type="AzureSpeechToText" output="screen" /> -->
   
 </launch>
