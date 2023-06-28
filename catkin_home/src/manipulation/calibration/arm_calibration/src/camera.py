@@ -29,7 +29,7 @@ class CameraPosePublisher:
     def __init__(self):
         self.ARM_GROUP = "arm"
         self.ARM_JOINTS = ["joint1", "joint2", "joint3", "joint4", "joint5"]
-        self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, -3.1416 / 4, 0.0]
+        self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, -3.1416 / 4, 1.57]
         self.ARM_HOME = [0.0, 0.0, 0.0, 0.0, 0.0]
         rospy.init_node('camera_pose_publisher')
         
@@ -41,21 +41,21 @@ class CameraPosePublisher:
         self.publishRotationFixedTransform = True
         
         self.move_arm(self.ARM_CALIBRATION)
-        time.sleep(5) # Wait for an accurate detection.
+        time.sleep(8.5) # Wait for an accurate detection.
         try:
-            # Get the transforms between 'base_footprint', 'apriltag', and 'tag_1'
+            # Get the transforms between 'base_footprint', 'apriltag', and 'tag_5'
             print("Waiting for transforms...")
             self.listener.waitForTransform('Base', 'apriltag', rospy.Time(0), rospy.Duration(5.0))
-            self.listener.waitForTransform('Base', 'tag_1', rospy.Time(0), rospy.Duration(5.0))
+            self.listener.waitForTransform('Base', 'tag_5', rospy.Time(0), rospy.Duration(5.0))
             self.listener.waitForTransform('Base', 'Cam1', rospy.Time(0), rospy.Duration(5.0))
-            self.listener.waitForTransform('Cam1', 'tag_1', rospy.Time(0), rospy.Duration(5.0))
+            self.listener.waitForTransform('Cam1', 'tag_5', rospy.Time(0), rospy.Duration(5.0))
             print("Got transforms!")
             (trans1, rot1) = self.listener.lookupTransform('Base', 'apriltag', rospy.Time(0))
-            (trans2, rot2) = self.listener.lookupTransform('Base', 'tag_1', rospy.Time(0))
+            (trans2, rot2) = self.listener.lookupTransform('Base', 'tag_5', rospy.Time(0))
             (trans3, rot3) = self.listener.lookupTransform('Base', 'Cam1', rospy.Time(0))
-            (trans4, rot4) = self.listener.lookupTransform('Cam1', 'tag_1', rospy.Time(0))
+            (trans4, rot4) = self.listener.lookupTransform('Cam1', 'tag_5', rospy.Time(0))
             print("Got matrices!")
-            # Fix Rotation Difference between 'apriltag' and 'tag_1'
+            # Fix Rotation Difference between 'apriltag' and 'tag_5'
             rot_diff = transformations.quaternion_multiply(rot1, transformations.quaternion_inverse(rot2))
             rot_diff = transformations.quaternion_multiply(rot_diff, rot3)
             rot_fixed = rot_diff
