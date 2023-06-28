@@ -65,15 +65,14 @@ promts = {
 }
 
 calls = {
-    "get_name": "if there is no name return ''get me the name of the person on the next message: ",
+    "get_name": "if there is no name return '' get me the name of the person on the next message: ",
     "get_drink": "get me the name of the beverage on the next message: ",
     "describe": "describe a person with the next attributes: ",
-    "confirm" : "tell me onlyTrue or False, the next message is a general confirmation, like ues, OK, got it:",
+    "confirm" : "tell me only rue or False, the next message is a general confirmation, like ues, OK, got it:",
     "reached": "tell me only True or False, the next message is a confirmation that you reached a place:",
-
     "get_loc": "the valid locations are living room, dining room, kitchen, bedroom. Give me only the location on this message: ",
     "get_obj": "the valid objects are coke, apple, mug, soap, banana, pitcher. Now give me only the object on this message: ",
-    "get_per": " the valid names are Jamie, Morgan, Micheal, Jordam, Taylor, Tracy, Robin, Alex. Now give me only the name on this mesage: "
+    "get_per": "the valid names are Jamie, Morgan, Micheal, Jordam, Taylor, Tracy, Robin, Alex. Now give me only the name on this mesage: "
 }
 
 
@@ -82,8 +81,6 @@ GoTo = 1
 Find = 2
 FindPerson = 3
 GotoBring = 4
-openai.api_key = "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"
-
 json_path = "/home/kevin/Desktop/workspace/home/TMR2023/robocup-home/catkin_home/src/humanAnalyzer/src/scripts/identities.json"
 
 INITIALIZATION_STATE = "init"
