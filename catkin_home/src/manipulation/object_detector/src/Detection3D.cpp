@@ -239,7 +239,49 @@ public:
       collision_object.mesh_poses.push_back(object_pose.pose);
       collision_object.operation = collision_object.ADD;
       planning_scene_interface_->applyCollisionObject(collision_object);
+      
+      const bool ADD_ENCLOSING_BOX = false;
+      if (ADD_ENCLOSING_BOX) {
+        // Add Box enclosing the object to Planning Scene
+        // Get Enclosing Measurements from PointCloud
+        pcl::PointXYZ minPt, maxPt;
+        for (auto &point: object_found.cluster->points) {
+          if (point.x < minPt.x) minPt.x = point.x;
+          if (point.y < minPt.y) minPt.y = point.y;
+          if (point.z < minPt.z) minPt.z = point.z;
+          if (point.x > maxPt.x) maxPt.x = point.x;
+          if (point.y > maxPt.y) maxPt.y = point.y;
+          if (point.z > maxPt.z) maxPt.z = point.z;
+        }
+        double width = maxPt.x - minPt.x;
+        double height = maxPt.y - minPt.y;
+        double depth = maxPt.z - minPt.z;
+        
+        shape_msgs::SolidPrimitive solid_primitive;
+        solid_primitive.type = solid_primitive.BOX;
+        solid_primitive.dimensions.resize(3);
+        float box_factor = 1.35;
+        solid_primitive.dimensions[0] = width * box_factor;
+        solid_primitive.dimensions[1] = height * box_factor;
+        solid_primitive.dimensions[2] = (depth * box_factor) / 2;
+        
+        moveit_msgs::CollisionObject collision_object_box;
+        collision_object_box.header.frame_id = BASE_FRAME;
+        collision_object_box.id = id + "_box";
+        collision_object_box.primitives.push_back(solid_primitive);
+        object_pose.pose.position.z += depth/2.0;
+        collision_object_box.primitive_poses.push_back(object_pose.pose);
+        collision_object_box.operation = collision_object_box.ADD;
+        planning_scene_interface_->applyCollisionObject(collision_object_box);
+      }  
+      ros::Duration(1.0).sleep();
+
+      // Refresh Octomap, ensuring pointcloud entry.
+      std_srvs::Empty clear_octomap_srv;
+      clear_octomap.call(clear_octomap_srv);
+      ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_);
     }
+
 
   }
 
@@ -572,7 +614,7 @@ public:
     segmentor.setModelType(pcl::SACMODEL_PLANE);
     segmentor.setMethodType(pcl::SAC_RANSAC);
     segmentor.setMaxIterations(1000); /* run at max 1000 iterations before giving up */
-    segmentor.setDistanceThreshold(0.01); /* tolerance for variation from model */
+    segmentor.setDistanceThreshold(0.02); /* tolerance for variation from model */
     segmentor.setInputCloud(cloud);
     
     /* Create the segmentation object for the planar model and set all the parameters */
@@ -796,7 +838,7 @@ public:
     //Set parameters for the clustering
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance(0.035); // 3.5cm
+    ec.setClusterTolerance(0.03); // 3cm
     ec.setMinClusterSize(25);
     ec.setMaxClusterSize(20000);
     ec.setSearchMethod(tree);

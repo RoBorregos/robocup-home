@@ -21,8 +21,8 @@
   
   <link name="apriltag" />
   <joint name="apriltag_joint" type="fixed">
-    <origin xyz="0.11625 0.03758 0" rpy="0 -1.57 3.1416" />
-    <parent link="link4" />
+    <origin xyz="0 -0.0375 0.0375" rpy="0 -1.57 1.57" />
+    <parent link="link5" />
     <child link="apriltag" />
   </joint>
   
@@ -308,7 +308,7 @@
   <xacro:include filename="$(find robot_description)/urdf/gripper/gripperFakeSF.urdf.xacro" />
   <xacro:include filename="$(find robot_description)/urdf/gripper/gripperSF.urdf.xacro" />
   
-  <xacro:load_gripperFakeSF attach_to="$(arg prefix)link_eef" xyz="0 0 0.003" rpy="-1.57 0 1.57" />
+  <xacro:load_gripperSF attach_to="$(arg prefix)link_eef" xyz="0 0 0.007" rpy="-1.57 0 1.57" />
   
 
 
@@ -316,6 +316,6 @@
   
    
   
-  <xacro:load_camera name="Cam1" attach_to="Base" x="-0.14733609953780444" y="-0.013216790422497737" z="1.5898169001977585" r_p="0.008378069114521033" r_r="0.7682487395321386" r_y="-1.6006887457492875" />
+  <xacro:load_camera name="Cam1" attach_to="Base" x="-0.1480668895189948" y="0.017240912957425025" z="1.5750724926280606" r_p="0.029148540802230845" r_r="0.8826864963968823" r_y="-1.5168108174976027" />
   <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.24" z="0.48" r_r="0.538132" r_p="0" r_y="-1.5708" />
 </robot>
