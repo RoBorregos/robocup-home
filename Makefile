@@ -110,7 +110,7 @@ noetic.shell:
 	@docker exec -it ros-home bash
 
 noetic.speech.shell:
-	@docker exec -it ros-home bash
+	@docker exec -it ros-homesp bash
 
 noetic.tiago.shell:
 	@docker exec -it ros-hometgo bash

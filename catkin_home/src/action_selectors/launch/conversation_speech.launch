@@ -1,7 +1,7 @@
 <launch>
     <!-- Devices -->
-    <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
-    <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/>
+    <!-- <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
+    <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/> -->
     <!-- <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
         <param name="RATE" value="15" />
         <param name="CAMERAID" value="2" />

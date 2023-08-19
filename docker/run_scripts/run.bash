@@ -30,7 +30,7 @@ if [ $# -eq 1 ]; then
         ADDITIONAL_COMMANDS="--env PULSE_SERVER=unix:/tmp/pulseaudio.socket
         --env PULSE_COOKIE=/tmp/pulseaudio.cookie
         --device /dev/video0
-        --volume ~/.config/pulse/cookie:/tmp/pulseaudio.cookie
+        --volume /home/oscar/.config/pulse/cookie:/tmp/pulseaudio.cookie
         --volume /tmp/pulseaudio.socket:/tmp/pulseaudio.socket
         --volume /tmp/pulseaudio.client.conf:/etc/pulse/client.conf"
     fi
@@ -47,8 +47,8 @@ $DOCKER_COMMAND -it -d\
     -v "$PWD/catkin_home/src:/catkin_home/src" \
     -v "$PWD/catkin_home/typings:/catkin_home/typings" \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    --name=ros-home \
-    ros:home \
+    --name=ros-homesp \
+    ros:homesp \
     bash
 
 if [ $# -eq 1 ]; then
