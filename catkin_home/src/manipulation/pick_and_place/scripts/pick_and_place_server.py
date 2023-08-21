@@ -262,34 +262,59 @@ class PickAndPlaceServer(object):
                         for planner in planners:
                             rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
                             
-                            pose_st = PoseStamped()
-                            pose_st.header = grasp.grasp_pose.header
-                            pose_st.pose = grasp.grasp_pose.pose
-                            self.pose_p.publish(pose_st)
-                            grasp.grasp_pose.pose.position.z += 0.04
-                            group.set_pose_target(grasp.grasp_pose.pose)
-                            group.set_goal_orientation_tolerance(numpy.deg2rad(5))
-                            group.set_goal_position_tolerance(0.012)
-                            group.set_max_velocity_scaling_factor(0.1)
-                            group.set_max_acceleration_scaling_factor(0.025)
-                            group.set_planning_pipeline_id(planner)
-                            group.set_planning_time(3)
+                            # pose_st = PoseStamped()
+                            # pose_st.header = grasp.grasp_pose.header
+                            # pose_st.pose = grasp.grasp_pose.pose
+                            # self.pose_p.publish(pose_st)
+                            # grasp.grasp_pose.pose.position.z += 0.04
+                            # adjust = 0.02
+                            # if grasp.grasp_pose.pose.position.x > 0.0:
+                            #     grasp.grasp_pose.pose.position.x -= adjust
+                            # else:
+                            #     grasp.grasp_pose.pose.position.x += adjust
+                            # # same with y
+                            # if grasp.grasp_pose.pose.position.y > 0.0:
+                            #     grasp.grasp_pose.pose.position.y -= adjust
+                            # else:
+                            #     grasp.grasp_pose.pose.position.y += adjust
+                            # group.set_pose_target(grasp.grasp_pose.pose)
+                            # group.set_goal_orientation_tolerance(numpy.deg2rad(5))
+                            # group.set_goal_position_tolerance(0.012)
+                            # group.set_max_velocity_scaling_factor(0.1)
+                            # group.set_max_acceleration_scaling_factor(0.025)
+                            # group.set_planning_pipeline_id(planner)
+                            # # set planner to kpiece
+                            # group.set_planner_id("RRTConnect")
+                            # # set planning threads
+                            # group.set_planning_time(25)
+                            # group.set_num_planning_attempts(10)
 
-                            t = time.time()
-                            res = group.plan()
-                            rospy.loginfo("Planning time 1: " + str(time.time() - t))
-                            if res[0] == False:
-                                rospy.loginfo("Planning failed")
-                                continue
-                            t = time.time()
-                            res = group.go(wait=True)
-                            rospy.loginfo("Execution time 1: " + str(time.time() - t))
+                            # t = time.time()
+                            # res = group.plan()
+                            # rospy.loginfo("Planning time 1: " + str(time.time() - t))
+                            # if res[0] == False:
+                            #     rospy.loginfo("Planning failed")
+                            #     continue
+                            # t = time.time()
+                            # res = group.go(wait=True)
+                            # rospy.loginfo("Execution time 1: " + str(time.time() - t))
                             
-                            group.stop()
-                            rospy.loginfo("Result: " + str(res))
-                            if res != True:
-                                break
+                            # group.stop()
+                            # rospy.loginfo("Result: " + str(res))
+                            # if res != True:
+                            #     break
                             
+                            adjust = 0.02
+                            if grasp.grasp_pose.pose.position.x > 0.0:
+                                grasp.grasp_pose.pose.position.x -= adjust
+                            else:
+                                grasp.grasp_pose.pose.position.x += adjust
+                            # same with y
+                            if grasp.grasp_pose.pose.position.y > 0.0:
+                                grasp.grasp_pose.pose.position.y -= adjust
+                            else:
+                                grasp.grasp_pose.pose.position.y += adjust
+
                             grasp.grasp_pose.pose.position.z -= 0.04
                             pose_st = PoseStamped()
                             pose_st.header = grasp.grasp_pose.header
@@ -297,21 +322,25 @@ class PickAndPlaceServer(object):
                             self.pose_p.publish(pose_st)
                             group.set_pose_target(grasp.grasp_pose.pose)
                             group.set_goal_orientation_tolerance(numpy.deg2rad(5))
-                            group.set_goal_position_tolerance(0.012)
-                            group.set_max_velocity_scaling_factor(0.1)
+                            group.set_goal_position_tolerance(0.02)
+                            group.set_max_velocity_scaling_factor(0.12)
                             group.set_max_acceleration_scaling_factor(0.025)
                             group.set_planning_pipeline_id(planner)
-                            group.set_planning_time(3)
-                            
+                            # disable path simplification
+                            group.set_planner_id("RRTConnect")
+                            # set planning threads
+                            group.set_planning_time(25)
+                            group.set_num_planning_attempts(10)
+
                             t = time.time()
                             res = group.plan()
-                            rospy.loginfo("Planning time 2: " + str(time.time() - t))
+                            rospy.loginfo("Planning time: " + str(time.time() - t))
                             if res[0] == False:
                                 rospy.loginfo("Planning failed")
                                 continue
                             t = time.time()
                             res = group.go(wait=True)
-                            rospy.loginfo("Execution time 2: " + str(time.time() - t))
+                            rospy.loginfo("Execution time: " + str(time.time() - t))
                             
                             group.stop()
                             rospy.loginfo("Result: " + str(res))
@@ -407,7 +436,7 @@ class PickAndPlaceServer(object):
                     AttachedCollisionObject(
                         link_name="Base_Gripper",
                         object=collision_object,
-                        touch_links=["Base_Gripper", "Servo1", "Servo2", "Dedo1", "Dedo2"],
+                        touch_links=["Base_Gripper", "Servo1", "Servo2", "Dedo1", "Dedo2", "link1"],
                         detach_posture= JointTrajectory(
                             joint_names=["Rev1Servo", "Rev2Servo"],
                             points=[JointTrajectoryPoint(
@@ -437,13 +466,19 @@ class PickAndPlaceServer(object):
                 group.set_pose_target(grasp.grasp_pose.pose)
                 group.set_goal_orientation_tolerance(numpy.deg2rad(5))
                 group.set_goal_position_tolerance(0.012)
-                group.set_max_velocity_scaling_factor(0.1)
+                group.set_max_velocity_scaling_factor(0.12)
                 group.set_max_acceleration_scaling_factor(0.025)
                 group.set_planning_pipeline_id("ompl")
                 group.set_planning_time(3)
                 res = group.plan()
                 res = group.go(wait=True)
                 group.stop()
+
+                # restore scene to detect collisions
+                rospy.loginfo("Restoring scene")
+                self.curr_scene = self.scene_srv(PlanningSceneComponents()).scene
+                self.curr_scene.allowed_collision_matrix = old_allowed_collision_matrix
+                self.apply_scene_srv(scene=self.curr_scene)
                 
                 return 1
 

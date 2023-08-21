@@ -9,7 +9,8 @@ import time
 import signal
 from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal, objectDetectionArray, objectDetection
 
-
+from std_msgs.msg import String
+import socket
 
 
 def handleIntInput(msg_ = "", range=(0, 10)):
@@ -34,14 +35,17 @@ class ManipulationClient(object):
         rospy.loginfo("Connecting to Manipulation Server")
         self.client = actionlib.SimpleActionClient('manipulationServer', manipulationServAction)
         self.client.wait_for_server()
+        #self.listener = rospy.Subscriber("/manipulation_publish_goal", String, self.receivedObj)
+        #self.talker = rospy.Publisher("/manipulation_publish_result", String, queue_size=20)
+        self.listener = rospy.Subscriber("navBridgeServer/listener", String, self.receivedObj)
+        self.talker = rospy.Publisher("navBridgeServer/talker", String, queue_size=20)
         rospy.loginfo("Connected to Manipulation Server")
         
         rospy.sleep(7)
 
-        result = False
         in_ = -1
         excepted = False
-        while not result and not rospy.is_shutdown() and in_ != 0:
+        while not rospy.is_shutdown() and in_ != 0:
             excepted = False
             ## Wait for user input
             try: 
@@ -63,7 +67,36 @@ class ManipulationClient(object):
             if in_ == -2:
                 continue
             
+            self.manipulation_goal(in_)
+
+    def receivedObj(self, msg):
+        result = False
+        in_ = -1
+        excepted = False
+        try: 
+            detections = rospy.wait_for_message("/detections", objectDetectionArray, timeout=10.0)
+        except rospy.exceptions.ROSException:
+            print("No objects detected")
+            excepted = True
+        
+        if not excepted:
+            print("Detected objects:")
+            for i, detection in enumerate(detections.detections):
+                print(f"({detection.label}) {detection.labelText}")
+                if msg.data == detection.labelText:
+                    in_ = detection.label
+            print("Selected object: ", in_, " ", msg.data)
+            if in_ == -1:
+                print("Object not found")
+                self.talker.publish(String("False"))
+                return
             result = self.manipulation_goal(in_)
+
+            if result:
+                self.talker.publish(String("True"))
+            else:
+                self.talker.publish(String("False"))
+
 
     def manipulation_goal(self, target = 1):
         class ManipulationGoalScope:

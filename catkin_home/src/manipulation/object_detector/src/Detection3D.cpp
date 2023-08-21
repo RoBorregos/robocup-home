@@ -280,6 +280,7 @@ public:
       std_srvs::Empty clear_octomap_srv;
       clear_octomap.call(clear_octomap_srv);
       ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_);
+      ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_);
     }
 
 
@@ -291,15 +292,18 @@ public:
     extractObjectDetails(cloud, plane_params, plane_params, false);
 
     // Z conditions to know if it is a plane parallel to the robot.
-    if (plane_params.max_z - plane_params.min_z > 0.15) { // Diff > 15cm, Not Parallel Plane 
+    if (plane_params.max_z - plane_params.min_z > 0.30) { // Diff > 30cm, Not Parallel Plane 
+      ROS_INFO_STREAM("Plane not parallel to the robot " << plane_params.max_z << " - " << plane_params.min_z << " > 0.15");
       return false;
     }
 
     if (plane_params.max_z > plane_max_height_) { // Z Value Ex. > than 30cm, Not Floor.
+      ROS_INFO_STREAM("Plane height too high. " << plane_params.max_z << " > " << plane_max_height_);
       return false;
     }
 
     if (plane_params.min_z < plane_min_height_) { // Z Value Ex. < than 30cm, Floor Detected.
+      ROS_INFO_STREAM("Plane height too low. " << plane_params.min_z << " < " << plane_min_height_);
       return false;
     }
 
@@ -776,6 +780,11 @@ public:
 
     /* Extract all objects from PointCloud using Clustering. */
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+    /*ObjectParams tmp_cloud;
+    tmp_cloud.mesh.reset(new shape_msgs::Mesh);
+    extractObjectDetails(cloud, tmp_cloud, plane_params);
+    ROS_INFO_STREAM("REMOVED PLANE IMAGE saved: " << "pcl_removedPlane.pcd");
+    pcl::io::savePCDFile("pcl_removedPlane.pcd", tmp_cloud.cluster_original);*/
     getClusters(cloud, clusters);
     int clustersFound = clusters.size();
     ROS_INFO_STREAM("Clusters Found: " << clustersFound);
@@ -879,4 +888,4 @@ int main(int argc, char** argv)
 
   // Spin
   ros::spin();
-}
+} 

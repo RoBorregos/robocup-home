@@ -69,7 +69,6 @@ class manipuationServer(object):
         if ARM_ENABLE:
             rospy.loginfo("Waiting for MoveGroupCommander ARM_TORSO...")
             self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
-            self.initARM()
         
         TEST_ARM_PLANNING = False
         if TEST_ARM_PLANNING:
@@ -111,6 +110,7 @@ class manipuationServer(object):
             self.grasp_config_list = rospy.Publisher("grasp_config_list", GraspConfigList, queue_size=5)
             rospy.wait_for_service('/detect_grasps_server_samples/detect_grasps_samples')
 
+        self.initARM()
         rospy.loginfo("Loaded everything...")
         
         # Initialize Manipulation Action Server
@@ -120,13 +120,20 @@ class manipuationServer(object):
         rospy.loginfo("Manipulation Server Initialized ...")
 
     
-    def moveARM(self, joints):
+    def moveARM(self, joints, speed):
         if VISION_ENABLE:
             self.toggle_octomap(False)
         ARM_JOINTS = rospy.get_param("ARM_JOINTS", ["arm_1_joint", "arm_2_joint", "arm_3_joint", "arm_4_joint", "arm_5_joint", "arm_6_joint", "arm_7_joint"])
         joint_state = JointState()
         joint_state.name = ARM_JOINTS
         joint_state.position = joints
+        # set speed
+        self.arm_group.set_max_velocity_scaling_factor(speed)
+        # set RRTConnect and timeout
+        self.arm_group.set_planner_id("RRTConnect")
+        self.arm_group.set_planning_time(20)
+        # planning attempts
+        self.arm_group.set_num_planning_attempts(10)
         self.arm_group.go(joint_state, wait=True)
         self.arm_group.stop()
         if VISION_ENABLE:
@@ -134,11 +141,14 @@ class manipuationServer(object):
 
     def initARM(self):
         ARM_INIT = rospy.get_param("ARM_INIT", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        self.moveARM(ARM_INIT)
+        ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        ARM_HOME = rospy.get_param("ARM_HOME", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        # Move to an easier to plan from location (facing front)
+        self.moveARM(ARM_INIT, 0.1)
     
     def graspARM(self):
         ARM_GRASP = rospy.get_param("ARM_GRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        self.moveARM(ARM_GRASP)
+        self.moveARM(ARM_GRASP, 0.2)
 
     def initHEAD(self):
         HEAD_JOINTS = rospy.get_param("HEAD_JOINTS", ["head_1_joint", "head_2_joint"])

@@ -21,6 +21,8 @@ ET.register_namespace('xacro', 'http://ros.org/wiki/xacro')
 URDF_PATH = 'src/robot_description/urdf/dashgo.urdf.xacro'
 
 tree = ET.parse(URDF_PATH, ET.XMLParser(encoding='utf-8'))
+# print tree info to check if it has loaded correctly
+print(ET.tostring(tree.getroot(), encoding='utf-8', method='xml'))
 root = tree.getroot()
 camera_tag = root.find(".//xacro:load_camera[@name='Cam1']", namespaces={"xacro": "http://ros.org/wiki/xacro"})
 
@@ -28,9 +30,9 @@ class CameraPosePublisher:
 
     def __init__(self):
         self.ARM_GROUP = "arm"
-        self.ARM_JOINTS = ["joint1", "joint2", "joint3", "joint4", "joint5"]
-        self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, -3.1416 / 4, 1.57]
-        self.ARM_HOME = [0.0, 0.0, 0.0, 0.0, 0.0]
+        self.ARM_JOINTS = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"]
+        self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, 0, -3.1416 / 4, -2.356]
+        self.ARM_HOME = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         rospy.init_node('camera_pose_publisher')
         
         self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
@@ -103,6 +105,8 @@ class CameraPosePublisher:
         joint_state = JointState()
         joint_state.name = self.ARM_JOINTS
         joint_state.position = joint_values
+        # set speed
+        self.arm_group.set_max_velocity_scaling_factor(0.1)
         self.arm_group.go(joint_state, wait=True)
         self.arm_group.stop()
 
