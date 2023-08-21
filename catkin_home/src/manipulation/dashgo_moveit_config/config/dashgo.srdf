@@ -28,6 +28,7 @@
         <joint name="joint3" value="0"/>
         <joint name="joint4" value="0"/>
         <joint name="joint5" value="0"/>
+        <joint name="joint6" value="-0.7854"/>
     </group_state>
     <group_state name="home" group="arm">
         <joint name="joint1" value="0"/>
@@ -35,13 +36,23 @@
         <joint name="joint3" value="0"/>
         <joint name="joint4" value="0"/>
         <joint name="joint5" value="0"/>
+        <joint name="joint6" value="-0.7854"/>
     </group_state>
     <group_state name="arm_grasp" group="arm">
         <joint name="joint1" value="1.57"/>
         <joint name="joint2" value="0"/>
         <joint name="joint3" value="-3.9"/>
-        <joint name="joint4" value="2.33"/>
-        <joint name="joint5" value="-1.57"/>
+        <joint name="joint4" value="0"/>
+        <joint name="joint5" value="2.33"/>
+        <joint name="joint6" value="-1.57"/>
+    </group_state>
+    <group_state name="arm_calibration" group="arm">
+        <joint name="joint1" value="-1.57"/>
+        <joint name="joint2" value="0"/>
+        <joint name="joint3" value="-0.785"/>
+        <joint name="joint4" value="0"/>
+        <joint name="joint5" value="-0.785"/>
+        <joint name="joint6" value="-2.356"/>
     </group_state>
     <group_state name="close" group="gripper">
         <joint name="Rev1Servo" value="0"/>
@@ -85,8 +96,8 @@
     <disable_collisions link1="Base_Gripper" link2="LlantaLoca2" reason="Never"/>
     <disable_collisions link1="Base_Gripper" link2="Servo1" reason="Adjacent"/>
     <disable_collisions link1="Base_Gripper" link2="Servo2" reason="Adjacent"/>
-    <disable_collisions link1="Base_Gripper" link2="link4" reason="Never"/>
-    <disable_collisions link1="Base_Gripper" link2="link5" reason="Adjacent"/>
+    <disable_collisions link1="Base_Gripper" link2="link5" reason="Never"/>
+    <disable_collisions link1="Base_Gripper" link2="link6" reason="Adjacent"/>
     <disable_collisions link1="Cam1" link2="Lidar" reason="Never"/>
     <disable_collisions link1="Cam1" link2="Llanta1" reason="Never"/>
     <disable_collisions link1="Cam1" link2="Llanta2" reason="Never"/>
@@ -177,10 +188,13 @@
     <disable_collisions link1="link1" link2="link2" reason="Adjacent"/>
     <disable_collisions link1="link1" link2="link_base" reason="Adjacent"/>
     <disable_collisions link1="link2" link2="link3" reason="Adjacent"/>
-    <disable_collisions link1="link2" link2="link4" reason="Never"/>
     <disable_collisions link1="link2" link2="link5" reason="Never"/>
+    <disable_collisions link1="link2" link2="link6" reason="Never"/>
     <disable_collisions link1="link2" link2="link_base" reason="Never"/>
-    <disable_collisions link1="link3" link2="link4" reason="Adjacent"/>
-    <disable_collisions link1="link3" link2="link5" reason="Never"/>
+    <disable_collisions link1="link3" link2="link5" reason="Adjacent"/>
+    <disable_collisions link1="link3" link2="link6" reason="Never"/>
+    <disable_collisions link1="link5" link2="link6" reason="Adjacent"/>
+    
     <disable_collisions link1="link4" link2="link5" reason="Adjacent"/>
+    <disable_collisions link1="link4" link2="link6" reason="Never"/>
 </robot>
