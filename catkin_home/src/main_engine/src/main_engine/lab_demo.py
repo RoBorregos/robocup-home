@@ -61,7 +61,9 @@ promts = {
     "come" : "come with me ",
     "unreached": "I am sorry, I couldn't understand your command, pleasy try again ",
     "sorry" : "I am sorry, I think i didn't get that",
-    "assign": "Can you please sit on the chair in front of me?"
+    "assign": "Can you please sit on the chair in front of me?",
+    "grapsped": "Object interaction finished",
+    "not_grasped": "Sorry, I couldn't grasp the object"
 }
 
 calls = {
@@ -70,7 +72,7 @@ calls = {
     "describe": "describe a person with the next attributes: ",
     "confirm" : "tell me only rue or False, the next message is a general confirmation, like ues, OK, got it:",
     "reached": "tell me only True or False, the next message is a confirmation that you reached a place:",
-    "get_loc": "the valid locations are printers, home, lockers. If you are not sure return '' Give me only the location on this message: ",
+    "get_loc": "the valid locations are printers or home. If you are not sure return '' Give me only the location on this message: ",
     "get_obj": "the valid objects are milk, cookies, cereal. If you are not sure return '' Now give me only the object on this message: ",
     "get_per": "the valid names are Jamie, Morgan, Micheal, Jordam, Taylor, Tracy, Robin, Alex. Now give me only the name on this mesage: "
 }
@@ -137,8 +139,8 @@ class gpsr(object):
         self.currentState =  INITIALIZATION_STATE
         self.iteration = 0
 
-        # self.move_base_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
-        # self.move_base_client.wait_for_server()
+        self.move_base_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+        self.move_base_client.wait_for_server()
         rospy.loginfo("Connected to move base server")
         f = open('/home/kevin/Desktop/workspace/home/TMR2023/robocup-home/catkin_home/src/main_engine/src/main_engine/nav.json')
         self.map_context = json.load(f)
@@ -173,7 +175,11 @@ class gpsr(object):
         #self.initial_pose = None
         #self.initial_pose_sub = rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.initial_pose_cb)
         self.is_moving = False
-
+        
+        #Manipulation message
+        self.manipulation_pub = rospy.Publisher('/navBridgeServer/talker', String, queue_size=10)
+        self.manipulation_sub = rospy.Subscriber('/navBridgeServer/listener', String, self.manipulation_callback)
+        self.manipulation_status = None
         #Face detection
 
         self.faces_subscriber = rospy.Subscriber("/faces", face_array, self.face_callback)
@@ -191,7 +197,7 @@ class gpsr(object):
         # Array of persons
         self.faces = None
         self.persons = []
-
+        
         # initialize embeddings and command variables
 
         self.embeddings = np.load("/home/kevin/Desktop/workspace/home/TMR2023/robocup-home/catkin_home/src/main_engine/src/main_engine/GoTo_embedding.npz")
@@ -204,9 +210,35 @@ class gpsr(object):
         self.cm_obj = None
         self.cm_person = None
         self.cm_pick = False
+        
 
         self.run()
         rospy.spin()
+    
+    def manipulation_callback(self, msg):
+        self.manipulation_status = msg.data
+        
+        
+    def grasp(self, object):
+        object = object.lower()
+        if object == "cereal":
+            object = "zucaritas"
+        if object == "milk":
+            object = "leche"
+        if object == "cookies":
+            object = "galletas"
+        object_msg = String()
+        object_msg.data = object
+
+        self.manipulation_pub.publish(object_msg)
+        
+        status = rospy.wait_for_message('/navBridgeServer/listener', String)
+        if status == "True":
+            self.say(promts["grasp_success"])
+            return True
+        elif status == "False":
+            self.say(promts["grasp_fail"])
+            return False
 
     def detectionPersonCallback(self, msg):
         # 1 Morgan - Emiliano
@@ -225,89 +257,31 @@ class gpsr(object):
         rospy.logwarn("Detected objects: " + str(self.detectedObjects))
 
     def execute_command(self, type_, location_, object_, person_):
-      rospy.logwarn("Executing command")
-      
-      if type_ == 1: # Go to Place
-        for key in self.map_context:
-          rospy.logwarn("Key in for: " + str(key))
-          rospy.logwarn("locatio: " + str(location_))
-          if key.lower() == location_.lower():
-            rospy.logwarn("Key inside if" + str(key))
-            pose = MoveBaseGoal()
-            pose.target_pose.header.frame_id = 'map'
-            pose.target_pose.pose.position.x = self.map_context[key]["safe_place"][0]
-            pose.target_pose.pose.position.y = self.map_context[key]["safe_place"][1]
-            pose.target_pose.pose.position.z = self.map_context[key]["safe_place"][2]
-            pose.target_pose.pose.orientation.x = self.map_context[key]["safe_place"][3]
-            pose.target_pose.pose.orientation.y = self.map_context[key]["safe_place"][4]
-            pose.target_pose.pose.orientation.z = self.map_context[key]["safe_place"][5]
-            pose.target_pose.pose.orientation.w = self.map_context[key]["safe_place"][6]
-            # self.move_base_client.send_goal(pose)
-            # res = self.move_base_client.wait_for_result()
-            break
-      if type_ == 2: # Go to Place and find object
-        for key in self.map_context:
-          if key.lower() == location_.lower():
-            for place in self.map_context[key]:
-                pose = MoveBaseGoal()
-                pose.target_pose.header.frame_id = 'map'
-                pose.target_pose.pose.position.x = self.map_context[key][place][0]
-                pose.target_pose.pose.position.y = self.map_context[key][place][1]
-                pose.target_pose.pose.position.z = self.map_context[key][place][2]
-                pose.target_pose.pose.orientation.x = self.map_context[key][place][3]
-                pose.target_pose.pose.orientation.y = self.map_context[key][place][4]
-                pose.target_pose.pose.orientation.z = self.map_context[key][place][5]
-                pose.target_pose.pose.orientation.w = self.map_context[key][place][6]
-                # self.moveToPose(pose)
-                # self.move_base_client.send_goal(pose)
-                # res = self.move_base_client.wait_for_result()
-
-            rospy.sleep(5)
-            import time
-            x = time.time()
-            success = False
-            self.detectedObjects = []
-            rate = rospy.Rate(10)
-            while (time.time() - x < 5.0):
-                if object_.lower() in self.detectedObjects:
-                    success = True
-                    self.say("Object Found")
-                    break
-                rospy.logwarn(object_.lower() + " not found")
-                rate.sleep()
-
-            if not success:
-                pass
-                # self.say("Not here, i'll keep looking")
-
-      if type_ == 3: # Go to Place and find person
-        for key in self.map_context:
-          if key.lower() == location_.lower():
-            for place in self.map_context[key]:
-                pose = MoveBaseGoal()
-                pose.target_pose.header.frame_id = 'map'
-                pose.target_pose.pose.position.x = self.map_context[key][place][0]
-                pose.target_pose.pose.position.y = self.map_context[key][place][1]
-                pose.target_pose.pose.position.z = self.map_context[key][place][2]
-                pose.target_pose.pose.orientation.x = self.map_context[key][place][3]
-                pose.target_pose.pose.orientation.y = self.map_context[key][place][4]
-                pose.target_pose.pose.orientation.z = self.map_context[key][place][5]
-                pose.target_pose.pose.orientation.w = self.map_context[key][place][6]
-                self.moveToPose(pose)
-                # self.move_base_client.send_goal(pose)
-                # self.move_base_client.wait_for_result()
-            rospy.sleep(5)
-            import time
-            x = time.time()
-            success = False
-            while (time.time() - x < 5.0):
-                if person_ == self.detectedPerson:
-                    success = True
-                    self.say("Person Found")
-                    break
-            if not success:
-                self.say("Not here, i'll keep looking")
-        if type == 4: # Go to []and bring me object
+        
+        rospy.logwarn("Executing command")
+        rospy.logwarn("Type: " + str(type_))
+        if type_ == 1: # Go to Place
+            for key in self.map_context:
+                rospy.logwarn("Key in for: " + str(key))
+                rospy.logwarn("locatio: " + str(location_))
+                if key.lower() == location_.lower():
+                    rospy.logwarn("Key inside if " + str(key))
+                    goal = MoveBaseGoal()
+                    goal.target_pose.header.frame_id = 'map'
+                    goal.target_pose.header.stamp = rospy.Time.now()
+                    goal.target_pose.pose.position.x = self.map_context[key]["safe_place"][0]
+                    goal.target_pose.pose.position.y = self.map_context[key]["safe_place"][1]
+                    goal.target_pose.pose.position.z = self.map_context[key]["safe_place"][2]
+                    goal.target_pose.pose.orientation.x = self.map_context[key]["safe_place"][3]
+                    goal.target_pose.pose.orientation.y = self.map_context[key]["safe_place"][4]
+                    goal.target_pose.pose.orientation.z = self.map_context[key]["safe_place"][5]
+                    goal.target_pose.pose.orientation.w = self.map_context[key]["safe_place"][6]
+                    rospy.logwarn("Sending goal")
+                    rospy.logwarn(goal)
+                    self.move_base_client.send_goal(goal)
+                    res = self.move_base_client.wait_for_result()
+                    rospy.logwarn("Result: " + str(res))
+        if type_ == 2: # Go to Place and find object
             for key in self.map_context:
                 if key.lower() == location_.lower():
                     for place in self.map_context[key]:
@@ -320,11 +294,77 @@ class gpsr(object):
                         pose.target_pose.pose.orientation.y = self.map_context[key][place][4]
                         pose.target_pose.pose.orientation.z = self.map_context[key][place][5]
                         pose.target_pose.pose.orientation.w = self.map_context[key][place][6]
-                        self.moveToPose(pose)
+                        # self.moveToPose(pose.target_pose)
+                        self.move_base_client.send_goal(pose)
+                        self.move_base_client.wait_for_result()
+
+                        rospy.sleep(5)
+                        import time
+                        x = time.time()
+                success = False
+                self.detectedObjects = []
+                rate = rospy.Rate(10)
+                while (time.time() - x < 5.0):
+                    if object_.lower() in self.detectedObjects:
+                        success = True
+                        self.say("Object Found")
+                        break
+                    rospy.logwarn(object_.lower() + " not found")
+                    rate.sleep()
+
+                if not success:
+                    pass
+                    # self.say("Not here, i'll keep looking")
+
+        if type_ == 3: # Go to Place and find person
+            for key in self.map_context:
+                if key.lower() == location_.lower():
+                    for place in self.map_context[key]:
+                        pose = MoveBaseGoal()
+                        pose.target_pose.header.frame_id = 'map'
+                        pose.target_pose.pose.position.x = self.map_context[key][place][0]
+                        pose.target_pose.pose.position.y = self.map_context[key][place][1]
+                        pose.target_pose.pose.position.z = self.map_context[key][place][2]
+                        pose.target_pose.pose.orientation.x = self.map_context[key][place][3]
+                        pose.target_pose.pose.orientation.y = self.map_context[key][place][4]
+                        pose.target_pose.pose.orientation.z = self.map_context[key][place][5]
+                        pose.target_pose.pose.orientation.w = self.map_context[key][place][6]
+                        # self.moveToPose(pose)
+                        self.move_base_client.send_goal(pose)
+                        self.move_base_client.wait_for_result()
+                        rospy.sleep(5)
+                    import time
+                    x = time.time()
+                    success = False
+                    while (time.time() - x < 5.0):
+                        if person_ == self.detectedPerson:
+                            success = True
+                            self.say("Person Found")
+                            break
+                    if not success:
+                        self.say("Not here, i'll keep looking")
+                        
+        if type_ == 4: # Go to []and bring me object
+            self.say("I am doing a manipulation task ")
+            for key in self.map_context:
+                if key.lower() == location_.lower():
+                    for place in self.map_context[key]:
+                        pose = MoveBaseGoal()
+                        pose.target_pose.header.frame_id = 'map'
+                        pose.target_pose.pose.position.x = -4.5
+                        pose.target_pose.pose.position.y = 0.63
+                        pose.target_pose.pose.position.z = 0
+                        pose.target_pose.pose.orientation.x = 0
+                        pose.target_pose.pose.orientation.y = 0
+                        pose.target_pose.pose.orientation.z = 0.67
+                        pose.target_pose.pose.orientation.w = 0.7
+                        # self.moveToPose(pose)
                         # self.move_base_client.send_goal(pose)
                         # self.move_base_client.wait_for_result()
                     rospy.sleep(5)
-            self.grasp(object_)
+            rospy.logwarn("calling grasp service")
+            if object_ is not None:
+                self.grasp(object_)
             
 
     def moveToPose(self, pose):
@@ -332,33 +372,33 @@ class gpsr(object):
         move_base_goal.target_pose.header.frame_id = 'map'
         move_base_goal.target_pose.pose = pose
         rospy.logwarn("Before movebase")
-        # self.move_base_client.send_goal(move_base_goal)
+        self.move_base_client.send_goal(move_base_goal)
         rospy.logwarn("Sended")
-        # res = self.move_base_client.wait_for_result()
+        res = self.move_base_client.wait_for_result()
         # rospy.logwarn(res)
     
     def moveTo(self, option):
         move_base_goal = MoveBaseGoal()
         if option == 1: 
             move_base_goal.target_pose.header.frame_id = 'map'
-            move_base_goal.target_pose.pose.position.x = 2.59
-            move_base_goal.target_pose.pose.position.y = -0.1526
-            move_base_goal.target_pose.pose.position.z = 0.0
+            move_base_goal.target_pose.pose.position.x = 4.72
+            move_base_goal.target_pose.pose.position.y = -1.31
+            move_base_goal.target_pose.pose.position.z = -0.49
             move_base_goal.target_pose.pose.orientation.x = 0
             move_base_goal.target_pose.pose.orientation.y = 0
             move_base_goal.target_pose.pose.orientation.z = 0.99
             move_base_goal.target_pose.pose.orientation.w = 0.0678
         else: 
             move_base_goal.target_pose.header.frame_id = 'map'
-            move_base_goal.target_pose.pose.position.x = 2.805
-            move_base_goal.target_pose.pose.position.y = -0.3707
-            move_base_goal.target_pose.pose.position.z = 0.0
+            move_base_goal.target_pose.pose.position.x = -0.59
+            move_base_goal.target_pose.pose.position.y = -2.43
+            move_base_goal.target_pose.pose.position.z = 0.0033
             move_base_goal.target_pose.pose.orientation.x = 0
             move_base_goal.target_pose.pose.orientation.y = 0
             move_base_goal.target_pose.pose.orientation.z = -0.782
             move_base_goal.target_pose.pose.orientation.w = 0.622
-        # self.move_base_client.send_goal(move_base_goal)
-        # self.move_base_client.wait_for_result()
+        self.move_base_client.send_goal(move_base_goal)
+        self.move_base_client.wait_for_result()
 
     def get_embedding(self, text, model="text-embedding-ada-002"):
         rospy.logwarn(text)
@@ -379,19 +419,19 @@ class gpsr(object):
     def goToOrigin(self):
         move_base_goal = MoveBaseGoal()
         move_base_goal.target_pose.header.frame_id = 'map'
-        move_base_goal.target_pose.pose.position.x = 2.46
-        move_base_goal.target_pose.pose.position.y = -0.33
-        move_base_goal.target_pose.pose.position.z = -0.5
+        move_base_goal.target_pose.pose.position.x = -4.5
+        move_base_goal.target_pose.pose.position.y = 0.63
+        move_base_goal.target_pose.pose.position.z = 0
         move_base_goal.target_pose.pose.orientation.x = 0
         move_base_goal.target_pose.pose.orientation.y = 0
-        move_base_goal.target_pose.pose.orientation.z = 0
-        move_base_goal.target_pose.pose.orientation.w = 1
+        move_base_goal.target_pose.pose.orientation.z = 0.67
+        move_base_goal.target_pose.pose.orientation.w = 0.7
         rospy.loginfo('Sending move_base goal: {}'.format(move_base_goal))
-        # self.move_base_client.send_goal(move_base_goal)
-        # self.move_base_client.wait_for_result()
+        self.move_base_client.send_goal(move_base_goal)
+        self.move_base_client.wait_for_result()
 
     def run(self):
-        self.goToOrigin()
+        # self.goToOrigin()
         while not rospy.is_shutdown():
             rospy.loginfo("-----------------------------------------RUN-----------------------------------------")
 
@@ -436,10 +476,10 @@ class gpsr(object):
                     self.say(promts["unreached"])
         
             elif self.currentState == DOING:
-                rospy.logwarn(" The command is " + str(command) + " " + str(self.cm_location) + str(self.cm_obj) + str(self.cm_person)  )
-                self.say(" The command is " + str(command) + " " + str(self.cm_location) + str(self.cm_obj) + str(self.cm_person))
+                rospy.logwarn(" The place is " + str(command) + " " + str(self.cm_location) + str(self.cm_obj) + str(self.cm_person)  )
+                self.say(" Place is " + str(command) + " location is: " + str(self.cm_location) + " Object is: " + str(self.cm_obj))
                 self.execute_command(command,self.cm_location,self.cm_obj, self.cm_person)
-                self.goToOrigin()
+                # self.goToOrigin()
                 self.currentState = COMMANDER
 
             elif self.currentState == END_STATE:
