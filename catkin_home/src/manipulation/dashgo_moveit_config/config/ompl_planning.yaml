@@ -157,7 +157,7 @@ arm:
     - SPARS
     - SPARStwo
   projection_evaluator: joints(joint1,joint2)
-  longest_valid_segment_fraction: 0.2
+  longest_valid_segment_fraction: 0.1
 gripper:
   planner_configs:
     - AnytimePathShortening
