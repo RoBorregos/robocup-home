@@ -4,10 +4,11 @@
 #include "Plot.h"
 
 Movement *robot = nullptr;
-bool ROS_ENABLE = true;
+bool ROS_ENABLE = false;
 bool CHECK_PID = false;
-bool CHECK_MOTORS = false;
+bool CHECK_MOTORS = true;
 bool CHECK_ENCODERS = false;
+
 
 void setup() {
     Serial.begin(57600);
