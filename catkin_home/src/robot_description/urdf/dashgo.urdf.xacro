@@ -316,6 +316,6 @@
   
    
   
-  <xacro:load_camera name="Cam1" attach_to="Base_Gripper" x="0.05" y="0" z="-0.05" r_p="0" r_r="0" r_y="0" />
+  <xacro:load_camera name="Cam1" attach_to="Base_Gripper" x="0.07" y="-0.05" z="0.0" r_p="-0.785398" r_r="1.5707" r_y="0.0" />
   <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.24" z="0.48" r_r="0.538132" r_p="0" r_y="-1.5708" />
 </robot>
