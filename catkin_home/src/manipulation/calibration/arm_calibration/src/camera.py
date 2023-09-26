@@ -45,16 +45,16 @@ class CameraPosePublisher:
         self.move_arm(self.ARM_CALIBRATION)
         time.sleep(8.5) # Wait for an accurate detection.
         try:
-            # Get the transforms between 'base_footprint', 'apriltag', and 'tag_5'
+            # Get the transforms between 'Base_Gripper_footprint', 'apriltag', and 'tag_5'
             print("Waiting for transforms...")
-            self.listener.waitForTransform('Base', 'apriltag', rospy.Time(0), rospy.Duration(5.0))
-            self.listener.waitForTransform('Base', 'tag_5', rospy.Time(0), rospy.Duration(5.0))
-            self.listener.waitForTransform('Base', 'Cam1', rospy.Time(0), rospy.Duration(5.0))
+            self.listener.waitForTransform('Base_Gripper', 'apriltag', rospy.Time(0), rospy.Duration(5.0))
+            self.listener.waitForTransform('Base_Gripper', 'tag_5', rospy.Time(0), rospy.Duration(5.0))
+            self.listener.waitForTransform('Base_Gripper', 'Cam1', rospy.Time(0), rospy.Duration(5.0))
             self.listener.waitForTransform('Cam1', 'tag_5', rospy.Time(0), rospy.Duration(5.0))
             print("Got transforms!")
-            (trans1, rot1) = self.listener.lookupTransform('Base', 'apriltag', rospy.Time(0))
-            (trans2, rot2) = self.listener.lookupTransform('Base', 'tag_5', rospy.Time(0))
-            (trans3, rot3) = self.listener.lookupTransform('Base', 'Cam1', rospy.Time(0))
+            (trans1, rot1) = self.listener.lookupTransform('Base_Gripper', 'apriltag', rospy.Time(0))
+            (trans2, rot2) = self.listener.lookupTransform('Base_Gripper', 'tag_5', rospy.Time(0))
+            (trans3, rot3) = self.listener.lookupTransform('Base_Gripper', 'Cam1', rospy.Time(0))
             (trans4, rot4) = self.listener.lookupTransform('Cam1', 'tag_5', rospy.Time(0))
             print("Got matrices!")
             # Fix Rotation Difference between 'apriltag' and 'tag_5'
@@ -65,9 +65,9 @@ class CameraPosePublisher:
             # Publish the camera transform with the rotation fixed.
             broadcasterThread = threading.Thread(target=self.send_transform, args=(trans3, rot_fixed, trans4, rot4))
             broadcasterThread.start()
-            # Get the transform between 'Base' and 'tag_fixed' (the detection with the fixed rotation).
-            self.listener.waitForTransform('Base', 'tag_fixed', rospy.Time(0), rospy.Duration(5.0))
-            (trans6, _) = self.listener.lookupTransform('Base', 'tag_fixed', rospy.Time(0))
+            # Get the transform between 'Base_Gripper' and 'tag_fixed' (the detection with the fixed rotation).
+            self.listener.waitForTransform('Base_Gripper', 'tag_fixed', rospy.Time(0), rospy.Duration(5.0))
+            (trans6, _) = self.listener.lookupTransform('Base_Gripper', 'tag_fixed', rospy.Time(0))
             self.publishRotationFixedTransform = False
             broadcasterThread.join()
 
@@ -76,7 +76,7 @@ class CameraPosePublisher:
             trans_cam = np.add(trans3, trans_diff)
 
             # Publish the resultant transform
-            self.broadcaster.sendTransform(trans_cam, rot_fixed, rospy.Time.now(), 'Cam1', 'Base')
+            self.broadcaster.sendTransform(trans_cam, rot_fixed, rospy.Time.now(), 'Cam1', 'Base_Gripper')
                 
             # Update the URDF file with the new camera transform.
             rot_euler_fixed = transformations.euler_from_quaternion(rot_fixed)
@@ -113,7 +113,7 @@ class CameraPosePublisher:
     def send_transform(self, trans, rot, detection_trans, detection_rot):
         start = time.time()
         while(time.time() - start < 5 and self.publishRotationFixedTransform):
-            self.broadcaster.sendTransform(trans, rot, rospy.Time.now(), 'New_Cam1', 'Base')
+            self.broadcaster.sendTransform(trans, rot, rospy.Time.now(), 'New_Cam1', 'Base_Gripper')
             self.broadcaster.sendTransform(detection_trans, detection_rot, rospy.Time.now(), 'tag_fixed', 'New_Cam1') 
    
 if __name__ == '__main__':
