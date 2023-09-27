@@ -13,7 +13,7 @@ from std_msgs.msg import Bool
 from std_srvs.srv import SetBool
 from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal, objectDetectionArray, objectDetection
 from pick_and_place.msg import PickAndPlaceAction, PickAndPlaceGoal
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Vector3
 from sensor_msgs.msg import JointState
 from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
@@ -35,30 +35,7 @@ class MoveItErrorCodes(Enum):
     TIMED_OUT = -6
     PREEMPTED = -7
 
-
-OBJECTS_NAME= {
-    1 : 'Coca-Cola',
-    2 : 'Coffee',
-    3 : 'Nesquik',
-    4 : 'Zucaritas',
-    5 : 'Harpic'
-}
-OBJECTS_ID= {
-    'Coca-Cola' : 1,
-    'Coffee' : 2,
-    'Nesquik' : 3,
-    'Zucaritas' : 4,
-    'Harpic' : 5
-}
-class ManipulationGoals(Enum):
-    COKE = 1
-    COFFEE = 2
-    NESQUIK = 3
-    ZUCARITAS = 4
-    HARPIC = 5
-    BIGGEST = 6
-
-ARM_ENABLE = False
+ARM_ENABLE = True
 HEAD_ENABLE = False
 VISION_ENABLE = True
 MANIPULATION_ENABLE = True
@@ -92,7 +69,6 @@ class manipuationServer(object):
         if ARM_ENABLE:
             rospy.loginfo("Waiting for MoveGroupCommander ARM_TORSO...")
             self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
-            self.initARM()
         
         TEST_ARM_PLANNING = False
         if TEST_ARM_PLANNING:
@@ -117,8 +93,9 @@ class manipuationServer(object):
         if VISION_ENABLE:
             self.vision2D_enable = rospy.Publisher("detectionsActive", Bool, queue_size=10)
             rospy.loginfo("Waiting for ComputerVision 3D AS...")
-            self.vision3D_as = actionlib.SimpleActionClient("Detect3DFloor", DetectObjects3DAction)
+            self.vision3D_as = actionlib.SimpleActionClient("Detect3D", DetectObjects3DAction)
             self.vision3D_as.wait_for_server()
+            rospy.loginfo("Loaded ComputerVision 3D AS...")
 
         # # Manipulation
         if MANIPULATION_ENABLE:
@@ -133,6 +110,7 @@ class manipuationServer(object):
             self.grasp_config_list = rospy.Publisher("grasp_config_list", GraspConfigList, queue_size=5)
             rospy.wait_for_service('/detect_grasps_server_samples/detect_grasps_samples')
 
+        self.initARM()
         rospy.loginfo("Loaded everything...")
         
         # Initialize Manipulation Action Server
@@ -140,17 +118,22 @@ class manipuationServer(object):
         self._as.start()
 
         rospy.loginfo("Manipulation Server Initialized ...")
-        # while 1:
-        #     rospy.loginfo("Tolerance: " + str(self.arm_group.get_goal_joint_tolerance()))
-        #     rospy.sleep(1)
+
     
-    def moveARM(self, joints):
+    def moveARM(self, joints, speed):
         if VISION_ENABLE:
             self.toggle_octomap(False)
         ARM_JOINTS = rospy.get_param("ARM_JOINTS", ["arm_1_joint", "arm_2_joint", "arm_3_joint", "arm_4_joint", "arm_5_joint", "arm_6_joint", "arm_7_joint"])
         joint_state = JointState()
         joint_state.name = ARM_JOINTS
         joint_state.position = joints
+        # set speed
+        self.arm_group.set_max_velocity_scaling_factor(speed)
+        # set RRTConnect and timeout
+        self.arm_group.set_planner_id("RRTConnect")
+        self.arm_group.set_planning_time(20)
+        # planning attempts
+        self.arm_group.set_num_planning_attempts(10)
         self.arm_group.go(joint_state, wait=True)
         self.arm_group.stop()
         if VISION_ENABLE:
@@ -158,11 +141,14 @@ class manipuationServer(object):
 
     def initARM(self):
         ARM_INIT = rospy.get_param("ARM_INIT", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        self.moveARM(ARM_INIT)
+        ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        ARM_HOME = rospy.get_param("ARM_HOME", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        # Move to an easier to plan from location (facing front)
+        self.moveARM(ARM_INIT, 0.1)
     
     def graspARM(self):
         ARM_GRASP = rospy.get_param("ARM_GRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        self.moveARM(ARM_GRASP)
+        self.moveARM(ARM_GRASP, 0.2)
 
     def initHEAD(self):
         HEAD_JOINTS = rospy.get_param("HEAD_JOINTS", ["head_1_joint", "head_2_joint"])
@@ -193,7 +179,7 @@ class manipuationServer(object):
         
 
     def execute_cb(self, goal):
-        target = ManipulationGoals(goal.object_id)
+        target = goal.object_id
 
         if HEAD_ENABLE:
             self.headTableDiscovery()
@@ -204,6 +190,7 @@ class manipuationServer(object):
 
         # Get Objects:
         rospy.loginfo("Getting objects")
+        self.target_label = ""
         found = self.get_object(target)
         if not found:
             rospy.loginfo("Object Not Found")
@@ -230,28 +217,44 @@ class manipuationServer(object):
             rospy.loginfo("Grasping Points Not Found")
             self._as.set_succeeded(manipulationServResult(result = False))
             return
+        
+        if not MANIPULATION_ENABLE or not ARM_ENABLE:
+            self._as.set_succeeded(manipulationServResult(result = False))
+            return
 
         # Move to Object
         self.toggle_octomap(False)
         self.grasp_config_list.publish(grasping_points)
-        rospy.loginfo("Robot Picking " + target.name + " up")
-        result = self.pick(self.object_pose, "current", allow_contact_with_ = ["<octomap>"], grasping_points = grasping_points)
+        rospy.loginfo("Robot Picking " + self.target_label + " up")
+        result = self.pick(self.object_pose, "current", allow_contact_with_ = [], grasping_points = grasping_points)
         if result != 1:
+            self.toggle_octomap(True)
             rospy.loginfo("Pick Failed")
             self._as.set_succeeded(manipulationServResult(result = False))
             return
-        rospy.loginfo("Robot Picked " + target.name + " up")
-        ## Move Up
-        self.object_pose.pose.position.z += 0.05
-        self.object_pose.pose.position.x -= 0.1
-        self.arm_group.set_pose_target(self.object_pose)
-        self.arm_group.plan()
-        self.arm_group.go(wait=True)
-        self.arm_group.stop()    
-        self._as.set_succeeded(manipulationServResult(result = True))
+        rospy.loginfo("Robot Picked " + self.target_label + " up")
         self.toggle_octomap(True)
+        ## Move Up
+        self.graspARM()
+        self._as.set_succeeded(manipulationServResult(result = True))
     
     def get_grasping_points(self):
+        def add_default_grasp(grasp_configs):
+            rpy_degrees = [180.0, 90.0, 0.0]
+            rpy_rad = [math.radians(x) for x in rpy_degrees]
+            quat = tf.transformations.quaternion_from_euler(rpy_rad[0], rpy_rad[1], rpy_rad[2])
+            matrix = tf.transformations.quaternion_matrix(quat)
+            R = numpy.eye(4)
+            R[:3, :3] = matrix[:3, :3]
+            approach = numpy.dot(R, numpy.array([1, 0, 0, 1]))[:3]
+            approach = Vector3(approach[0], approach[1], approach[2])
+            binormal = numpy.dot(R, numpy.array([0, 1, 0, 1]))[:3]
+            binormal = Vector3(binormal[0], binormal[1], binormal[2])
+            axis = numpy.dot(R, numpy.array([0, 0, 1, 1]))[:3]
+            axis = Vector3(axis[0], axis[1], axis[2])
+            # grasp_configs.grasps.append(GraspConfig(0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+            return grasp_configs
+
         attempts = 0
         while attempts < 3:
             try:
@@ -261,11 +264,12 @@ class manipuationServer(object):
                 rospy.loginfo("Getting Grasping Points")
                 resp = detect_grasps(self.object_cloud).grasp_configs
                 if len(resp.grasps) > 0:
-                    return resp
+                    return add_default_grasp(resp)
                 rospy.loginfo("No Grasping Points Found")
             except rospy.ServiceException as e:
                 rospy.loginfo("Service call failed: %s"%e)
             time.sleep(0.5)
+        
         return None
         
 
@@ -325,7 +329,7 @@ class manipuationServer(object):
 
         return PlaceScope.error_code
 
-    def get_object(self, target = ManipulationGoals['BIGGEST']):
+    def get_object(self, target = -1):
         
         class GetObjectsScope:
             success = False
@@ -359,8 +363,8 @@ class manipuationServer(object):
             GetObjectsScope.height_plane = result.height_plane
             GetObjectsScope.result_received = True
 
-        if target == ManipulationGoals['BIGGEST']:
-            goal = DetectObjects3DGoal()
+        if target == -1: # Biggest Object
+            goal = DetectObjects3DGoal(plane_min_height = 0.2, plane_max_height = 3.0) # Table
         else:
             # Search for Target
             attempts = 0
@@ -375,11 +379,12 @@ class manipuationServer(object):
                 if len(detections.detections) == 0:
                     attempts += 1
                     continue
-                rospy.loginfo("Objects Found:" + str(len(detections.detections)))
+
                 for detection in detections.detections:
-                    if detection.labelText == OBJECTS_NAME[target.value]:
+                    if detection.label == target:
                         rospy.loginfo("Target Found:" + detection.labelText)
-                        goal = DetectObjects3DGoal(force_object = objectDetectionArray(detections = [detection]))
+                        self.target_label = detection.labelText
+                        goal = DetectObjects3DGoal(force_object = objectDetectionArray(detections = [detection]), plane_min_height = 0.2, plane_max_height = 3.0) # Table
                         GetObjectsScope.detection = detection
                         success = True
                         break

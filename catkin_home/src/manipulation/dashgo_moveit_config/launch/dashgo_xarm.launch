@@ -15,7 +15,7 @@
   <arg name="jnt_stat_pub_rate" default="10" />
 
   <!-- common: bring up node to enable real xArm control -->
-  <include file="$(find xarm_bringup)/launch/xarm5_server.launch">
+  <include file="$(find xarm_bringup)/launch/xarm6_server.launch">
     <arg name="robot_ip" value="$(arg robot_ip)" />
     <arg name="report_type" value="$(arg report_type)" />
     <arg name="use_moveit" value="true" />
@@ -27,8 +27,8 @@
   </include>
 
   <!-- load the joint trajectory controller specified in yaml -->
-  <rosparam file="$(find xarm_controller)/config/xarm5_traj_controller.yaml" command="load" ns="$(arg xarm_hw_ns)"/>
-  <arg name="xarm_traj_controller" value="$(eval 'xarm5_traj_controller_velocity' if arg('velocity_control') else 'xarm5_traj_controller')" />
+  <rosparam file="$(find xarm_controller)/config/xarm6_traj_controller.yaml" command="load" ns="$(arg xarm_hw_ns)"/>
+  <arg name="xarm_traj_controller" value="$(eval 'xarm6_traj_controller_velocity' if arg('velocity_control') else 'xarm6_traj_controller')" />
   <node
     name="traj_controller_spawner"
     pkg="controller_manager"
@@ -53,11 +53,16 @@
   <include file="$(find dashgo_moveit_config)/launch/moveit_rviz_common.launch">
     <arg name="jnt_stat_source" value="[$(arg xarm_hw_ns)/joint_states, DASHGO/joint_states]" />
     <arg name="jnt_stat_pub_rate" value="$(arg jnt_stat_pub_rate)"/>
+    <arg name="pipeline" default="ompl" />
     <arg name="show_rviz" value="$(arg show_rviz)" />
     <arg name="pub_static_odom" default="false" />
   </include>
 
   <!-- Run Octomap Toggle Service -->
   <node name="OctomapInput" pkg="dashgo_moveit_config" type="OctomapInput" output="screen" />
+
+  <!-- If needed, broadcast static tf for robot root -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 odom base_footprint" />
+  <!-- <node name="azureSpeechText" pkg="action_selectors" type="AzureSpeechToText" output="screen" /> -->
   
 </launch>

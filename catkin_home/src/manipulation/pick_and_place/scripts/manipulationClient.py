@@ -7,46 +7,25 @@ from geometry_msgs.msg import PoseStamped
 from enum import Enum
 import time
 import signal
+from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal, objectDetectionArray, objectDetection
 
-OBJECTS_NAME= {
-    1 : 'Coca-Cola',
-    2 : 'Coffee',
-    3 : 'Nesquik',
-    4 : 'Zucaritas',
-    5 : 'Harpic'
-}
-OBJECTS_ID= {
-    'Coca-Cola' : 1,
-    'Coffee' : 2,
-    'Nesquik' : 3,
-    'Zucaritas' : 4,
-    'Harpic' : 5
-}
-class ManipulationGoals(Enum):
-    COKE = 1
-    COFFEE = 2
-    NESQUIK = 3
-    ZUCARITAS = 4
-    HARPIC = 5
-    BIGGEST = 6
+from std_msgs.msg import String
+import socket
 
-def generateObjectString():
-    result = ""
-    for object_id in OBJECTS_NAME:
-        object_ = OBJECTS_NAME[object_id]
-        result += str(object_id) + ") " + object_ + "\n"
-    result += "0) Exit"
-    return result 
 
 def handleIntInput(msg_ = "", range=(0, 10)):
-    x = -1
+    x = range[0] - 1
     while x < range[0] or x > range[1]:
         print(msg_)
         while True:
             x = input()
 
-            if x and x.isnumeric():
+            # Check Positive and Negative Numbers
+            try:
+                x = int(x)
                 break
+            except ValueError:
+                continue
         x = int(x)
     return x
 
@@ -56,27 +35,70 @@ class ManipulationClient(object):
         rospy.loginfo("Connecting to Manipulation Server")
         self.client = actionlib.SimpleActionClient('manipulationServer', manipulationServAction)
         self.client.wait_for_server()
+        #self.listener = rospy.Subscriber("/manipulation_publish_goal", String, self.receivedObj)
+        #self.talker = rospy.Publisher("/manipulation_publish_result", String, queue_size=20)
+        self.listener = rospy.Subscriber("navBridgeServer/listener", String, self.receivedObj)
+        self.talker = rospy.Publisher("navBridgeServer/talker", String, queue_size=20)
         rospy.loginfo("Connected to Manipulation Server")
         
         rospy.sleep(7)
 
-        result = False
         in_ = -1
-        while not result and not rospy.is_shutdown() and in_ != 0:
+        excepted = False
+        while not rospy.is_shutdown() and in_ != 0:
+            excepted = False
             ## Wait for user input
-            in_ = handleIntInput("(1) Zucaritas, (2) Coca-Cola, (3) Harpic", range=(0, 3))
+            try: 
+                detections = rospy.wait_for_message("/detections", objectDetectionArray, timeout=10.0)
+            except rospy.exceptions.ROSException:
+                print("No objects detected")
+                excepted = True
+            
+            if excepted:
+                in_ = handleIntInput("(1) Zucaritas, (2) Coca-Cola, (3) Harpic, (-2 Refresh, -1 Biggest , 0 to exit):", range=(-100, 100))
+            else:
+                print("Detected objects:")
+                for i, detection in enumerate(detections.detections):
+                    print(f"({detection.label}) {detection.labelText}")
+
+                in_ = handleIntInput("Select object to pick (-2 Refresh, -1 Biggest , 0 to exit): ", (-100, 100))
             if in_ == 0:
                 break
-            if in_ == 1:
-                x = OBJECTS_ID['Zucaritas']
-            elif in_ == 2:
-                x = OBJECTS_ID['Coca-Cola']
-            elif in_ == 3:
-                x = OBJECTS_ID['Harpic']
+            if in_ == -2:
+                continue
             
-            result = self.manipulation_goal(ManipulationGoals(x))    
+            self.manipulation_goal(in_)
 
-    def manipulation_goal(self, target = ManipulationGoals.COKE):
+    def receivedObj(self, msg):
+        result = False
+        in_ = -1
+        excepted = False
+        try: 
+            detections = rospy.wait_for_message("/detections", objectDetectionArray, timeout=10.0)
+        except rospy.exceptions.ROSException:
+            print("No objects detected")
+            excepted = True
+        
+        if not excepted:
+            print("Detected objects:")
+            for i, detection in enumerate(detections.detections):
+                print(f"({detection.label}) {detection.labelText}")
+                if msg.data == detection.labelText:
+                    in_ = detection.label
+            print("Selected object: ", in_, " ", msg.data)
+            if in_ == -1:
+                print("Object not found")
+                self.talker.publish(String("False"))
+                return
+            result = self.manipulation_goal(in_)
+
+            if result:
+                self.talker.publish(String("True"))
+            else:
+                self.talker.publish(String("False"))
+
+
+    def manipulation_goal(self, target = 1):
         class ManipulationGoalScope:
             object_ = target
             result = False
@@ -94,7 +116,7 @@ class ManipulationClient(object):
 
         rospy.loginfo("Sending Manipulation Goal")
         self.client.send_goal(
-                    manipulationServGoal(object_id = ManipulationGoalScope.object_.value),
+                    manipulationServGoal(object_id = ManipulationGoalScope.object_),
                     feedback_cb=manipulation_goal_feedback,
                     done_cb=get_result_callback)
         

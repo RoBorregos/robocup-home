@@ -2,7 +2,7 @@
   <!-- By default, we do not start a database (it can be large) -->
   <arg name="db" default="false" />
   <!-- Allow user to specify database location -->
-  <arg name="db_path" default="$(find xarm5_moveit_config)/default_warehouse_mongo_db" />
+  <arg name="db_path" default="$(find xarm6_moveit_config)/default_warehouse_mongo_db" />
   <!-- By default, we are not in debug mode -->
   <arg name="debug" default="false" />
   <!-- By default, hide joint_state_publisher's GUI -->
@@ -20,6 +20,9 @@
   <arg name="pub_tf" default="true" />
   <!-- option to show rviz or not -->
   <arg name="show_rviz" default="true" />
+
+  <!-- Pipeline -->
+  <arg name="pipeline" default="ompl" />
 
   <!-- option to publish static odom tf -->
   <arg name="pub_static_odom" default="false" />
@@ -41,6 +44,7 @@
   <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
   <include if="$(arg load_move_group)" file="$(find dashgo_moveit_config)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="pipeline" value="$(arg pipeline)"/>
     <arg name="load_robot_description" value="true"/>
     <arg name="info" value="true"/>
     <arg name="debug" value="$(arg debug)"/>

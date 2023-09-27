@@ -39,7 +39,7 @@
   
   <!-- GPD -->
 	<node name="detect_grasps_server_samples" pkg="gpd_ros" type="detect_grasps_server_samples" output="screen" respawn="true" args="">
-    <param name="config_file" value="/catkin_home/src/manipulation/pick_and_place/config/dashgo_eigen_params.cfg" />
+    <param name="config_file" value="$(find pick_and_place)/config/dashgo_eigen_params.cfg" />
     <param name="rviz_topic" value="plot_grasps" />
   </node>
   

@@ -11,8 +11,7 @@
         <origin xyz="${xyz}" rpy="${rpy}"/>
       </joint>
     </xacro:unless>
-    <link
-      name="Base_Gripper">
+    <link name="Base_Gripper">
       <inertial>
         <origin
           xyz="0.0235336388798847 -0.000229446948367704 0.0267925511331642"
@@ -58,8 +57,7 @@
       <child link="end_effector_link" />
       <origin xyz="0.156 0 0.04" rpy="0 0 0" />
     </joint>
-    <link
-      name="Servo1">
+    <link name="Servo1">
       <inertial>
         <origin
           xyz="0.0186297249994027 -4.50497350604206E-08 -0.0319399514116179"
@@ -98,8 +96,7 @@
         </geometry>
       </collision>
     </link>
-    <joint
-      name="Rev1Servo"
+    <joint name="Rev1Servo"
       type="revolute">
       <origin
         xyz="0.056595 0.034832 0.069142"
@@ -116,8 +113,7 @@
         effort="0"
         velocity="0" />
     </joint>
-    <link
-      name="Dedo1">
+    <link name="Dedo1">
       <inertial>
         <origin
           xyz="-0.0339571348134267 -9.21108600088205E-08 0.148247426657738"
@@ -156,8 +152,7 @@
         </geometry>
       </collision>
     </link>
-    <joint
-      name="Fix1Dedo"
+    <joint name="Fix1Dedo"
       type="fixed">
       <origin
         xyz="-0.0685 -0.035 -0.0342"
@@ -169,8 +164,7 @@
       <axis
         xyz="0 0 0" />
     </joint>
-    <link
-      name="Servo2">
+    <link name="Servo2">
       <inertial>
         <origin
           xyz="0.0186297249994028 -4.50497350534818E-08 -0.0319399514116179"
@@ -209,8 +203,7 @@
         </geometry>
       </collision>
     </link>
-    <joint
-      name="Rev2Servo"
+    <joint name="Rev2Servo"
       type="revolute">
       <origin
         xyz="0.056595 -0.035167 0.069142"
@@ -231,8 +224,7 @@
         multiplier="-1"
         offset="0" />
     </joint>
-    <link
-      name="Dedo2">
+    <link name="Dedo2">
       <inertial>
         <origin
           xyz="-0.033957134813415 -9.21108604737264E-08 0.148247426657736"
@@ -271,8 +263,7 @@
         </geometry>
       </collision>
     </link>
-    <joint
-      name="Fix2Dedo"
+    <joint name="Fix2Dedo"
       type="fixed">
       <origin
         xyz="-0.0685 0.035 -0.0342"

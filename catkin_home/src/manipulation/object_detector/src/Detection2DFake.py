@@ -2,13 +2,14 @@
 import rospy
 from std_msgs.msg import Bool
 from object_detector.msg import objectDetection, objectDetectionArray
-from geometry_msgs.msg import Point
+from geometry_msgs.msg import Point, PointStamped
+from std_msgs.msg import Header
 
 dicPoints = {
-    'Coca-Cola': Point(x=0.45, y=-0.73, z=0.88),
-    'Zucaritas': Point(x=0.45, y=-0.73, z=0.88),
-    'Harpic':    Point(x=0.45, y=-0.73, z=0.88),
-    'Principe':  Point(x=0.42, y=-0.73, z=0.88)
+    'Coca-Cola': PointStamped(Header(frame_id="base_footprint"), Point(x=0.45, y=-0.73, z=0.88)),
+    'Zucaritas': PointStamped(Header(frame_id="base_footprint"), Point(x=0.45, y=-0.73, z=0.88)),
+    'Harpic':    PointStamped(Header(frame_id="base_footprint"), Point(x=0.45, y=-0.73, z=0.88)),
+    'Principe':  PointStamped(Header(frame_id="base_footprint"), Point(x=0.42, y=-0.73, z=0.88))
 }
 
 activeFlag = True

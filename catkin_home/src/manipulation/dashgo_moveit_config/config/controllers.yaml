@@ -1,5 +1,5 @@
 controller_list:
-  - name: /xarm/xarm5_traj_controller
+  - name: /xarm/xarm6_traj_controller
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory
     joints:
@@ -8,6 +8,7 @@ controller_list:
       - joint3
       - joint4
       - joint5
+      - joint6
   - name: /DASHGO/gripper_controller
     action_ns: follow_joint_trajectory
     type: FollowJointTrajectory

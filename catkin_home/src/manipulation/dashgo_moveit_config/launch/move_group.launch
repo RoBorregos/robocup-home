@@ -14,7 +14,7 @@
   <!-- move_group settings -->
   <arg name="pipeline" default="ompl" />
   <arg name="allow_trajectory_execution" default="true"/>
-  <arg name="moveit_controller_manager" default="xarm5" />
+  <arg name="moveit_controller_manager" default="xarm6" />
   <arg name="fake_execution_type" default="interpolate"/>
   <arg name="max_safe_path_cost" default="1"/>
   <arg name="publish_monitored_planning_scene" default="true"/>
