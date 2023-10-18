@@ -10,6 +10,60 @@ import tf
 # ARM_GROUP: "arm"
 # ARM_JOINTS: [joint1, joint2, joint3, joint4, joint5, joint6]
 
+import face_recognition
+import os
+from cv_bridge import CvBridge
+from sensor_msgs.msg import Image
+
+CAMERA_TOPIC = "/zed2/zed_node/rgb/image_rect_color"
+
+# Load images
+random = face_recognition.load_image_file("known_people/random.png")
+
+# Encodings
+random_encodings = face_recognition.face_encodings(random)[0]
+
+
+# Name people and encodings
+people = [
+    [random_encodings, "random"]
+]
+people_encodings = [
+    random_encodings
+]
+people_names = [
+    "random"
+]
+
+# Make encodings of known people images
+folder = "known_people"
+def process_imgs():
+    for filename in os.listdir(folder):
+        if filename == ".DS_Store":
+            continue
+        
+        process_img(filename)
+
+
+def process_img(filename):
+    img = face_recognition.load_image_file(f"{folder}/{filename}")
+    cur_encodings = face_recognition.face_encodings(img)
+
+    if len(cur_encodings) == 0:
+        print('no encodings found')
+        return
+    
+    if len(cur_encodings) > 0:
+        cur_encodings = cur_encodings[0]
+
+    people_encodings.append(cur_encodings)
+    people_names.append(filename[:-4])
+    people.append([cur_encodings, filename[:-4]])
+
+    print(f"{folder}/{filename}")
+
+process_imgs()
+
 class PlanningNode():
     ARM_GROUP = "arm"
     ARM_JOINTS = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"]
@@ -23,7 +77,14 @@ class PlanningNode():
         self.pick_group.set_goal_position_tolerance(0.01)
         self.listener = tf.TransformListener()
         self.broadcaster = tf.TransformBroadcaster()
+        self.bridge = CvBridge()
+        self.image = None
+        self.image_sub = rospy.Subscriber("/cameras/cam1/image_raw", Image, self.image_callback)
     
+    def image_callback(self, data):
+        self.image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+
+
     def plan(self, pose):
         self.pick_group.set_pose_target(pose)
         self.pick_group.plan()
