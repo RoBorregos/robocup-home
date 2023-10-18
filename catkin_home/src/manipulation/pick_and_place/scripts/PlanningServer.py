@@ -31,6 +31,10 @@ class PlanningNode():
         self.listener.waitForTransform('Base', 'Cam1', rospy.Time(0), rospy.Duration(5.0))
         (trans, rot) = self.listener.lookupTransform('Base', 'Cam1', rospy.Time(0))
         # move to the camera position in x by 0.1
+        print('hola ', trans, ' ', rot)
         new_cam_pose = PoseStamped()
         new_cam_pose.header.frame_id = "Base"
+
+p = PlanningNode()
+p.run() 
 
