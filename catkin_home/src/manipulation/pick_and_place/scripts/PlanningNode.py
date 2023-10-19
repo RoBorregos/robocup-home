@@ -69,6 +69,7 @@ class PlanningNode():
     ARM_JOINTS = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"]
     ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, 0, -3.1416 / 4, -2.356]
     ARM_HOME = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    ARM_RECOGNITION = [-1.7503315210342407, -1.2894670963287354, -0.7641545534133911, -0.07917511463165283, -0.36656704545021057, 0.8473416566848755]
 
     def __init__(self):
         rospy.init_node('planning_node')
@@ -80,7 +81,8 @@ class PlanningNode():
         self.bridge = CvBridge()
         self.image = None
         self.image_sub = rospy.Subscriber("/cameras/cam1/image_raw", Image, self.image_callback)
-    
+        self.move_arm(PlanningNode.ARM_RECOGNITION)
+        
     def image_callback(self, data):
         self.image = self.bridge.imgmsg_to_cv2(data, "bgr8")
 
