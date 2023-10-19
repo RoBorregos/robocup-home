@@ -190,11 +190,11 @@ class PlanningNode():
             move_y = dify*max_degree/center[1]
             print(move_x, ", ",move_y)
 
-            cv2.imshow('Video', frame)
-            # cv2.waitKey(1)
-            # Hit 'q' on the keyboard to quit!
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            # cv2.imshow('Video', frame)
+            # # cv2.waitKey(1)
+            # # Hit 'q' on the keyboard to quit!
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
 
             state = self.pick_group.get_current_joint_values()
 
