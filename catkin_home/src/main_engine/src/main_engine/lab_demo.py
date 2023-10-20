@@ -19,10 +19,9 @@ from tf import transformations
 from tf.transformations import quaternion_from_euler
 import math
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-from detection_msgs.msg import BoundingBoxes, BoundingBox
+# from detection_msgs.msg import BoundingBoxes, BoundingBox
 from action_selectors.msg import RawInput
 from humanAnalyzer.msg import face_array
-
 
 import os
 import openai
@@ -84,7 +83,7 @@ Find = 2
 FindPerson = 3
 GotoBring = 4
 
-json_path = "/home/kevin/Desktop/workspace/home/TMR2023/robocup-home/catkin_home/src/humanAnalyzer/src/scripts/identities.json"
+json_path = "/home/emilianh/Documents/robocup-home/catkin_home/src/humanAnalyzer/src/scripts/identities.json"
 
 INITIALIZATION_STATE = "init"
 START_STATE = "start"
@@ -142,13 +141,13 @@ class gpsr(object):
         self.move_base_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.move_base_client.wait_for_server()
         rospy.loginfo("Connected to move base server")
-        f = open('/home/kevin/Desktop/workspace/home/TMR2023/robocup-home/catkin_home/src/main_engine/src/main_engine/nav.json')
+        f = open('/home/emilianh/Documents/robocup-home/catkin_home/src/main_engine/src/main_engine/nav.json')
         self.map_context = json.load(f)
         # print(json.dumps(self.map_context))
         f.close()
 
         # 
-        self.detectionSub = rospy.Subscriber('detections/output', BoundingBoxes, self.detectionCallback)
+        #self.detectionSub = rospy.Subscriber('detections/output', BoundingBoxes, self.detectionCallback)
         self.detectedObjects = []
         
         self.detectionPersonSub = rospy.Subscriber('idPerson', Int32, self.detectionPersonCallback)
@@ -179,6 +178,8 @@ class gpsr(object):
         #Manipulation message
         self.manipulation_pub = rospy.Publisher('/navBridgeServer/talker', String, queue_size=10)
         self.manipulation_sub = rospy.Subscriber('/navBridgeServer/listener', String, self.manipulation_callback)
+        #self.manipulation_pub = rospy.Publisher('/manipulation_publish_goal', String, queue_size=10)
+        #self.manipulation_sub = rospy.Subscriber('/manipulation_publish_result', String, self.manipulation_callback)
         self.manipulation_status = None
         #Face detection
 
@@ -200,7 +201,7 @@ class gpsr(object):
         
         # initialize embeddings and command variables
 
-        self.embeddings = np.load("/home/kevin/Desktop/workspace/home/TMR2023/robocup-home/catkin_home/src/main_engine/src/main_engine/GoTo_embedding.npz")
+        self.embeddings = np.load("/home/emilianh/Documents/robocup-home/catkin_home/src/main_engine/src/main_engine/GoTo_embedding.npz")
         self.GoTo_embedding = self.embeddings['GoTo']
         self.Find_embedding = self.embeddings['Find']
         self.FindPerson_embedding = self.embeddings['FindPerson']
@@ -232,7 +233,8 @@ class gpsr(object):
 
         self.manipulation_pub.publish(object_msg)
         
-        status = rospy.wait_for_message('/navBridgeServer/listener', String)
+        #status = rospy.wait_for_message('/manipulation_publish_result', String)
+        status = self.manipulation_sub = rospy.Subscriber('/navBridgeServer/listener', String, self.manipulation_callback)
         if status == "True":
             self.say(promts["grasp_success"])
             return True
@@ -477,7 +479,7 @@ class gpsr(object):
         
             elif self.currentState == DOING:
                 rospy.logwarn(" The place is " + str(command) + " " + str(self.cm_location) + str(self.cm_obj) + str(self.cm_person)  )
-                self.say(" Place is " + str(command) + " location is: " + str(self.cm_location) + " Object is: " + str(self.cm_obj))
+                self.say(" Place is " + str(command) + ". location is: " + str(self.cm_location) + ". Object is: " + str(self.cm_obj))
                 self.execute_command(command,self.cm_location,self.cm_obj, self.cm_person)
                 # self.goToOrigin()
                 self.currentState = COMMANDER
@@ -556,10 +558,7 @@ class gpsr(object):
                         self.cm_obj = self.parser(calls["get_obj"])
                         self.cm_person = None
                         self.cm_pick = True
-                    
-
-
-
+                                
                     self.cm_location = self.cm_location.strip() if self.cm_location is not None else None
                     self.cm_obj = self.cm_obj.strip() if self.cm_obj is not None else None
                     self.cm_person = self.cm_person.strip() if self.cm_person is not None else None
@@ -570,10 +569,10 @@ class gpsr(object):
                 self.speech_enable.publish(Bool(True))
                 i = 0
                 
-        rospy.logwarn("command2: " + str(command))
-        rospy.logwarn(self.cm_location)
-        rospy.logwarn(self.cm_person)
-        rospy.logwarn(self.cm_obj)
+        rospy.logwarn("Command: " + str(command))
+        rospy.logwarn("Location: " + str(self.cm_location))
+        rospy.logwarn("Person: " + str(self.cm_person))
+        rospy.logwarn("Object: " + str(self.cm_obj))
 
 
 

@@ -32,6 +32,7 @@ void onAudioCallback(const audio_common_msgs::AudioData::ConstPtr msg){
     
     // Creates an instance of a speech config with specified subscription key and service region.
     auto config = SpeechConfig::FromSubscription(SpeechUtils.getAPI(), SpeechUtils.getRegion());
+    ROS_INFO_STREAM("API: " << SpeechUtils.getAPI());
 
     // Creates a speech recognizer using file as audio input.
     auto callback = make_shared<AudioInputBytes>(msg->data);
