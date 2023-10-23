@@ -1,4 +1,5 @@
 <launch>
+    <arg name="DEBUG_WHISPER" default="true"/>
     <!-- Devices -->
     <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
     <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/>
@@ -13,9 +14,15 @@
     <node name="hear" pkg="action_selectors" type="hear.py" respawn="true" output="screen">
         <param name="FORCE_ENGINE" value="$(arg FORCE_ENGINE)" />
     </node>
+
     <node name="azureSpeechText" pkg="action_selectors" type="AzureSpeechToText" output="screen" if="$(eval arg('FORCE_ENGINE') != 'offline')"/>
     <node name="DeepSpeech" pkg="action_selectors" type="DeepSpeech.py" output="screen" if="$(eval arg('FORCE_ENGINE') != 'online')"/>
+    <node name="Whisper" pkg="action_selectors" type="Whisper.py" output="screen" if="$(eval arg('FORCE_ENGINE') != 'offline')">
+        <param name="debug" value="$(arg DEBUG_WHISPER)"/>
+    </node>
+    
     <!-- Conversation -->
+    
     <!-- START_TALK: 'True' - Start Conversation, 'False' - Wait until being Spoken -->
     <arg name="START_TALK" default="False"/>
     <!-- <node name="SomeoneToTalk" pkg="action_selectors" type="SomeoneToTalk.py" respawn="true">

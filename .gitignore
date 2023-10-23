@@ -70,6 +70,8 @@ out.log
 venv/
 *.log
 
+notes.txt
+todo.txt
 
 # tiago simulation #
 
