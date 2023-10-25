@@ -16,7 +16,7 @@ import pandas as pd
 
 
 class serialPlot:
-    def __init__(self, serialPort='/dev/ttyACM0', serialBaud=57600, plotLength=100, dataNumBytes=4, numPlots=5):
+    def __init__(self, serialPort='/dev/ttyUSB0', serialBaud=57600, plotLength=100, dataNumBytes=4, numPlots=5):
         self.port = serialPort
         self.baud = serialBaud
         self.plotMaxLength = plotLength
@@ -74,7 +74,6 @@ class serialPlot:
         # Start reading when target is found to make sure subsecuent bytes are read properly.
         target = "<target>"
         self.blockUntilTarget(target)
-        
 
         while (self.isRun):
             self.serialConnection.readinto(self.rawData)
@@ -111,7 +110,7 @@ class serialPlot:
 
 def main():
     # portName = 'COM11'
-    portName = '/dev/ttyUSB1'
+    portName = '/dev/ttyUSB0'
     baudRate = 57600
     maxPlotLength = 100     # number of points in x-axis of real time plot
     dataNumBytes = 4        # number of bytes of 1 data point
@@ -127,7 +126,7 @@ def main():
     xmax = maxPlotLength
     if not plot_pwm:
         ymin = 0
-        ymax = 5
+        ymax = 1.8
     else:
         ymin = 0
         ymax = 230
@@ -150,7 +149,7 @@ def main():
 
     plt.legend(loc="upper left")
     plt.show()
-
+    
     s.close()
 
 

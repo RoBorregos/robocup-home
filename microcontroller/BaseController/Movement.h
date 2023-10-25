@@ -20,7 +20,6 @@ class Movement {
     //////////////////////////////////Constructor//////////////////////////////////////
     Movement();
 
-
     //////////////////////////////////Motors//////////////////////////////////////
     Motor back_right_motor_;
     Motor back_left_motor_;
@@ -94,7 +93,7 @@ class Movement {
     static constexpr double kFrWheelsDist = 0.0;
     static constexpr double kLrWheelsDist = 0.33;
     static constexpr double kWheelDiameter = 0.12;
-    static constexpr double kRPM = 120;
+    static constexpr double kRPM = 500;
     static constexpr double kRPS = kRPM / 60;
     static constexpr double kMaxVelocity = kRPS * (M_PI * kWheelDiameter);
 

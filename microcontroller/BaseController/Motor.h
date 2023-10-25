@@ -1,9 +1,7 @@
 // This class has all the functions related to one Motor.
 #ifndef Motor_h
 #define Motor_h
-
 #include <Arduino.h>
-
 #include "MotorId.h"
 #include "PID.h"
 
@@ -32,7 +30,6 @@ class Motor {
     // Declare encoder pins as input and include attachInterrupt.
     void initEncoders();
     
-
     //////////////////////////////////Motor State//////////////////////////////////////
     // Change motor state to forward.
     void forward();
@@ -137,6 +134,8 @@ class Motor {
     double target_speed_ = 0;
     
     // PID.
+
+
     PID pid_;
     static constexpr uint8_t kPidMinOutputLimit = 0;
     static constexpr uint8_t kPidMaxOutputLimit = 255;
@@ -149,7 +148,6 @@ class Motor {
     static constexpr double kP = 45;
     static constexpr double kI = 55;
     static constexpr double kD = 40;
-    
 
 };
 

@@ -1,7 +1,7 @@
-
 #include "PID.h"
 
 //////////////////////////////////Constructor//////////////////////////////////////
+
 PID::PID() {
   time_ = millis();
 }
@@ -65,6 +65,7 @@ void PID::compute(const double error, double &output, const byte flag) {
     error_pre_ = 0;
     error_sum_ = 0;
   }
+  
   if(flag == 0) {
     if(abs(error) <= 2) {
       error_pre_ = 0;

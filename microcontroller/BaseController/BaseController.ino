@@ -4,8 +4,8 @@
 #include "Plot.h"
 
 Movement *robot = nullptr;
-bool ROS_ENABLE = false;
-bool CHECK_PID = false;
+bool ROS_ENABLE = false;  
+bool CHECK_PID = true;
 bool CHECK_MOTORS = true;
 bool CHECK_ENCODERS = false;
 
@@ -31,13 +31,14 @@ void setup() {
     bridge.run();
 }
 
+
 // Used if ROS disabled.
 void loop() {
     if (CHECK_PID) {
         Serial.begin(57600);
         // Check PID
         while(1) {
-            Plot plot(robot, !ROS_ENABLE);
+            Plot plot(robot, false);
             delay(2000);
             plot.startSequence();
             // List of x Velocities
@@ -58,7 +59,7 @@ void loop() {
                       sign = true;
                     }
                 }
-                robot->cmdVelocity(0.5, 0, 0);
+                robot->cmdVelocity(xVelocities[i], 0.0, 0);
                 plot.plotTargetandCurrent();
             }
         }
