@@ -219,7 +219,28 @@ class PlanningNode():
                 # if cv2.waitKey(1) & 0xFF == ord('q'):
                 #     break
                     
-                
+             ##merge conflict start   
+            process_this_frame = not process_this_frame
+    
+            difx = xc - center[0] 
+            dify = center[1] - yc
+            max_degree = 30
+
+            # print(area)
+            move_x = difx*max_degree/center[0]
+            move_y = dify*max_degree/center[1]
+            print(move_x, ", ",move_y)
+
+            # cv2.imshow('Video', frame)
+            # # cv2.waitKey(1)
+            # # Hit 'q' on the keyboard to quit!
+            # if cv2.waitKey(1) & 0xFF == ord('q'):
+            #     break
+
+            state = self.pick_group.get_current_joint_values()
+
+            if move_x > 0:
+                ##merge conflict end
                 state[0] += move_x*3.1416/180
                 state[4] += move_y*3.14/180
 
