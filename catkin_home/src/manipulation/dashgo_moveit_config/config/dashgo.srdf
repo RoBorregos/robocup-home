@@ -107,6 +107,13 @@
     <disable_collisions link1="Cam1" link2="Loca2" reason="Never"/>
     <disable_collisions link1="Cam1" link2="link5" reason="Never"/>
     <disable_collisions link1="Cam1" link2="link_base" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="link_eef" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Dedo1" reason="Adjacent"/>
+    <disable_collisions link1="Cam1" link2="Dedo2" reason="Adjacent"/>
+    <disable_collisions link1="Cam1" link2="Servo1" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Servo2" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="link6" reason="Never"/>
+    <disable_collisions link1="Cam1" link2="Base_Gripper" reason="Never"/>
     <disable_collisions link1="Dedo1" link2="Dedo2" reason="Never"/>
     <disable_collisions link1="Dedo1" link2="Servo1" reason="Adjacent"/>
     <disable_collisions link1="Dedo1" link2="Servo2" reason="Never"/>
@@ -197,4 +204,5 @@
     
     <disable_collisions link1="link4" link2="link5" reason="Adjacent"/>
     <disable_collisions link1="link4" link2="link6" reason="Never"/>
+
 </robot>
