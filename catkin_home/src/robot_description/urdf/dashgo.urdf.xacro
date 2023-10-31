@@ -43,9 +43,9 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="-.235 -.2371 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://robot_description/meshes/Dashgo/Base_Collisions.STL" />
+        <mesh filename="package://robot_description/meshes/Dashgo/Base_Collisions_CamGripper.STL" />
       </geometry>
     </collision>
   </link>
