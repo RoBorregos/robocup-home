@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>manipulation_server</name>
+  <name>arm_server</name>
   <version>0.0.0</version>
   <description>The manipulation_server package</description>
 
