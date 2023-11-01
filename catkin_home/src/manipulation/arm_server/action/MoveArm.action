@@ -1,0 +1,9 @@
+#goal definition
+float32[] joints_target
+float32 speed
+---
+#result definition
+int32 success
+---
+#feedback
+float32 completion_percentage
