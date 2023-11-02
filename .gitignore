@@ -1,6 +1,6 @@
 #Folders and files to ignore
 __ignore__/
-
+CATKIN_IGNORE
 ### ROS ###
 /catkin_home/devel/
 /catkin_home/devel_isolated/
@@ -29,8 +29,12 @@ __ignore__/
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/params.tar.gz
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/README.md
 /catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/vocab.txt
-/catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm/lm.binary
+/catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm
+/catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k
+/catkin_home/src/action_selectors/scripts/DeepSpeech/models/librispeech
+
 /catkin_home/src/action_selectors/data/AzureSTTAPIKey.txt
+/catkin_home/src/main_engine/data/OpenAiKey.txt
 
 ### BASE CONTROL ###
 base_control/test
@@ -50,6 +54,9 @@ wrokspace.code-workspace
 catkin_home/src/object_detector/models/gazebo/variables/variables.index
 catkin_home/src/manipulation/object_detector/models
 catkin_home/src/manipulation/object_detector/resources
+__ignore__/*
+catkin_home/src/object_detector/models
+catkin_home/src/object_detector/resources
 
 ### CONVERSATION ###
 catkin_home/src/action_selectors/scripts/FaceDetection/haarcascade_frontalface_default.xml
@@ -66,5 +73,16 @@ out.log
 venv/
 lib/x86_64-linux-gnu/
 lib/firmware/
+*.log
 
-# End 
+notes.txt
+todo.txt
+
+# tiago simulation #
+
+
+*tiago_public_ws/
+
+.env
+
+#End

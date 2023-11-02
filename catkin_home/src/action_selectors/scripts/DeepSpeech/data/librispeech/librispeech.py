@@ -11,6 +11,7 @@ from __future__ import print_function
 import distutils.util
 import os
 import sys
+sys.path.append('/catkin_home/src/action_selectors/scripts/DeepSpeech')
 import argparse
 import soundfile
 import json

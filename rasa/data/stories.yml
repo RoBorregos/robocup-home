@@ -9,6 +9,10 @@ stories:
     entities:
     - object: banana
     - place: kitchen
+  - slot_was_set:
+    - object: banana
+  - slot_was_set:
+    - place: kitchen
   - action: utter_understood
   - action: utter_command
   - action: action_bring_something
@@ -18,6 +22,10 @@ stories:
   - intent: bring_something
     entities:
     - object: bottle
+    - place: kitchen
+  - slot_was_set:
+    - object: bottle
+  - slot_was_set:
     - place: kitchen
   - action: utter_understood
   - action: utter_command
@@ -56,81 +64,81 @@ stories:
   - intent: bye
   - action: utter_bye
 
-- story: bring_something_secret_intent
-  steps:
-  - intent: bring_something_secret_intent
-  - action: utter_greet
-  - intent: greet
-  - action: utter_whereto
-  - intent: go_to
-    entities:
-    - place: kitchen
-  - slot_was_set:
-    - place: kitchen
-  - action: utter_what_bring
-  - intent: bring_only
-    entities:
-    - object: pizza
-  - slot_was_set:
-    - object: pizza
-  - action: utter_command
-  - action: action_bring_something
+# - story: bring_something_secret_intent
+#   steps:
+#   - intent: bring_something_secret_intent
+#   - action: utter_greet
+#   - intent: greet
+#   - action: utter_whereto
+#   - intent: go_to
+#     entities:
+#     - place: kitchen
+#   - slot_was_set:
+#     - place: kitchen
+#   - action: utter_what_bring
+#   - intent: bring_only
+#     entities:
+#     - object: pizza
+#   - slot_was_set:
+#     - object: pizza
+#   - action: utter_command
+#   - action: action_bring_something
 
-- story: bring_something_secret_intent2
-  steps:
-  - intent: bring_something_secret_intent
-  - action: utter_greet
-  - intent: greet
-  - action: utter_whereto
-  - intent: go_to
-    entities:
-    - place: kitchen
-  - slot_was_set:
-    - place: kitchen
-  - action: utter_what_bring
-  - intent: bring_only
-    entities:
-    - object: pizza
-  - slot_was_set:
-    - object: pizza
-  - action: utter_command
-  - action: action_bring_something
-  - intent: thank
-  - action: utter_you're_welcome
-  - action: action_restart
-
-
-- story: farewell_goalonng
-  steps: 
-  - intent: farewell
-    entities:
-    - color: red
-    - object: coat
-  - slot_was_set:
-    - object: coat
-  - slot_was_set:
-    - color: red
-  - action: utter_understood
-  - action: utter_ask_farewell
-  - intent: yes
-  - action: action_farewell_yes
+# - story: bring_something_secret_intent2
+#   steps:
+#   - intent: bring_something_secret_intent
+#   - action: utter_greet
+#   - intent: greet
+#   - action: utter_whereto
+#   - intent: go_to
+#     entities:
+#     - place: kitchen
+#   - slot_was_set:
+#     - place: kitchen
+#   - action: utter_what_bring
+#   - intent: bring_only
+#     entities:
+#     - object: pizza
+#   - slot_was_set:
+#     - object: pizza
+#   - action: utter_command
+#   - action: action_bring_something
+#   - intent: thank
+#   - action: utter_you're_welcome
+#   - action: action_restart
 
 
+# - story: farewell_goalonng
+#   steps: 
+#   - intent: farewell
+#     entities:
+#     - color: red
+#     - object: coat
+#   - slot_was_set:
+#     - object: coat
+#   - slot_was_set:
+#     - color: red
+#   - action: utter_understood
+#   - action: utter_ask_farewell
+#   - intent: yes
+#   - action: action_farewell_yes
 
-- story: farewell_notalonng
-  steps: 
-  - intent: farewell
-    entities:
-    - color: green
-    - object: coat
-  - slot_was_set:
-    - object: coat
-  - slot_was_set:
-    - color: red
-  - action: utter_understood
-  - action: utter_ask_farewell
-  - intent: no
-  - action: action_farewell_no
+
+
+# - story: farewell_notalonng
+#   steps: 
+#   - intent: farewell
+#     entities:
+#     - color: green
+#     - object: coat
+#   - slot_was_set:
+#     - object: coat
+#   - slot_was_set:
+#     - color: red
+#   - action: utter_understood
+#   - action: utter_ask_farewell
+#   - intent: no
+#   - action: action_farewell_no
 
  
 
@@ -139,7 +147,7 @@ stories:
   steps:
   - intent: greet
   - action: utter_greet
-    
+
 - story: interactive bye
   steps:
   - intent: bye
@@ -149,54 +157,54 @@ stories:
   
 #search for people
 
-- story: search_for_people
-  steps:
-  - intent: search_for_people
-    entities:
-    - names: manuel
-  - slot_was_set:
-    - names: manuel
-  - action: utter_will_look
-  - action: action_search_for_people
-  - slot_was_set:
-    - place: kitchen
-  - action: utter_found_location
+# - story: search_for_people
+#   steps:
+#   - intent: search_for_people
+#     entities:
+#     - names: manuel
+#   - slot_was_set:
+#     - names: manuel
+#   - action: utter_will_look
+#   - action: action_search_for_people
+#   - slot_was_set:
+#     - place: kitchen
+#   - action: utter_found_location
 
 #strore 
-- story: store_object
-  steps:
-  - intent: store_object
-    entities:
-    - object: apple
-    - place: shelf
-  - slot_was_set:
-    - object: apple
-    - place: shelf
-  - action: utter_understood
-  - action: action_store_object
-  - action: utter_anything_else
+# - story: store_object
+#   steps:
+#   - intent: store_object
+#     entities:
+#     - object: apple
+#     - place: shelf
+#   - slot_was_set:
+#     - object: apple
+#     - place: shelf
+#   - action: utter_understood
+#   - action: action_store_object
+#   - action: utter_anything_else
 
 #clean
-- story: clean
-  steps:
-  - intent: clean
-    entities:
-    - place: bedroom
-  - slot_was_set:
-    - place: bedroom
-  - action: utter_understood
-  - action: action_clean_up
+# - story: clean
+#   steps:
+#   - intent: clean
+#     entities:
+#     - place: bedroom
+#   - slot_was_set:
+#     - place: bedroom
+#   - action: utter_understood
+#   - action: action_clean_up
 
 #carry my lugage
-- story: carry_my
-  steps:
-  - intent: bring_to
-    entities:
-    - object: luggage
-  - slot_was_set:
-    - object: luggage
-  - action: utter_carry_bag
-  - action: action_bring_to
+# - story: carry_my
+#   steps:
+#   - intent: bring_to
+#     entities:
+#     - object: luggage
+#   - slot_was_set:
+#     - object: luggage
+#   - action: utter_carry_bag
+#   - action: action_bring_to
 
 #reset
 - story: thanks

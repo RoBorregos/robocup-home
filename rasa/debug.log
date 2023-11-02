@@ -1,0 +1,173 @@
+NOT WORKING - Check action_default_fallback | Chech Line 37 it predicts wrong
+ 
+2022-05-02 23:50:31 DEBUG    rasa.core.lock_store  - Issuing ticket for conversation 'HOME'.
+2022-05-02 23:50:31 DEBUG    rasa.core.lock_store  - Acquiring lock for conversation 'HOME'.
+2022-05-02 23:50:31 DEBUG    rasa.core.lock_store  - Acquired lock for conversation 'HOME'.
+2022-05-02 23:50:31 DEBUG    rasa.core.tracker_store  - Recreating tracker for id 'HOME'
+2022-05-02 23:50:31 DEBUG    rasa.nlu.classifiers.diet_classifier  - There is no trained model for 'ResponseSelector': The component is either not trained or didn't receive enough training data.
+2022-05-02 23:50:31 DEBUG    rasa.nlu.selectors.response_selector  - Adding following selector key to message property: default
+2022-05-02 23:50:31 DEBUG    rasa.core.processor  - Received user message 'bring the pizza from the kitchen' with intent '{'id': -6913177983489238847, 'name': 'bring_something', 'confidence': 0.9980915188789368}' and entities '[{'entity': 'object', 'start': 10, 'end': 15, 'confidence_entity': 0.9998080134391785, 'value': 'pizza', 'extractor': 'DIETClassifier'}, {'entity': 'place', 'start': 25, 'end': 32, 'confidence_entity': 0.9995204210281372, 'value': 'kitchen', 'extractor': 'DIETClassifier'}]'
+2022-05-02 23:50:31 DEBUG    rasa.core.processor  - Current slot values: 
+        object: pizza
+        place: kitchen
+        names: None
+        color: None
+        requested_slot: None
+        session_started_metadata: None
+2022-05-02 23:50:31 DEBUG    rasa.core.processor  - Logged UserUtterance - tracker now has 210 events.
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.memoization  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user intent: bring_something | user entities: ('place', 'object') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.memoization  - There is no memorised next action
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.ted_policy  - TED predicted 'utter_please_rephrase' based on user intent.
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.rule_policy  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user text: bring the pizza from the kitchen | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.rule_policy  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user intent: bring_something | user entities: ('place', 'object') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.ensemble  - Made prediction using user intent.
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.ensemble  - Added `DefinePrevUserUtteredFeaturization(False)` event.
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.ensemble  - Predicted next action using policy_2_RulePolicy.
+2022-05-02 23:50:31 DEBUG    rasa.core.processor  - Predicted next action 'action_default_fallback' with confidence 0.40.
+2022-05-02 23:50:31 DEBUG    rasa.core.processor  - Policy prediction ended with events '[<rasa.shared.core.events.DefinePrevUserUtteredFeaturization object at 0x7fe9cc46b040>]'.
+2022-05-02 23:50:31 DEBUG    rasa.core.processor  - Action 'action_default_fallback' ended with events '[BotUttered('I didnt understand that, can you please rephrase', {"elements": null, "quick_replies": null, "buttons": null, "attachment": null, "image": null, "custom": null}, {"utter_action": "utter_default"}, 1651553431.9979527), <rasa.shared.core.events.UserUtteranceReverted object at 0x7fe9cc555a90>]'.
+2022-05-02 23:50:31 DEBUG    rasa.core.processor  - Current slot values: 
+        object: None
+        place: None
+        names: None
+        color: None
+        requested_slot: None
+        session_started_metadata: None
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.memoization  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+2022-05-02 23:50:31 DEBUG    rasa.core.policies.memoization  - There is a memorised next action 'action_listen'
+2022-05-02 23:50:32 DEBUG    rasa.core.policies.ted_policy  - TED predicted 'utter_you're_welcome' based on user intent.
+2022-05-02 23:50:32 DEBUG    rasa.core.policies.rule_policy  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+2022-05-02 23:50:32 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2022-05-02 23:50:32 DEBUG    rasa.core.policies.ensemble  - Predicted next action using policy_0_MemoizationPolicy.
+2022-05-02 23:50:32 DEBUG    rasa.core.processor  - Predicted next action 'action_listen' with confidence 1.00.
+2022-05-02 23:50:32 DEBUG    rasa.core.processor  - Policy prediction ended with events '[]'.
+2022-05-02 23:50:32 DEBUG    rasa.core.processor  - Action 'action_listen' ended with events '[]'.
+2022-05-02 23:50:32 DEBUG    rasa.core.lock_store  - Deleted lock for conversation 'HOME'.
+
+
+
+
+
+When it actually works (there was a Hi! before this)
+
+
+2022-05-02 23:54:24 DEBUG    rasa.core.lock_store  - Issuing ticket for conversation 'HOME'.
+2022-05-02 23:54:24 DEBUG    rasa.core.lock_store  - Acquiring lock for conversation 'HOME'.
+2022-05-02 23:54:24 DEBUG    rasa.core.lock_store  - Acquired lock for conversation 'HOME'.
+2022-05-02 23:54:24 DEBUG    rasa.core.tracker_store  - Recreating tracker for id 'HOME'
+2022-05-02 23:54:24 DEBUG    rasa.nlu.classifiers.diet_classifier  - There is no trained model for 'ResponseSelector': The component is either not trained or didn't receive enough training data.
+2022-05-02 23:54:24 DEBUG    rasa.nlu.selectors.response_selector  - Adding following selector key to message property: default
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Received user message 'bring the pizza from the kitchen' with intent '{'id': -7076495308111861353, 'name': 'bring_something', 'confidence': 0.9980915188789368}' and entities '[{'entity': 'object', 'start': 10, 'end': 15, 'confidence_entity': 0.9998080134391785, 'value': 'pizza', 'extractor': 'DIETClassifier'}, {'entity': 'place', 'start': 25, 'end': 32, 'confidence_entity': 0.9995204210281372, 'value': 'kitchen', 'extractor': 'DIETClassifier'}]'
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Current slot values: 
+        object: pizza
+        place: kitchen
+        names: None
+        color: None
+        requested_slot: None
+        session_started_metadata: None
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Logged UserUtterance - tracker now has 11 events.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.memoization  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.memoization  - There is a memorised next action 'utter_understood'
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ted_policy  - TED predicted 'utter_please_rephrase' based on user intent.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user text: bring the pizza from the kitchen | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ensemble  - Made prediction using user intent.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ensemble  - Added `DefinePrevUserUtteredFeaturization(False)` event.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ensemble  - Predicted next action using policy_0_MemoizationPolicy.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Predicted next action 'utter_understood' with confidence 1.00.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Policy prediction ended with events '[<rasa.shared.core.events.DefinePrevUserUtteredFeaturization object at 0x7fef003ad370>]'.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Action 'utter_understood' ended with events '[BotUttered('Understood, I am on it.', {"elements": null, "quick_replies": null, "buttons": null, "attachment": null, "image": null, "custom": null}, {"utter_action": "utter_understood"}, 1651553664.6719983)]'.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.memoization  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 4] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_understood | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.memoization  - There is a memorised next action 'utter_command'
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ted_policy  - TED predicted 'utter_please_rephrase' based on user intent.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 4] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_understood | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ensemble  - Predicted next action using policy_0_MemoizationPolicy.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Predicted next action 'utter_command' with confidence 1.00.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Policy prediction ended with events '[]'.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Action 'utter_command' ended with events '[BotUttered('I need to bring pizza from the kitchen', {"elements": null, "quick_replies": null, "buttons": null, "attachment": null, "image": null, "custom": null}, {"utter_action": "utter_command"}, 1651553664.6812139)]'.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.memoization  - Current tracker state:
+[state 0] user intent: greet | previous action name: action_listen
+[state 1] user intent: greet | previous action name: utter_greet
+[state 2] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 3] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_understood | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 4] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_command | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.memoization  - There is a memorised next action 'action_bring_something'
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ted_policy  - TED predicted 'utter_please_rephrase' based on user intent.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 4] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_understood | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 5] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_command | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ensemble  - Predicted next action using policy_0_MemoizationPolicy.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Predicted next action 'action_bring_something' with confidence 1.00.
+2022-05-02 23:54:24 DEBUG    rasa.core.actions.action  - Calling action endpoint to run action 'action_bring_something'.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Policy prediction ended with events '[]'.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Action 'action_bring_something' ended with events '[BotUttered('None', {"elements": null, "quick_replies": null, "buttons": null, "attachment": null, "image": null, "custom": null}, {}, 1651553664.7005851)]'.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Current slot values: 
+        object: pizza
+        place: kitchen
+        names: None
+        color: None
+        requested_slot: None
+        session_started_metadata: None
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.memoization  - Current tracker state:
+[state 0] user intent: greet | previous action name: utter_greet
+[state 1] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 2] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_understood | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 3] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_command | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 4] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_bring_something | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.memoization  - There is a memorised next action 'action_listen'
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ted_policy  - TED predicted 'utter_please_rephrase' based on user intent.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - Current tracker state:
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: utter_greet
+[state 3] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_listen | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 4] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_understood | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 5] user intent: bring_something | user entities: ('object', 'place') | previous action name: utter_command | slots: {'object': (1.0,), 'place': (1.0,)}
+[state 6] user intent: bring_something | user entities: ('object', 'place') | previous action name: action_bring_something | slots: {'object': (1.0,), 'place': (1.0,)}
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2022-05-02 23:54:24 DEBUG    rasa.core.policies.ensemble  - Predicted next action using policy_0_MemoizationPolicy.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Predicted next action 'action_listen' with confidence 1.00.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Policy prediction ended with events '[]'.
+2022-05-02 23:54:24 DEBUG    rasa.core.processor  - Action 'action_listen' ended with events '[]'.
+2022-05-02 23:54:24 DEBUG    rasa.core.lock_store  - Deleted lock for conversation 'HOME'.
+
+
+

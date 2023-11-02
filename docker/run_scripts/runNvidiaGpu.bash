@@ -23,7 +23,7 @@ DOCKER_GPU_ARGS="--env DISPLAY --env QT_X11_NO_MITSHM=1 --volume=/tmp/.X11-unix:
 dpkg -l | grep nvidia-container-toolkit &> /dev/null
 HAS_NVIDIA_TOOLKIT=$?
 which nvidia-docker > /dev/null
-HAS_NVIDIA_DOCKER=$?
+HAS_NVIDIA_DOCKER=$?env
 if [ $HAS_NVIDIA_TOOLKIT -eq 0 ]; then
   docker_version=`docker version --format '{{.Client.Version}}' | cut -d. -f1`
   if [ $docker_version -ge 19 ]; then
@@ -69,8 +69,8 @@ $DOCKER_COMMAND -it -d\
   -v "$PWD/catkin_home/typings:/catkin_home/typings" \
   -v "$PWD/lib:/catkin_home/lib" \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  --name=ros-home \
-  ros:home \
+  --name=ros-hometgo \
+  ros:hometgo \
   bash
 
 if [ $# -eq 1 ]; then
@@ -100,13 +100,15 @@ cat << EOF
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-Install python dependencies inside container.
+IF GPU:
+pip3 uninstall paddlepaddle
+pip3 install paddlepaddle-gpu==1.2.1.post97
 
-GPU
-python3 -m pip install --upgrade pip && pip3 install -r speechDependenciesGpu.txt
-
-Without-GPU
-python3 -m pip install --upgrade pip && pip3 install -r speechDependencies.txt
+Deepspeech - Download Models:
+cd ./catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm/
+./download_lm.sh
+cd ./catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/
+./download_model.sh
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

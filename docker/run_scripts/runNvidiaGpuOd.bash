@@ -17,13 +17,33 @@ if [[ "$@" == *"--net "* ]]; then
     DOCKER_NETWORK_ARGS=""
 fi
 
-DOCKER_COMMAND="docker run"
+# Settings required for having nvidia GPU acceleration inside the docker
+DOCKER_GPU_ARGS="--env DISPLAY --env QT_X11_NO_MITSHM=1 --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw --env NVIDIA_VISIBLE_DEVICES=all --env NVIDIA_DRIVER_CAPABILITIES=compute,utility"
+
+dpkg -l | grep nvidia-container-toolkit &> /dev/null
+HAS_NVIDIA_TOOLKIT=$?
+which nvidia-docker > /dev/null
+HAS_NVIDIA_DOCKER=$?
+if [ $HAS_NVIDIA_TOOLKIT -eq 0 ]; then
+  docker_version=`docker version --format '{{.Client.Version}}' | cut -d. -f1`
+  if [ $docker_version -ge 19 ]; then
+	  DOCKER_COMMAND="docker run --gpus all"
+  else
+	  DOCKER_COMMAND="docker run --runtime=nvidia"
+  fi
+elif [ $HAS_NVIDIA_DOCKER -eq 0 ]; then
+  DOCKER_COMMAND="nvidia-docker run"
+else
+  echo "Running without nvidia-docker, if you have an NVidia card you may need it"\
+  "to have GPU acceleration"
+  DOCKER_COMMAND="docker run"
+fi
 
 ADDITIONAL_COMMANDS=""
 if [ $# -eq 1 ]; then
     if [ "$1" == "IS_NAVIGATION" ]; then
-        ADDITIONAL_COMMANDS="--device='/dev/ttyUSB0'"s
-    elif [ "$1" == "IS_OBJECT_DETECTION" ]; then
+        ADDITIONAL_COMMANDS="--device='/dev/ttyUSB0'"
+    elif [[ "$1" == "IS_OBJECT_DETECTION" || "$1" == "IS_OBJECT_DETECTION_PROD" ]]; then
         ADDITIONAL_COMMANDS="--volume /dev/video0:/dev/video0
             --volume $PWD/object_detection:/object_detection"
     elif [ "$1" == "IS_SPEECH" ]; then
@@ -39,24 +59,24 @@ fi
 xhost +
 
 $DOCKER_COMMAND -it -d\
-    $DOCKER_USER_ARGS \
-    $DOCKER_SSH_AUTH_ARGS \
-    $DOCKER_NETWORK_ARGS \
-    $ADDITIONAL_COMMANDS \
-    --privileged \
-    -v "$PWD/catkin_home/src:/catkin_home/src" \
-    -v "$PWD/lib:/lib/" \
-    -v "$PWD/catkin_home/typings:/catkin_home/typings" \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    --name=ros-homesp \
-    ros:homesp \
-    bash
+  $DOCKER_USER_ARGS \
+  $DOCKER_GPU_ARGS \
+  $DOCKER_SSH_AUTH_ARGS \
+  $DOCKER_NETWORK_ARGS \
+  $ADDITIONAL_COMMANDS \
+  --privileged \
+  -v "$PWD/catkin_home/src:/catkin_home/src" \
+  -v "$PWD/catkin_home/typings:/catkin_home/typings" \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --name=ros-homeod \
+  ros:homeod \
+  bash
 
 if [ $# -eq 1 ]; then
     if [ $1 == "IS_NAVIGATION" ]; then
         ARDUINO_PATH="${HOME}/Arduino/libraries/ros_lib" 
         rm -f -r ${ARDUINO_PATH}
-        docker cp ros-home:/Arduino/libraries/ros_lib $ARDUINO_PATH
+        docker cp ros-homeod:/Arduino/libraries/ros_lib $ARDUINO_PATH
         chmod -R 777 ${ARDUINO_PATH}
     elif [ $1 == "IS_OBJECT_DETECTION" ]; then
 cat << EOF	
@@ -67,7 +87,7 @@ Create conda environment and Download Models if necessary.
 
 Execute inside container: 
 
-cd object_detection && ./object_detection_setup.sh && echo 'conda activate object_detection_env' >> ~/.bashrc
+cd /object_detection && ./object_detection_setup.sh && echo 'conda activate object_detection_env' >> ~/.bashrc
 
 *Remember to activate object_detection_env environment
 conda activate object_detection_env
@@ -79,13 +99,15 @@ cat << EOF
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-Install python dependencies inside container.
+IF GPU:
+pip3 uninstall paddlepaddle
+pip3 install paddlepaddle-gpu==1.2.1.post97
 
-GPU
-python3 -m pip install --upgrade pip && pip3 install -r speechDependenciesGpu.txt
-
-Without-GPU
-python3 -m pip install --upgrade pip && pip3 install -r speechDependencies.txt
+Deepspeech - Download Models:
+cd ./catkin_home/src/action_selectors/scripts/DeepSpeech/models/lm/
+./download_lm.sh
+cd ./catkin_home/src/action_selectors/scripts/DeepSpeech/models/baidu_en8k/
+./download_model.sh
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
