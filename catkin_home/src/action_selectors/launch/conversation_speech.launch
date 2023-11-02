@@ -1,27 +1,39 @@
 <launch>
+    
+    <arg name="DEBUG_WHISPER" default="false"/> <!-- Print messages using rospy.logdebug (execution time) -->
+    <arg name="USE_WHISPER_OFFLINE" default="true"/> <!-- Use whisper, instead of DeepSpeech -->
+    <!-- FORCE_ENGINE: 'online' - Azure, 'offline' - Whisper or DeepSpeech, 'none' - Both Engines [it depends on internet] -->
+    <arg name="FORCE_ENGINE" default="offline"/>
+    
+
     <!-- Devices -->
-    <!-- <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
+    <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
     <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/>
-    <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
+    <!-- <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
         <param name="RATE" value="15" />
         <param name="CAMERAID" value="2" />
-    </node>
-    <node name="say" pkg="devices" type="say.py" respawn="true" output="screen" /> -->
+    </node> -->
+    <node name="say" pkg="devices" type="say.py" respawn="true" output="screen" />
     <!-- Speech To Text -->
-    <!-- FORCE_ENGINE: 'online' - Azure, 'offline' - DeepSpeech, 'none' - Both Engines [it depends on internet] -->
-    <arg name="FORCE_ENGINE" default="online"/>
     <node name="hear" pkg="action_selectors" type="hear.py" respawn="true" output="screen">
         <param name="FORCE_ENGINE" value="$(arg FORCE_ENGINE)" />
+        <param name="USE_WHISPER_OFFLINE" value="$(arg USE_WHISPER_OFFLINE)" />
     </node>
+
     <node name="azureSpeechText" pkg="action_selectors" type="AzureSpeechToText" output="screen" if="$(eval arg('FORCE_ENGINE') != 'offline')"/>
-    <node name="DeepSpeech" pkg="action_selectors" type="DeepSpeech.py" output="screen" if="$(eval arg('FORCE_ENGINE') != 'online')"/>
+    <node name="DeepSpeech" pkg="action_selectors" type="DeepSpeech.py" output="screen" if="$(eval arg('FORCE_ENGINE') != 'online' and not arg('USE_WHISPER_OFFLINE'))"/>
+    <node name="Whisper" pkg="action_selectors" type="Whisper.py" output="screen" if="$(eval arg('FORCE_ENGINE') != 'online' and arg('USE_WHISPER_OFFLINE'))">
+        <param name="debug" value="$(arg DEBUG_WHISPER)"/>
+    </node>
+    
     <!-- Conversation -->
+    
     <!-- START_TALK: 'True' - Start Conversation, 'False' - Wait until being Spoken -->
-    <arg name="START_TALK" default="True"/>
-    <node name="SomeoneToTalk" pkg="action_selectors" type="SomeoneToTalk.py" respawn="true">
+    <arg name="START_TALK" default="False"/>
+    <!-- <node name="SomeoneToTalk" pkg="action_selectors" type="SomeoneToTalk.py" respawn="true">
         <param name="CAMERAID" value="1" />
-    </node>
-    <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen">
+    </node> -->
+    <!-- <node name="parser" pkg="action_selectors" type="parser.py" respawn="true" output="screen">
         <param name="START_TALK" value="$(arg START_TALK)" />
-    </node>
+    </node> -->
 </launch>

@@ -22,11 +22,14 @@ from SpeechApiUtils import SpeechApiUtils
 # Force the use of an specific engine.
 # 'online' always sends the request to Azure node 
 # without even checking for internet.
-# 'offline' always uses DeepSpeech even with internet.
+# 'offline' always uses Whisper even with internet (uses DeepSpeech if whisper flag is off).
 FORCE_ENGINE = None
+
+USE_WHISPER_OFFLINE = True
 
 publisher_azure = None
 publisher_deepspeech = None
+publisher_whisper = None
 
 def callback_azure(data):
     # Change Sample Rate.
@@ -42,13 +45,28 @@ def callback_deepspeech(data):
     publisher_deepspeech.publish(data)
     rospy.loginfo("Sent to Deepspeech node.")
 
+
+def callback_whisper(data):
+    # Whisper resamples audio to 16 kHz
+    resample=SpeechApiUtils.resample_ratecv(data.data, 48000, 16000)
+    # getAllSamples.
+    allsamples=SpeechApiUtils.get_all_samples(resample[0])
+    # Publish.
+    publisher_whisper.publish(allsamples)
+    rospy.loginfo("Sent to Whisper node.")
+
+
+
 def both_callback(data):
     rospy.loginfo("*Received a voice audio, computing...*")
     if (FORCE_ENGINE == "online" or 
         (FORCE_ENGINE == "none" and SpeechApiUtils.is_connected())):
         callback_azure(data)
     else:
-        callback_deepspeech(data)
+        if USE_WHISPER_OFFLINE:
+            callback_whisper(data)
+        else:
+            callback_deepspeech(data)
 
 def main():
     # In ROS, nodes are uniquely named. If two nodes with the same
@@ -62,11 +80,17 @@ def main():
     global FORCE_ENGINE
     FORCE_ENGINE=rospy.get_param('~FORCE_ENGINE', 'online')
 
-    global publisher_azure, publisher_deepspeech
+    global USE_WHISPER_OFFLINE
+    USE_WHISPER_OFFLINE=rospy.get_param('~USE_WHISPER_OFFLINE', True)
+
+    global publisher_azure, publisher_deepspeech, publisher_whisper
     # For publishing when online to Azure node to it compute it and publish.
     publisher_azure = rospy.Publisher('UsefulAudioAzure', AudioData, queue_size=5)
     # For publishing when online to Azure node to it compute it and publish.
     publisher_deepspeech = rospy.Publisher('UsefulAudioDeepSpeech', AudioData, queue_size=5)
+
+    # For publishing when online to Whispe node to compute it and publish.
+    publisher_whisper = rospy.Publisher('UsefulAudioWhisper', AudioData, queue_size=5)
 
     rospy.Subscriber("UsefulAudio", AudioData, both_callback)        
     
