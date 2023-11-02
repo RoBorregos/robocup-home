@@ -33,7 +33,7 @@ for name in MoveItErrorCodes.__dict__.keys():
     if not name[:1] == '_':
         code = MoveItErrorCodes.__dict__[name]
         moveit_error_dict[code] = name
-
+img_obj
 class PickAndPlaceServer(object):
     ARM_GROUP = "whole_body"
     PICK_GROUPS = ["whole_body"]
