@@ -18,10 +18,11 @@ class ArmServer:
         self.GRIPPER_GROUP = rospy.get_param("GRIPPER_GROUP", "gripper")
         self.HEAD_GROUP = rospy.get_param("HEAD_GROUP", "head")
 
-        #self.ARM_GROUP = "arm"
-        #self.ARM_JOINTS = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"]
+        # ARM GROUP STATES
+        self.ARM_HOME = [0.0, 0.0, 0.0, -1.5708, 1.5708, 0.7854]
         self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, 0, -3.1416 / 4, -2.356]
-        self.ARM_HOME = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        self.ARM_NAV = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
+        self.ARM_HRI = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
         rospy.init_node('arm_server')
         
         self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
@@ -37,6 +38,16 @@ class ArmServer:
 
     def move_arm_cb(self, goal):
         rospy.loginfo("Received goal: {}".format(goal))
+        if goal.state != None:
+            if(goal.state == "home"):
+                goal.joints_target = self.ARM_HOME
+            elif(goal.state == "calibration"):
+                goal.joints_target = self.ARM_CALIBRATION
+            elif(goal.state == "nav"):
+                goal.joints_target = self.ARM_NAV
+            elif(goal.state == "hri"):
+                goal.joints_target = self.ARM_HRI
+
         self.move_joints(goal.joints_target, goal.speed)
         result = MoveArmResult()
         result.success = 1

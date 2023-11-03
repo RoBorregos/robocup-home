@@ -1,4 +1,5 @@
 #goal definition
+string state
 float32[] joints_target
 float32 speed
 ---
