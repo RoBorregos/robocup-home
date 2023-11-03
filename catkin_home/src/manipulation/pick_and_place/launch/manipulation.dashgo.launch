@@ -27,11 +27,11 @@
   <!-- 3D Detector -->
   <include file="$(find object_detector)/launch/object_3D_BAG.launch">
     <arg name="MAP_FRAME" default="map" />
-    <arg name="CAMERA_FRAME" default="zed2_up_left_camera_frame" />
+    <arg name="CAMERA_FRAME" default="zed2_left_camera_frame" />
     <arg name="BASE_FRAME" default="base_link" />
     <arg name="map_to_odom"  default="true"/>
     <arg name="odom_to_base_footprint"  default="true"/>
-    <arg name="POINT_CLOUD_TOPIC" default="/zed2_up/zed_up_node/point_cloud/ds_cloud_registered" />
+    <arg name="POINT_CLOUD_TOPIC" default="/zed2/zed_node/point_cloud/ds_cloud_registered" />
   </include>
 
   <!-- Manipulation Server -->

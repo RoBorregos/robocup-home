@@ -40,7 +40,7 @@ public:
     {
       sensor_msgs::PointCloud2 t_pc;
       try {
-        tf_listener->waitForTransform("base_link", "zed2_up_left_camera_frame", ros::Time(0), ros::Duration(5.0));
+        tf_listener->waitForTransform("base_link", "zed2_left_camera_frame", ros::Time(0), ros::Duration(5.0));
       } catch (tf::TransformException ex) {
         return;
       }

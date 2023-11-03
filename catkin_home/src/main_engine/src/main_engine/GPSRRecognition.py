@@ -137,7 +137,7 @@ class faceRecognition:
 
         rospy.init_node('FaceRecognition')
 
-        camSubscriber = '/zed2_up/zed_up_node/rgb/image_rect_color'
+        camSubscriber = '/zed2/zed_node/rgb/image_rect_color'
         #camSubscriber = 'image'
         self.imageSub = rospy.Subscriber(
             camSubscriber, Image, self.process_image, queue_size=10)

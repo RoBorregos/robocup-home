@@ -725,7 +725,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: /zed2_up/zed_up_node/point_cloud/ds_cloud_registered
+      Topic: /zed2/zed_node/point_cloud/ds_cloud_registered
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -895,25 +895,25 @@ Visualization Manager:
           Value: false
         tag_1:
           Value: true
-        zed2_up_baro_link:
+        zed2_baro_link:
           Value: false
-        zed2_up_base_link:
+        zed2_base_link:
           Value: false
-        zed2_up_camera_center:
+        zed2_camera_center:
           Value: false
-        zed2_up_left_camera_frame:
+        zed2_left_camera_frame:
           Value: false
-        zed2_up_left_camera_optical_frame:
+        zed2_left_camera_optical_frame:
           Value: false
-        zed2_up_mag_link:
+        zed2_mag_link:
           Value: false
-        zed2_up_right_camera_frame:
+        zed2_right_camera_frame:
           Value: false
-        zed2_up_right_camera_optical_frame:
+        zed2_right_camera_optical_frame:
           Value: false
-        zed2_up_temp_left_link:
+        zed2_temp_left_link:
           Value: false
-        zed2_up_temp_right_link:
+        zed2_temp_right_link:
           Value: false
       Marker Alpha: 1
       Marker Scale: 1
@@ -952,22 +952,22 @@ Visualization Manager:
                         Cam1_ry_rz:
                           Cam1_rz_link:
                             Cam1:
-                              zed2_up_base_link:
-                                zed2_up_camera_center:
-                                  zed2_up_baro_link:
+                              zed2_base_link:
+                                zed2_camera_center:
+                                  zed2_baro_link:
                                     {}
-                                  zed2_up_left_camera_frame:
-                                    zed2_up_left_camera_optical_frame:
+                                  zed2_left_camera_frame:
+                                    zed2_left_camera_optical_frame:
                                       tag_1:
                                         {}
-                                    zed2_up_temp_left_link:
+                                    zed2_temp_left_link:
                                       {}
-                                  zed2_up_mag_link:
+                                  zed2_mag_link:
                                     {}
-                                  zed2_up_right_camera_frame:
-                                    zed2_up_right_camera_optical_frame:
+                                  zed2_right_camera_frame:
+                                    zed2_right_camera_optical_frame:
                                       {}
-                                    zed2_up_temp_right_link:
+                                    zed2_temp_right_link:
                                       {}
                 Cam2_x_y:
                   Cam2_y_z:

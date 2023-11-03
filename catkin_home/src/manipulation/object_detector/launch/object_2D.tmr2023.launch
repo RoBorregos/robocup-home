@@ -1,8 +1,8 @@
 <launch>
     <!-- ObjectDetection -->
-    <arg name="SOURCE" default="/zed2_up/zed_up_node/rgb/image_rect_color" /> 
-    <arg name="DEPTH_INPUT" default="/zed2_up/zed_up_node/depth/depth_registered" />
-    <arg name="CAMERA_INFO" default="/zed2_up/zed_up_node/depth/camera_info" />
+    <arg name="SOURCE" default="/zed2/zed_node/rgb/image_rect_color" /> 
+    <arg name="DEPTH_INPUT" default="/zed2/zed_node/depth/depth_registered" />
+    <arg name="CAMERA_INFO" default="/zed2/zed_node/depth/camera_info" />
     <arg name="ROS_INPUT" default="True" />
     <arg name="USE_ACTIVE_FLAG" default="False" />
     <arg name="VERBOSE" default="False" />
@@ -11,7 +11,7 @@
     <arg name="YOLO_MODEL_PATH" default="$(find object_detector)/models/tmr2023/yolo11classes.pt" />
     <arg name="MODELS_PATH" default="$(find object_detector)/models/gazebo/" />
     <arg name="LABELS_PATH" default="$(find object_detector)/models/gazebo/label_map.pbtxt" />
-    <arg name="CAMERA_FRAME" default="zed2_up_left_camera_optical_frame" />
+    <arg name="CAMERA_FRAME" default="zed2_left_camera_optical_frame" />
     <arg name="USE_FAKE_DETECTOR" default="False" />
 
     <node name="Detection2D" pkg="object_detector" type="Detection2D.py" respawn="true" output="screen" unless="$(arg USE_FAKE_DETECTOR)">
