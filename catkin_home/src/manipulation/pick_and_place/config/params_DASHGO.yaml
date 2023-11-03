@@ -6,7 +6,7 @@ ARM_JOINTS: [joint1, joint2, joint3, joint4, joint5, joint6]
 ARM_GRASP: [-1.57, -0.785, -0.785, 0, 1.57, 0]
 ARM_INIT: [-1.57, -1.39626, -0.174533, 0.0, 1.57, -0.7854]
 ARM_HOME: [0.0, 0.0, 0.0, 0.0, 0.0, -0.7854]
-ARM_PREGRASP: [-1.57, -0.1745, -0.262, 0.0, 0.0, -0.7854]
+ARM_PREGRASP: [-1.57, -1.04, -1.04, 0, 2.09, -2.356]
 HEAD_ENABLE: false
 HEAD_GROUP: "head"
 HEAD_JOINTS: [Cam1Rev1, Cam1Rev2]
