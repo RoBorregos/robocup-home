@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 
 <launch>
-  <arg name="camera_name" default="zed2_up"/>
-  <arg name="camera_frame" default="zed2_up_left_camera_optical_frame" />
-  <arg name="image_topic" default="/zed2_up/zed_up_node/rgb/image_rect_color" />
-  <arg name="info_topic" default="/zed2_up/zed_up_node/rgb/camera_info" />
+  <arg name="camera_name" default="zed2"/>
+  <arg name="camera_frame" default="zed2_left_camera_optical_frame" />
+  <arg name="image_topic" default="/zed2/zed_node/rgb/image_rect_color" />
+  <arg name="info_topic" default="/zed2/zed_node/rgb/camera_info" />
 
-  <arg name="image_topic_synced" default="/zed2_up/zed_up_node/synced_rgb/image_rect" />
-  <arg name="info_topic_synced" default="/zed2_up/zed_up_node/synced_rgb/camera_info" />
+  <arg name="image_topic_synced" default="/zed2/zed_node/synced_rgb/image_rect" />
+  <arg name="info_topic_synced" default="/zed2/zed_node/synced_rgb/camera_info" />
 
   <arg name="tag_file" default="tags.yaml" />
 

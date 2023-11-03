@@ -523,7 +523,7 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: /zed2_up/zed_up_node/point_cloud/cloud_registered
+      Topic: /zed2/zed_node/point_cloud/cloud_registered
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true

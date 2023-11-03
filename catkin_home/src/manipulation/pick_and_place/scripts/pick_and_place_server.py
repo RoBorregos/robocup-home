@@ -90,7 +90,6 @@ class PickAndPlaceServer(object):
         #     entry.enabled.append(True)
         # self.curr_collision_matrix.entry_values.append(AllowedCollisionEntry(enabled=[True for i in range(len(self.curr_collision_matrix.entry_names))]))
         
-
         rospy.loginfo("Connecting to clear octomap service...")
         self.clear_octomap_srv = rospy.ServiceProxy(
             '/clear_octomap', Empty)
@@ -304,7 +303,7 @@ class PickAndPlaceServer(object):
                             # if res != True:
                             #     break
                             
-                            adjust = 0.02
+                            adjust = 0
                             if grasp.grasp_pose.pose.position.x > 0.0:
                                 grasp.grasp_pose.pose.position.x -= adjust
                             else:
@@ -315,7 +314,7 @@ class PickAndPlaceServer(object):
                             else:
                                 grasp.grasp_pose.pose.position.y += adjust
 
-                            grasp.grasp_pose.pose.position.z -= 0.04
+                            grasp.grasp_pose.pose.position.z -= 0.02
                             pose_st = PoseStamped()
                             pose_st.header = grasp.grasp_pose.header
                             pose_st.pose = grasp.grasp_pose.pose
@@ -323,7 +322,7 @@ class PickAndPlaceServer(object):
                             group.set_pose_target(grasp.grasp_pose.pose)
                             group.set_goal_orientation_tolerance(numpy.deg2rad(5))
                             group.set_goal_position_tolerance(0.02)
-                            group.set_max_velocity_scaling_factor(0.12)
+                            group.set_max_velocity_scaling_factor(0.15)
                             group.set_max_acceleration_scaling_factor(0.025)
                             group.set_planning_pipeline_id(planner)
                             # disable path simplification
@@ -457,7 +456,7 @@ class PickAndPlaceServer(object):
                 rospy.loginfo("Attached object to gripper")
 
 
-                pose_st = PoseStamped()
+                """pose_st = PoseStamped()
                 pose_st.header = grasp.grasp_pose.header
                 pose_st.pose = grasp.grasp_pose.pose
                 pose_st.pose.position.z += 0.08
@@ -466,13 +465,13 @@ class PickAndPlaceServer(object):
                 group.set_pose_target(grasp.grasp_pose.pose)
                 group.set_goal_orientation_tolerance(numpy.deg2rad(5))
                 group.set_goal_position_tolerance(0.012)
-                group.set_max_velocity_scaling_factor(0.12)
-                group.set_max_acceleration_scaling_factor(0.025)
+                group.set_max_velocity_scaling_factor(0.10)
+                group.set_max_acceleration_scaling_factor(0.001)
                 group.set_planning_pipeline_id("ompl")
                 group.set_planning_time(3)
                 res = group.plan()
                 res = group.go(wait=True)
-                group.stop()
+                group.stop()"""
 
                 # restore scene to detect collisions
                 rospy.loginfo("Restoring scene")
