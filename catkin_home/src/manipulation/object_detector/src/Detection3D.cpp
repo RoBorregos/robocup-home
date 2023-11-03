@@ -526,6 +526,14 @@ public:
         return;
       }
 
+      if (object_found.max_x > plane_params.max_x || object_found.min_x > plane_params.min_x || 
+      object_found.max_y > plane_params.max_y || object_found.min_y > plane_params.min_y) {
+        ROS_INFO_STREAM("Object rejected due to not within table plane ROI.");
+        object_found.isValid = false;
+        return;
+      }
+
+
       if (!ignore_moveit_) {
         // Store mesh.
         ROS_INFO_STREAM("Reconstructing Mesh Started");
@@ -837,6 +845,66 @@ public:
     std::string id = "current";
     addObject(id, selectedObject);
   }
+
+  void placeCB(const sensor_msgs::PointCloud2& input)
+  {
+    ROS_INFO_STREAM("Received PointCloud");
+    if (!ignore_moveit_) {
+      // Reset Planning Scene Interface
+      std::vector<std::string> object_ids = planning_scene_interface_->getKnownObjectNames();
+      planning_scene_interface_->removeCollisionObjects(object_ids);
+      ros::Duration(2).sleep();
+    }
+
+    // Get cloud ready
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+    pcl::PointIndices::Ptr inliers_plane(new pcl::PointIndices); // Indices that correspond to a plane.
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+    pcl::fromROSMsg(input, *cloud);
+    computeNormals(cloud, cloud_normals);
+
+    if (side_ != 0) {
+      passThroughFilterSide(cloud, side_);
+    }
+
+    ROS_INFO_STREAM("PointCloud Pre-Processing Done");
+
+    // Detect and Remove the plane on which the object is resting.
+    ObjectParams plane_params;
+    if (ENABLE_RANSAC) {
+      bool targetPlaneRemoved = false;
+      int count = 0;
+      while(!targetPlaneRemoved && cloud->points.size() > 3) {
+        targetPlaneRemoved = removeBiggestPlane(cloud, inliers_plane, plane_params, count++);
+        extractNormals(cloud_normals, inliers_plane);
+      }
+    }
+    
+    if (cloud->points.size() <= 3) {
+      return;
+    }
+
+    /* Extract all objects from PointCloud using Clustering. */
+    std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+    getClusters(cloud, clusters);
+    int clustersFound = clusters.size();
+    ROS_INFO_STREAM("Clusters Found: " << clustersFound);
+
+    std::vector<ObjectParams> objects;
+    for(int i=0;i < clustersFound; i++) {
+      ObjectParams tmp;
+      tmp.mesh.reset(new shape_msgs::Mesh);
+      extractObjectDetails(clusters[i], tmp, plane_params);
+      tmp.file_id = i;
+      ROS_INFO_STREAM("File saved: " << "pcl_object_"+std::to_string(i)+".pcd");
+      pcl::io::savePCDFile("pcl_object_"+std::to_string(i)+".pcd", tmp.cluster_original);
+      if (tmp.isValid) {
+        objects.push_back(tmp);
+      }
+    }
+    ROS_INFO_STREAM("Valid Objects: " << objects.size());
+  }
+
 
   /** \brief Find all clusters in a pointcloud.*/
   void getClusters(const pcl::PointCloud<pcl::PointXYZ>::Ptr cloud, std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> &clusters) {
