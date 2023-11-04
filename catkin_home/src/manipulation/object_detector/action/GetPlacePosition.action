@@ -1,0 +1,11 @@
+#goal definition
+float64 plane_min_height
+float64 plane_max_height
+---
+#result definition
+bool success
+geometry_msgs/PoseStamped target_pose
+---
+#feedback
+# -1 => Error, 0..1...2 => ObjectsFoundSoFar
+int32 status

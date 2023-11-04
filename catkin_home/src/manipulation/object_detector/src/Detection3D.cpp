@@ -30,12 +30,14 @@
 
 #include <actionlib/server/simple_action_server.h>
 #include <object_detector/DetectObjects3DAction.h>
+#include <object_detector/GetPlacePositionAction.h>
 
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit_msgs/CollisionObject.h>
 
 
 #include <std_msgs/Int64.h>
+#include <std_msgs/Int64MultiArray.h>
 
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/PoseArray.h>
@@ -111,6 +113,7 @@ class Detect3D
   ros::NodeHandle nh_;
   moveit::planning_interface::PlanningSceneInterface *planning_scene_interface_;
   actionlib::SimpleActionServer<object_detector::DetectObjects3DAction> as_;
+  actionlib::SimpleActionServer<object_detector::DetectObjects3DAction> place_as_; // TODO: Type of simple as
   object_detector::DetectObjects3DFeedback feedback_;
   object_detector::DetectObjects3DResult result_;
   object_detector::objectDetection force_object_;
@@ -129,7 +132,8 @@ class Detect3D
 public:
   Detect3D() :
     listener_(buffer_),
-    as_(nh_, name, boost::bind(&Detect3D::handleActionServer, this, _1), false)
+    as_(nh_, name, boost::bind(&Detect3D::handleActionServer, this, _1), false),
+    place_as_(nh_, "detect3d_place", boost::bind(&Detect3D::handlePlaceActionServer, this, _1), false)
   {
     planning_scene_interface_ = new moveit::planning_interface::PlanningSceneInterface();
     clear_octomap = nh_.serviceClient<std_srvs::Empty>("/clear_octomap");
@@ -217,6 +221,30 @@ public:
     Detect3D::cloudCB(t_pc);
     as_.setSucceeded(result_);
     pose_pub_.publish(pose_pub_msg_);
+  }
+
+  void handlePlaceActionServer(const std_msgs::Int64MultiArray)
+  {
+    ROS_INFO_STREAM("Action Server Place - Goal Received");
+
+    
+    // Get PointCloud and Transform it to Map Frame
+    sensor_msgs::PointCloud2 pc;
+    sensor_msgs::PointCloud2 t_pc;
+    pc = *(ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_));
+    if (pc.header.frame_id != BASE_FRAME && tf_listener->canTransform(BASE_FRAME, CAMERA_FRAME, ros::Time(0)))
+    {
+      tf_listener->waitForTransform(BASE_FRAME, CAMERA_FRAME, ros::Time(0), ros::Duration(5.0));
+      pc.header.frame_id = CAMERA_FRAME;
+      pcl_ros::transformPointCloud(BASE_FRAME, pc, t_pc, *tf_listener);
+    }
+    else
+    {
+      t_pc = pc;
+    }
+
+    Detect3D::placeCB(t_pc);
+    place_as_.setSucceeded();
   }
 
   /** \brief Given the parameters of the object add it to the planning scene. */
@@ -706,6 +734,7 @@ public:
     gpd_ros::CloudSources cloud_sources;
     cloud_sources.cloud = input;
     std_msgs::Int64 tmpInt; tmpInt.data = 0;
+
     cloud_sources.camera_source.assign(input.width * input.height, tmpInt);
 
     geometry_msgs::TransformStamped tf_to_cam;
@@ -731,7 +760,8 @@ public:
       tmpPoint.z = point.z;
       gpd_msg_.samples.push_back(tmpPoint);
       unique_points.insert(point);
-    }
+    }    
+
     // Indices
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_original(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(input, *cloud_original);
@@ -884,7 +914,10 @@ public:
       return;
     }
 
-    /* Extract all objects from PointCloud using Clustering. */
+    
+
+    /* Extract all objects from PointCloud using Clustering.*/
+    /*
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
     getClusters(cloud, clusters);
     int clustersFound = clusters.size();
@@ -902,7 +935,7 @@ public:
         objects.push_back(tmp);
       }
     }
-    ROS_INFO_STREAM("Valid Objects: " << objects.size());
+    ROS_INFO_STREAM("Valid Objects: " << objects.size());*/
   }
 
 

@@ -85,6 +85,7 @@ add_message_files(
 add_action_files(
   FILES
   DetectObjects3D.action
+  GetPlacePosition.action
 )
 
 ## Generate added messages and services with any dependencies listed here
