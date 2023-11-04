@@ -7,7 +7,7 @@
     <arg name="USE_ACTIVE_FLAG" default="False" />
     <arg name="VERBOSE" default="False" />
     <arg name="DEPTH_ACTIVE" default="True" />
-    <arg name="USE_YOLO" default="True" />
+    <arg name="USE_YOLO8" default="False" />
     <arg name="YOLO_MODEL_PATH" default="$(find object_detector)/models/tmr2023/yolo11classes.pt" />
     <arg name="MODELS_PATH" default="$(find object_detector)/models/gazebo/" />
     <arg name="LABELS_PATH" default="$(find object_detector)/models/gazebo/label_map.pbtxt" />
@@ -19,7 +19,7 @@
         <param name="ROS_INPUT" value="$(arg ROS_INPUT)" />
         <param name="USE_ACTIVE_FLAG" value="$(arg USE_ACTIVE_FLAG)" />
         <param name="VERBOSE" value="$(arg VERBOSE)" />
-        <param name="USE_YOLO" value="$(arg USE_YOLO)" />
+        <param name="USE_YOLO8" value="$(arg USE_YOLO8)" />
         <param name="YOLO_MODEL_PATH" value="$(arg YOLO_MODEL_PATH)" />
         <param name="MODELS_PATH" value="$(arg MODELS_PATH)" />
         <param name="LABELS_PATH" value="$(arg LABELS_PATH)" />

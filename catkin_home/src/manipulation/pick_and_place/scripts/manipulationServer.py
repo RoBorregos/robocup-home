@@ -110,12 +110,13 @@ class manipuationServer(object):
             self.grasp_config_list = rospy.Publisher("grasp_config_list", GraspConfigList, queue_size=5)
             rospy.wait_for_service('/detect_grasps_server_samples/detect_grasps_samples')
 
-        self.initARM()
+        
         rospy.loginfo("Loaded everything...")
         
         # Initialize Manipulation Action Server
         self._as = actionlib.SimpleActionServer(self._action_name, manipulationServAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
+        self.initARM()
 
         rospy.loginfo("Manipulation Server Initialized ...")
 
@@ -143,12 +144,12 @@ class manipuationServer(object):
         ARM_INIT = rospy.get_param("ARM_INIT", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         ARM_HOME = rospy.get_param("ARM_HOME", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        # Move to an easier to plan from location (facing front)
-        self.moveARM(ARM_INIT, 0.1)
+        # Move to a position to look at the objects
+        self.moveARM(ARM_PREGRASP, 0.25)
     
     def graspARM(self):
         ARM_GRASP = rospy.get_param("ARM_GRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        self.moveARM(ARM_GRASP, 0.2)
+        self.moveARM(ARM_GRASP, 0.25)
 
     def initHEAD(self):
         HEAD_JOINTS = rospy.get_param("HEAD_JOINTS", ["head_1_joint", "head_2_joint"])
