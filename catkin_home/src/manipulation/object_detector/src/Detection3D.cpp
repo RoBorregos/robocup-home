@@ -505,12 +505,12 @@ public:
       object_found.cluster = cloud;
       
        ROS_INFO_STREAM("Object dimensions: "
-        << "max_x " << object_found.max_x
-        << "min_x " << object_found.min_x
-        << "max_y " << object_found.max_y
-        << "min_y " << object_found.min_y
-        << "max_z " << object_found.max_z
-        << "min_z " << object_found.min_z);
+        << " max_x " << object_found.max_x
+        << " min_x " << object_found.min_x
+        << " max_y " << object_found.max_y
+        << " min_y " << object_found.min_y
+        << " max_z " << object_found.max_z
+        << " min_z " << object_found.min_z);
       // Add object only if it has restricted dimensions.
       if (abs(object_found.max_x - object_found.min_x) > 0.5 ||
         abs(object_found.max_y - object_found.min_y) > 0.5 ||
@@ -520,14 +520,14 @@ public:
         return;
       }
 
-      if (abs(object_found.max_z - object_found.min_z) < 0.1) {
+      if (abs(object_found.max_z - object_found.min_z) < 0.03) {
         ROS_INFO_STREAM("Object rejected due to height.");
         object_found.isValid = false;
         return;
       }
 
-      if (object_found.max_x > plane_params.max_x || object_found.min_x > plane_params.min_x || 
-      object_found.max_y > plane_params.max_y || object_found.min_y > plane_params.min_y) {
+      if (object_found.max_x > plane_params.max_x || object_found.min_x < plane_params.min_x || 
+      object_found.max_y > plane_params.max_y || object_found.min_y < plane_params.min_y) {
         ROS_INFO_STREAM("Object rejected due to not within table plane ROI.");
         object_found.isValid = false;
         return;
