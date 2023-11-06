@@ -212,6 +212,7 @@ public:
         object_pose.header.stamp = ros::Time::now();
         object_pose.header.frame_id = BASE_FRAME;
         object_pose.pose = plane_found.center.pose;
+        object_pose.pose.position.z += 0.5;
         pose_pub_msg_.header = object_pose.header;
         pose_pub_msg_.poses.push_back(object_pose.pose);
         result_.target_pose = object_pose;
@@ -310,6 +311,8 @@ public:
             ROS_INFO_STREAM("Plane height too low. " << plane_params.min_z << " < " << plane_min_height_);
             return false;
         }
+        
+        
 
         // Adding Plane to Planning Scene
         moveit_msgs::CollisionObject collision_object;
@@ -343,6 +346,7 @@ public:
         // planning_scene_interface_->applyCollisionObject(collision_object);
 
         plane_params.isValid = true;
+        //reconstructMesh(cloud, object_found.mesh);
 
         return true;
     }
