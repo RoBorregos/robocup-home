@@ -46,6 +46,14 @@
         <joint name="joint5" value="2.33"/>
         <joint name="joint6" value="-1.57"/>
     </group_state>
+    <group_state name="arm_pregrasp" group="arm">
+        <joint name="joint1" value="-1.57"/>
+        <joint name="joint2" value="-0.6108"/>
+        <joint name="joint3" value="-0.4363"/>
+        <joint name="joint4" value="0"/>
+        <joint name="joint5" value="-0.1745"/>
+        <joint name="joint6" value="0.7854"/>
+    </group_state>
     <group_state name="arm_calibration" group="arm">
         <joint name="joint1" value="-1.57"/>
         <joint name="joint2" value="0"/>

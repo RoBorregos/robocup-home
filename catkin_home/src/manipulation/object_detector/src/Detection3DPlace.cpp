@@ -131,6 +131,11 @@ class Detect3DPlace
     float plane_min_height_;
     float plane_max_height_;
 
+    bool table_objects[50][50] = {false};
+    int horizontal_prefix[50][50] = {0};
+    int vertical_prefix[50][50] = {0};
+    double selected_object_sz = 0.1; //meters
+
 public:
     Detect3DPlace() : 
         listener_(buffer_),
@@ -291,6 +296,46 @@ public:
         }
     }
 
+    void addObjects2TableMatrix(ObjectParams& obj_params, ObjectParams& plane_params, bool occupied = true){
+        ROS_INFO_STREAM("Object size params: " << obj_params.max_x << " " << obj_params.min_x << " " << obj_params.max_y << " " << obj_params.min_y);
+        int obj_size_x = std::ceil( (obj_params.max_x - obj_params.min_x) / selected_object_sz );
+        int obj_size_y = std::ceil( (obj_params.max_y - obj_params.min_y) / selected_object_sz );
+        ROS_INFO_STREAM("Object Size: " << obj_size_x << " x " << obj_size_y);
+        int y_idx = std::max( floor( (obj_params.min_y - plane_params.min_y) / selected_object_sz ), double(0) );
+        int x_idx = std::max( floor( (obj_params.min_x - plane_params.min_x) / selected_object_sz ), double(0) );
+
+        
+        for(int i = y_idx; i<y_idx+obj_size_y; i++){
+            for(int j = x_idx; j<x_idx+obj_size_x; j++){
+                table_objects[i][j] = occupied;
+            }
+        }
+    }
+
+    void fillPrefixMatrices(ObjectParams& plane_params){
+        int max_y = ceil( (plane_params.max_y - plane_params.min_y) / selected_object_sz );
+        int max_x = ceil( (plane_params.max_x - plane_params.min_x) / selected_object_sz );
+
+        for(int i=0; i<max_y; i++){
+            for(int j=0; j<max_x; j++){
+                if(!table_objects[i][j]){
+                    horizontal_prefix[i][j] = 1;
+                    vertical_prefix[i][j] = 1;
+                }
+                else{
+                    horizontal_prefix[i][j] = 0;
+                    vertical_prefix[i][j] = 0;
+                    continue;
+                }
+                if(i>0)
+                    vertical_prefix[i][j] += vertical_prefix[i-1][j];
+                if(j>0)
+                    horizontal_prefix[i][j] += horizontal_prefix[i][j-1];
+            } 
+        }
+    }
+
+
     /** \brief Given the parameters of the plane add it to the planning scene. */
     bool addPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, const pcl::ModelCoefficients::Ptr &coefficients_plane, ObjectParams &plane_params){
         extractObjectDetails(cloud, plane_params, plane_params, false);
@@ -346,6 +391,7 @@ public:
 
         plane_params.isValid = true;
         //reconstructMesh(cloud, object_found.mesh);
+        addObjects2TableMatrix(plane_params, plane_params, false);
 
         return true;
     }
@@ -811,7 +857,7 @@ public:
             }
         }
 
-        bool table_empty = true;
+        bool table_empty = false;
         if( table_empty ){
             addTablePos(plane_params);
             return;
@@ -855,8 +901,7 @@ public:
         ROS_INFO_STREAM("Clusters Found: " << clustersFound);
 
         std::vector<ObjectParams> objects;
-        for (int i = 0; i < clustersFound; i++)
-        {
+        for (int i = 0; i < clustersFound; i++){
             ObjectParams tmp;
             tmp.mesh.reset(new shape_msgs::Mesh);
             extractObjectDetails(clusters[i], tmp, plane_params);
@@ -864,17 +909,81 @@ public:
             ROS_INFO_STREAM("File saved: "
                             << "pcl_object_" + std::to_string(i) + ".pcd");
             pcl::io::savePCDFile("pcl_object_" + std::to_string(i) + ".pcd", tmp.cluster_original);
-            if (tmp.isValid)
-            {
+            if (tmp.isValid){
                 objects.push_back(tmp);
+                addObjects2TableMatrix(tmp, plane_params);
             }
         }
-        ROS_INFO_STREAM("Valid Objects: " << objects.size());
+        ROS_INFO_STREAM("Found Objects: " << objects.size());
 
-        if (!biggest_object_)
-        {
-            bindDetections(objects);
+        fillPrefixMatrices(plane_params);
+
+
+        int max_y = std::ceil( (plane_params.max_y - plane_params.min_y) / selected_object_sz );
+        int max_x = std::ceil( (plane_params.max_x - plane_params.min_x) / selected_object_sz );
+        int y_closests_av = -1;
+        int x_closests_av = -1;
+        
+        //debug table objects and prefix matrices
+        ROS_INFO_STREAM("Table Objects");
+        for(int i=0; i<max_y; i++){
+            for(int j=0; j<max_x; j++){
+                std::cout << table_objects[i][j] << " ";
+            }
+            std::cout << std::endl;
         }
+
+        ROS_INFO_STREAM("Horizontal Prefix");
+        for(int i=0; i<max_y; i++){
+            for(int j=0; j<max_x; j++){
+                std::cout << horizontal_prefix[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        ROS_INFO_STREAM("Vertical Prefix");
+        for(int i=0; i<max_y; i++){
+            for(int j=0; j<max_x; j++){
+                std::cout << vertical_prefix[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        for(int i=max_y; i>=0; i--){
+            for(int j=max_x; j>=0; j--){
+                if( vertical_prefix[i][j] >= 2 && horizontal_prefix[i][j] >= 2 ){
+                    y_closests_av = i;
+                    x_closests_av = j;
+                    break;
+                }
+            }
+            if( y_closests_av != -1 && x_closests_av != -1 )
+                break;
+        }
+
+        if( y_closests_av == -1 || x_closests_av == -1 ){
+            ROS_INFO_STREAM("No available space for object");
+            result_.success = false;
+            return;
+        }
+
+        double x_pos = x_closests_av * selected_object_sz + plane_params.min_x;
+        double y_pos = y_closests_av * selected_object_sz + plane_params.min_y;
+
+        geometry_msgs::PoseStamped target_pose;
+        target_pose.header.stamp = ros::Time::now();
+        target_pose.header.frame_id = BASE_FRAME;
+        target_pose.pose = plane_params.center.pose;
+        target_pose.pose.position.x = x_pos;
+        target_pose.pose.position.y = y_pos;
+        pose_pub_msg_.header = target_pose.header;
+        pose_pub_msg_.poses.push_back(target_pose.pose);
+        result_.target_pose = target_pose;
+
+        ROS_INFO_STREAM("Target matrix position: " << y_closests_av << " " << x_closests_av);
+        ROS_INFO_STREAM("Target Pose: " << target_pose.pose.position.x << ", " << target_pose.pose.position.y << ", " << target_pose.pose.position.z);
+        return;
+
 
         if (objects.size() < 1)
         {
