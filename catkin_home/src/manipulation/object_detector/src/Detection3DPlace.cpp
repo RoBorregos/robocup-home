@@ -212,7 +212,6 @@ public:
         object_pose.header.stamp = ros::Time::now();
         object_pose.header.frame_id = BASE_FRAME;
         object_pose.pose = plane_found.center.pose;
-        object_pose.pose.position.z += 0.5;
         pose_pub_msg_.header = object_pose.header;
         pose_pub_msg_.poses.push_back(object_pose.pose);
         result_.target_pose = object_pose;

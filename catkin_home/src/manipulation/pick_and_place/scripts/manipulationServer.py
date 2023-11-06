@@ -147,10 +147,10 @@ class manipuationServer(object):
 
     def initARM(self):
         ARM_INIT = rospy.get_param("ARM_INIT", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        self.ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         ARM_HOME = rospy.get_param("ARM_HOME", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         # Move to a position to look at the objects
-        self.moveARM(ARM_PREGRASP, 0.25)
+        self.moveARM(self.ARM_PREGRASP, 0.25)
     
     def graspARM(self):
         ARM_GRASP = rospy.get_param("ARM_GRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
@@ -200,6 +200,7 @@ class manipuationServer(object):
         self.target_label = ""
         found = False
         if target == -5: #Place action
+            self.moveARM(self.ARM_PREGRASP, 0.25)
             found = self.get_place_position()
             if found:
                 self.toggle_octomap(False)
