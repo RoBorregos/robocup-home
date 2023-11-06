@@ -12,6 +12,7 @@ import moveit_commander
 from std_msgs.msg import Bool
 from std_srvs.srv import SetBool
 from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal, objectDetectionArray, objectDetection
+from object_detector.msg import GetPlacePositionAction, GetPlacePositionGoal
 from pick_and_place.msg import PickAndPlaceAction, PickAndPlaceGoal
 from geometry_msgs.msg import PoseStamped, Vector3
 from sensor_msgs.msg import JointState
@@ -96,6 +97,10 @@ class manipuationServer(object):
             self.vision3D_as = actionlib.SimpleActionClient("Detect3D", DetectObjects3DAction)
             self.vision3D_as.wait_for_server()
             rospy.loginfo("Loaded ComputerVision 3D AS...")
+            
+            self.place_vision_as = actionlib.SimpleActionClient("detect3d_place", GetPlacePositionAction)
+            self.place_vision_as.wait_for_server()
+            rospy.loginfo("Loaded Place ComputerVision 3D AS...")
 
         # # Manipulation
         if MANIPULATION_ENABLE:
@@ -188,13 +193,33 @@ class manipuationServer(object):
         if not VISION_ENABLE:
             self._as.set_succeeded(manipulationServResult(result = False))
             return
+        
 
         # Get Objects:
-        rospy.loginfo("Getting objects")
+        rospy.loginfo("Getting objects/position")
         self.target_label = ""
-        found = self.get_object(target)
+        found = False
+        if target == -5: #Place action
+            found = self.get_place_position()
+            if found:
+                self.toggle_octomap(False)
+                rospy.loginfo("Robot Placing " + self.target_label + " down")
+                result = self.place(self.target_pose, "current", allow_contact_with_ = [])
+                if result != 1:
+                    self.toggle_octomap(True)
+                    rospy.loginfo("Place Failed")
+                    self._as.set_succeeded(manipulationServResult(result = False))
+                    return
+                rospy.loginfo("Robot Placed " + self.target_label + " down")
+                self.toggle_octomap(True)
+                ## Move Up
+                self.graspARM()
+                self._as.set_succeeded(manipulationServResult(result = True))
+                return
+        else:
+            found = self.get_object(target)
         if not found:
-            rospy.loginfo("Object Not Found")
+            rospy.loginfo("Not Found")
             self._as.set_succeeded(manipulationServResult(result = False))
             return
         rospy.loginfo("Object Extracted")
@@ -418,6 +443,57 @@ class manipuationServer(object):
         self.object_cloud_indexed = GetObjectsScope.object_cloud_indexed
 
         return GetObjectsScope.success
+    
+    def get_place_position(self):
+        class GetPositionScope:
+            success = False
+            target_pose = []
+            x_plane = 0.0
+            y_plane = 0.0
+            z_plane = 0.0
+            width_plane = 0.0
+            height_plane = 0.0
+            result_received = False
+        
+        def get_position_feedback(feedback_msg):
+            GetPositionScope.objects_found_so_far = feedback_msg.status
+        
+        def get_result_callback(state, result):
+            if result is None:
+                GetPositionScope.success = False
+                GetPositionScope.result_received = True
+                return
+            GetPositionScope.success = result.success
+            GetPositionScope.target_pose = result.target_pose
+            GetPositionScope.x_plane = result.x_plane
+            GetPositionScope.y_plane = result.y_plane
+            GetPositionScope.z_plane = result.z_plane
+            GetPositionScope.width_plane = result.width_plane
+            GetPositionScope.height_plane = result.height_plane
+            GetPositionScope.result_received = True
+
+        goal = GetPlacePositionGoal(plane_min_height = 0.2, plane_max_height = 3.0) # Table
+
+        attempts = 0
+        while attempts < 3:
+            self.place_vision_as.send_goal(
+                goal,
+                feedback_cb=get_position_feedback,
+                done_cb=get_result_callback)
+        
+            start_time = time.time()
+            while not GetPositionScope.result_received:
+                pass
+        
+            if GetPositionScope.success:
+                break
+            attempts += 1
+
+        if not GetPositionScope.success:
+            return False
+
+        self.target_pose = GetPositionScope.target_pose
+        return GetPositionScope.success
 
 if __name__ == '__main__':
     rospy.init_node('manipulationServer')
