@@ -814,6 +814,27 @@ public:
             return;
         }
 
+        /* Idea for search algorithm:
+        Given the max dimension por the package as M, find an area of M*M for the place
+        After obtaining plane's max and min positions, the size of the plane is W = max x - min x,
+        H = max y - min y.
+        Define a boolean matrix of dimensions [W/(M/2)][H/(M/2)] set to false,
+        min x and min y would represent the index 0,0
+        Find each cluster and validate if its on the table, then, set it's dimensions to true
+        in the matrix, in the index corresponding to (obj min x - min x)/(M/2) until its area is covered
+        After adding every object to the matrix, compute two prefix matrices of integers:
+        One keeping track of the previous continuous available spaces (false) to the left,
+        and the other above, if a layout table is like this:
+
+        Table           Prefix horizontal   Vertical
+        001000010       120123401           110111101
+        010010000       101201234           201202212
+        100000010       012345601           012313303
+        000001000       123450123           123420414
+
+        As the size was defined to M/2, with a traverse of O(N), starting from right down and 
+        moving left (for priority of placing close to the arm), when a 2 of maximum is found in
+        both matrices, it would fit the size of the object. */
 
         if (cloud->points.size() <= 3){
             return;
