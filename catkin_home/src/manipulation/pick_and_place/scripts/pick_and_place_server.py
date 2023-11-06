@@ -560,11 +560,45 @@ class PickAndPlaceServer(object):
         links_to_allow_contact = PickAndPlaceServer.ALLOW_CONTACT
         links_to_allow_contact.extend(allow_contact_with)
         
-        possible_placings = create_placings_from_object_pose(object_pose, links_to_allow_contact)
+        #possible_placings = create_placings_from_object_pose(object_pose, links_to_allow_contact)
 
         error_code = -1
         
-        rospy.loginfo("Trying to place with arm and torso")
+        for group in self.pick_groups:
+            planners = ["ompl"]
+            for planner in planners:
+                rospy.loginfo("Trying to place with arm and torso")
+                                    
+                pose_st = PoseStamped()
+                pose_st.header = object_pose.header
+                pose_st.pose = object_pose.pose
+                self.pose_p.publish(pose_st)
+                group.set_pose_target(object_pose.pose)
+                group.set_goal_orientation_tolerance(numpy.deg2rad(5))
+                group.set_goal_position_tolerance(0.012)
+                group.set_max_velocity_scaling_factor(0.1)
+                group.set_max_acceleration_scaling_factor(0.025)
+                group.set_planning_pipeline_id(planner)
+                # set planner to kpiece
+                group.set_planner_id("RRTConnect")
+                # set planning threads
+                group.set_planning_time(25)
+                group.set_num_planning_attempts(10)
+
+                t = time.time()
+                res = group.plan()
+                rospy.loginfo("Planning time 1: " + str(time.time() - t))
+                if res[0] == False:
+                    rospy.loginfo("Planning failed")
+                    continue
+                t = time.time()
+                res = group.go(wait=True)
+                rospy.loginfo("Execution time 1: " + str(time.time() - t))
+                
+                group.stop()
+                rospy.loginfo("Result: " + str(res))
+                if res != True:
+                    break
         
         goal = createPlaceGoal(
             possible_placings, place_group, object_name, links_to_allow_contact, "<octomap>", None)
