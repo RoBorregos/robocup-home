@@ -113,7 +113,7 @@ class Detect3D
   ros::NodeHandle nh_;
   moveit::planning_interface::PlanningSceneInterface *planning_scene_interface_;
   actionlib::SimpleActionServer<object_detector::DetectObjects3DAction> as_;
-  actionlib::SimpleActionServer<object_detector::DetectObjects3DAction> place_as_; // TODO: Type of simple as
+  actionlib::SimpleActionServer<object_detector::GetPlacePositionAction> place_as_; // TODO: Type of simple as
   object_detector::DetectObjects3DFeedback feedback_;
   object_detector::DetectObjects3DResult result_;
   object_detector::objectDetection force_object_;
@@ -223,7 +223,7 @@ public:
     pose_pub_.publish(pose_pub_msg_);
   }
 
-  void handlePlaceActionServer(const std_msgs::Int64MultiArray)
+  void handlePlaceActionServer(const object_detector::GetPlacePositionGoalConstPtr &goal)
   {
     ROS_INFO_STREAM("Action Server Place - Goal Received");
 
