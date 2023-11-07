@@ -126,8 +126,8 @@ class manipuationServer(object):
         rospy.loginfo("Manipulation Server Initialized ...")
 
     
-    def moveARM(self, joints, speed):
-        if VISION_ENABLE:
+    def moveARM(self, joints, speed, enable_octomap = True):
+        if VISION_ENABLE and enable_octomap:
             self.toggle_octomap(False)
         ARM_JOINTS = rospy.get_param("ARM_JOINTS", ["arm_1_joint", "arm_2_joint", "arm_3_joint", "arm_4_joint", "arm_5_joint", "arm_6_joint", "arm_7_joint"])
         joint_state = JointState()
@@ -142,7 +142,7 @@ class manipuationServer(object):
         self.arm_group.set_num_planning_attempts(10)
         self.arm_group.go(joint_state, wait=True)
         self.arm_group.stop()
-        if VISION_ENABLE:
+        if VISION_ENABLE and enable_octomap:
             self.toggle_octomap(True)
 
     def initARM(self):
@@ -250,6 +250,14 @@ class manipuationServer(object):
             return
 
         # Move to Object
+        self.toggle_octomap(True)
+        octo_joints = self.ARM_PREGRASP.copy() 
+        octo_joints[5] = 3.14
+        self.moveARM(octo_joints, 0.2, False)
+        octo_joints[5] = -3.14
+        self.moveARM(octo_joints, 0.2, False)
+        self.moveARM(self.ARM_PREGRASP, 0.1, False)
+        rospy.sleep(1.5)
         self.toggle_octomap(False)
         self.grasp_config_list.publish(grasping_points)
         rospy.loginfo("Robot Picking " + self.target_label + " up")

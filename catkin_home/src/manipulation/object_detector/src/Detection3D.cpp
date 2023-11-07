@@ -268,7 +268,7 @@ public:
       collision_object.operation = collision_object.ADD;
       planning_scene_interface_->applyCollisionObject(collision_object);
       
-      const bool ADD_ENCLOSING_BOX = false;
+      const bool ADD_ENCLOSING_BOX = true;
       if (ADD_ENCLOSING_BOX) {
         // Add Box enclosing the object to Planning Scene
         // Get Enclosing Measurements from PointCloud

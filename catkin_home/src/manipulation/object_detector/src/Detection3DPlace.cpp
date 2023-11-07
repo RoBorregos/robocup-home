@@ -135,6 +135,10 @@ class Detect3DPlace
     int horizontal_prefix[50][50] = {0};
     int vertical_prefix[50][50] = {0};
     double selected_object_sz = 0.1; //meters
+    double kXRobotRange = 0.4; //meters
+    double kRobotXIndexLimit = kXRobotRange / selected_object_sz;
+    double kYRobotRange = 0.3; //meters
+    double kRobotYIndexLimit = kYRobotRange / selected_object_sz;
 
 public:
     Detect3DPlace() : 
@@ -315,6 +319,7 @@ public:
     void fillPrefixMatrices(ObjectParams& plane_params){
         int max_y = ceil( (plane_params.max_y - plane_params.min_y) / selected_object_sz );
         int max_x = ceil( (plane_params.max_x - plane_params.min_x) / selected_object_sz );
+        
 
         for(int i=0; i<max_y; i++){
             for(int j=0; j<max_x; j++){
@@ -363,6 +368,7 @@ public:
         collision_object.header.frame_id = BASE_FRAME;
         collision_object.id = "plane";
 
+
         // Define a cylinder which will be added to the world.
         shape_msgs::SolidPrimitive solid_primitive;
         solid_primitive.type = solid_primitive.BOX;
@@ -370,6 +376,7 @@ public:
         solid_primitive.dimensions[0] = std::abs(plane_params.max_y - plane_params.min_y) * 2 / 3;
         solid_primitive.dimensions[1] = std::abs(plane_params.max_x - plane_params.min_x) * 2 / 3;
         solid_primitive.dimensions[2] = 0.02; // Custom plane Z.
+
 
         geometry_msgs::PoseStamped plane_pose;
         plane_pose.header.stamp = ros::Time::now();
@@ -923,6 +930,7 @@ public:
         int max_x = std::ceil( (plane_params.max_x - plane_params.min_x) / selected_object_sz );
         int y_closests_av = -1;
         int x_closests_av = -1;
+
         
         //debug table objects and prefix matrices
         ROS_INFO_STREAM("Table Objects");
@@ -948,10 +956,18 @@ public:
             }
             std::cout << std::endl;
         }
+        /*
+        Approach:
+            Find the center of the robot respect the plane (x,y) and transform it to look from the center of the robot, within its range,
+            through the prefixes of available spaces
+        */
 
-        for(int i=max_y; i>=0; i--){
-            for(int j=max_x; j>=0; j--){
-                if( vertical_prefix[i][j] >= 2 && horizontal_prefix[i][j] >= 2 ){
+       int robot_center_x = ceil(abs(plane_params.max_x / selected_object_sz));
+       int robot_center_y = ceil(abs((kYRobotRange - plane_params.max_y) / selected_object_sz));
+
+        for(int i=robot_center_y; i < robot_center_y + kRobotYIndexLimit && i < max_y; i--){
+            for(int j=robot_center_x - kRobotXIndexLimit; j <= robot_center_x + kRobotXIndexLimit && j < max_x; j++){
+                if(j > 0 && i > 0 && vertical_prefix[i][j] >= 2 && horizontal_prefix[i][j] >= 2 ){
                     y_closests_av = i;
                     x_closests_av = j;
                     break;
@@ -967,8 +983,9 @@ public:
             return;
         }
 
-        double x_pos = x_closests_av * selected_object_sz + plane_params.min_x;
-        double y_pos = y_closests_av * selected_object_sz + plane_params.min_y;
+        
+        double x_pos =  plane_params.max_x - (x_closests_av * selected_object_sz);
+        double y_pos =  plane_params.max_y - (y_closests_av * selected_object_sz);
 
         geometry_msgs::PoseStamped target_pose;
         target_pose.header.stamp = ros::Time::now();
@@ -979,7 +996,8 @@ public:
         pose_pub_msg_.header = target_pose.header;
         pose_pub_msg_.poses.push_back(target_pose.pose);
         result_.target_pose = target_pose;
-
+        
+        ROS_INFO_STREAM("Plane params: " << plane_params.min_x << " " << plane_params.max_y);
         ROS_INFO_STREAM("Target matrix position: " << y_closests_av << " " << x_closests_av);
         ROS_INFO_STREAM("Target Pose: " << target_pose.pose.position.x << ", " << target_pose.pose.position.y << ", " << target_pose.pose.position.z);
         return;

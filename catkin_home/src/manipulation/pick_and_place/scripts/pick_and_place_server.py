@@ -874,7 +874,7 @@ def createGripperTranslation(direction_vector, desired_distance, min_distance):
 def gpd_to_moveit_new(grasp_config_list, allow_contact_with):
     header = Header()
     header.frame_id = "Base"
-    kThresholdScore = 1.0
+    kThresholdScore = -1000.0
     res = []
     for grasp_config in grasp_config_list.grasps:
         if grasp_config.score.data < kThresholdScore:
