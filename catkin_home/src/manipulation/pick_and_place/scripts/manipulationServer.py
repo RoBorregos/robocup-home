@@ -252,9 +252,9 @@ class manipuationServer(object):
         # Move to Object
         self.toggle_octomap(True)
         octo_joints = self.ARM_PREGRASP.copy() 
-        octo_joints[5] = 3.14
+        octo_joints[5] = 1.57
         self.moveARM(octo_joints, 0.2, False)
-        octo_joints[5] = -3.14
+        octo_joints[5] = -1.57
         self.moveARM(octo_joints, 0.2, False)
         self.moveARM(self.ARM_PREGRASP, 0.1, False)
         rospy.sleep(1.5)

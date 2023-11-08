@@ -134,8 +134,8 @@ class Detect3DPlace
     bool table_objects[50][50] = {false};
     int horizontal_prefix[50][50] = {0};
     int vertical_prefix[50][50] = {0};
-    double selected_object_sz = 0.1; //meters
-    double kXRobotRange = 0.4; //meters
+    double selected_object_sz = 0.05; //meters
+    double kXRobotRange = 0.3; //meters
     double kRobotXIndexLimit = kXRobotRange / selected_object_sz;
     double kYRobotRange = 0.3; //meters
     double kRobotYIndexLimit = kYRobotRange / selected_object_sz;
@@ -317,8 +317,16 @@ public:
     }
 
     void fillPrefixMatrices(ObjectParams& plane_params){
+        //swap matrix in X axis
+
         int max_y = ceil( (plane_params.max_y - plane_params.min_y) / selected_object_sz );
         int max_x = ceil( (plane_params.max_x - plane_params.min_x) / selected_object_sz );
+        
+        for(int i=0; i<max_y; i++){
+            for(int j=0; j<max_x/2; j++){
+                std::swap(table_objects[i][j], table_objects[i][max_x-1-j]);
+            }
+        }
         
 
         for(int i=0; i<max_y; i++){
@@ -991,7 +999,7 @@ public:
         target_pose.header.stamp = ros::Time::now();
         target_pose.header.frame_id = BASE_FRAME;
         target_pose.pose = plane_params.center.pose;
-        target_pose.pose.position.x = x_pos;
+        target_pose.pose.position.x = -x_pos;
         target_pose.pose.position.y = y_pos;
         pose_pub_msg_.header = target_pose.header;
         pose_pub_msg_.poses.push_back(target_pose.pose);
@@ -1003,40 +1011,7 @@ public:
         return;
 
 
-        if (objects.size() < 1)
-        {
-            result_.success = false;
-            return;
-        }
-
-        // Get Closer in x, y to the origin.
-        int selectedId = 0;
-        if (objects.size() > 1)
-        {
-            float min_dist = 100000;
-            float dist;
-            for (int i = 0; i < objects.size(); i++)
-            {
-                dist = sqrt(pow(objects[i].center.pose.position.x, 2) + pow(objects[i].center.pose.position.y, 2));
-                if (dist < min_dist)
-                {
-                    min_dist = dist;
-                    selectedId = i;
-                }
-            }
-        }
-        ObjectParams selectedObject = objects[selectedId];
-        ROS_INFO_STREAM("Selected Object " << selectedObject.file_id);
-
-        if (!ignore_moveit_)
-        {
-            ROS_INFO_STREAM("STARTED - Building Grasping Info");
-            addGraspInfo(input, selectedObject);
-            ROS_INFO_STREAM("ENDED - Building Grasping Info");
-        }
-
-        std::string id = "current";
-        addObject(id, selectedObject);
+        
     }
 
     /** \brief Find all clusters in a pointcloud.*/
