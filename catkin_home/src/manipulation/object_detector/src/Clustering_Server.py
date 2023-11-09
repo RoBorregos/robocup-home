@@ -30,7 +30,7 @@ class Clustering_Service:
         print(point_cloud_array)
 
         # Run k-means clustering
-        n_clusters = req.n_clusters
+        n_clusters = req.n_clusters * 4
         rospy.loginfo("Running k-means clustering with %d clusters", n_clusters)
         kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(point_cloud_array)
         rospy.loginfo("Clustering complete, computing largest cluster")
