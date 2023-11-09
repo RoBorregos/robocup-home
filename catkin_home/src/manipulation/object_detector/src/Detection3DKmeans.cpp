@@ -139,7 +139,7 @@ class Detect3DPlace
     int horizontal_prefix[50][50] = {0};
     int vertical_prefix[50][50] = {0};
     double selected_object_sz = 0.05; //meters
-    double kRobotRadiusLimit = 0.1; //meters
+    double kRobotRadiusLimit = 0.5; //meters
     double kXRobotRange = 0.3; //meters
     double kRobotXIndexLimit = kXRobotRange / selected_object_sz;
     double kYRobotRange = 0.3; //meters
@@ -843,15 +843,35 @@ public:
 
     /** \brief  Generate an achiveable PCL by checking magnitude of X,Y coordinates*/
     void generateAchievablePCL(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud_achievable){
-        pcl::PointXYZ achievable_point;
-        for (auto &point : cloud->points){
-            if (sqrt(point.x*point.x + point.y*point.y) < kRobotRadiusLimit){
-                achievable_point.x = point.x;
-                achievable_point.y = point.y;
-                achievable_point.z = point.z;
-                cloud_achievable->points.push_back(achievable_point);
+        pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
+        tree->setInputCloud(cloud);
+
+        // Set parameters for the clustering
+        std::vector<pcl::PointIndices> cluster_indices;
+        pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+        ec.setClusterTolerance(0.03); // 3cm
+        ec.setMinClusterSize(25);
+        ec.setMaxClusterSize(20000);
+        ec.setSearchMethod(tree);
+        ec.setInputCloud(cloud);
+        ec.extract(cluster_indices);
+
+        for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+        {
+            for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); ++pit){
+                if (sqrt(cloud->points[*pit].x*cloud->points[*pit].x + cloud->points[*pit].y*cloud->points[*pit].y) < kRobotRadiusLimit){
+                    cloud_achievable->points.push_back(cloud->points[*pit]);
+                    //ROS_INFO_STREAM("Achievable Point Added ON: " << cloud->points[*pit].x << " " << cloud->points[*pit].y << " " << cloud->points[*pit].z);
+                }
             }
         }
+
+        cloud_achievable->width = cloud_achievable->points.size();
+        cloud_achievable->height = 1;
+
+
+        pcl::io::savePCDFile("pcl_achievable_cloud.pcd", *cloud_achievable);
+        ROS_INFO_STREAM("Achievable cloud saved");
     }
 
     /** \brief PointCloud callback. */
@@ -925,7 +945,7 @@ public:
 
         ROS_INFO_STREAM("Found Objects Within robot's radius: " << objectsWithinRadius);
 
-        generateAchievablePCL(cloud, achievable_cloud);
+        generateAchievablePCL(table_cloud, achievable_cloud);
 
         ROS_INFO_STREAM("Achievable PCL generated");
 
