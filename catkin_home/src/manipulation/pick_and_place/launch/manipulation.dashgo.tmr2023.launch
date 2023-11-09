@@ -10,7 +10,7 @@
   <node name="pick_and_place_server" pkg="pick_and_place" type="pick_and_place_server.py" output="screen" />
 
   <!-- 2D Detector -->
-  <!--<include file="$(find object_detector)/launch/object_2D.tmr2023.launch" />-->
+  <include file="$(find object_detector)/launch/object_2D.tmr2023.launch" />
 
   <!-- 3D Detector -->
   

@@ -132,46 +132,50 @@ class Detect3DPlace
     float plane_min_height_;
     float plane_max_height_;
 
-    bool possible_placings[28][28];
     bool table_objects[50][50] = {false};
-    int horizontal_prefix[50][50] = {0};
-    int vertical_prefix[50][50] = {0};
-    double selected_object_sz = 0.05; //meters
+    int horizontal_prefix[29][29] = {0};
+    int vertical_prefix[29][29] = {0};
+    int prefix[29][29] = {0};
+    double selected_object_sz = 0.25; //meters
+    double selected_object_sz_ = 0.4; //meters
+    double grid_size = 0.05; //meters
     double kXRobotRange = 0.3; //meters
     double kRobotXIndexLimit = kXRobotRange / selected_object_sz;
     double kYRobotRange = 0.3; //meters
     double kRobotYIndexLimit = kYRobotRange / selected_object_sz;
-    int matrix_size = 28;
+    const int matrix_size = 29;
+    bool visited[29][29] = {false};
 
-    bool possible_placings = {
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    bool possible_placings[29][29] = {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+        {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
+        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
+        {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
+        {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
 public:
@@ -334,6 +338,57 @@ public:
         }
     }
 
+    void addTable2Possible(const pcl::PointCloud<pcl::PointXYZ>::Ptr &table){
+        bool tmp_table[matrix_size][matrix_size] = {false};
+
+        for(auto const point : table->points){
+            int y_id = (matrix_size/2) + int(point.y/grid_size);
+            int x_id = (matrix_size/2) - int(point.x/grid_size);
+            if(y_id<0 || y_id>matrix_size || x_id<0 || x_id>matrix_size )
+                continue;
+            tmp_table[y_id][x_id] = true;
+        }
+
+        ROS_INFO_STREAM("Tmp table Objects");
+        for(int i=0; i<matrix_size; i++){
+            for(int j=0; j<matrix_size; j++){
+                std::cout << tmp_table[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        for(int i=0; i<matrix_size; i++)
+            for(int j=0; j<matrix_size; j++)
+                possible_placings[i][j] &= tmp_table[i][j];
+
+        
+
+
+    }
+
+    void addObjPossible(const pcl::PointCloud<pcl::PointXYZ>::Ptr &obj, ObjectParams& obj_params){
+        for(auto const point : obj->points){
+            int y_id = (matrix_size/2) + int(point.y/grid_size);
+            int x_id = (matrix_size/2) - int(point.x/grid_size);
+            if(y_id<0 || y_id>matrix_size || x_id<0 || x_id>matrix_size )
+                continue;
+            possible_placings[y_id][x_id] = false;
+        }
+
+        int obj_size_x = std::ceil( (obj_params.max_x - obj_params.min_x) / grid_size );
+        int obj_size_y = std::ceil( (obj_params.max_y - obj_params.min_y) / grid_size );
+        ROS_INFO_STREAM("Object Size: " << obj_size_x << " x " << obj_size_y);
+        int y_idx = floor( (matrix_size/2) + int(obj_params.min_y/grid_size) );
+        int x_idx = floor( (matrix_size/2) - int(obj_params.min_x/grid_size) );
+
+        
+        for(int i = y_idx; i<y_idx+obj_size_y; i++){
+            for(int j = x_idx; j<x_idx+obj_size_x; j++){
+                possible_placings[i][j] = false;
+            }
+        }
+    }
+
     void addObjects2TableMatrix(ObjectParams& obj_params, ObjectParams& plane_params, bool occupied = true){
         ROS_INFO_STREAM("Object size params: " << obj_params.max_x << " " << obj_params.min_x << " " << obj_params.max_y << " " << obj_params.min_y);
         int obj_size_x = std::ceil( (obj_params.max_x - obj_params.min_x) / selected_object_sz );
@@ -441,6 +496,7 @@ public:
         plane_params.isValid = true;
         //reconstructMesh(cloud, object_found.mesh);
         addObjects2TableMatrix(plane_params, plane_params, false);
+        addTable2Possible(cloud);
 
         return true;
     }
@@ -558,8 +614,7 @@ public:
         double min_y_ = cloud->points[0].y;
         double max_x_ = cloud->points[0].x;
         double min_x_ = cloud->points[0].x;
-        for (auto const point : cloud->points)
-        {
+        for (auto const point : cloud->points){
             max_z_ = fmax(max_z_, point.z);
             min_z_ = fmin(min_z_, point.z);
             max_x_ = fmax(max_x_, point.x);
@@ -905,10 +960,143 @@ public:
                 extractNormals(cloud_normals, inliers_plane);
             }
         }
+        
+        std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
+        getClusters(cloud, clusters);
+        int clustersFound = clusters.size();
+        ROS_INFO_STREAM("Clusters Found: " << clustersFound);
 
-        bool table_empty = false;
+        std::vector<ObjectParams> objects;
+        for (int i = 0; i < clustersFound; i++){
+            ObjectParams tmp;
+            tmp.mesh.reset(new shape_msgs::Mesh);
+            extractObjectDetails(clusters[i], tmp, plane_params);
+            tmp.file_id = i;
+            ROS_INFO_STREAM("File saved: "
+                            << "pcl_object_" + std::to_string(i) + ".pcd");
+            pcl::io::savePCDFile("pcl_object_" + std::to_string(i) + ".pcd", tmp.cluster_original);
+            if (tmp.isValid){
+                objects.push_back(tmp);
+                addObjPossible(clusters[i], tmp);
+            }
+        }
+        ROS_INFO_STREAM("Found Objects: " << objects.size());
+
+        //fillPrefixMatrices(plane_params);
+        for(int i=0; i<matrix_size; i++){
+            for(int j=0; j<matrix_size; j++){
+                if(possible_placings[i][j]){
+                    prefix[i][j] = 1;
+                }
+                else{
+                    prefix[i][j] = 0;
+                    continue;
+                }
+                if(i>0 && j>0)
+                    prefix[i][j] += std::min( prefix[i-1][j-1], std::min( prefix[i-1][j], prefix[i][j-1] ) );
+                else if(i>0)
+                    prefix[i][j] += prefix[i-1][j];
+                else if(j>0)
+                    prefix[i][j] += prefix[i][j-1];
+
+            } 
+        }
+        
+        //debug table objects and prefix matrices
+        ROS_INFO_STREAM("Table Objects");
+        for(int i=0; i<matrix_size; i++){
+            for(int j=0; j<matrix_size; j++){
+                std::cout << possible_placings[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        ROS_INFO_STREAM("Horizontal Prefix");
+        for(int i=0; i<matrix_size; i++){
+            for(int j=0; j<matrix_size; j++){
+                std::cout << horizontal_prefix[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        ROS_INFO_STREAM("Vertical Prefix");
+        for(int i=0; i<matrix_size; i++){
+            for(int j=0; j<matrix_size; j++){
+                std::cout << vertical_prefix[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+        
+        ROS_INFO_STREAM("Area Prefix");
+        for(int i=0; i<matrix_size; i++){
+            for(int j=0; j<matrix_size; j++){
+                std::cout << prefix[i][j] << " ";
+            }
+            std::cout << std::endl;
+        }
+
+        bool table_empty = true;
         if( table_empty ){
-            addTablePos(plane_params);
+            //addTablePos(plane_params);
+            struct tile{
+                int y;
+                int x;
+            };
+            int x_closests_av = -1;
+            int y_closests_av = -1;
+
+            tile current = {14, 14};
+            std::queue<tile> q;
+            q.push(current);
+
+            while( !q.empty() ){
+                tile tmp = q.front();
+                q.pop();
+                //ROS_INFO_STREAM("Checking tile: " << tmp.y << " " << tmp.x);
+                if(tmp.y < 0 || tmp.y == matrix_size || tmp.x < 0 || tmp.x == matrix_size)
+                    continue;
+                if(visited[tmp.y][tmp.x])
+                    continue;
+                visited[tmp.y][tmp.x] = true;
+
+                if( prefix[tmp.y][tmp.x] >= selected_object_sz/grid_size ){
+                    x_closests_av = tmp.x - (selected_object_sz/grid_size)/4;
+                    y_closests_av = tmp.y - (selected_object_sz/grid_size)/4;
+                    break;
+                }
+                current = {tmp.y-1, tmp.x};
+                q.push(current);
+                current = {tmp.y, tmp.x+1};
+                q.push(current);
+                current = {tmp.y, tmp.x-1};
+                q.push(current);
+                current = {tmp.y+1, tmp.x};
+                q.push(current);
+            }
+
+            if( y_closests_av == -1 || x_closests_av == -1 ){
+                ROS_INFO_STREAM("No available space for object");
+                result_.success = false;
+                return;
+            }
+
+            
+            double x_pos = -(x_closests_av - (matrix_size/2)) * grid_size;
+            double y_pos = (y_closests_av - (matrix_size/2)) * grid_size;
+
+            geometry_msgs::PoseStamped target_pose;
+            target_pose.header.stamp = ros::Time::now();
+            target_pose.header.frame_id = BASE_FRAME;
+            target_pose.pose = plane_params.center.pose;
+            target_pose.pose.position.x = x_pos;
+            target_pose.pose.position.y = y_pos;
+            pose_pub_msg_.header = target_pose.header;
+            pose_pub_msg_.poses.push_back(target_pose.pose);
+            result_.target_pose = target_pose;
+            
+            ROS_INFO_STREAM("Plane params: " << plane_params.min_x << " " << plane_params.max_y);
+            ROS_INFO_STREAM("Target matrix position: " << y_closests_av << " " << x_closests_av);
+            ROS_INFO_STREAM("Target Pose: " << target_pose.pose.position.x << ", " << target_pose.pose.position.y << ", " << target_pose.pose.position.z);
             return;
         }
 
@@ -938,32 +1126,6 @@ public:
             return;
         }
 
-        /* Extract all objects from PointCloud using Clustering. */
-        std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clusters;
-        /*ObjectParams tmp_cloud;
-        tmp_cloud.mesh.reset(new shape_msgs::Mesh);
-        extractObjectDetails(cloud, tmp_cloud, plane_params);
-        ROS_INFO_STREAM("REMOVED PLANE IMAGE saved: " << "pcl_removedPlane.pcd");
-        pcl::io::savePCDFile("pcl_removedPlane.pcd", tmp_cloud.cluster_original);*/
-        getClusters(cloud, clusters);
-        int clustersFound = clusters.size();
-        ROS_INFO_STREAM("Clusters Found: " << clustersFound);
-
-        std::vector<ObjectParams> objects;
-        for (int i = 0; i < clustersFound; i++){
-            ObjectParams tmp;
-            tmp.mesh.reset(new shape_msgs::Mesh);
-            extractObjectDetails(clusters[i], tmp, plane_params);
-            tmp.file_id = i;
-            ROS_INFO_STREAM("File saved: "
-                            << "pcl_object_" + std::to_string(i) + ".pcd");
-            pcl::io::savePCDFile("pcl_object_" + std::to_string(i) + ".pcd", tmp.cluster_original);
-            if (tmp.isValid){
-                objects.push_back(tmp);
-                addObjects2TableMatrix(tmp, plane_params);
-            }
-        }
-        ROS_INFO_STREAM("Found Objects: " << objects.size());
 
         fillPrefixMatrices(plane_params);
 
@@ -1017,34 +1179,6 @@ public:
             }
             if( y_closests_av != -1 && x_closests_av != -1 )
                 break;
-        }
-
-        struct tile{
-            int x,
-            int y
-        };
-        tile current = {13, 13};
-        std::queue<tile> q;
-        q.push(current);
-
-        while( !q.empty() ){
-            tile tmp = q.front();
-            q.pop();
-            if(tmp.y < 0 || tmp.y == matrix_size || tmp.x < 0 || tmp.x == 28)
-                continue;              
-            if( possible_placings[tmp.y][tmp.x] ){
-                x_closests_av = tmp.x;
-                y_closests_av = tmp.y;
-                break;
-            }
-            current = {tmp.y-1}{tmp.x};
-            q.push(current);
-            current = {tmp.y}{tmp.x+1};
-            q.push(current);
-            current = {tmp.y}{tmp.x-1};
-            q.push(current);
-            current = {tmp.y+1}{tmp.x};
-            q.push(current);
         }
 
         if( y_closests_av == -1 || x_closests_av == -1 ){

@@ -217,6 +217,9 @@ class manipuationServer(object):
                 self.graspARM()
                 self._as.set_succeeded(manipulationServResult(result = True))
                 return
+            else:
+                rospy.loginfo("Place Failed")
+                return
         else:
             found = self.get_object(target)
         if not found:
