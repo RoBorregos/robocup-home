@@ -32,6 +32,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_geometry_msgs
   laser_geometry
   gpd_ros
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -75,11 +76,10 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  Clustering.srv
+)
 
 ## Generate actions in the 'action' folder
 add_action_files(
@@ -167,6 +167,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=shadow")
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(Detection3D src/Detection3D.cpp)
 add_executable(Detection3DPlace src/Detection3DPlace.cpp)
+add_executable(Clustering_Client src/Clustering_Client.cpp)
 add_executable(SaveOctomap src/SaveOctomap.cpp)
 
 ## Rename C++ executable without prefix
@@ -180,11 +181,13 @@ add_executable(SaveOctomap src/SaveOctomap.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(Detection3D object_detector_generate_messages_cpp gpd_ros_generate_messages_cpp)
 add_dependencies(Detection3DPlace object_detector_generate_messages_cpp gpd_ros_generate_messages_cpp)
+add_dependencies(Clustering_Client object_detector_generate_messages_cpp gpd_ros_generate_messages_cpp)
 add_dependencies(SaveOctomap object_detector_generate_messages_cpp gpd_ros_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(Detection3D ${catkin_LIBRARIES})
 target_link_libraries(Detection3DPlace ${catkin_LIBRARIES})
+target_link_libraries(Clustering_Client ${catkin_LIBRARIES})
 target_link_libraries(SaveOctomap ${catkin_LIBRARIES})
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
