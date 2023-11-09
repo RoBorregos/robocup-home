@@ -169,6 +169,7 @@ add_executable(Detection3D src/Detection3D.cpp)
 add_executable(Detection3DPlace src/Detection3DPlace.cpp)
 add_executable(Clustering_Client src/Clustering_Client.cpp)
 add_executable(SaveOctomap src/SaveOctomap.cpp)
+add_executable(Detection3DKmeans src/Detection3DKmeans.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -183,12 +184,14 @@ add_dependencies(Detection3D object_detector_generate_messages_cpp gpd_ros_gener
 add_dependencies(Detection3DPlace object_detector_generate_messages_cpp gpd_ros_generate_messages_cpp)
 add_dependencies(Clustering_Client object_detector_generate_messages_cpp gpd_ros_generate_messages_cpp)
 add_dependencies(SaveOctomap object_detector_generate_messages_cpp gpd_ros_generate_messages_cpp)
+add_dependencies(Detection3DKmeans object_detector_generate_messages_cpp gpd_ros_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(Detection3D ${catkin_LIBRARIES})
 target_link_libraries(Detection3DPlace ${catkin_LIBRARIES})
 target_link_libraries(Clustering_Client ${catkin_LIBRARIES})
 target_link_libraries(SaveOctomap ${catkin_LIBRARIES})
+target_link_libraries(Detection3DKmeans ${catkin_LIBRARIES})
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
