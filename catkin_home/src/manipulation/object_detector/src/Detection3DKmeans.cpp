@@ -146,37 +146,6 @@ class Detect3DPlace
     double kRobotYIndexLimit = kYRobotRange / selected_object_sz;
     int matrix_size = 28;
 
-    bool possible_placings = {
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
-        {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0},
-        {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    };
-
 public:
     Detect3DPlace() : 
         listener_(buffer_),
@@ -649,13 +618,6 @@ public:
                 return;
             }
 
-            // Check if object centroid is within robot radius.
-            if (sqrt(pow(object_found.center.pose.position.x, 2) + pow(object_found.center.pose.position.y, 2)) > kRobotRadiusLimit)
-            {
-                ROS_INFO_STREAM("Object rejected due to not within robot radius.");
-                object_found.isValid = false;
-                return;
-            }
 
             if (!ignore_moveit_)
             {
@@ -881,7 +843,7 @@ public:
 
     /** \brief  Generate an achiveable PCL by checking magnitude of X,Y coordinates*/
     void generateAchievablePCL(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud_achievable){
-        int float_max = std::numeric_limits<float>::max();
+        pcl::PointXYZ achievable_point;
         for (auto &point : cloud->points){
             if (sqrt(point.x*point.x + point.y*point.y) < kRobotRadiusLimit){
                 achievable_point.x = point.x;
@@ -954,7 +916,14 @@ public:
             }
         }
 
-        ROS_INFO_STREAM("Found Objects Within robot's radius: " << objects.size());
+        int objectsWithinRadius = 0;;
+        for (auto &object : objects){
+            if (sqrt(object.center.pose.position.x*object.center.pose.position.x + object.center.pose.position.y*object.center.pose.position.y) < kRobotRadiusLimit){
+                objectsWithinRadius++;
+            }
+        }
+
+        ROS_INFO_STREAM("Found Objects Within robot's radius: " << objectsWithinRadius);
 
         generateAchievablePCL(cloud, achievable_cloud);
 
@@ -962,26 +931,25 @@ public:
 
         sensor_msgs::PointCloud2 achievable_cloud_msg;
         pcl::toROSMsg(*achievable_cloud, achievable_cloud_msg);
-        achievable_cloud_msg.header.frame_id = table_frame;
+        achievable_cloud_msg.header.frame_id = "table_frame";
         achievable_cloud_msg.header.stamp = ros::Time::now();
         ROS_INFO_STREAM("Converted pcl to sensor_msgs::PC2");
 
         cluster_srv_.request.pointcloud = achievable_cloud_msg;
-        cluster_srv_.request.cluster = objects.size();
+        cluster_srv_.request.n_clusters = objectsWithinRadius;
 
-        if (!cluster_client_.call(cluster_srv_)){
-            ROS_INFO_STREAM("Cluster Service Called Failed");
+        if (client_.call(cluster_srv_)){
+            ROS_INFO_STREAM("Cluster Service Called success");
+            geometry_msgs::PoseStamped target_pose;
+            target_pose.header.stamp = ros::Time::now();
+            target_pose.header.frame_id = BASE_FRAME;
+            target_pose.pose = plane_params.center.pose;
+            target_pose.pose.position.x = cluster_srv_.response.x_center;
+            target_pose.pose.position.y = cluster_srv_.response.y_center;
+            pose_pub_msg_.header = target_pose.header;
+            pose_pub_msg_.poses.push_back(target_pose.pose);
+            result_.target_pose = target_pose;
         }
-
-        geometry_msgs::PoseStamped target_pose;
-        target_pose.header.stamp = ros::Time::now();
-        target_pose.header.frame_id = BASE_FRAME;
-        target_pose.pose = plane_params.center.pose;
-        target_pose.pose.position.x = cluster_srv_.response.x;
-        target_pose.pose.position.y = cluster_srv_.response.x;
-        pose_pub_msg_.header = target_pose.header;
-        pose_pub_msg_.poses.push_back(target_pose.pose);
-        result_.target_pose = target_pose;
         return;
     }
 

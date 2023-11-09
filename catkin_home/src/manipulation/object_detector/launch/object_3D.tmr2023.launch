@@ -25,7 +25,7 @@
         <param name="BASE_FRAME" value="$(arg BASE_FRAME)" />
         <param name="CAMERA_FRAME" value="$(arg CAMERA_FRAME)" />
     </node>
-    <node name="Detection3DPlace" pkg="object_detector" type="Detection3DPlace" respawn="true" output="screen">
+    <node name="Detection3DPlace" pkg="object_detector" type="Detection3DKmeans" respawn="true" output="screen">
         <param name="POINT_CLOUD_TOPIC" value="$(arg POINT_CLOUD_TOPIC)"/>
         <param name="MAP_FRAME" value="$(arg MAP_FRAME)" />
         <param name="BASE_FRAME" value="$(arg BASE_FRAME)" />
