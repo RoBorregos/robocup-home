@@ -55,9 +55,10 @@ class Clustering_Service:
         plt.ylabel('y')
         plt.title('Clusters')
 
+
         # save as file
         rospy.loginfo("Saving clusters as image")
-        plt.savefig('/home/emilianh/clusters.png')
+        plt.savefig('clusters.png')
 
         rospy.loginfo("Returning centroid")
 
