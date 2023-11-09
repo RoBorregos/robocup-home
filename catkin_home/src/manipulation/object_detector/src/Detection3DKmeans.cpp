@@ -139,7 +139,8 @@ class Detect3DPlace
     int horizontal_prefix[50][50] = {0};
     int vertical_prefix[50][50] = {0};
     double selected_object_sz = 0.05; //meters
-    double kRobotRadiusLimit = 0.5; //meters
+    double kRobotRadiusLimit = 0.7; //meters
+    double kMinRobotDistance = 0.2;
     double kXRobotRange = 0.3; //meters
     double kRobotXIndexLimit = kXRobotRange / selected_object_sz;
     double kYRobotRange = 0.3; //meters
@@ -704,7 +705,7 @@ public:
         segmentor.setModelType(pcl::SACMODEL_PLANE);
         segmentor.setMethodType(pcl::SAC_RANSAC);
         segmentor.setMaxIterations(1000);     /* run at max 1000 iterations before giving up */
-        segmentor.setDistanceThreshold(0.02); /* tolerance for variation from model */
+        segmentor.setDistanceThreshold(0.01); /* tolerance for variation from model */
         segmentor.setInputCloud(cloud);
 
         /* Create the segmentation object for the planar model and set all the parameters */
@@ -859,7 +860,8 @@ public:
         for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
         {
             for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); ++pit){
-                if (sqrt(cloud->points[*pit].x*cloud->points[*pit].x + cloud->points[*pit].y*cloud->points[*pit].y) < kRobotRadiusLimit){
+                float magnitude = sqrt(cloud->points[*pit].x*cloud->points[*pit].x + cloud->points[*pit].y*cloud->points[*pit].y);
+                if (magnitude < kRobotRadiusLimit && magnitude > kMinRobotDistance){
                     cloud_achievable->points.push_back(cloud->points[*pit]);
                     //ROS_INFO_STREAM("Achievable Point Added ON: " << cloud->points[*pit].x << " " << cloud->points[*pit].y << " " << cloud->points[*pit].z);
                 }
