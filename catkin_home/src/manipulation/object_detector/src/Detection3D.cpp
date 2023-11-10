@@ -43,6 +43,9 @@
 #include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/Quaternion.h>
 
+//Point stamped to publish target object 3D point
+#include <geometry_msgs/PointStamped.h>
+
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf/transform_listener.h>
@@ -123,6 +126,7 @@ class Detect3D
   geometry_msgs::PoseArray pose_pub_msg_;
   gpd_ros::CloudSamples gpd_msg_;
   gpd_ros::CloudIndexed gpd_msg_indexed_;
+  ros::Publisher target_point_pub_;
   ros::Publisher pc_pub_1_;
   ros::Publisher pc_pub_2_;
   ros::ServiceClient clear_octomap;
@@ -142,6 +146,7 @@ public:
     tf_listener = new tf::TransformListener();
     as_.start();
     pose_pub_ = nh_.advertise<geometry_msgs::PoseArray>("/test/objectposes", 10);
+    target_point_pub_ = nh_.advertise<geometry_msgs::PointStamped>("/test/target_point", 10);
     pc_pub_1_ = nh_.advertise<sensor_msgs::PointCloud2>("/test_pc_1", 10);
     pc_pub_2_ = nh_.advertise<sensor_msgs::PointCloud2>("/test_pc_2", 10);
     ROS_INFO("Waiting for Clear Octomap service to start.");
@@ -161,6 +166,8 @@ public:
     ROS_INFO_STREAM("Action Server Detect3D - Goal Received");
     biggest_object_ = goal->force_object.detections.size() == 0;
     force_object_ = !biggest_object_ ? goal->force_object.detections[0] : object_detector::objectDetection();
+    // publish force_object_.point3D
+    target_point_pub_.publish(force_object_.point3D);
     side_ = goal->side;
     ignore_moveit_ = goal->ignore_moveit;
     plane_min_height_ = goal->plane_min_height;
