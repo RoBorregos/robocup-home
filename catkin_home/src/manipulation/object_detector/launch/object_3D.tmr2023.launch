@@ -36,4 +36,5 @@
     <node name="Clustering_Service" pkg="object_detector" type="Clustering_Server.py" respawn="true" output="screen">
         <param name="CLUSTERS_PER_OBJECT" value="$(arg CLUSTERS_PER_OBJECT)" />
         <param name="SAVE_IMAGE" value="$(arg SAVE_IMAGE)" />
+    </node>
 </launch>

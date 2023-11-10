@@ -13,7 +13,7 @@ import cv2
 
 ARGS= {
     "CLUSTERS_PER_OBJECT": 4,
-    "SAVE_IMAGE": False
+    "SAVE_IMAGE": True
 }
 
 class Clustering_Service:
@@ -28,14 +28,14 @@ class Clustering_Service:
     def handle_clustering(self, req):
         # Convert pointcloud to numpy array, ignore z axis
         point_cloud = req.pointcloud
-        print(point_cloud)
+        #print(point_cloud)
         point_cloud_array = []
         for p in pc2.read_points(point_cloud, field_names = ("x", "y", "z"), skip_nans=True):
             # append point to array
             if not np.isnan(p[0]) and not np.isnan(p[1]):
                 point_cloud_array.append([p[0], p[1]])
         point_cloud_array = np.array(point_cloud_array)
-        print(point_cloud_array)
+        #print(point_cloud_array)
 
         # Run k-means clustering
         n_clusters = req.n_clusters * self.clusters_per_object
@@ -56,7 +56,7 @@ class Clustering_Service:
         centroid = kmeans.cluster_centers_[biggest_cluster]
         rospy.loginfo("Largest cluster found, centroid: %s", centroid)
 
-        if self.save_image:
+        if True:
             # Draw clusters with biggest cluster centroid drawn in green, save as matplotlib image
             plt.scatter(point_cloud_array[:,0], point_cloud_array[:,1], c=kmeans.labels_, cmap='rainbow')
             plt.scatter(centroid[0], centroid[1], c='green', s=1000, alpha=0.8)
@@ -67,7 +67,7 @@ class Clustering_Service:
 
             # save as file
             rospy.loginfo("Saving clusters as image")
-            plt.savefig('clusters.png')
+            plt.savefig('/home/rbrgs-pc/Desktop/Robocup-Home/clusters.png')
 
         rospy.loginfo("Returning centroid")
 
