@@ -577,7 +577,8 @@ class PickAndPlaceServer(object):
                 pose_st = PoseStamped()
                 pose_st.header = object_pose.header
                 pose_st.pose = object_pose.pose
-                pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.07
+                #pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.07
+                pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.15
                 #pose_st.pose.position.y -= 0.05
                 #face down
                 pose_st.pose.orientation = Quaternion(x=0.000001, y=0.707000, z=0.000001, w=0.707000)

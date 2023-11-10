@@ -23,6 +23,8 @@
 #include <pcl_ros/transforms.h>
 #include <pcl/filters/voxel_grid.h>
 #include <queue>
+#include <vector>
+#include <math.h>
 
 #include <object_detector/objectDetectionArray.h>
 
@@ -132,21 +134,12 @@ class Detect3DPlace
     float plane_min_height_;
     float plane_max_height_;
 
-    bool table_objects[50][50] = {false};
-    int horizontal_prefix[29][29] = {0};
-    int vertical_prefix[29][29] = {0};
     int prefix[29][29] = {0};
-    double selected_object_sz = 0.25; //meters
-    double selected_object_sz_ = 0.4; //meters
+    double selected_object_sz = 0.15; //meters
     double grid_size = 0.05; //meters
-    double kXRobotRange = 0.3; //meters
-    double kRobotXIndexLimit = kXRobotRange / selected_object_sz;
-    double kYRobotRange = 0.3; //meters
-    double kRobotYIndexLimit = kYRobotRange / selected_object_sz;
     const int matrix_size = 29;
-    bool visited[29][29] = {false};
 
-    bool possible_placings[29][29] = {
+    bool robot_range[29][29] = {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
@@ -178,6 +171,8 @@ class Detect3DPlace
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
 
+    bool possible_placings[29][29];
+
 public:
     Detect3DPlace() : 
         listener_(buffer_),
@@ -204,8 +199,7 @@ public:
     }
 
     /** \brief Handle Action Server Goal Received. */
-    void handleActionServer(const object_detector::GetPlacePositionGoalConstPtr &goal)
-    {
+    void handleActionServer(const object_detector::GetPlacePositionGoalConstPtr &goal){
         ROS_INFO_STREAM("Action Server Detect3D - Goal Received");
         ignore_moveit_ = goal->ignore_moveit;
         plane_min_height_ = goal->plane_min_height;
@@ -226,6 +220,10 @@ public:
 
         gpd_msg_indexed_.cloud_sources = gpd_ros::CloudSources();
         gpd_msg_indexed_.indices.clear();
+
+        //reset matrices
+        memcpy(possible_placings, robot_range, sizeof(robot_range));
+        memset(prefix, 0, sizeof(prefix));
 
         if (as_.isPreemptRequested() || !ros::ok())
         {
@@ -254,89 +252,6 @@ public:
         pose_pub_.publish(pose_pub_msg_);
     }
 
-    void addTablePos(ObjectParams &plane_found){
-        geometry_msgs::PoseStamped object_pose;
-        object_pose.header.stamp = ros::Time::now();
-        object_pose.header.frame_id = BASE_FRAME;
-        object_pose.pose = plane_found.center.pose;
-        pose_pub_msg_.header = object_pose.header;
-        pose_pub_msg_.poses.push_back(object_pose.pose);
-        result_.target_pose = object_pose;
-    }
-
-    /** \brief Given the parameters of the object add it to the planning scene. */
-    void addObject(std::string id, ObjectParams &object_found)
-    {
-        geometry_msgs::PoseStamped object_pose;
-        object_pose.header.stamp = ros::Time::now();
-        object_pose.header.frame_id = BASE_FRAME;
-        object_pose.pose = object_found.center.pose;
-        pose_pub_msg_.header = object_pose.header;
-        pose_pub_msg_.poses.push_back(object_pose.pose);
-        result_.target_pose = object_pose;
-
-        if (!ignore_moveit_)
-        {
-            // Adding Object to Planning Scene
-            moveit_msgs::CollisionObject collision_object;
-            collision_object.header.frame_id = BASE_FRAME;
-            collision_object.id = id;
-            collision_object.meshes.push_back(*object_found.mesh);
-            collision_object.mesh_poses.push_back(object_pose.pose);
-            collision_object.operation = collision_object.ADD;
-            planning_scene_interface_->applyCollisionObject(collision_object);
-
-            const bool ADD_ENCLOSING_BOX = false;
-            if (ADD_ENCLOSING_BOX)
-            {
-                // Add Box enclosing the object to Planning Scene
-                // Get Enclosing Measurements from PointCloud
-                pcl::PointXYZ minPt, maxPt;
-                for (auto &point : object_found.cluster->points)
-                {
-                    if (point.x < minPt.x)
-                        minPt.x = point.x;
-                    if (point.y < minPt.y)
-                        minPt.y = point.y;
-                    if (point.z < minPt.z)
-                        minPt.z = point.z;
-                    if (point.x > maxPt.x)
-                        maxPt.x = point.x;
-                    if (point.y > maxPt.y)
-                        maxPt.y = point.y;
-                    if (point.z > maxPt.z)
-                        maxPt.z = point.z;
-                }
-                double width = maxPt.x - minPt.x;
-                double height = maxPt.y - minPt.y;
-                double depth = maxPt.z - minPt.z;
-
-                shape_msgs::SolidPrimitive solid_primitive;
-                solid_primitive.type = solid_primitive.BOX;
-                solid_primitive.dimensions.resize(3);
-                float box_factor = 1.35;
-                solid_primitive.dimensions[0] = width * box_factor;
-                solid_primitive.dimensions[1] = height * box_factor;
-                solid_primitive.dimensions[2] = (depth * box_factor) / 2;
-
-                moveit_msgs::CollisionObject collision_object_box;
-                collision_object_box.header.frame_id = BASE_FRAME;
-                collision_object_box.id = id + "_box";
-                collision_object_box.primitives.push_back(solid_primitive);
-                object_pose.pose.position.z += depth / 2.0;
-                collision_object_box.primitive_poses.push_back(object_pose.pose);
-                collision_object_box.operation = collision_object_box.ADD;
-                planning_scene_interface_->applyCollisionObject(collision_object_box);
-            }
-            ros::Duration(1.0).sleep();
-
-            // Refresh Octomap, ensuring pointcloud entry.
-            std_srvs::Empty clear_octomap_srv;
-            clear_octomap.call(clear_octomap_srv);
-            ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_);
-            ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_);
-        }
-    }
 
     void addTable2Possible(const pcl::PointCloud<pcl::PointXYZ>::Ptr &table){
         bool tmp_table[matrix_size][matrix_size] = {false};
@@ -360,9 +275,6 @@ public:
         for(int i=0; i<matrix_size; i++)
             for(int j=0; j<matrix_size; j++)
                 possible_placings[i][j] &= tmp_table[i][j];
-
-        
-
 
     }
 
@@ -388,55 +300,6 @@ public:
             }
         }
     }
-
-    void addObjects2TableMatrix(ObjectParams& obj_params, ObjectParams& plane_params, bool occupied = true){
-        ROS_INFO_STREAM("Object size params: " << obj_params.max_x << " " << obj_params.min_x << " " << obj_params.max_y << " " << obj_params.min_y);
-        int obj_size_x = std::ceil( (obj_params.max_x - obj_params.min_x) / selected_object_sz );
-        int obj_size_y = std::ceil( (obj_params.max_y - obj_params.min_y) / selected_object_sz );
-        ROS_INFO_STREAM("Object Size: " << obj_size_x << " x " << obj_size_y);
-        int y_idx = std::max( floor( (obj_params.min_y - plane_params.min_y) / selected_object_sz ), double(0) );
-        int x_idx = std::max( floor( (obj_params.min_x - plane_params.min_x) / selected_object_sz ), double(0) );
-
-        
-        for(int i = y_idx; i<y_idx+obj_size_y; i++){
-            for(int j = x_idx; j<x_idx+obj_size_x; j++){
-                table_objects[i][j] = occupied;
-            }
-        }
-    }
-
-    void fillPrefixMatrices(ObjectParams& plane_params){
-        //swap matrix in X axis
-
-        int max_y = ceil( (plane_params.max_y - plane_params.min_y) / selected_object_sz );
-        int max_x = ceil( (plane_params.max_x - plane_params.min_x) / selected_object_sz );
-        
-        for(int i=0; i<max_y; i++){
-            for(int j=0; j<max_x/2; j++){
-                std::swap(table_objects[i][j], table_objects[i][max_x-1-j]);
-            }
-        }
-        
-
-        for(int i=0; i<max_y; i++){
-            for(int j=0; j<max_x; j++){
-                if(!table_objects[i][j]){
-                    horizontal_prefix[i][j] = 1;
-                    vertical_prefix[i][j] = 1;
-                }
-                else{
-                    horizontal_prefix[i][j] = 0;
-                    vertical_prefix[i][j] = 0;
-                    continue;
-                }
-                if(i>0)
-                    vertical_prefix[i][j] += vertical_prefix[i-1][j];
-                if(j>0)
-                    horizontal_prefix[i][j] += horizontal_prefix[i][j-1];
-            } 
-        }
-    }
-
 
     /** \brief Given the parameters of the plane add it to the planning scene. */
     bool addPlane(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, const pcl::ModelCoefficients::Ptr &coefficients_plane, ObjectParams &plane_params){
@@ -495,15 +358,13 @@ public:
 
         plane_params.isValid = true;
         //reconstructMesh(cloud, object_found.mesh);
-        addObjects2TableMatrix(plane_params, plane_params, false);
         addTable2Possible(cloud);
 
         return true;
     }
 
     template <typename T>
-    void toPoint(const T &in, geometry_msgs::Point &out)
-    {
+    void toPoint(const T &in, geometry_msgs::Point &out){
         out.x = in.x;
         out.y = in.y;
         out.z = in.z;
@@ -511,8 +372,7 @@ public:
 
     /** \brief Given pcl Polygon Mesh convert it to ros Mesh.
         @param polygon_mesh_ptr - Polygon Mesh Pointer. */
-    bool convertPolygonMeshToRosMesh(const pcl::PolygonMesh::Ptr polygon_mesh_ptr, shape_msgs::Mesh::Ptr ros_mesh_ptr)
-    {
+    bool convertPolygonMeshToRosMesh(const pcl::PolygonMesh::Ptr polygon_mesh_ptr, shape_msgs::Mesh::Ptr ros_mesh_ptr){
         ROS_INFO("Conversion from PCL PolygonMesh to ROS Mesh started.");
 
         pcl_msgs::PolygonMesh pcl_msg_mesh;
@@ -604,8 +464,7 @@ public:
     /** \brief Given the pointcloud containing just the object,
         compute its center point, its height and its mesh and store in object_found.
         @param cloud - point cloud containing just the object. */
-    void extractObjectDetails(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, ObjectParams &object_found, const ObjectParams &plane_params, bool isCluster = true)
-    {
+    void extractObjectDetails(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, ObjectParams &object_found, const ObjectParams &plane_params, bool isCluster = true){
         ROS_INFO_STREAM("Extracting Object Details " << cloud->points.size());
         object_found.cluster_original = *cloud;
         double max_z_ = cloud->points[0].z;
@@ -642,13 +501,11 @@ public:
         object_found.center.pose.orientation.z = 0.0;
         object_found.center.pose.orientation.w = 1.0;
 
-        if (isCluster)
-        {
+        if (isCluster){
             object_found.isValid = true;
 
             // Add object only if is above plane.
-            if (plane_params.isValid && object_found.center.pose.position.z < plane_params.min_z - 0.025)
-            {
+            if (plane_params.isValid && object_found.center.pose.position.z < plane_params.min_z - 0.025){
                 ROS_INFO_STREAM("Object rejected due to plane height: "
                                 << " x: " << object_found.center.pose.position.x
                                 << " y: " << object_found.center.pose.position.y
@@ -660,8 +517,7 @@ public:
             }
 
             // Change point cloud origin to object centroid and save it.
-            for (auto &point : cloud->points)
-            {
+            for (auto &point : cloud->points){
                 point.x = point.x - centroid.x;
                 point.y = point.y - centroid.y;
                 point.z = point.z - centroid.z;
@@ -678,30 +534,26 @@ public:
             // Add object only if it has restricted dimensions.
             if (abs(object_found.max_x - object_found.min_x) > 0.5 ||
                 abs(object_found.max_y - object_found.min_y) > 0.5 ||
-                abs(object_found.max_z - object_found.min_z) > 0.5)
-            {
+                abs(object_found.max_z - object_found.min_z) > 0.5){
                 ROS_INFO_STREAM("Object rejected due to dimensions.");
                 object_found.isValid = false;
                 return;
             }
 
-            if (abs(object_found.max_z - object_found.min_z) < 0.03)
-            {
+            if (abs(object_found.max_z - object_found.min_z) < 0.03){
                 ROS_INFO_STREAM("Object rejected due to height.");
                 object_found.isValid = false;
                 return;
             }
 
             if (object_found.max_x > plane_params.max_x || object_found.min_x < plane_params.min_x ||
-                object_found.max_y > plane_params.max_y || object_found.min_y < plane_params.min_y)
-            {
+                object_found.max_y > plane_params.max_y || object_found.min_y < plane_params.min_y){
                 ROS_INFO_STREAM("Object rejected due to not within table plane ROI.");
                 object_found.isValid = false;
                 return;
             }
 
-            if (!ignore_moveit_)
-            {
+            if (!ignore_moveit_){
                 // Store mesh.
                 ROS_INFO_STREAM("Reconstructing Mesh Started");
                 reconstructMesh(cloud, object_found.mesh);
@@ -726,42 +578,10 @@ public:
         }
     }
 
-    /** \brief Given a pointcloud extract the ROI defined by the user.
-        @param cloud - Pointcloud whose ROI needs to be extracted. */
-    void passThroughFilter(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud)
-    {
-        pcl::PassThrough<pcl::PointXYZ> pass;
-        pass.setInputCloud(cloud);
-        pass.setFilterFieldName("z");
-        // min and max values in z axis to keep
-        pass.setFilterLimits(0.3, 1.3);
-        pass.filter(*cloud);
-    }
-
-    /** \brief Given a pointcloud extract the ROI defined by the user.
-        @param cloud - Pointcloud whose ROI needs to be extracted. */
-    void passThroughFilterSide(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, int side)
-    {
-        pcl::PassThrough<pcl::PointXYZ> pass;
-        pass.setInputCloud(cloud);
-        pass.setFilterFieldName("y");
-        if (side == -1)
-        { // Left
-            pass.setFilterLimits(0, 2.50);
-        }
-        else
-        { // Right
-            pass.setFilterLimits(-2.50, 0.0);
-        }
-        pass.filter(*cloud);
-    }
-
     /** \brief Given the pointcloud and pointer cloud_normals compute the point normals and store in cloud_normals.
         @param cloud - Pointcloud.
         @param cloud_normals - The point normals once computer will be stored in this. */
-    void computeNormals(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
-                        const pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals)
-    {
+    void computeNormals(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, const pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals){
         pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>());
         pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
         ne.setSearchMethod(tree);
@@ -774,9 +594,7 @@ public:
     /** \brief Given the point normals and point indices, extract the normals for the indices.
         @param cloud_normals - Point normals.
         @param inliers - Indices whose normals need to be extracted. */
-    void extractNormals(const pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals,
-                        const pcl::PointIndices::Ptr &inliers)
-    {
+    void extractNormals(const pcl::PointCloud<pcl::Normal>::Ptr &cloud_normals, const pcl::PointIndices::Ptr &inliers){
         pcl::ExtractIndices<pcl::Normal> extract_normals;
         extract_normals.setNegative(true);
         extract_normals.setInputCloud(cloud_normals);
@@ -839,98 +657,6 @@ public:
         return isTheTargetPlane;
     }
 
-    /** \brief Calculate distance between two points. */
-    float getDistance(const geometry_msgs::Point &a, const geometry_msgs::Point &b)
-    {
-        return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2) + pow(a.z - b.z, 2));
-    }
-
-    /** \brief Bind an object mesh with a 2D detection using distance between two points. */
-    void bindDetections(std::vector<ObjectParams> &objects)
-    {
-        float min_distance = std::numeric_limits<float>::max();
-        int min_index = -1;
-        for (int j = 0; j < objects.size(); j++)
-        {
-            float curr_distance = getDistance(objects[j].center.pose.position, force_object_.point3D.point);
-            ROS_INFO_STREAM(j << ": Distance center cluster to object point " << curr_distance);
-            if (curr_distance < min_distance)
-            {
-                min_distance = curr_distance;
-                min_index = j;
-            }
-        }
-        if (min_index != -1)
-        {
-            objects[min_index].label = force_object_.label;
-            ROS_INFO_STREAM("Detection binded with object " << min_index << " File Id: " << objects[min_index].file_id << " -> Min Distance: " << min_distance);
-            objects = {objects[min_index]};
-        }
-        else
-        {
-            objects = {};
-        }
-    }
-
-    void addGraspInfo(const sensor_msgs::PointCloud2 &input, ObjectParams &object)
-    {
-        sensor_msgs::PointCloud2 tmp;
-        pcl::toROSMsg(object.cluster_original, tmp);
-        tmp.header.frame_id = input.header.frame_id;
-        tmp.header.stamp = input.header.stamp;
-        pc_pub_1_.publish(tmp);
-        pc_pub_2_.publish(input);
-
-        // Cloud Sources
-        gpd_ros::CloudSources cloud_sources;
-        cloud_sources.cloud = input;
-        std_msgs::Int64 tmpInt;
-        tmpInt.data = 0;
-
-        cloud_sources.camera_source.assign(input.width * input.height, tmpInt);
-
-        geometry_msgs::TransformStamped tf_to_cam;
-        tf_to_cam = buffer_.lookupTransform(BASE_FRAME, CAMERA_FRAME, ros::Time(0), ros::Duration(1.0));
-        geometry_msgs::Point tmpPoint;
-        tmpPoint.x = tf_to_cam.transform.translation.x;
-        tmpPoint.y = tf_to_cam.transform.translation.y;
-        tmpPoint.z = tf_to_cam.transform.translation.z;
-        ROS_INFO_STREAM("Camera Position: " << tmpPoint.x << ", " << tmpPoint.y << ", " << tmpPoint.z);
-        cloud_sources.view_points.push_back(tmpPoint);
-
-        gpd_msg_.cloud_sources = cloud_sources;
-        gpd_msg_indexed_.cloud_sources = cloud_sources;
-
-        ROS_INFO_STREAM("Finding Grasps");
-        // Samples
-        gpd_msg_.samples.clear();
-        std::set<pcl::PointXYZ, PointXYZComparator> unique_points;
-        for (auto &point : object.cluster_original.points)
-        {
-            tmpPoint.x = point.x;
-            tmpPoint.y = point.y;
-            tmpPoint.z = point.z;
-            gpd_msg_.samples.push_back(tmpPoint);
-            unique_points.insert(point);
-        }
-
-        // Indices
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_original(new pcl::PointCloud<pcl::PointXYZ>);
-        pcl::fromROSMsg(input, *cloud_original);
-        gpd_msg_indexed_.indices.clear();
-        for (int i = 0; i < cloud_original->points.size(); i++)
-        {
-            if (unique_points.find(cloud_original->points[i]) != unique_points.end())
-            {
-                tmpInt.data = i;
-                gpd_msg_indexed_.indices.push_back(tmpInt);
-            }
-        }
-
-        //result_.object_cloud = gpd_msg_;
-        //result_.object_cloud_indexed = gpd_msg_indexed_;
-    }
-
     /** \brief PointCloud callback. */
     void cloudCB(const sensor_msgs::PointCloud2 &input){
         ROS_INFO_STREAM("Received PointCloud");
@@ -982,7 +708,7 @@ public:
         }
         ROS_INFO_STREAM("Found Objects: " << objects.size());
 
-        //fillPrefixMatrices(plane_params);
+        //fill area prefix matrix
         for(int i=0; i<matrix_size; i++){
             for(int j=0; j<matrix_size; j++){
                 if(possible_placings[i][j]){
@@ -1011,22 +737,6 @@ public:
             std::cout << std::endl;
         }
 
-        ROS_INFO_STREAM("Horizontal Prefix");
-        for(int i=0; i<matrix_size; i++){
-            for(int j=0; j<matrix_size; j++){
-                std::cout << horizontal_prefix[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-
-        ROS_INFO_STREAM("Vertical Prefix");
-        for(int i=0; i<matrix_size; i++){
-            for(int j=0; j<matrix_size; j++){
-                std::cout << vertical_prefix[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-        
         ROS_INFO_STREAM("Area Prefix");
         for(int i=0; i<matrix_size; i++){
             for(int j=0; j<matrix_size; j++){
@@ -1035,69 +745,8 @@ public:
             std::cout << std::endl;
         }
 
-        bool table_empty = true;
+        bool table_empty = false;
         if( table_empty ){
-            //addTablePos(plane_params);
-            struct tile{
-                int y;
-                int x;
-            };
-            int x_closests_av = -1;
-            int y_closests_av = -1;
-
-            tile current = {14, 14};
-            std::queue<tile> q;
-            q.push(current);
-
-            while( !q.empty() ){
-                tile tmp = q.front();
-                q.pop();
-                //ROS_INFO_STREAM("Checking tile: " << tmp.y << " " << tmp.x);
-                if(tmp.y < 0 || tmp.y == matrix_size || tmp.x < 0 || tmp.x == matrix_size)
-                    continue;
-                if(visited[tmp.y][tmp.x])
-                    continue;
-                visited[tmp.y][tmp.x] = true;
-
-                if( prefix[tmp.y][tmp.x] >= selected_object_sz/grid_size ){
-                    x_closests_av = tmp.x - (selected_object_sz/grid_size)/4;
-                    y_closests_av = tmp.y - (selected_object_sz/grid_size)/4;
-                    break;
-                }
-                current = {tmp.y-1, tmp.x};
-                q.push(current);
-                current = {tmp.y, tmp.x+1};
-                q.push(current);
-                current = {tmp.y, tmp.x-1};
-                q.push(current);
-                current = {tmp.y+1, tmp.x};
-                q.push(current);
-            }
-
-            if( y_closests_av == -1 || x_closests_av == -1 ){
-                ROS_INFO_STREAM("No available space for object");
-                result_.success = false;
-                return;
-            }
-
-            
-            double x_pos = -(x_closests_av - (matrix_size/2)) * grid_size;
-            double y_pos = (y_closests_av - (matrix_size/2)) * grid_size;
-
-            geometry_msgs::PoseStamped target_pose;
-            target_pose.header.stamp = ros::Time::now();
-            target_pose.header.frame_id = BASE_FRAME;
-            target_pose.pose = plane_params.center.pose;
-            target_pose.pose.position.x = x_pos;
-            target_pose.pose.position.y = y_pos;
-            pose_pub_msg_.header = target_pose.header;
-            pose_pub_msg_.poses.push_back(target_pose.pose);
-            result_.target_pose = target_pose;
-            
-            ROS_INFO_STREAM("Plane params: " << plane_params.min_x << " " << plane_params.max_y);
-            ROS_INFO_STREAM("Target matrix position: " << y_closests_av << " " << x_closests_av);
-            ROS_INFO_STREAM("Target Pose: " << target_pose.pose.position.x << ", " << target_pose.pose.position.y << ", " << target_pose.pose.position.z);
-            return;
         }
 
         /* Idea for search algorithm:
@@ -1122,80 +771,69 @@ public:
         moving left (for priority of placing close to the arm), when a 2 of maximum is found in
         both matrices, it would fit the size of the object. */
 
-        if (cloud->points.size() <= 3){
-            return;
-        }
-
-
-        fillPrefixMatrices(plane_params);
-
-
-        int max_y = std::ceil( (plane_params.max_y - plane_params.min_y) / selected_object_sz );
-        int max_x = std::ceil( (plane_params.max_x - plane_params.min_x) / selected_object_sz );
-        int y_closests_av = -1;
+        struct tile{
+            int y;
+            int x;
+        };
         int x_closests_av = -1;
+        int y_closests_av = -1;
 
+        tile current = {14, 14};
+        bool visited[29][29] = {false};
+        std::vector< std::pair<int, tile> > found_placings;
+        std::queue<tile> q;
+        q.push(current);
+
+        while( !q.empty() ){
+            tile tmp = q.front();
+            q.pop();
+            //ROS_INFO_STREAM("Checking tile: " << tmp.y << " " << tmp.x);
+            if(tmp.y < 0 || tmp.y == matrix_size || tmp.x < 0 || tmp.x == matrix_size)
+                continue;
+            if(visited[tmp.y][tmp.x])
+                continue;
+            visited[tmp.y][tmp.x] = true;
+
+            if( prefix[tmp.y][tmp.x] >= selected_object_sz/grid_size ){
+                //assign the weight, priority of area, then distance to the center
+                int weight = prefix[tmp.y][tmp.x]*9 + (14-sqrt( pow(tmp.y - (matrix_size/2), 2) + pow(tmp.x - (matrix_size/2), 2) ));
+                found_placings.push_back({weight, tmp});
+            }
+            current = {tmp.y-1, tmp.x};
+            q.push(current);
+            current = {tmp.y, tmp.x+1};
+            q.push(current);
+            current = {tmp.y, tmp.x-1};
+            q.push(current);
+            current = {tmp.y+1, tmp.x};
+            q.push(current);
+        }
+
+
+        //sort the placings by weight
+        int max_weight = 0;
+        for(auto const placing : found_placings){
+            if(placing.first > max_weight){
+                max_weight = placing.first;
+                x_closests_av = placing.second.x - (selected_object_sz/grid_size)/4;
+                y_closests_av = placing.second.y - (selected_object_sz/grid_size)/4;
+            }
+        }
         
-        //debug table objects and prefix matrices
-        ROS_INFO_STREAM("Table Objects");
-        for(int i=0; i<max_y; i++){
-            for(int j=0; j<max_x; j++){
-                std::cout << table_objects[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-
-        ROS_INFO_STREAM("Horizontal Prefix");
-        for(int i=0; i<max_y; i++){
-            for(int j=0; j<max_x; j++){
-                std::cout << horizontal_prefix[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-
-        ROS_INFO_STREAM("Vertical Prefix");
-        for(int i=0; i<max_y; i++){
-            for(int j=0; j<max_x; j++){
-                std::cout << vertical_prefix[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-        /*
-        Approach:
-            Find the center of the robot respect the plane (x,y) and transform it to look from the center of the robot, within its range,
-            through the prefixes of available spaces
-        */
-
-       int robot_center_x = ceil(abs(plane_params.max_x / selected_object_sz));
-       int robot_center_y = ceil(abs((kYRobotRange - plane_params.max_y) / selected_object_sz));
-
-        for(int i=robot_center_y; i < robot_center_y + kRobotYIndexLimit && i < max_y; i--){
-            for(int j=robot_center_x - kRobotXIndexLimit; j <= robot_center_x + kRobotXIndexLimit && j < max_x; j++){
-                if(j > 0 && i > 0 && vertical_prefix[i][j] >= 2 && horizontal_prefix[i][j] >= 2 ){
-                    y_closests_av = i;
-                    x_closests_av = j;
-                    break;
-                }
-            }
-            if( y_closests_av != -1 && x_closests_av != -1 )
-                break;
-        }
-
         if( y_closests_av == -1 || x_closests_av == -1 ){
             ROS_INFO_STREAM("No available space for object");
             result_.success = false;
             return;
         }
-
         
-        double x_pos =  plane_params.max_x - (x_closests_av * selected_object_sz);
-        double y_pos =  plane_params.max_y - (y_closests_av * selected_object_sz);
+        double x_pos = -(x_closests_av - (matrix_size/2)) * grid_size;
+        double y_pos = (y_closests_av - (matrix_size/2)) * grid_size;
 
         geometry_msgs::PoseStamped target_pose;
         target_pose.header.stamp = ros::Time::now();
         target_pose.header.frame_id = BASE_FRAME;
         target_pose.pose = plane_params.center.pose;
-        target_pose.pose.position.x = -x_pos;
+        target_pose.pose.position.x = x_pos;
         target_pose.pose.position.y = y_pos;
         pose_pub_msg_.header = target_pose.header;
         pose_pub_msg_.poses.push_back(target_pose.pose);
@@ -1205,9 +843,6 @@ public:
         ROS_INFO_STREAM("Target matrix position: " << y_closests_av << " " << x_closests_av);
         ROS_INFO_STREAM("Target Pose: " << target_pose.pose.position.x << ", " << target_pose.pose.position.y << ", " << target_pose.pose.position.z);
         return;
-
-
-        
     }
 
     /** \brief Find all clusters in a pointcloud.*/
