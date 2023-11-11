@@ -4,12 +4,14 @@
 #include "Plot.h"
 
 Movement *robot = nullptr;
-bool ROS_ENABLE = true;
-bool CHECK_PID = false;
+bool ROS_ENABLE = false;
+bool CHECK_PID = true;
 bool CHECK_MOTORS = false;
 bool CHECK_ENCODERS = false;
+float velo = 0;
 
 void setup() {
+    
     Serial.begin(57600);
     Serial2.begin(57600);
 
@@ -34,16 +36,18 @@ void setup() {
 void loop() {
     if (CHECK_PID) {
         Serial.begin(57600);
+           Serial2.begin(57600);
         // Check PID
         while(1) {
-            Plot plot(robot, !ROS_ENABLE);
+            //Plot plot(robot, !ROS_ENABLE);
             delay(2000);
-            plot.startSequence();
+            //plot.startSequence();
             // List of x Velocities
             double xVelocities[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7};
             long long time = 0.0;
             int i = 0;
             bool sign = false;
+      
             while(1) {
                 if (millis() - time > 6000) {
                     time = millis();
@@ -57,8 +61,14 @@ void loop() {
                       sign = true;
                     }
                 }
-                robot->cmdVelocity(0.5, 0, 0);
-                plot.plotTargetandCurrent();
+                if(Serial.available()){
+                  velo = Serial.parseFloat();
+                  Serial.println(velo);
+                  Serial2.println(velo);
+                  if(velo>0)
+                  robot->cmdVelocity(velo, 0, 0); 
+                }
+                //plot.plotTargetandCurrent();
             }
         }
     }
