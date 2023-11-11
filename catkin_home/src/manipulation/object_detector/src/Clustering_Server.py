@@ -12,7 +12,7 @@ import cv2
 
 
 ARGS= {
-    "CLUSTERS_PER_OBJECT": 4,
+    "CLUSTERS_PER_OBJECT": 3,
     "SAVE_IMAGE": True
 }
 

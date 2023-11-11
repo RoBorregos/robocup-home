@@ -194,6 +194,11 @@ class manipuationServer(object):
             self._as.set_succeeded(manipulationServResult(result = False))
             return
         
+        # Check if arm is in PREGRASP position, if not, move to it
+        if ARM_ENABLE:
+            current_joints = self.arm_group.get_current_joint_values()
+            if current_joints != self.ARM_PREGRASP:
+                self.moveARM(self.ARM_PREGRASP, 0.25)
 
         # Get Objects:
         rospy.loginfo("Getting objects/position")
