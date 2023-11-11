@@ -167,7 +167,6 @@ public:
     biggest_object_ = goal->force_object.detections.size() == 0;
     force_object_ = !biggest_object_ ? goal->force_object.detections[0] : object_detector::objectDetection();
     // publish force_object_.point3D
-    target_point_pub_.publish(force_object_.point3D);
     side_ = goal->side;
     ignore_moveit_ = goal->ignore_moveit;
     plane_min_height_ = goal->plane_min_height;
@@ -222,7 +221,10 @@ public:
       tf_listener->transformPoint(BASE_FRAME, point_in, point_out);
       force_object_.point3D.header = point_out.header;
       force_object_.point3D.point = point_out.point;
+      ROS_INFO_STREAM("Force Object Transformed to Base Frame");
     }
+
+    target_point_pub_.publish(force_object_.point3D);
 
 
     Detect3D::cloudCB(t_pc);
@@ -661,7 +663,7 @@ public:
     segmentor.setModelType(pcl::SACMODEL_PLANE);
     segmentor.setMethodType(pcl::SAC_RANSAC);
     segmentor.setMaxIterations(1000); /* run at max 1000 iterations before giving up */
-    segmentor.setDistanceThreshold(0.02); /* tolerance for variation from model */
+    segmentor.setDistanceThreshold(0.01); /* tolerance for variation from model */
     segmentor.setInputCloud(cloud);
     
     /* Create the segmentation object for the planar model and set all the parameters */

@@ -37,6 +37,6 @@
   <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)" args="-d $(find pick_and_place)/config/all.rviz"/>
 
   <!-- Nav Bridge Server -->
-  <node name="NavBridgeServer" pkg="nav_bridge" type="NavBridgeServer.py" output="screen" />
+  <!-- <node name="NavBridgeServer" pkg="nav_bridge" type="NavBridgeServer.py" output="screen" /> -->
 
 </launch>

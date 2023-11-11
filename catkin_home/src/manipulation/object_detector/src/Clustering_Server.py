@@ -63,6 +63,8 @@ class Clustering_Service:
             plt.xlabel('x')
             plt.ylabel('y')
             plt.title('Clusters')
+            # set axis scale to be equal
+            plt.axis('equal')
 
 
             # save as file
