@@ -47,8 +47,9 @@ wrokspace.code-workspace
 /object_detection/models/dependencies/TensorFlow
 /object_detection/models/dependencies/coco
 /object_detection/images/train
-catkin_home/src/object_detector/models
-catkin_home/src/object_detector/resources
+catkin_home/src/object_detector/models/gazebo/variables/variables.index
+catkin_home/src/manipulation/object_detector/models
+catkin_home/src/manipulation/object_detector/resources
 
 ### CONVERSATION ###
 catkin_home/src/action_selectors/scripts/FaceDetection/haarcascade_frontalface_default.xml
@@ -63,5 +64,7 @@ out.log
 *.pyc
 .vscode/
 venv/
+lib/x86_64-linux-gnu/
+lib/firmware/
 
 # End 

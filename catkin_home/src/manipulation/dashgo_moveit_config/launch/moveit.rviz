@@ -1,0 +1,1139 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 84
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /TF1/Frames1
+        - /Pose1
+        - /Nav1
+      Splitter Ratio: 0.7425600290298462
+    Tree Height: 787
+  - Class: rviz/Help
+    Name: Help
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+Preferences:
+  PromptSaveOnExit: true
+Toolbars:
+  toolButtonStyle: 2
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Acceleration_Scaling_Factor: 1
+      Class: moveit_rviz_plugin/MotionPlanning
+      Enabled: true
+      Move Group Namespace: ""
+      MoveIt_Allow_Approximate_IK: false
+      MoveIt_Allow_External_Program: false
+      MoveIt_Allow_Replanning: false
+      MoveIt_Allow_Sensor_Positioning: false
+      MoveIt_Planning_Attempts: 10
+      MoveIt_Planning_Time: 5
+      MoveIt_Use_Cartesian_Path: false
+      MoveIt_Use_Constraint_Aware_IK: true
+      MoveIt_Workspace:
+        Center:
+          X: 0
+          Y: 0
+          Z: 0
+        Size:
+          X: 2
+          Y: 2
+          Z: 2
+      Name: MotionPlanning
+      Planned Path:
+        Color Enabled: false
+        Interrupt Display: false
+        Links:
+          All Links Enabled: true
+          Base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          BaseBrazo:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Base_Gripper:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam1_rx_ry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_ry_rz:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_rz_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_x_y:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_y_z:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_z_rx:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam2_rx_ry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_ry_rz:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_rz_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_x_y:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_y_z:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_z_rx:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Dedo1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Dedo2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Lidar:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Link Tree Style: Links in Alphabetic Order
+          Llanta1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Llanta2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          LlantaLoca1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          LlantaLoca2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Loca1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Loca2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Servo1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Servo2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          apriltag:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          base_footprint:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          end_effector_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          link1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link4:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link5:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link_eef:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+        Loop Animation: false
+        Robot Alpha: 0.5
+        Robot Color: 150; 50; 150
+        Show Robot Collision: true
+        Show Robot Visual: true
+        Show Trail: false
+        State Display Time: 0.05 s
+        Trail Step Size: 1
+        Trajectory Topic: move_group/display_planned_path
+        Use Sim Time: false
+      Planning Metrics:
+        Payload: 1
+        Show Joint Torques: false
+        Show Manipulability: false
+        Show Manipulability Index: false
+        Show Weight Limit: false
+        TextHeight: 0.07999999821186066
+      Planning Request:
+        Colliding Link Color: 255; 0; 0
+        Goal State Alpha: 1
+        Goal State Color: 250; 128; 0
+        Interactive Marker Size: 0
+        Joint Violation Color: 255; 0; 255
+        Planning Group: arm
+        Query Goal State: true
+        Query Start State: false
+        Show Workspace: false
+        Start State Alpha: 1
+        Start State Color: 0; 255; 0
+      Planning Scene Topic: move_group/monitored_planning_scene
+      Robot Description: robot_description
+      Scene Geometry:
+        Scene Alpha: 1
+        Scene Color: 50; 230; 50
+        Scene Display Time: 0.20000000298023224
+        Show Scene Geometry: true
+        Voxel Coloring: Z-Axis
+        Voxel Rendering: Occupied Voxels
+      Scene Robot:
+        Attached Body Color: 150; 50; 150
+        Links:
+          All Links Enabled: true
+          Base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          BaseBrazo:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Base_Gripper:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam1_rx_ry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_ry_rz:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_rz_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_x_y:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_y_z:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam1_z_rx:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Cam2_rx_ry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_ry_rz:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_rz_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_x_y:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_y_z:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Cam2_z_rx:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          Dedo1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Dedo2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Lidar:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Link Tree Style: Links in Alphabetic Order
+          Llanta1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Llanta2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          LlantaLoca1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          LlantaLoca2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Loca1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Loca2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Servo1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          Servo2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          apriltag:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          base_footprint:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          end_effector_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          link1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link4:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link5:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          link_eef:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+        Robot Alpha: 0.5
+        Show Robot Collision: false
+        Show Robot Visual: true
+      Value: true
+      Velocity_Scaling_Factor: 1
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: RGB8
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /zed2/zed_node/point_cloud/ds_cloud_registered
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Base:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        BaseBrazo:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Base_Gripper:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Cam1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Cam1_rx_ry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam1_ry_rz:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam1_rz_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam1_x_y:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam1_y_z:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam1_z_rx:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Cam2_rx_ry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam2_ry_rz:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam2_rz_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam2_x_y:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam2_y_z:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Cam2_z_rx:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        Dedo1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Dedo2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Lidar:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Link Tree Style: Links in Alphabetic Order
+        Llanta1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Llanta2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LlantaLoca1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        LlantaLoca2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Loca1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Loca2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Servo1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        Servo2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        apriltag:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        end_effector_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_base:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_eef:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 0.9585530161857605
+        Min Value: 0.7429208159446716
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 0; 0
+      Color Transformer: RGB8
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /zed2_up/zed_up_node/point_cloud/ds_cloud_registered
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: RGB8
+      Decay Time: 0
+      Enabled: false
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Min Color: 0; 0; 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic: /zed2/zed_node/point_cloud/ds_cloud_registered
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /detect_grasps_server_samples/plot_grasps
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
+    - Alpha: 1
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.30000001192092896
+      Axes Radius: 0.009999999776482582
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.07000000029802322
+      Head Radius: 0.029999999329447746
+      Name: PoseArray
+      Queue Size: 10
+      Shaft Length: 0.23000000417232513
+      Shaft Radius: 0.009999999776482582
+      Shape: Arrow (Flat)
+      Topic: /pose_array/object
+      Unreliable: false
+      Value: true
+    - Class: moveit_rviz_plugin/PlanningScene
+      Enabled: false
+      Move Group Namespace: ""
+      Name: PlanningScene
+      Planning Scene Topic: move_group/monitored_planning_scene
+      Robot Description: robot_description
+      Scene Geometry:
+        Scene Alpha: 0.8999999761581421
+        Scene Color: 50; 230; 50
+        Scene Display Time: 0.009999999776482582
+        Show Scene Geometry: true
+        Voxel Coloring: Z-Axis
+        Voxel Rendering: Occupied Voxels
+      Scene Robot:
+        Attached Body Color: 150; 50; 150
+        Links:
+          All Links Enabled: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Link Tree Style: Links in Alphabetic Order
+        Robot Alpha: 1
+        Show Robot Collision: false
+        Show Robot Visual: true
+      Value: false
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        Base:
+          Value: false
+        BaseBrazo:
+          Value: false
+        Base_Gripper:
+          Value: false
+        Cam1:
+          Value: false
+        Cam1_rx_ry:
+          Value: false
+        Cam1_ry_rz:
+          Value: false
+        Cam1_rz_link:
+          Value: false
+        Cam1_x_y:
+          Value: false
+        Cam1_y_z:
+          Value: false
+        Cam1_z_rx:
+          Value: false
+        Cam2:
+          Value: false
+        Cam2_rx_ry:
+          Value: false
+        Cam2_ry_rz:
+          Value: false
+        Cam2_rz_link:
+          Value: false
+        Cam2_x_y:
+          Value: false
+        Cam2_y_z:
+          Value: false
+        Cam2_z_rx:
+          Value: false
+        Dedo1:
+          Value: false
+        Dedo2:
+          Value: false
+        Lidar:
+          Value: false
+        Llanta1:
+          Value: false
+        Llanta2:
+          Value: false
+        LlantaLoca1:
+          Value: false
+        LlantaLoca2:
+          Value: false
+        Loca1:
+          Value: false
+        Loca2:
+          Value: false
+        Servo1:
+          Value: false
+        Servo2:
+          Value: false
+        apriltag:
+          Value: true
+        base_footprint:
+          Value: false
+        base_link:
+          Value: false
+        end_effector_link:
+          Value: false
+        link1:
+          Value: false
+        link2:
+          Value: false
+        link3:
+          Value: false
+        link4:
+          Value: false
+        link5:
+          Value: false
+        link_base:
+          Value: false
+        link_eef:
+          Value: false
+        odom:
+          Value: false
+        tag_1:
+          Value: true
+        zed2_up_baro_link:
+          Value: false
+        zed2_up_base_link:
+          Value: false
+        zed2_up_camera_center:
+          Value: false
+        zed2_up_left_camera_frame:
+          Value: false
+        zed2_up_left_camera_optical_frame:
+          Value: false
+        zed2_up_mag_link:
+          Value: false
+        zed2_up_right_camera_frame:
+          Value: false
+        zed2_up_right_camera_optical_frame:
+          Value: false
+        zed2_up_temp_left_link:
+          Value: false
+        zed2_up_temp_right_link:
+          Value: false
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        odom:
+          base_footprint:
+            base_link:
+              Base:
+                BaseBrazo:
+                  link_base:
+                    link1:
+                      link2:
+                        link3:
+                          link4:
+                            apriltag:
+                              {}
+                            link5:
+                              link_eef:
+                                Base_Gripper:
+                                  Servo1:
+                                    Dedo1:
+                                      {}
+                                  Servo2:
+                                    Dedo2:
+                                      {}
+                                  end_effector_link:
+                                    {}
+                Cam1_x_y:
+                  Cam1_y_z:
+                    Cam1_z_rx:
+                      Cam1_rx_ry:
+                        Cam1_ry_rz:
+                          Cam1_rz_link:
+                            Cam1:
+                              zed2_up_base_link:
+                                zed2_up_camera_center:
+                                  zed2_up_baro_link:
+                                    {}
+                                  zed2_up_left_camera_frame:
+                                    zed2_up_left_camera_optical_frame:
+                                      tag_1:
+                                        {}
+                                    zed2_up_temp_left_link:
+                                      {}
+                                  zed2_up_mag_link:
+                                    {}
+                                  zed2_up_right_camera_frame:
+                                    zed2_up_right_camera_optical_frame:
+                                      {}
+                                    zed2_up_temp_right_link:
+                                      {}
+                Cam2_x_y:
+                  Cam2_y_z:
+                    Cam2_z_rx:
+                      Cam2_rx_ry:
+                        Cam2_ry_rz:
+                          Cam2_rz_link:
+                            Cam2:
+                              {}
+                Lidar:
+                  {}
+                Llanta1:
+                  {}
+                Llanta2:
+                  {}
+                Loca1:
+                  LlantaLoca1:
+                    {}
+                Loca2:
+                  LlantaLoca2:
+                    {}
+      Update Interval: 0
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Queue Size: 10
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic: /debug/grasp/pose
+      Unreliable: false
+      Value: true
+    - Class: rviz/Group
+      Displays:
+        - Alpha: 0.699999988079071
+          Class: rviz/Map
+          Color Scheme: map
+          Draw Behind: false
+          Enabled: true
+          Name: Map
+          Topic: /map
+          Unreliable: false
+          Use Timestamp: false
+          Value: true
+        - Alpha: 1
+          Class: rviz/Polygon
+          Color: 25; 255; 0
+          Enabled: true
+          Name: Polygon
+          Queue Size: 10
+          Topic: /move_base/local_costmap/footprint
+          Unreliable: false
+          Value: true
+        - Alpha: 1
+          Buffer Length: 1
+          Class: rviz/Path
+          Color: 25; 255; 0
+          Enabled: true
+          Head Diameter: 0.30000001192092896
+          Head Length: 0.20000000298023224
+          Length: 0.30000001192092896
+          Line Style: Lines
+          Line Width: 0.029999999329447746
+          Name: Path
+          Offset:
+            X: 0
+            Y: 0
+            Z: 0
+          Pose Color: 255; 85; 255
+          Pose Style: None
+          Queue Size: 10
+          Radius: 0.029999999329447746
+          Shaft Diameter: 0.10000000149011612
+          Shaft Length: 0.10000000149011612
+          Topic: /move_base/TebLocalPlannerROS/local_plan
+          Unreliable: false
+          Value: true
+        - Alpha: 1
+          Class: rviz/Polygon
+          Color: 25; 255; 0
+          Enabled: false
+          Name: Polygon
+          Queue Size: 10
+          Topic: /move_base/local_costmap/footprint
+          Unreliable: false
+          Value: false
+        - Alpha: 0.699999988079071
+          Class: rviz/Map
+          Color Scheme: map
+          Draw Behind: false
+          Enabled: true
+          Name: Map
+          Topic: /move_base/global_costmap/costmap
+          Unreliable: false
+          Use Timestamp: false
+          Value: true
+      Enabled: true
+      Name: Nav
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: Base
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/PublishPoint
+      Single click: true
+      Topic: /clicked_point
+    - Class: rviz/SetInitialPose
+      Theta std deviation: 0.2617993950843811
+      Topic: initialpose
+      X std deviation: 0.5
+      Y std deviation: 0.5
+    - Class: rviz/SetGoal
+      Topic: goal
+  Value: true
+  Views:
+    Current:
+      Class: rviz/XYOrbit
+      Distance: 1.9640692472457886
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Field of View: 0.7853981852531433
+      Focal Point:
+        X: -0.04727250337600708
+        Y: -0.24500858783721924
+        Z: -2.2351684947352624e-07
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.7402034401893616
+      Target Frame: world
+      Yaw: 0.3667725920677185
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1043
+  Help:
+    collapsed: false
+  Hide Left Dock: false
+  Hide Right Dock: false
+  MotionPlanning:
+    collapsed: false
+  MotionPlanning - Trajectory Slider:
+    collapsed: false
+  QMainWindow State: 000000ff00000000fd0000000100000000000002ad000003bdfc0200000006fc0000003b000003bd000001840100001afa000000000100000002fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000000ffffffff000001ca00fffffffb000000100044006900730070006c0061007900730100000000000002ad0000015600fffffffb0000000800480065006c00700000000342000000bb0000006e00fffffffb0000000a0056006900650077007300000003b0000000b0000000a000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000001600000016000004cd000003bd00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Views:
+    collapsed: false
+  Width: 1920
+  X: 1920
+  Y: 0

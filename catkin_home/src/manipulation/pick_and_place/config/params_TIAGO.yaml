@@ -1,0 +1,22 @@
+ARM_GROUP: "arm_torso"
+ARM_JOINTS: [torso_lift_joint, arm_1_joint, arm_2_joint, arm_3_joint, arm_4_joint, arm_5_joint, arm_6_joint, arm_7_joint]
+ARM_GRASP: [0.258, 0.200, -1.3389, -0.1999, 1.938, -1.5699, 1.3697, 0.0]
+HEAD_GROUP: "head"
+HEAD_JOINTS: [head_1_joint, head_2_joint]
+HEAD_LOOK_DOWN: [0.0, -0.78]
+HEAD_LOOK_FRONT: [0.0, 0.0]
+HEAD_LEFT: [0.6, -0.78]
+HEAD_RIGHT: [-0.6, -0.78]
+GRIPPER_GROUP: "gripper"
+GRIPPER_JOINTS: [ "gripper_left_finger_joint", "gripper_right_finger_joint"]
+GRIPPER_OPEN: [0.038, 0.038]
+GRIPPER_CLOSED: [0.015, 0.015]
+GRASP_POSTURES_FRAME_ID: "end_effector_link"
+ALLOW_CONTACT: [
+  "gripper_left_finger_link",
+  "gripper_right_finger_link",
+  "arm_tool_link",
+  "end_effector_link",
+  "<octomap>",
+]
+CAMERA_DEPTH_FRAME: camera_depth_frame

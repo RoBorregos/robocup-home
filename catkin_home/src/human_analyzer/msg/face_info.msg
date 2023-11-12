@@ -1,0 +1,9 @@
+string identity
+int32 x
+int32 y
+int32 w
+int32 h
+string name
+int32 age
+string gender
+string race

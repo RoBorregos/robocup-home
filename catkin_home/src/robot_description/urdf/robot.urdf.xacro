@@ -96,7 +96,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis_R1" type="continuous">
+  <joint name="Chasis_R1" type="fixed">
     <origin
       xyz="0.13960999018429 -0.224000012165135 -0.0268998000000014"
       rpy="0 0 0" />
@@ -106,6 +106,8 @@
       link="R1" />
     <axis
       xyz="0 1 0" />
+    <limit effort="1" velocity="10"/>
+    <joint_properties damping="5.0" friction="10.0"/>
   </joint>
 
   <!-- Wheel 2 -->
@@ -117,12 +119,12 @@
       <mass
         value="0.275706306313456" />
       <inertia
-        ixx="6.88914080188531E-05"
-        ixy="-8.21254945713304E-11"
-        ixz="1.95157168736736E-10"
-        iyy="9.76757022851765E-05"
-        iyz="2.44874061876534E-10"
-        izz="6.88908849846178E-05" />
+        ixx="6.88913760503531E-05"
+        ixy="-9.99707194725952E-11"
+        ixz="2.32024543753798E-10"
+        iyy="9.7675702655705E-05"
+        iyz="2.38192945242156E-10"
+        izz="6.88909173459932E-05" />
     </inertial>
     <visual>
       <origin
@@ -148,7 +150,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis_R2" type="continuous">
+  <joint name="Chasis_R2" type="fixed">
     <origin
       xyz="0.13960999018429 0.223999987834865 -0.0268998000000016"
       rpy="0 0 0" />
@@ -158,6 +160,8 @@
       link="R2" />
     <axis
       xyz="0 1 0" />
+    <limit effort="1" velocity="10"/>
+    <joint_properties damping="5.0" friction="10.0"/>
   </joint>
 
   <!-- Wheel 3 -->
@@ -200,7 +204,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis_R3" type="continuous">
+  <joint name="Chasis_R3" type="fixed">
     <origin
       xyz="-0.29339000981571 -0.224000012165135 -0.0263997999996424"
       rpy="0 0 0" />
@@ -210,6 +214,8 @@
       link="R3" />
     <axis
       xyz="0 1 0" />
+    <limit effort="1" velocity="10"/>
+    <joint_properties damping="5.0" friction="10.0"/>
   </joint>
 
   <!-- Wheel 4 -->
@@ -252,7 +258,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="Chasis_R4" type="continuous">
+  <joint name="Chasis_R4" type="fixed">
     <origin
       xyz="-0.29339000981571 0.223999987834865 -0.0268998000000015"
       rpy="0 0 0" />
@@ -262,6 +268,8 @@
       link="R4" />
     <axis
       xyz="0 1 0" />
+    <limit effort="1" velocity="10"/>
+    <joint_properties damping="5.0" friction="10.0"/>
   </joint>
 
   <!-- Elevator -->
@@ -364,7 +372,7 @@
   </link>
   <joint name="Elevador_Brazo_1" type="prismatic">
     <origin
-      xyz="0 0 1.09559517536383"
+      xyz="0 0 1"
       rpy="0 0 0" />
     <parent
       link="Elevador" />
@@ -491,7 +499,7 @@
       upper="1.57"
       effort="39.0"
       velocity="4.0" />
-    <dynamics damping="0.7" friction="1"/>/>
+    <dynamics damping="0.7" friction="1"/>
   </joint>
   <link name="BASE_PINZA">
     <inertial>
@@ -541,7 +549,7 @@
     <child
       link="BASE_PINZA" />
     <axis
-      xyz="-0.31288 0.94979 0" />
+      xyz="0 1 0" />
     <limit
       lower="-0.1"
       upper="0.5"
@@ -757,7 +765,7 @@
   <joint name="neck_joint" type="revolute">
     <origin
       xyz="0.083 -0.018139 1.6763"
-      rpy="0 0.8 0" />
+      rpy="0 1.1 0" />
     <parent
       link="base_link" />
     <child
@@ -765,8 +773,8 @@
     <axis
       xyz="0 1 0" />
     <limit
-      lower="-0.8"
-      upper="0.5"
+      lower="-1.1"
+      upper="0.2"
       effort="40.0"
       velocity="2.0" />
     <dynamics damping="0.7" friction="2"/>

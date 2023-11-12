@@ -1,0 +1,7 @@
+#goal definition
+int32 object_id
+---
+#result definition
+bool result
+---
+#feedback

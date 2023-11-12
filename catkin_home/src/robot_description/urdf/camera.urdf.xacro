@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="Camera">
+  <xacro:macro name="load_camera" params="name:='' attach_to:='' x:='0' y:='0' z:='0' r_r:='0' r_p:='0' r_y:='0'">
+    <xacro:unless value="${attach_to == ''}">
+      <joint name="${name}_joint_x" type="prismatic">
+        <parent link="${attach_to}"/>
+        <child link="${name}_x_y"/>
+        <origin xyz="${x} 0 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-1.0" upper="1.0" effort="1000" velocity="0.5" />
+      </joint>
+      <link name="${name}_x_y" />
+      <joint name="${name}_joint_y" type="prismatic">
+        <parent link="${name}_x_y"/>
+        <child link="${name}_y_z"/>
+        <origin xyz="0 ${y} 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-1.0" upper="1.0" effort="1000" velocity="0.5" />
+      </joint>
+      <link name="${name}_y_z" />
+      <joint name="${name}_joint_z" type="prismatic">
+        <parent link="${name}_y_z"/>
+        <child link="${name}_z_rx"/>
+        <origin xyz="0 0 ${z}" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-1.0" upper="1.0" effort="1000" velocity="0.5" />
+      </joint>
+      <link name="${name}_z_rx" />
+      <joint name="${name}_joint_rx" type="revolute">
+        <parent link="${name}_z_rx"/>
+        <child link="${name}_rx_ry"/>
+        <origin xyz="0 0 0" rpy="${r_r} 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="1000" velocity="0.5" />
+      </joint>
+      <link name="${name}_rx_ry" />
+      <joint name="${name}_joint_ry" type="revolute">
+        <parent link="${name}_rx_ry"/>
+        <child link="${name}_ry_rz"/>
+        <origin xyz="0 0 0" rpy="0 ${r_p} 0"/>
+        <axis xyz="0 1 0"/>
+        <limit lower="-3.1416" upper="3.1416" effort="1000" velocity="0.5" />
+      </joint>
+      <link name="${name}_ry_rz" />
+      <joint name="${name}_joint_rz" type="revolute">
+        <parent link="${name}_ry_rz"/>
+        <child link="${name}_rz_link"/>
+        <origin xyz="0 0 0" rpy="0 0 ${r_y}"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-3.1416" upper="3.1416" effort="1000" velocity="0.5" />
+      </joint>
+      <link name="${name}_rz_link" />
+      <joint name="${name}_joint_link" type="fixed">
+        <parent link="${name}_rz_link"/>
+        <child link="${name}"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 0"/>
+      </joint>
+    </xacro:unless>
+    <link name="${name}">
+      <inertial>
+        <origin
+          xyz="-0.0161158990750312 -2.71397957091191E-06 8.43511749604176E-06"
+          rpy="0 0 0" />
+        <mass
+          value="0.152258301511643" />
+        <inertia
+          ixx="0.00037232470424964"
+          ixy="2.49919563850586E-09"
+          ixz="-3.15602915288441E-08"
+          iyy="2.28180071550079E-05"
+          iyz="6.18457007379358E-09"
+          izz="0.000374741909994746" />
+      </inertial>
+      <visual>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://robot_description/meshes/Dashgo/Cam1.STL" />
+        </geometry>
+        <material
+          name="">
+          <color
+            rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+      <collision>
+        <origin
+          xyz="0 0 0"
+          rpy="0 0 0" />
+        <geometry>
+          <mesh
+            filename="package://robot_description/meshes/Dashgo/Cam1.STL" />
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+</robot>

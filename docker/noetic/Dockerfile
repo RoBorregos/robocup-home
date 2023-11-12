@@ -11,6 +11,7 @@ RUN apt-get update -qq && \
     git \
     autoconf \
     libtool \
+    libgazebo11-dev \
     python3-pip \
     mesa-utils \
     --no-install-recommends terminator \
@@ -25,6 +26,9 @@ RUN apt-get update -qq && \
     ros-noetic-moveit-ros-perception \
     ros-noetic-moveit \
     ros-noetic-ros-control \
+    ros-noetic-ros-controllers \
+    ros-noetic-gazebo-ros-pkgs \
+    ros-noetic-gazebo-ros-control \
     ros-noetic-ros-controllers \
     ros-noetic-rosserial && \
     rm -rf /var/lib/apt/lists/*

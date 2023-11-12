@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+     <arg name="hw_ns" default="DASHGO" />
+
+     <!-- Fix Base TFs -->
+     <!-- <node name="MoveitBase"
+          pkg="dashgo_moveit_config" type="MoveItBase.py" output="screen"
+     /> -->
+
+     <!-- Run HardwareInterface -->
+     <node name="MyController"
+          pkg="dashgo_moveit_config" type="MyController" output="screen"
+          ns="$(arg hw_ns)"
+     />
+
+     <!-- load controller configuration -->
+     <rosparam command="load" file="$(find dashgo_moveit_config)/config/DASHGO_controllers.yaml" ns="$(arg hw_ns)" />
+     <!-- spawn controller -->
+     <node name="controllers_spawner_base" 
+          pkg="controller_manager" type="spawner" output="screen" 
+          args="gripper_controller"
+          ns="$(arg hw_ns)"
+     />
+     <remap from="gripper_controller/follow_joint_trajectory" to="$(arg hw_ns)/gripper_controller/follow_joint_trajectory"/>
+</launch>

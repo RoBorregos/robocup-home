@@ -1,0 +1,11 @@
+#goal
+gpd_ros/GraspConfigList grasp_config_list
+geometry_msgs/PoseStamped target_pose
+string object_name
+string[] allow_contact_with
+---
+#result
+# Comes from moveit_msgs/MoveItErrorCodes
+int32 error_code
+---
+#feedback

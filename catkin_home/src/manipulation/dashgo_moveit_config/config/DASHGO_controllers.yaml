@@ -1,0 +1,39 @@
+base_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - odom_x
+    - odom_y
+    - odom_r
+  constraints:
+    stopped_velocity_tolerance: 0
+  gains:
+    odom_x:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    odom_y:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    odom_r:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+gripper_controller:
+  type: position_controllers/JointTrajectoryController
+  # position_controllers/GripperActionController
+  # position_controllers/JointPositionController
+  joints:
+    - Rev1Servo
+  constraints:
+    stopped_velocity_tolerance: 0
+  gains:
+    Rev1Servo:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+

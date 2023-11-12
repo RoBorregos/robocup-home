@@ -1,0 +1,57 @@
+<launch>
+  <!-- By default, we do not start a database (it can be large) -->
+  <arg name="db" default="false" />
+  <!-- Allow user to specify database location -->
+  <arg name="db_path" default="$(find xarm6_moveit_config)/default_warehouse_mongo_db" />
+  <!-- By default, we are not in debug mode -->
+  <arg name="debug" default="false" />
+  <!-- By default, hide joint_state_publisher's GUI -->
+  <arg name="use_gui" default="false" />
+  <!-- as for moveit planner, always reload model to limit the joint range -->
+  <arg name="reload_limited_description" default="true" />
+
+  <!-- arguments configurable by upper layers: -->
+  <!-- the source topic of joint states  -->
+  <arg name="jnt_stat_source" default="[/joint_states]" />
+  <arg name="jnt_stat_pub_rate" default="10" />
+  <!-- option to launch move_group node or not -->
+  <arg name="load_move_group" default="true" />
+  <!-- option to publish tf topic or not -->
+  <arg name="pub_tf" default="true" />
+  <!-- option to show rviz or not -->
+  <arg name="show_rviz" default="true" />
+
+  <!-- Pipeline -->
+  <arg name="pipeline" default="ompl" />
+
+  <!-- option to publish static odom tf -->
+  <arg name="pub_static_odom" default="false" />
+
+  <!-- If needed, broadcast static tf for robot root -->
+  <node if="$(arg pub_static_odom)" pkg="tf2_ros" type="static_transform_publisher" name="virtual_joint_broadcaster_0" args="0 0 0 0 0 0 odom base_footprint" />
+
+  <!-- publish /joint_states from specified source topic -->
+  <!-- Remove -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="/use_gui" value="$(arg use_gui)"/>
+    <param name="/rate" value="$(arg jnt_stat_pub_rate)"/>
+    <rosparam param="/source_list" subst_value="True">$(arg jnt_stat_source)</rosparam>
+  </node>
+
+  <!-- Given the published joint states, publish tf for the robot links -->
+  <node if="$(arg pub_tf)" name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
+
+  <!-- Run the main MoveIt executable without trajectory execution (we do not have controllers configured by default) -->
+  <include if="$(arg load_move_group)" file="$(find dashgo_moveit_config)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="pipeline" value="$(arg pipeline)"/>
+    <arg name="load_robot_description" value="true"/>
+    <arg name="info" value="true"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+  <!-- Run Rviz and load the default config to see the state of the move_group node -->
+  <include if="$(arg show_rviz)" file="$(find dashgo_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+</launch>

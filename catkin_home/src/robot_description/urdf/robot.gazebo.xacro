@@ -35,26 +35,26 @@
 
   <gazebo reference="R1">
     <material>Gazebo/Black</material>
-    <mu1>10</mu1>
-    <mu2>10</mu2>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <gazebo reference="R2">
     <material>Gazebo/Black</material>
-    <mu1>10</mu1>
-    <mu2>10</mu2>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <gazebo reference="R3">
     <material>Gazebo/Black</material>
-    <mu1>10</mu1>
-    <mu2>10</mu2>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <gazebo reference="R4">
     <material>Gazebo/Black</material>
-    <mu1>10</mu1>
-    <mu2>10</mu2>
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
   </gazebo>
 
   <gazebo reference="neck_link">
@@ -291,10 +291,6 @@
   <xacro:gazebo-joint joint="Pinza_Garra_D" />
   <xacro:gazebo-joint joint="Pinza_Garra_I" />
   <xacro:gazebo-joint joint="neck_joint" />
-  <xacro:gazebo-joint joint="Chasis_R1" />
-  <xacro:gazebo-joint joint="Chasis_R2" />
-  <xacro:gazebo-joint joint="Chasis_R3" />
-  <xacro:gazebo-joint joint="Chasis_R4" />
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
   </gazebo>

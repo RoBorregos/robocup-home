@@ -5,6 +5,8 @@
 #: Builds a Docker image with the corresponding Dockerfile file
 noetic.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile .
+noetic.tiago.build:
+	@docker build -t ros:home -f docker/noetic/Dockerfile.tiago .
 noetic.speech.build:
 	@docker build -t ros:home -f docker/noetic/Dockerfile.speech .
 noetic.navigation.build:
@@ -14,6 +16,11 @@ noetic.objectDetection.build:
 noetic.objectDetection.prod.build:
 	@docker login ghcr.io
 	@docker build -t ros:home -f docker/noetic/Dockerfile.objectDetection.prod .
+
+tiago.create:
+	@./docker/run_scripts/tiagoNvidiaGpu.bash
+tiago.shell:
+	@docker exec -it ros-tiago bash
 
 #: Create Generic Docker container
 noetic.create: 

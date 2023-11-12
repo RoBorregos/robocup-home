@@ -1,0 +1,21 @@
+#goal definition
+object_detector/objectDetectionArray force_object
+int32 side
+bool ignore_moveit
+float64 plane_min_height
+float64 plane_max_height
+---
+#result definition
+bool success
+gpd_ros/CloudSamples object_cloud
+gpd_ros/CloudIndexed object_cloud_indexed
+geometry_msgs/PoseStamped object_pose
+float64 x_plane
+float64 y_plane
+float64 z_plane
+float64 width_plane
+float64 height_plane
+---
+#feedback
+# -1 => Error, 0..1...2 => ObjectsFoundSoFar
+int32 status

@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: robot_description
+    relative_path: urdf/dashgo.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/dashgo.srdf
+  CONFIG:
+    author_name: JoseCisneros
+    author_email: joseacisnerosm@gmail.com
+    generated_timestamp: 1682676584
