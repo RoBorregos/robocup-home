@@ -60,6 +60,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   Kinematics::output rpm;
 
   //Access BNO current angle
+  bno->updateBNO();
   float curr_angle_x = bno->getYaw();
 
     //front-left motor
