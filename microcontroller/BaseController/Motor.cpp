@@ -14,7 +14,6 @@ pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidMo
   analog_one_ = analog_one;
   encoder_one_ = encoder_one;
   encoder_two_ = encoder_two;
-
   stop();
   defineOutput();
 
@@ -67,7 +66,7 @@ void Motor::forward() {
 void Motor::backward() {
 
   analogWrite(analog_one_, pwm_);
-  
+
   if(current_state_ == MotorState::Backward) {
     return;
   }

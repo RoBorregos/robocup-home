@@ -26,7 +26,6 @@ void Movement::initEncoders() {
 }
 
 //////////////////////////////////PWM//////////////////////////////////////
-
 void Movement::changePwm(const uint8_t pwm) {
   back_left_motor_.changePwm(pwm);
   front_left_motor_.changePwm(pwm);
@@ -86,7 +85,6 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
   double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
-
   Kinematics::output rpm = kinematics_.getRPM(x, y, z);
   updatePIDKinematics(rpm.motor1, rpm.motor2, rpm.motor3, rpm.motor4);
 }

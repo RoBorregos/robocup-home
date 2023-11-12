@@ -1,11 +1,9 @@
 #include "PID.h"
-
 //////////////////////////////////Constructor//////////////////////////////////////
-
 PID::PID() {
   time_ = millis();
 }
-
+   
 PID::PID(const double kp, const double ki, const double kd, const double out_min, const double out_max, const double max_error_sum, const long sample_time) {
   time_ = millis();
   setTunings(kp, ki, kd);
@@ -19,6 +17,7 @@ void PID::compute(const double setpoint, double &input, double &output, int &res
   if(millis()-time_ < sample_time_) {
       return;
   }
+  
   // Improvement: Change Time to millis() instead of fixed variable.
   input = (reset_variable / pulses_per_rev) * count_time_samples_in_one_second;
   reset_variable = 0;
@@ -29,7 +28,6 @@ void PID::compute(const double setpoint, double &input, double &output, int &res
   error_pre_ = error;
   error_sum_ += error;
   
-
   error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
   output = max(out_min_, min(out_max_, output));
   
