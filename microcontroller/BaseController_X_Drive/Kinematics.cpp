@@ -27,6 +27,7 @@
 
 #include "Arduino.h"
 #include "Kinematics.h"
+#include "BNO.h"
 
 Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits):
   circumference_(PI * wheel_diameter),
@@ -37,7 +38,7 @@ Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_
 {
 }
 
-Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z, float hub_angle)
+Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
   //Distance from the center of the robot to the center of the wheels
   R = lr_wheels_dist_;
@@ -58,15 +59,17 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
 
   Kinematics::output rpm;
 
-  //calculate for the target motor RPM and direction
+  //Access BNO current angle
+  float curr_angle_x = BNO::getYaw()
+
     //front-left motor
-    rpm.motor1 = (-1*sin(135)*x_rpm_+cos(135)*y_rpm_+R*hub_angle)/(circumference_/(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+    rpm.motor1 = (-1*sin(135)*x_rpm_+cos(135)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
     //rear-left motor
-    rpm.motor3 = (-1*sin(225)*x_rpm_+cos(225)*y_rpm_+R*hub_angle)/(circumference_/(2*PI));
+    rpm.motor3 = (-1*sin(225)*x_rpm_+cos(225)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
     //front-right motor
-    rpm.motor2 = (-1*sin(45)*x_rpm_+cos(45)*y_rpm_+R*hub_angle)/(circumference_/(2*PI));
+    rpm.motor2 = (-1*sin(45)*x_rpm_+cos(45)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
     //rear-right motor
-    rpm.motor4 = (-1*sin(315)*x_rpm_+cos(315)*y_rpm_+R*hub_angle)/(circumference_/(2*PI));
+    rpm.motor4 = (-1*sin(315)*x_rpm_+cos(315)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
 
   return rpm;
 }
