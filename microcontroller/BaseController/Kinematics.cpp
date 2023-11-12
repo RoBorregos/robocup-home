@@ -24,9 +24,10 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 */
-
+//TEST
 #include "Arduino.h"
 #include "Kinematics.h"
+#include "BNO.h"
 
 Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits):
   circumference_(PI * wheel_diameter),
@@ -39,6 +40,9 @@ Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_
 
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
+  //Distance from the center of the robot to the center of the wheels
+  double R = lr_wheels_dist_;
+  
   //convert m/s to m/min
   linear_vel_x_mins_ = linear_x * 60;
   linear_vel_y_mins_ = linear_y * 60;
@@ -46,7 +50,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   //convert rad/s to rad/min
   angular_vel_z_mins_ = angular_z * 60;
 
-  //Vt = ω * radius
+  // //Vt = ω * radius
   tangential_vel_ = angular_vel_z_mins_ * lr_wheels_dist_;
 
   x_rpm_ = linear_vel_x_mins_ / circumference_;
@@ -55,16 +59,17 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
 
   Kinematics::output rpm;
 
-  //calculate for the target motor RPM and direction
-  //front-left motor
-  rpm.motor1 = x_rpm_ - y_rpm_ - tan_rpm_;
-  //rear-left motor
-  rpm.motor3 = x_rpm_ + y_rpm_ - tan_rpm_;
+  //Access BNO current angle
+  float curr_angle_x = bno->getYaw();
 
-  //front-right motor
-  rpm.motor2 = x_rpm_ + y_rpm_ + tan_rpm_;
-  //rear-right motor
-  rpm.motor4 = x_rpm_ - y_rpm_ + tan_rpm_;
+    //front-left motor
+    rpm.motor1 = (-1*sin(135)*x_rpm_ + cos(135)*y_rpm_ + R*curr_angle_x)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+    //rear-left motor
+    rpm.motor3 = (-1*sin(225)*x_rpm_+cos(225)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
+    //front-right motor
+    rpm.motor2 = (-1*sin(45)*x_rpm_+cos(45)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
+    //rear-right motor
+    rpm.motor4 = (-1*sin(315)*x_rpm_+cos(315)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
 
   return rpm;
 }
