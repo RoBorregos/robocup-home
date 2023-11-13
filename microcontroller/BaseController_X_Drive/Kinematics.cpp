@@ -29,14 +29,16 @@
 #include "Kinematics.h"
 #include "BNO.h"
 
-Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits):
+Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits)
+{
   circumference_(PI * wheel_diameter),
   max_rpm_(motor_max_rpm),
   fr_wheels_dist_(fr_wheels_dist),
   lr_wheels_dist_(lr_wheels_dist),
   pwm_res_ (pow(2, pwm_bits) - 1)
-{
+  bno = new BNO();
 }
+
 
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
@@ -60,7 +62,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   Kinematics::output rpm;
 
   //Access BNO current angle
-  float curr_angle_x = Kinematics::bno->getYaw()
+  float curr_angle_x = bno->getYaw()
 /*
      //OLD KINEMATICS
     //front-left motor
