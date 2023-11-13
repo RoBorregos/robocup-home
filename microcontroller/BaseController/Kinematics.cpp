@@ -60,10 +60,25 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   Kinematics::output rpm;
 
   //Access BNO current angle
-  bno->updateBNO();
   float curr_angle_x = bno->getYaw();
-
+  /*
+    //OLD KINEMATICS
     //front-left motor
+    rpm.motor1 = x_rpm_ - y_rpm_ - tan_rpm_;
+    //rear-left motor
+    rpm.motor3 = x_rpm_ + y_rpm_ - tan_rpm_;
+
+    //front-right motor
+    rpm.motor2 = x_rpm_ + y_rpm_ + tan_rpm_;
+    //rear-right motor
+    rpm.motor4 = x_rpm_ - y_rpm_ + tan_rpm_;
+
+
+    */
+
+    --//NEW KINEMATICS//--
+    //front-left motor
+
     rpm.motor1 = (-1*sin(135)*x_rpm_ + cos(135)*y_rpm_ + R*curr_angle_x)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
     //rear-left motor
     rpm.motor3 = (-1*sin(225)*x_rpm_+cos(225)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
@@ -71,7 +86,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
     rpm.motor2 = (-1*sin(45)*x_rpm_+cos(45)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
     //rear-right motor
     rpm.motor4 = (-1*sin(315)*x_rpm_+cos(315)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
-
+  
   return rpm;
 }
 
@@ -87,7 +102,6 @@ Kinematics::output Kinematics::getPWM(float linear_x, float linear_y, float angu
   pwm.motor1 = rpmToPWM(rpm.motor1);
   //rear-left motor
   pwm.motor2 = rpmToPWM(rpm.motor2);
-
   //front-right motor
   pwm.motor3 = rpmToPWM(rpm.motor3);
   //rear-right motor

@@ -146,9 +146,9 @@ class Motor {
     static constexpr double kSecondsInMinute = 60;
     static constexpr double kPidCountTimeSamplesInOneSecond = kOneSecondInMillis/kPidMotorTimeSample;
     static constexpr double kPidCountTimeSamplesInOneMinute = kSecondsInMinute*kPidCountTimeSamplesInOneSecond;
-    static constexpr double kP = 40;
-    static constexpr double kI = 44;
-    static constexpr double kD = 44;
+    static constexpr double kP = 20;
+    static constexpr double kI = 2;
+    static constexpr double kD = 0;
     
 
 };

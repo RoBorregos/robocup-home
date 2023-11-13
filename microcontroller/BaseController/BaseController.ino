@@ -8,7 +8,6 @@ bool ROS_ENABLE = false;
 bool CHECK_PID = true;
 bool CHECK_MOTORS = false;
 bool CHECK_ENCODERS = false;
-float velo = 0;
 
 void setup() {
     
@@ -39,11 +38,11 @@ void loop() {
            Serial2.begin(57600);
         // Check PID
         while(1) {
-            //Plot plot(robot, !ROS_ENABLE);
+            Plot plot(robot, ROS_ENABLE);
             delay(2000);
-            //plot.startSequence();
+            plot.startSequence();
             // List of x Velocities
-            double xVelocities[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7};
+            double xVelocities[] = {0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3};
             long long time = 0.0;
             int i = 0;
             bool sign = false;
@@ -61,14 +60,9 @@ void loop() {
                       sign = true;
                     }
                 }
-                if(Serial.available()){
-                  velo = Serial.parseFloat();
-                  Serial.println(velo);
-                  Serial2.println(velo);
-                  if(velo>0)
-                  robot->cmdVelocity(velo, 0, 0); 
-                }
-                //plot.plotTargetandCurrent();
+     
+                robot->cmdVelocity(xVelocities[i], 0, 0); 
+                plot.plotTargetandCurrent();
             }
         }
     }
@@ -124,14 +118,14 @@ void loop() {
           robot->back_right_motor_.setPidTicks(0);
           robot->front_right_motor_.setPidTicks(0);
           while(millis()-start < 1000) {
-              robot->back_left_motor_.changePwm(255);
-              robot->back_left_motor_.forward();
-              robot->front_left_motor_.changePwm(255);
-              robot->front_left_motor_.forward();
-              robot->back_right_motor_.changePwm(255);
-              robot->back_right_motor_.forward();
-              robot->front_right_motor_.changePwm(255);
-              robot->front_right_motor_.forward();
+              //robot->back_left_motor_.changePwm(255);
+              //robot->back_left_motor_.forward();
+              //robot->front_left_motor_.changePwm(255);
+              //robot->front_left_motor_.forward();
+              //robot->back_right_motor_.changePwm(255);
+              //robot->back_right_motor_.forward();
+              //robot->front_right_motor_.changePwm(255);
+              //robot->front_right_motor_.forward();
           }
           robot->back_left_motor_.changePwm(0);
           robot->back_right_motor_.changePwm(0);

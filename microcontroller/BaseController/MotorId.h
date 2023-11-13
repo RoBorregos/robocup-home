@@ -1,9 +1,9 @@
 #ifndef MotorId_h
 #define MotorId_h
 enum class MotorId{
-    BackLeft = 1,
+    BackLeft = 3,
     FrontLeft = 2,
-    BackRight = 3,
-    FrontRight = 4
+    BackRight = 4,
+    FrontRight = 1
 };
 #endif
