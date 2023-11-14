@@ -24,6 +24,7 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 */
+
 //TEST
 #include "Arduino.h"
 #include "Kinematics.h"
@@ -31,19 +32,19 @@
 
 Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits)
 {
-  circumference_(PI * wheel_diameter),
-  max_rpm_(motor_max_rpm),
-  fr_wheels_dist_(fr_wheels_dist),
-  lr_wheels_dist_(lr_wheels_dist),
-  pwm_res_ (pow(2, pwm_bits) - 1)
-  bno = new BNO();
+  circumference_ = PI * wheel_diameter;
+  max_rpm_ = motor_max_rpm;
+  fr_wheels_dist_ = fr_wheels_dist;
+  lr_wheels_dist_ = lr_wheels_dist;
+  pwm_res_ = pow(2, pwm_bits) - 1;
+  bno = new BNO(/* Constructor parameters for BNO */);
 }
 
 
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
   //Distance from the center of the robot to the center of the wheels
-  R = lr_wheels_dist_;
+  float R = lr_wheels_dist_;
   
   //convert m/s to m/min
   linear_vel_x_mins_ = linear_x * 60;
@@ -62,7 +63,10 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   Kinematics::output rpm;
 
   //Access BNO current angle
-  float curr_angle_x = bno->getYaw()
+  float curr_angle_x = bno -> getYaw();
+  bno->updateBNO();
+  Serial.print("Angle X: ");
+  Serial.println(curr_angle_x);
 /*
      //OLD KINEMATICS
     //front-left motor

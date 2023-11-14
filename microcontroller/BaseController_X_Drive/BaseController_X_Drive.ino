@@ -8,7 +8,6 @@ bool ROS_ENABLE = false;
 bool CHECK_PID = true;
 bool CHECK_MOTORS = false;
 bool CHECK_ENCODERS = false;
-float velo = 0;
 
 void setup() {
     
@@ -24,9 +23,10 @@ void setup() {
     }
     
     BNO bno;
+
+
     Plot plot(robot, ROS_ENABLE);
-    // plot.startSequence();
-    
+    // plot.startSequence();    
     RosBridge bridge(robot, &bno, &plot);
     
     bridge.run();
@@ -39,9 +39,9 @@ void loop() {
            Serial2.begin(57600);
         // Check PID
         while(1) {
-            //Plot plot(robot, !ROS_ENABLE);
+            Plot plot(robot, !ROS_ENABLE);
             delay(2000);
-            //plot.startSequence();
+            plot.startSequence();
             // List of x Velocities
             double xVelocities[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7};
             long long time = 0.0;
@@ -61,17 +61,13 @@ void loop() {
                       sign = true;
                     }
                 }
-                if(Serial.available()){
-                  velo = Serial.parseFloat();
-                  Serial.println(velo);
-                  Serial2.println(velo);
-                  if(velo>0)
-                  robot->cmdVelocity(velo, 0, 0); 
-                }
+
+                  robot->cmdVelocity(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
             }
         }
     }
+    
     if (CHECK_ENCODERS) {
         Serial.begin(9600);
         bool direction = false;

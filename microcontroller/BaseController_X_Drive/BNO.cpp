@@ -6,11 +6,10 @@ BNO::BNO() {
   if (!bno_.begin()) {
     return;
   }
-  
+  Serial.begin(57600);
   bno_.setExtCrystalUse(true);
   sensors_event_t event;
   bno_.getEvent(&event);
-
 }
 
 //////////////////////////////////Calibration//////////////////////////////////////
