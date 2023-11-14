@@ -30,14 +30,13 @@
 #include "Kinematics.h"
 #include "BNO.h"
 
-Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits)
+Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits, BNO& bno_ref) :  bno(bno_ref)
 {
   circumference_ = PI * wheel_diameter;
   max_rpm_ = motor_max_rpm;
   fr_wheels_dist_ = fr_wheels_dist;
   lr_wheels_dist_ = lr_wheels_dist;
   pwm_res_ = pow(2, pwm_bits) - 1;
-  bno = new BNO(/* Constructor parameters for BNO */);
 }
 
 
@@ -45,7 +44,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
 {
   //Distance from the center of the robot to the center of the wheels
   float R = lr_wheels_dist_;
-  
+  this->bno = bno;
   //convert m/s to m/min
   linear_vel_x_mins_ = linear_x * 60;
   linear_vel_y_mins_ = linear_y * 60;
@@ -63,8 +62,9 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   Kinematics::output rpm;
 
   //Access BNO current angle
-  float curr_angle_x = bno -> getYaw();
-  bno->updateBNO();
+  this->bno = bno;
+  float curr_angle_x = bno->getYaw();
+  
   Serial.print("Angle X: ");
   Serial.println(curr_angle_x);
 /*
@@ -126,7 +126,7 @@ Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2)
   float average_rpm_a = (float)(motor2 - motor1) / 2;
   //convert revolutions per minute to revolutions per second
   float average_rps_a = average_rpm_a / 60;
-  vel.angular_z =  (average_rps_a * circumference_) / (lr_wheels_dist_ / 2);
+  vel.angular_z =  (average_rps_a * circumference_) / (lr_wheels_dist_ /  2);
 
   return vel;
 }

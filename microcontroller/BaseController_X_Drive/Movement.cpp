@@ -1,7 +1,7 @@
 #include "Movement.h"
 
 //////////////////////////////////Constructor//////////////////////////////////////
-Movement::Movement() : kinematics_(kRPM, kWheelDiameter, kFrWheelsDist, kLrWheelsDist, kPwmBits) {
+Movement::Movement(BNO *bno) : kinematics_(kRPM, kWheelDiameter, kFrWheelsDist, kLrWheelsDist, kPwmBits) : bno_(bno) {
   back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[0], 
                           kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, 
                           kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
@@ -81,13 +81,12 @@ double constrainDa(double x, double min_, double max_)
 }
 
 //////////////////////////////////PID//////////////////////////////////////
-void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z)
+void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z, BNO *bno)
 {
   double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
-
-  Kinematics::output rpm = kinematics_.getRPM(x, y, z);
+  Kinematics::output rpm = kinematics_.getRPM(x, y, z, *bno);
   updatePIDKinematics(rpm.motor1, rpm.motor2, rpm.motor3, rpm.motor4);
 }
 

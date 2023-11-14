@@ -7,6 +7,7 @@
 #include "Kinematics.h"
 #include <math.h>
 #include <Arduino.h>
+#include "BNO.h"
 
 #include "Motor.h"
 
@@ -62,7 +63,7 @@ class Movement {
     
     //////////////////////////////////PID//////////////////////////////////////
     // Robot linear velocity to rpm per motor. 
-    void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
+    void cmdVelocity(const double linear_x, const double linear_y, const double angular_z, BNO &bno);
     
     // Set motors to velocity. 
     void updatePIDKinematics(double fl_speed, double fr_speed, double bl_speed, double br_speed);

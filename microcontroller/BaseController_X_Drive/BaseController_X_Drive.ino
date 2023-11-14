@@ -22,8 +22,7 @@ void setup() {
         loop();
     }
     
-    BNO bno;
-
+    BNO *bno;
 
     Plot plot(robot, ROS_ENABLE);
     // plot.startSequence();    
@@ -31,6 +30,7 @@ void setup() {
     
     bridge.run();
 }
+
 
 // Used if ROS disabled.
 void loop() {
@@ -47,7 +47,7 @@ void loop() {
             long long time = 0.0;
             int i = 0;
             bool sign = false;
-      
+            
             while(1) {
                 if (millis() - time > 6000) {
                     time = millis();
@@ -56,18 +56,17 @@ void loop() {
                       if (i == 7) {
                           i = 0;
                       }
-                      sign = false;
+                      sign = false;  
                     }else {
                       sign = true;
                     }
                 }
 
-                  robot->cmdVelocity(xVelocities[i], 0, 0); 
+                  robot->cmdVelocity(xVelocities[i], 0, 0, *bno); 
                 //plot.plotTargetandCurrent();
             }
         }
     }
-    
     if (CHECK_ENCODERS) {
         Serial.begin(9600);
         bool direction = false;
