@@ -2,8 +2,8 @@
 #define MotorId_h
 enum class MotorId{
     BackLeft = 3,
-    FrontLeft = 2,
+    FrontLeft = 1,
     BackRight = 4,
-    FrontRight = 1
+    FrontRight = 2
 };
 #endif

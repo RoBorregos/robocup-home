@@ -100,33 +100,22 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
     */
 
     ///////////Test kinematics//////////////////////
-    if(abs(curr_angle_x-target_angle) > 10){
-  
-     //Test primitive corrections or angle disturbances; compensate current angle with a certain rotational velocity and stop when target angle is reached
-     
-     //front-right motor
-      rpm.motor1 = (-1*sin(45)*0 + cos(45)*0 + R*target_v_rot)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
-      //front-left motor
-      rpm.motor2 = (-1*sin(135)*0+cos(135)*0 + R*target_v_rot)/(circumference_/(2*PI));
-      //back-left motor
-      rpm.motor3 = (-1*sin(225)*0+cos(225)*0 + R*target_v_rot)/(circumference_/(2*PI));
-      //back-right motor
-      rpm.motor4 = (-1*sin(315)*0+cos(315)*0 + R*target_v_rot)/(circumference_/(2*PI));
-    }
-
-     else{
-    
     //NEW KINEMATICS
-    
-    //front-left motor
-      rpm.motor1 = (-1*sin()*0 + cos(45)*100 + R*angle_diff)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+      //Hacer caso a esta cosa 
+      //Front left es el motor que está marcado como 2 en el robot y como rpm.motor1 en las funciones
+      //Front right es el motor que est+a marcado como 1 en el robot y como rpm.motor2 en las funciones
+      //Back left es el motor que está marcado como 3 en el robot y como rpm.motor3 en las funciones
+      //Back right es el motor que está marcado como 4 en el robot y como rpm.motor4 en las funciones
+      
       //front-right motor
-      rpm.motor2 = (-1*sin(135)*0+ cos(135)*100 + R*angle_diff)/(circumference_/(2*PI));
+      rpm.motor2 = (-1*sin(PI/4)*x_rpm_ + cos(PI/4)*y_rpm_ + R*1000)/(circumference_ /(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+      //front-left motor
+      rpm.motor1 = 0*(-1*sin(3*PI/4)*x_rpm_+ cos(3*PI/4)*y_rpm_ + R*1000)/(circumference_/(2*PI));
       //back-left motor
-      rpm.motor3 = (-1*sin(225)*0+ cos(225)*100 + R*angle_diff)/(circumference_/(2*PI));
+      rpm.motor3 = 0*(-1*sin(5*PI/4)*x_rpm_+ cos(5*PI/4)*y_rpm_ + R*10000)/(circumference_/(2*PI));
       //back-right motor
-      rpm.motor4 = (-1*sin(315)*0+ cos(315)*100 + R*angle_diff)/(circumference_/(2*PI));
-    }
+      rpm.motor4 = 0*-(-1*sin(7*PI/4)*x_rpm_+ cos(7*PI/4)*y_rpm_ + R*10000)/(circumference_/(2*PI));
+    
     
     ////////////////////////////////////////////////
     //NEW KINEMATICS
