@@ -80,7 +80,6 @@ class Motor {
     // Set the direction of the wheels according to encoders.
     void setEncodersDir(const int encoders_dir);
 
-
     //////////////////////////////////Get Methods//////////////////////////////////////
     // Get the direction of the wheels according to encoders.
     int getEncodersDir();

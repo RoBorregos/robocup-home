@@ -28,7 +28,6 @@
 //TEST
 #include "Arduino.h"
 #include "Kinematics.h"
-#include "BNO.h"
 
 Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits, BNO *bno)
 {
@@ -43,9 +42,31 @@ Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_
 
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
+  target_angle = 45;
+  //Get current angle using BNO Yaw
+  float curr_angle_x = bno->getYaw();
+  float angle_diff = curr_angle_x - past_angle;
   //Distance from the center of the robot to the center of the wheels
   float R = lr_wheels_dist_;
- 
+  float target_v_rot = 100000;;
+  /*
+  if(curr_angle_x-target_angle > 5){
+    target_v_rot = 0.5;
+  }
+  else if(curr_angle_x-target_angle < 5){
+    target_v_rot = -0.5;
+  }
+  else{
+    target_v_rot = 0;
+  }
+
+  if(target_v_rot>angle_diff){
+    
+  }
+  */
+
+
+  
   //convert m/s to m/min
   linear_vel_x_mins_ = linear_x * 60;
   linear_vel_y_mins_ = linear_y * 60;
@@ -62,11 +83,8 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
 
   Kinematics::output rpm;
 
-  //Access BNO current angle
-  float curr_angle_x = bno->getYaw();
-  
   Serial.print("Angle X: ");
-  Serial.println(curr_angle_x);
+  Serial.println(abs(360-curr_angle_x));
 /*
      //OLD KINEMATICS
     //front-left motor
@@ -80,16 +98,53 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
     rpm.motor4 = x_rpm_ - y_rpm_ + tan_rpm_;
 
     */
-    //NEW KINEMATICS
-    //front-left motor
-    rpm.motor1 = (-1*sin(135)*x_rpm_ + cos(135)*y_rpm_ + R*curr_angle_x)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
-    //rear-left motor
-    rpm.motor3 = (-1*sin(225)*x_rpm_+cos(225)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
-    //front-right motor
-    rpm.motor2 = (-1*sin(45)*x_rpm_+cos(45)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
-    //rear-right motor
-    rpm.motor4 = (-1*sin(315)*x_rpm_+cos(315)*y_rpm_+R*curr_angle_x)/(circumference_/(2*PI));
 
+    ///////////Test kinematics//////////////////////
+    if(abs(curr_angle_x-target_angle) > 10){
+  
+     //Test primitive corrections or angle disturbances; compensate current angle with a certain rotational velocity and stop when target angle is reached
+     
+     //front-right motor
+      rpm.motor1 = -(-1*sin(45)*0 + cos(45)*0 + R*target_v_rot)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+      //front-left motor
+      rpm.motor2 = (-1*sin(135)*0+cos(135)*0 + R*target_v_rot)/(circumference_/(2*PI));
+      //back-left motor
+      rpm.motor3 = -(-1*sin(225)*0+cos(225)*0 + R*target_v_rot)/(circumference_/(2*PI));
+      //back-right motor
+      rpm.motor4 = (-1*sin(315)*0+cos(315)*0 + R*target_v_rot)/(circumference_/(2*PI));
+    }
+
+     else{
+    
+    //NEW KINEMATICS
+    
+    //front-left motor
+      rpm.motor1 = (-1*sin(45)*0 + cos(45)*100 + R*angle_diff)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+      //front-right motor
+      rpm.motor2 = (-1*sin(135)*0+ cos(135)*100 + R*angle_diff)/(circumference_/(2*PI));
+      //back-left motor
+      rpm.motor3 = (-1*sin(225)*0+ cos(225)*100 + R*angle_diff)/(circumference_/(2*PI));
+      //back-right motor
+      rpm.motor4 = (-1*sin(315)*0+ cos(315)*100 + R*angle_diff)/(circumference_/(2*PI));
+    }
+    
+    ////////////////////////////////////////////////
+    //NEW KINEMATICS
+    /*
+    //front-left motor
+    rpm.motor1 = (-1*sin(135)*x_rpm_ + cos(135)*y_rpm_ + R*angle_diff)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+    //rear-left motor
+    rpm.motor3 = (-1*sin(225)*x_rpm_+cos(225)*y_rpm_+R*angle_diff)/(circumference_/(2*PI));
+    //front-right motor
+    rpm.motor2 = (-1*sin(45)*x_rpm_+cos(45)*y_rpm_+R*angle_diff)/(circumference_/(2*PI));
+    //rear-right motor
+    rpm.motor4 = (-1*sin(315)*x_rpm_+cos(315)*y_rpm_+R*angle_diff)/(circumference_/(2*PI));
+    */
+    
+    past_angle = curr_angle_x;
+    bno->updateBNO();
+    
+  
   return rpm;
 }
 

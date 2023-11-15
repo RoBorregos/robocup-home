@@ -23,7 +23,7 @@ uint8_t BNO::orientationStatus() {
 void BNO::updateBNO() {
   static long long last_time = 0;
   static sensors_event_t orientationData , angVelocityData, accelerometerData;
-  if (millis() - last_time > 100) {
+  if (millis() - last_time > 10) {
     last_time = millis();
     bno_.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
     bno_.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);

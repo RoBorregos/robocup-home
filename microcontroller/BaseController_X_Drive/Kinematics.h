@@ -67,6 +67,8 @@ class Kinematics
     float fr_wheels_dist_;
     float lr_wheels_dist_;
     float pwm_res_;
+    float past_angle;
+    float target_angle;
     BNO *bno;
 };
 
