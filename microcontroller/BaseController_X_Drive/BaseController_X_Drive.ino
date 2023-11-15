@@ -13,8 +13,8 @@ void setup() {
     
     Serial.begin(57600);
     Serial2.begin(57600);
-
-    Movement initRobot;
+    BNO bnoInstance;
+    Movement initRobot(&bnoInstance);
     robot = &initRobot;
     robot->initEncoders();
 
@@ -22,11 +22,11 @@ void setup() {
         loop();
     }
     
-    BNO *bno;
+
 
     Plot plot(robot, ROS_ENABLE);
     // plot.startSequence();    
-    RosBridge bridge(robot, &bno, &plot);
+    RosBridge bridge(robot, &bnoInstance, &plot);
     
     bridge.run();
 }
@@ -62,7 +62,7 @@ void loop() {
                     }
                 }
 
-                  robot->cmdVelocity(xVelocities[i], 0, 0, *bno); 
+                  robot->cmdVelocity(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
             }
         }

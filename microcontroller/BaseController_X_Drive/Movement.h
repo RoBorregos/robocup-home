@@ -19,7 +19,7 @@ enum class Direction{
 class Movement {
   public:
     //////////////////////////////////Constructor//////////////////////////////////////
-    Movement();
+    Movement(BNO *bno);
 
 
     //////////////////////////////////Motors//////////////////////////////////////
@@ -63,13 +63,12 @@ class Movement {
     
     //////////////////////////////////PID//////////////////////////////////////
     // Robot linear velocity to rpm per motor. 
-    void cmdVelocity(const double linear_x, const double linear_y, const double angular_z, BNO &bno);
+    void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
     
     // Set motors to velocity. 
     void updatePIDKinematics(double fl_speed, double fr_speed, double bl_speed, double br_speed);
 
   private:
-  
     //////////////////////////////////DIRECTIONS//////////////////////////////////////
     // Convert radians to degrees.
     double radiansToDegrees(const double radians);
@@ -107,7 +106,7 @@ class Movement {
 
     // Kinematics.
     Kinematics kinematics_;
-
+    BNO *bno;
     // Velocity.
     double delta_x_ = 0;
     double delta_y_ = 0;
