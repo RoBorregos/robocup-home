@@ -105,11 +105,11 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
      //Test primitive corrections or angle disturbances; compensate current angle with a certain rotational velocity and stop when target angle is reached
      
      //front-right motor
-      rpm.motor1 = -(-1*sin(45)*0 + cos(45)*0 + R*target_v_rot)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+      rpm.motor1 = (-1*sin(45)*0 + cos(45)*0 + R*target_v_rot)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
       //front-left motor
       rpm.motor2 = (-1*sin(135)*0+cos(135)*0 + R*target_v_rot)/(circumference_/(2*PI));
       //back-left motor
-      rpm.motor3 = -(-1*sin(225)*0+cos(225)*0 + R*target_v_rot)/(circumference_/(2*PI));
+      rpm.motor3 = (-1*sin(225)*0+cos(225)*0 + R*target_v_rot)/(circumference_/(2*PI));
       //back-right motor
       rpm.motor4 = (-1*sin(315)*0+cos(315)*0 + R*target_v_rot)/(circumference_/(2*PI));
     }
@@ -119,7 +119,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
     //NEW KINEMATICS
     
     //front-left motor
-      rpm.motor1 = (-1*sin(45)*0 + cos(45)*100 + R*angle_diff)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+      rpm.motor1 = (-1*sin()*0 + cos(45)*100 + R*angle_diff)/(circumference_ / (2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
       //front-right motor
       rpm.motor2 = (-1*sin(135)*0+ cos(135)*100 + R*angle_diff)/(circumference_/(2*PI));
       //back-left motor
