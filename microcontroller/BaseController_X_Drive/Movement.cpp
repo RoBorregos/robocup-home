@@ -81,6 +81,15 @@ double constrainDa(double x, double min_, double max_)
   return max(min_, min(x, max_));
 }
 
+
+///////////////////////////Auxiliar function to test kinematics (Linear + Traslational)///////////////////////
+void Movement::cmdVelocity4Kinematics(const double linear_x, const double linear_y, const double angular_z){
+  double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
+  double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
+  double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
+  Kinematics::output rpm = kinematics_.getRPM(x, y, z);
+}
+
 //////////////////////////////////PID//////////////////////////////////////
 void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z)
 {
@@ -90,6 +99,8 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
   Kinematics::output rpm = kinematics_.getRPM(x, y, z);
   updatePIDKinematics(rpm.motor1, rpm.motor2, rpm.motor3, rpm.motor4);
 }
+
+
 
 void Movement::updatePIDKinematics(double fr_speed, double fl_speed, double bl_speed, double br_speed) {
   front_left_motor_.constantRPM(fr_speed);

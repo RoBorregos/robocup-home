@@ -110,11 +110,11 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
       //front-right motor
       rpm.motor2 = (-1*sin(PI/4)*x_rpm_ + cos(PI/4)*y_rpm_ + R*1000)/(circumference_ /(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
       //front-left motor
-      rpm.motor1 = 0*(-1*sin(3*PI/4)*x_rpm_+ cos(3*PI/4)*y_rpm_ + R*1000)/(circumference_/(2*PI));
+      rpm.motor1 = (-1*sin(3*PI/4)*x_rpm_+ cos(3*PI/4)*y_rpm_ + R*1000)/(circumference_/(2*PI));
       //back-left motor
-      rpm.motor3 = 0*(-1*sin(5*PI/4)*x_rpm_+ cos(5*PI/4)*y_rpm_ + R*10000)/(circumference_/(2*PI));
+      rpm.motor3 = (-1*sin(5*PI/4)*x_rpm_+ cos(5*PI/4)*y_rpm_ + R*10000)/(circumference_/(2*PI));
       //back-right motor
-      rpm.motor4 = 0*-(-1*sin(7*PI/4)*x_rpm_+ cos(7*PI/4)*y_rpm_ + R*10000)/(circumference_/(2*PI));
+      rpm.motor4 = (-1*sin(7*PI/4)*x_rpm_+ cos(7*PI/4)*y_rpm_ + R*10000)/(circumference_/(2*PI));
     
     
     ////////////////////////////////////////////////
