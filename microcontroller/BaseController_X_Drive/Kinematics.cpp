@@ -255,5 +255,5 @@ Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2, int mot
 int Kinematics::rpmToPWM(int rpm)
 {
   //remap scale of target RPM vs MAX_RPM to PWM
-  return (((float) rpm / (float) max_rpm_) * pwm_res_);
+  return (((float) rpm / (float) max_rpm_) * 255);
 }
