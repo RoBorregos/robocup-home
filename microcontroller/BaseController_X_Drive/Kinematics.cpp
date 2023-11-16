@@ -43,7 +43,7 @@ Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
   target_angle = 0;
-  float direction_angle = 0;
+  float direction_angle = 90;
   //Get current angle using BNO Yaw
   float curr_angle_x = bno->getYaw();
   
@@ -123,8 +123,8 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
       
 
       //front-right motor
-
-      if((curr_angle_x < 5+target_angle || curr_angle_x >355)){
+/*
+      if((curr_angle_x-target_angle > 10){
         rpm.motor2 = (-0*sin(1*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(1*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
         //front-left motor
         rpm.motor1 = (-0*sin(3*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(3*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI));
@@ -143,6 +143,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
         rpm.motor4 = (-0*sin(7*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(7*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI));
       }
       else{
+      */
         rpm.motor2 = (-1*sin(1*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + cos(1*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*0)/(circumference_/(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
         //front-left motor
         rpm.motor1 = (-1*sin(3*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + cos(3*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*0)/(circumference_/(2*PI));
@@ -150,7 +151,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
         rpm.motor3 = (-1*sin(5*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + cos(5*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*0)/(circumference_/(2*PI));
         //back-right motor
         rpm.motor4 = (-1*sin(7*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + cos(7*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*0)/(circumference_/(2*PI));
-      }
+      
       Serial.println(rpm.motor1);
       Serial.println(rpm.motor2);
       Serial.println(rpm.motor3);
