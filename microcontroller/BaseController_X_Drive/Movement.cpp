@@ -3,6 +3,10 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Movement::Movement(BNO *bno) : kinematics_(kRPM, kWheelDiameter, kFrWheelsDist, kLrWheelsDist, kPwmBits,  bno)
 { 
+  pidBno = PID(kBnoKP, kBnoKI, kBnoKD, 0, 360, kMaxErrorSum, kPID_time);
+
+  this->bno = bno;
+
   back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[1], 
                           kDigitalPinsBackLeftMotor[0], kAnalogPinBackLeftMotor, 
                           kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
@@ -17,6 +21,7 @@ Movement::Movement(BNO *bno) : kinematics_(kRPM, kWheelDiameter, kFrWheelsDist, 
                             kEncoderPinsFrontRightMotor[0], kEncoderPinsFrontRightMotor[1]);
 }
 
+
 //////////////////////////////////Encoders//////////////////////////////////////
 
 void Movement::initEncoders() {
@@ -24,6 +29,11 @@ void Movement::initEncoders() {
   front_left_motor_.initEncoders();
   back_right_motor_.initEncoders();
   front_right_motor_.initEncoders();
+}
+
+////////////////////////////SET A DESIRED ROBOT ANGLE//////////////////////////////
+void Movement::setRobotAngle(const double angle){
+  robotAngle = angle;
 }
 
 //////////////////////////////////PWM//////////////////////////////////////
@@ -82,19 +92,19 @@ double constrainDa(double x, double min_, double max_)
 }
 
 
-///////////////////////////Auxiliar function to test kinematics (Linear + Traslational)///////////////////////
+///////////////////////////Auxiliar function to test kinematics (Linear + Traslational) with PWM values///////////////////////
 void Movement::cmdVelocityKinematics(const double linear_x, const double linear_y, const double angular_z){
   double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
+
   Kinematics::output pwm = kinematics_.getPWM(x, y, z);
   updatePIDKinematics(pwm.motor1, pwm.motor2, pwm.motor3, pwm.motor4);
 
 }
 
 //////////////////////////////////PID//////////////////////////////////////
-void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z)
-{
+void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z){
   double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
@@ -102,7 +112,29 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
   updatePIDKinematics(rpm.motor1, rpm.motor2, rpm.motor3, rpm.motor4);
 }
 
+//////////////////////////ADJUSTING CMD VELOCITY BASED ON BNO FEEDBACK//////////////////////////
+void Movement::orientedMovement(const double linear_x, const double linear_y, double angular_z){
+  bno->updateBNO();
+  float current_angle = bno->getYaw();
+  
+  if(angular_z != 0){
+      robotAngle = current_angle;
+  }
+  else{
+    float angle_error = fabs(current_angle - robotAngle);
+    if(angle_error > kAngleTolerance){
+      float compensatedAngle = pidBno.compute_dt(robotAngle, current_angle, kPID_time);
+      angular_z = compensatedAngle;
+    }
+  }
 
+  double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
+  double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
+  double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
+  Kinematics::output pwm = kinematics_.getPWM(x, y, z);
+  updatePIDKinematics(pwm.motor1, pwm.motor2, pwm.motor3, pwm.motor4);
+
+}
 
 void Movement::updatePIDKinematics(double fr_speed, double fl_speed, double bl_speed, double br_speed) {
   front_left_motor_.constantRPM(fr_speed);

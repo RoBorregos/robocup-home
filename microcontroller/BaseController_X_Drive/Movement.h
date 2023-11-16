@@ -65,10 +65,14 @@ class Movement {
     // Robot linear velocity to rpm per motor. 
     void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
 
-    void cmdVelocity4Kinematics(const double linear_x, const double linear_y, const double angular_z);
+    void cmdVelocityKinematics(const double linear_x, const double linear_y, const double angular_z);
     
     // Set motors to velocity. 
     void updatePIDKinematics(double fl_speed, double fr_speed, double bl_speed, double br_speed);
+
+    void orientedMovement(const double linear_x, const double linear_y, double angular_z);
+
+    void setRobotAngle(const double angle);
 
   private:
     //////////////////////////////////DIRECTIONS//////////////////////////////////////
@@ -104,14 +108,23 @@ class Movement {
     static constexpr double kLinearYMaxVelocity = kMaxVelocity;
     static constexpr double kAngularZMaxVelocity = kMaxVelocity / kLrWheelsDist;
     static constexpr uint8_t kPwmBits = 8;
+    static constexpr double kBnoKP = 0;
+    static constexpr double kBnoKI = 0;
+    static constexpr double kBnoKD = 0;
+    static constexpr int kPID_time = 4;
+    static constexpr double kMaxErrorSum = 1000;
     long long cycle = 0;
 
     // Kinematics.
     Kinematics kinematics_;
     BNO *bno;
+    PID pidBno;
     // Velocity.
     double delta_x_ = 0;
     double delta_y_ = 0;
     double delta_angular_ = 0;
+    //Angle
+    double robotAngle = 0;
+    static constexpr double kAngleTolerance = 0.5;
 };
 #endif

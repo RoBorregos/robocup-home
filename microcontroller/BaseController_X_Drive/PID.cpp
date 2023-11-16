@@ -84,6 +84,30 @@ void PID::compute(const double error, double &output, const byte flag) {
 
 }
 
+
+
+double PID::compute_dt(const double setpoint, const double input, const double sample_time_) {
+
+
+  if(millis()-time_ < sample_time_) {
+      return;
+  }
+
+  const double error = setpoint - input;
+  float output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
+  
+  error_pre_ = error;
+  error_sum_ += error;
+  
+  error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
+  output = max(out_min_, min(out_max_, output));
+  
+  time_ = millis();
+    
+  return output;
+
+}
+
 //////////////////////////////////Set Methods//////////////////////////////////////
 void PID::setTunings(const double kp,  const double ki , const double kd) {
   kp_ = kp;

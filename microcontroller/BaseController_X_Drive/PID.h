@@ -20,6 +20,8 @@ class PID{
     
     // Computes an output accoriding to the error calculated internally and PID constants.
     void compute(const double setpoint, const double input, double &output);
+
+    double compute_dt(const double setpoint, const double input, const double sample_time_);
     
     // Computes an output accoriding to the error calculated internally and PID constants,
     // also it resets a variable (used with ticks).

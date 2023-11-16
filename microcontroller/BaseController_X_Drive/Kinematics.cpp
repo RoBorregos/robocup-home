@@ -48,7 +48,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   float curr_angle_x = bno->getYaw();
   
   //float curr_angle_x = 0;
-  float angle_diff = curr_angle_x - past_angle;
+ // float angle_diff = curr_angle_x - past_angle;
   //Distance from the center of the robot to the center of the wheels
   float R = lr_wheels_dist_;
   float target_v_rot = 100000;;
@@ -156,7 +156,7 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
       Serial.println(rpm.motor2);
       Serial.println(rpm.motor3);
       Serial.println(rpm.motor4);
-      Serial.println(curr_angle_x);
+     // Serial.println(curr_angle_x);
 
       //float angle_2 = -PI/3; 
 

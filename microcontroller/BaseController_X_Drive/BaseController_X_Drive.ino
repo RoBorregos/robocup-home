@@ -67,7 +67,8 @@ void loop() {
                 //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
                 //robot->cmdVelocity4Kinematics(xVelocities[i], 0, 0); 
                 ///CMDVEL FOR PID
-                robot->cmdVelocity(xVelocities[i], 0, 0); 
+                robot->setRobotAngle(/*Write a desired angle*/ 20);
+                robot->orientedMovement(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
             }
         }
