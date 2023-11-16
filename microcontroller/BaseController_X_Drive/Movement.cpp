@@ -3,11 +3,11 @@
 //////////////////////////////////Constructor//////////////////////////////////////
 Movement::Movement(BNO *bno) : kinematics_(kRPM, kWheelDiameter, kFrWheelsDist, kLrWheelsDist, kPwmBits,  bno)
 { 
-  back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[0], 
-                          kDigitalPinsBackLeftMotor[1], kAnalogPinBackLeftMotor, 
+  back_left_motor_ = Motor(MotorId::BackLeft, kDigitalPinsBackLeftMotor[1], 
+                          kDigitalPinsBackLeftMotor[0], kAnalogPinBackLeftMotor, 
                           kEncoderPinsBackLeftMotor[0], kEncoderPinsBackLeftMotor[1]);
-  front_left_motor_ = Motor(MotorId::FrontLeft, kDigitalPinsFrontLeftMotor[0], 
-                            kDigitalPinsFrontLeftMotor[1], kAnalogPinFrontLeftMotor, 
+  front_left_motor_ = Motor(MotorId::FrontLeft, kDigitalPinsFrontLeftMotor[1], 
+                            kDigitalPinsFrontLeftMotor[0], kAnalogPinFrontLeftMotor, 
                             kEncoderPinsFrontLeftMotor[0], kEncoderPinsFrontLeftMotor[1]);
   back_right_motor_ = Motor(MotorId::BackRight, kDigitalPinsBackRightMotor[0], 
                             kDigitalPinsBackRightMotor[1], kAnalogPinBackRightMotor, 

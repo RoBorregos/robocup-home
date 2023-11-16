@@ -34,6 +34,9 @@ void setup() {
 
 // Used if ROS disabled.
 void loop() {
+
+    
+    
     if (CHECK_PID) {
         Serial.begin(57600);
            Serial2.begin(57600);
@@ -61,8 +64,10 @@ void loop() {
                       sign = true;
                     }
                 }
-
-                  robot->cmdVelocity(xVelocities[i], 0, 0); 
+                //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
+                //robot->cmdVelocity4Kinematics(xVelocities[i], 0, 0); 
+                ///CMDVEL FOR PID
+                robot->cmdVelocity(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
             }
         }
