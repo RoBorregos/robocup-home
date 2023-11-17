@@ -23,10 +23,11 @@ class ArmServer:
         self.HEAD_GROUP = rospy.get_param("HEAD_GROUP", "head")
 
         # ARM GROUP STATES
-        self.ARM_HOME = [0.0, 0.0, 0.0, -1.5708, 1.5708, 0.7854]
+        self.ARM_HOME = rospy.get_param("ARM_HOME", [0.0, 0.0, 0.0, -1.5708, 1.5708, 0.7854] )
         self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, 0, -3.1416 / 4, -2.356]
         self.ARM_NAV = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
         self.ARM_HRI = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
+        self.ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [-1.57, 0, -3.14, 0, 1.8326, 0.7854])
         rospy.init_node('arm_server')
         
         self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
