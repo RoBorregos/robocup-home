@@ -4,6 +4,7 @@
 import rospy
 import actionlib
 import numpy as np
+import math
 import time
 import moveit_commander
 from sensor_msgs.msg import JointState
@@ -47,19 +48,24 @@ class ArmServer:
         if msg.data == True:
             self.stop_arm = True
             self.arm_group.stop()
+        else:
+            self.stop_arm = False
 
     def arm_cb(self, goal):
         rospy.loginfo("Received goal: {}".format(goal))
         init_t = time.time()
         result = MoveArmResult()
+        if self.stop_arm:
+            result.success = False
+            self.arm_as.set_aborted( result )
 
-        if goal.speed == None:
+        if goal.speed == 0:
             goal.speed = 0.15
-        if goal.acceleration == None:
+        if goal.acceleration == 0:
             goal.acceleration = 0.025
-        if goal.position_tolerance == None:
+        if goal.position_tolerance == 0:
             goal.position_tolerance = 0.012
-        if goal.orientation_tolerance == None:
+        if goal.orientation_tolerance == 0:
             goal.orientation_tolerance = 5
 
         self.arm_group.set_max_velocity_scaling_factor(goal.speed)
@@ -67,7 +73,7 @@ class ArmServer:
         self.arm_group.set_goal_position_tolerance(goal.position_tolerance)
         self.arm_group.set_goal_orientation_tolerance( np.deg2rad(goal.orientation_tolerance) )
 
-        if goal.pose_target != None:
+        if goal.pose_target != Pose():
             result.success = self.plan_arm(goal.pose_target, goal.planning_time, goal.planning_attempts)
         
         else:
@@ -81,42 +87,50 @@ class ArmServer:
                 elif(goal.state == "hri"):
                     goal.joints_target = self.ARM_HRI
 
-            result.success = self.move_joints(goal.joints_target, goal.speed)
+            result.success = self.move_joints(goal.joints_target)
 
+        result.execution_time = time.time() - init_t
+        if result.success == False:
+            self.arm_as.set_aborted( result )
+            
         self.arm_as.set_succeeded( result )
 
-    def move_joints(self, joint_values, speed):
+    def move_joints(self, joint_values):
+        feedback = MoveArmFeedback()
         joint_state = JointState()
         joint_state.name = self.ARM_JOINTS
         joint_state.position = joint_values
         # set speed
-        self.set_pose_target(None)
-        self.arm_group.set_max_velocity_scaling_factor(speed)
-        self.arm_group.go(joint_state)
         
-        feedback.execition_state = "Moving"
+        feedback.execution_state = "Moving"
+        feedback.completion_percentage = 0.0
 
         self.arm_as.publish_feedback( feedback )
         t = time.time()
-        group.go()
+        self.arm_group.go(joint_state, wait=False)
         current_joints = self.arm_group.get_current_joint_values()
-        distance = np.sqrt( (joint_values[0] - current_joints[0])**2 + (joint_values[1] - current_joints[1])**2 + (joint_values[2] - current_joints[2])**2 + (joint_values[3] - current_joints[3])**2 + (joint_values[4] - current_joints[4])**2 + (joint_values[5] - current_joints[5])**2 )
+        distance = math.sqrt( (joint_values[0] - current_joints[0])**2 + (joint_values[1] - current_joints[1])**2 + (joint_values[2] - current_joints[2])**2 + (joint_values[3] - current_joints[3])**2 + (joint_values[4] - current_joints[4])**2 + (joint_values[5] - current_joints[5])**2 )
         max_distance = distance
+        print("Max distance: " + str(max_distance))
 
-        while( not self.stop_arm or self.arm_as.is_preempt_requested() or distance > 0.1 ):
+        while( feedback.completion_percentage < 0.98 ):
             if( self.stop_arm or self.arm_as.is_preempt_requested() ):
                 rospy.loginfo("Stopping arm")
                 self.arm_group.stop()
                 self.arm_as.set_preempted()
+                feedback.execution_state = "Stopped"
+                self.arm_as.publish_feedback( feedback )
                 return False
-            current_joints = self.arm_group.get_current_pose().pose
-            distance = np.sqrt( (joint_values[0] - current_joints[0])**2 + (joint_values[1] - current_joints[1])**2 + (joint_values[2] - current_joints[2])**2 + (joint_values[3] - current_joints[3])**2 + (joint_values[4] - current_joints[4])**2 + (joint_values[5] - current_joints[5])**2 )
-            feedback.complete_percentage = 1 - distance / max_distance
+            current_joints = self.arm_group.get_current_joint_values()
+            distance = math.sqrt( (joint_values[0] - current_joints[0])**2 + (joint_values[1] - current_joints[1])**2 + (joint_values[2] - current_joints[2])**2 + (joint_values[3] - current_joints[3])**2 + (joint_values[4] - current_joints[4])**2 + (joint_values[5] - current_joints[5])**2 )
+            feedback.completion_percentage = 1 - distance / max_distance
             self.arm_as.publish_feedback( feedback )
             rospy.sleep(0.1)
 
+
         rospy.loginfo("Execution time: " + str(time.time() - t))
-        self.arm_group.stop()
+        feedback.execution_state = "Finished"
+        self.arm_as.publish_feedback( feedback )
         return True        
 
     def plan_arm(self, pose, p_time, p_attempts):
@@ -131,34 +145,34 @@ class ArmServer:
             self.forget_joint_values()
             self.set_pose_target(pose)
             
-            print("Planning to pose: " + str(pose_st.pose))
-            feedback.execition_state = "Planning"
+            print("Planning to pose: " + str(pose))
+            feedback.execution_state = "Planning"
             self.arm_as.publish_feedback( feedback )
                 
             t = time.time()
-            res = group.plan()
+            res = self.arm_group.plan()
             rospy.loginfo("Planning time: " + str(time.time() - t))
             if res[0] == False:
                 rospy.loginfo("Planning failed")
-                return false
+                return False
 
-        feedback.execition_state = "Moving"
+        feedback.execution_state = "Moving"
         self.arm_as.publish_feedback( feedback )
         t = time.time()
-        group.go()
+        self.arm_group.go(wait=False)
         current_pose = self.arm_group.get_current_pose().pose
-        pose_distance = np.sqrt( (pose.position.x - current_pose.position.x)**2 + (pose.position.y - current_pose.position.y)**2 + (pose.position.z - current_pose.position.z)**2 )
+        pose_distance = math.sqrt( (pose.position.x - current_pose.position.x)**2 + (pose.position.y - current_pose.position.y)**2 + (pose.position.z - current_pose.position.z)**2 )
         max_distance = pose_distance
 
-        while( not self.stop_arm or self.arm_as.is_preempt_requested() or pose_distance > 0.1 ):
+        while( not self.stop_arm and not self.arm_as.is_preempt_requested() and pose_distance > 0.1 ):
             if( self.stop_arm or self.arm_as.is_preempt_requested() ):
                 rospy.loginfo("Stopping arm")
                 self.arm_group.stop()
                 self.arm_as.set_preempted()
                 return False
             current_pose = self.arm_group.get_current_pose().pose
-            pose_distance = np.sqrt( (pose.position.x - current_pose.position.x)**2 + (pose.position.y - current_pose.position.y)**2 + (pose.position.z - current_pose.position.z)**2 )
-            feedback.complete_percentage = 1 - pose_distance / max_distance
+            pose_distance = math.sqrt( (pose.position.x - current_pose.position.x)**2 + (pose.position.y - current_pose.position.y)**2 + (pose.position.z - current_pose.position.z)**2 )
+            feedback.completion_percentage = 1 - pose_distance / max_distance
             self.arm_as.publish_feedback( feedback )
             rospy.sleep(0.1)
 
