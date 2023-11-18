@@ -93,7 +93,7 @@ class ArmServer:
         result.execution_time = time.time() - init_t
         if result.success == False:
             self.arm_as.set_aborted( result )
-            
+
         self.arm_as.set_succeeded( result )
 
     def move_joints(self, joint_values):
@@ -114,7 +114,7 @@ class ArmServer:
         max_distance = distance
         print("Max distance: " + str(max_distance))
 
-        while( feedback.completion_percentage < 0.98 ):
+        while( feedback.completion_percentage < 0.99 ):
             if( self.stop_arm or self.arm_as.is_preempt_requested() ):
                 rospy.loginfo("Stopping arm")
                 self.arm_group.stop()
