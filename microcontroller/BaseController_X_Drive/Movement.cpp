@@ -133,6 +133,10 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
   Kinematics::output pwm = kinematics_.getPWM(x, y, z);
   updatePIDKinematics(pwm.motor1, pwm.motor2, pwm.motor3, pwm.motor4);
+  Serial.print("Back Left Motor PWM: "); Serial.println(back_left_motor_.getPWM());
+  Serial.print("Back Right Motor PWM: "); Serial.println(back_right_motor_.getPWM());
+  Serial.print("Front Left Motor PWM: "); Serial.println(front_left_motor_.getPWM());
+  Serial.print("Front Right Motor PWM: "); Serial.println(front_right_motor_.getPWM());
 
 }
 

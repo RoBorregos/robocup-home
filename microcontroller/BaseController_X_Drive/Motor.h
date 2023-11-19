@@ -137,17 +137,17 @@ class Motor {
     
     // PID.
     PID pid_;
-    static constexpr uint8_t kPidMinOutputLimit = 0;
+    static constexpr uint8_t kPidMinOutputLimit = 51;
     static constexpr uint8_t kPidMaxOutputLimit = 255;
-    static constexpr uint16_t kPidMaxErrorSum = 4000;
+    static constexpr uint16_t kPidMaxErrorSum = 100;
     static constexpr uint8_t kPidMotorTimeSample = 100;
     static constexpr double kOneSecondInMillis = 1000.0;
     static constexpr double kSecondsInMinute = 60;
     static constexpr double kPidCountTimeSamplesInOneSecond = kOneSecondInMillis/kPidMotorTimeSample;
     static constexpr double kPidCountTimeSamplesInOneMinute = kSecondsInMinute*kPidCountTimeSamplesInOneSecond;
-    static constexpr double kP = 45;
-    static constexpr double kI = 55;
-    static constexpr double kD = 40;
+    static constexpr double kP = 70;
+    static constexpr double kI = 0.1;
+    static constexpr double kD = 0;
     
 
 };

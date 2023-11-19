@@ -46,7 +46,7 @@ void loop() {
             delay(2000);
             plot.startSequence();
             // List of x Velocities
-            double xVelocities[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7};
+            double xVelocities[] = {0.7};
             long long time = 0.0;
             int i = 0;
             bool sign = false;
@@ -67,7 +67,6 @@ void loop() {
                 //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
                 //robot->cmdVelocity4Kinematics(xVelocities[i], 0, 0); 
                 ///CMDVEL FOR PID
-                robot->setRobotAngle(/*Write a desired angle*/ 20);
                 robot->orientedMovement(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
             }

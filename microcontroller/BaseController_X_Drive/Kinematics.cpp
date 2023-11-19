@@ -29,8 +29,13 @@
 #include "Arduino.h"
 #include "Kinematics.h"
 
+float direction_angle = 1;
+float VEL_LIN_X = 0;
+float VEL_LIN_Y = 0;
+
 Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits, BNO *bno)
 {
+  //this->motor = motor;
   circumference_ = PI * wheel_diameter;
   max_rpm_ = motor_max_rpm;
   fr_wheels_dist_ = fr_wheels_dist;
@@ -40,18 +45,16 @@ Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_
 }
 
 
+
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
-  target_angle = 0;
-  float direction_angle = 90;
   //Get current angle using BNO Yaw
-  float curr_angle_x = bno->getYaw();
-  
-  //float curr_angle_x = 0;
- // float angle_diff = curr_angle_x - past_angle;
+  float curr_angle_x = abs(360-bno->getYaw());
+  float acc_x = bno->getXAccel();
+  float acc_y = bno->getYAccel();
+  float angle_diff = curr_angle_x - past_angle;
   //Distance from the center of the robot to the center of the wheels
   float R = lr_wheels_dist_;
-  float target_v_rot = 100000;;
   /*
   if(curr_angle_x-target_angle > 5){
     target_v_rot = 0.5;
@@ -111,56 +114,74 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
             
       /*       CORRECTED KINEMATICS 
       //front-right motor
-      rpm.motor2 = (-1*sin(PI/4+curr_angle_x*(PI/180))*0 + cos(PI/4+curr_angle_x*(PI/180))*5 + R*10)/(circumference_ /(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+      rpm.motor2 = (-1*sin(PI/4+curr_angle_x*(PI/180))0 + cos(PI/4+curr_angle_x(PI/180))*5 + R*10)/(circumference_ /(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
       //front-left motor
-      rpm.motor1 = (-1*sin(3*PI/4+curr_angle_x*(PI/180))*0 + cos(3*PI/4+curr_angle_x*(PI/180))*5 + R*10)/(circumference_/(2*PI));
+      rpm.motor1 = (-1*sin(3*PI/4+curr_angle_x*(PI/180))0 + cos(3*PI/4+curr_angle_x(PI/180))*5 + R*10)/(circumference_/(2*PI));
       //back-left motor
-      rpm.motor3 = (-1*sin(5*PI/4+curr_angle_x*(PI/180))*0 + cos(5*PI/4+curr_angle_x*(PI/180))*5 + R*10)/(circumference_/(2*PI));
+      rpm.motor3 = (-1*sin(5*PI/4+curr_angle_x*(PI/180))0 + cos(5*PI/4+curr_angle_x(PI/180))*5 + R*10)/(circumference_/(2*PI));
       //back-right motor
-      rpm.motor4 = (-1*sin(7*PI/4+curr_angle_x*(PI/180))*0 + cos(7*PI/4+curr_angle_x*(PI/180))*5  + R*10)/(circumference_/(2*PI));
+      rpm.motor4 = (-1*sin(7*PI/4+curr_angle_x*(PI/180))0 + cos(7*PI/4+curr_angle_x(PI/180))*5  + R*10)/(circumference_/(2*PI));
       */ 
 
       
 
       //front-right motor
-/*
-      if((curr_angle_x-target_angle > 10){
-        rpm.motor2 = (-0*sin(1*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(1*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
-        //front-left motor
-        rpm.motor1 = (-0*sin(3*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(3*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI));
-        //back-left motor
-        rpm.motor3 = (-0*sin(5*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(5*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI));
-        //back-right motor
-        rpm.motor4 = (-0*sin(7*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(7*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI));
-      }
-      else if((curr_angle_x > 5+target_angle && curr_angle_x < 355)){
-        rpm.motor2 = (-0*sin(1*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(1*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
-        //front-left motor
-        rpm.motor1 = (-0*sin(3*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(3*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI));
-        //back-left motor
-        rpm.motor3 = (-0*sin(5*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(5*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI));
-        //back-right motor
-        rpm.motor4 = (-0*sin(7*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + 0*cos(7*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*10)/(circumference_/(2*PI));
-      }
-      else{
-      */
-        rpm.motor2 = (-1*sin(1*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + cos(1*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*0)/(circumference_/(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
-        //front-left motor
-        rpm.motor1 = (-1*sin(3*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + cos(3*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*0)/(circumference_/(2*PI));
-        //back-left motor
-        rpm.motor3 = (-1*sin(5*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + cos(5*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*0)/(circumference_/(2*PI));
-        //back-right motor
-        rpm.motor4 = (-1*sin(7*PI/4+curr_angle_x*(PI/180))*(5*(cos(PI/180 * (direction_angle)))) + cos(7*PI/4+curr_angle_x*(PI/180))*5*(sin(PI/180 * (direction_angle))) + R*0)/(circumference_/(2*PI));
+
       
-      Serial.println(rpm.motor1);
-      Serial.println(rpm.motor2);
-      Serial.println(rpm.motor3);
-      Serial.println(rpm.motor4);
-     // Serial.println(curr_angle_x);
+        float target_angle = curr_angle_x;
+        direction_angle = direction_angle + 1;
+        //float target_angle = direction_angle;
+        int enable_vel_x = 1;
+        int enable_vel_y = 1;
+        float vel_lin_x = 5;
+        float vel_lin_y = 5;
+        float vel_angular = 2;
+        ///rpm.motor2 = (-1*sin(1*PI/4+0*(PI/180))*(5*(cos(PI/180 * (curr_angle_x)))) + cos(1*PI/4+0*(PI/180))*5*(sin(PI/180 * (curr_angle_x))) + R*0)/(circumference_/(2*PI)); //R*theta is the rotational speed of the robot, which is calculated using R as the distance from the wheels to the center of the robot, and theta as the angular displacement in radians
+        
+        
+        ///////////////////TEST DE TRAYECTORIA CIRCULAR Y ROTACIONAL CON RETROALIMETNACIÖN DEL BNO SIN PID DE VELOCIDAD ANGULAR//////////////////
+        /*
+        if(curr_angle_x > 5 && curr_angle_x < 180){
+          rpm.motor2 = (-1*sin(1*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(1*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*-vel_angular)/(circumference_/(2*PI));
+          rpm.motor1 = (-1*sin(3*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(3*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*-vel_angular)/(circumference_/(2*PI));
+          rpm.motor3 = (-1*sin(5*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(5*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*-vel_angular)/(circumference_/(2*PI));
+          rpm.motor4 = (-1*sin(7*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(7*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*-vel_angular)/(circumference_/(2*PI));    
+        }
+        else if(curr_angle_x >= 180 && curr_angle_x < 355){
+          rpm.motor2 = (-1*sin(1*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(1*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*vel_angular)/(circumference_/(2*PI));
+          rpm.motor1 = (-1*sin(3*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(3*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*vel_angular)/(circumference_/(2*PI));
+          rpm.motor3 = (-1*sin(5*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(5*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*vel_angular)/(circumference_/(2*PI));
+          rpm.motor4 = (-1*sin(7*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(7*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*vel_angular)/(circumference_/(2*PI));      
+        }
+        else{
+          rpm.motor2 = (-1*sin(1*(PI/4))*5*cos(PI/180*(360-target_angle))+cos(1*PI/4)*5*sin(PI/180*(360-target_angle))+R*0)/(circumference_/(2*PI));
+          rpm.motor1 = (-1*sin(3*(PI/4))*5*cos(PI/180*(360-target_angle))+cos(3*PI/4)*5*sin(PI/180*(360-target_angle))+R*0)/(circumference_/(2*PI));
+          rpm.motor3 = (-1*sin(5*(PI/4))*5*cos(PI/180*(360-target_angle))+cos(5*PI/4)*5*sin(PI/180*(360-target_angle))+R*0)/(circumference_/(2*PI));
+          rpm.motor4 = (-1*sin(7*(PI/4))*5*cos(PI/180*(360-target_angle))+cos(7*PI/4)*5*sin(PI/180*(360-target_angle))+R*0)/(circumference_/(2*PI));
+        }
 
+      */  
+      ///////////////////////////////MOVIMIENTO TRASLACIONAL + ROTACIONAL!!!!!!!///////////////////////////////////
+      //int enable_vel_x = 1;
+      //int enable_vel_y = 1;
+      //float vel_lin_x = 5;
+      //float vel_lin_y = 5;
+      //float vel_angular = 5;
+      rpm.motor2 = (-1*sin(1*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(1*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*vel_angular)/(circumference_/(2*PI));
+      rpm.motor1 = (-1*sin(3*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(3*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*vel_angular)/(circumference_/(2*PI));
+      rpm.motor3 = (-1*sin(5*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(5*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*vel_angular)/(circumference_/(2*PI));
+      rpm.motor4 = (-1*sin(7*(PI/4))*enable_vel_x*vel_lin_x*cos(PI/180*(360-target_angle))+cos(7*PI/4)*enable_vel_y*vel_lin_x*sin(PI/180*(360-target_angle))+R*vel_angular)/(circumference_/(2*PI));
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////
+      Serial.println((curr_angle_x));
+      Serial.print("M1: ");
+      Serial.println(float(rpm.motor2));
+      Serial.print("M2: ");
+      Serial.println(float(rpm.motor1));
+      Serial.print("M3: ");
+      Serial.println(float(rpm.motor3));
+      Serial.print("M4: ");
+      Serial.println(float(rpm.motor4));
       //float angle_2 = -PI/3; 
-
-
       /*
       //FRONT RIGHT 
       rpm.motor2 = cos(angle_2-PI/4)*10000; 

@@ -30,6 +30,7 @@
 
 #include "Arduino.h"
 #include "BNO.h"
+#include "Motor.h"
 
 class Kinematics
 {
@@ -71,6 +72,7 @@ class Kinematics
     float past_angle;
     float target_angle;
     BNO *bno;
+    //Motor *motor;
 };
 
 #endif
