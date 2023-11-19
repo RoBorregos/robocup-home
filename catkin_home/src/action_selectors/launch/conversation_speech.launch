@@ -1,15 +1,23 @@
 <launch>
     
     <arg name="DEBUG_WHISPER" default="false"/> <!-- Print messages using rospy.logdebug (execution time) -->
+
     <arg name="USE_WHISPER_OFFLINE" default="true"/> <!-- Use whisper, instead of DeepSpeech -->
     <!-- FORCE_ENGINE: 'online' - Azure, 'offline' - Whisper or DeepSpeech, 'none' - Both Engines [it depends on internet] -->
     <arg name="FORCE_ENGINE" default="offline"/>
     
+    <arg name="DEBUG_USEFUL_AUDIO" default="false"/> <!-- Print messages using rospy.logdebug (voice detections) -->
+    <arg name="USE_SILERO_VAD" default="true"/> <!-- Use Silero VAD, instead of webrtcvad VAD -->
 
     <!-- Devices -->
     <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
-    <!-- <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/> -->
-    <node name="UsefulAudioSileroVAD" pkg="devices" type="UsefulAudioSileroVAD.py" respawn="true" output="screen"/>
+
+        
+        
+    <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen">
+        <param name="debug" value="$(arg DEBUG_USEFUL_AUDIO)"/>
+        <param name="USE_SILERO_VAD" value="$(arg USE_SILERO_VAD)"/>
+    </node>
 
     <!-- <node name="ImageCapturer" pkg="devices" type="ImageCapture.py" respawn="true">
         <param name="RATE" value="15" />
