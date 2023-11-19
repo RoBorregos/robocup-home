@@ -5,9 +5,9 @@
 
 Movement *robot = nullptr;
 bool ROS_ENABLE = false;
-bool CHECK_PID = true;
+bool CHECK_PID = false;
 bool CHECK_MOTORS = false;
-bool CHECK_ENCODERS = false;
+bool CHECK_ENCODERS = true;
 
 void setup() {
     
