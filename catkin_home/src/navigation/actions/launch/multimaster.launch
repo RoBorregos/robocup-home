@@ -1,23 +1,22 @@
 <launch>
-    <!-- Change value to xavier if necessary -->
-    <arg name="jetson" default="nano"/>
-
-    <arg name="ignore_topics_jetson" default="['/*tf*', '/*zed*', '/*xarm*', '/*DASHGO*', '/*move_group*']"/>
-    <arg name="ignore_topics_xavier" default="['/*move_base*', '/*tf*']"/>
-
-    <!-- Define rosparam ignore_topics to ignore_topics_jetson arg if jetson arg == nano -->
-    <rosparam if="$(arg jetson)=='nano'" param="ignore_topics">
-        "$(arg ignore_topics_jetson)"
-    </rosparam>
-
     <!-- Define rosparam ignore_topics to ignore_topics_xavier arg if jetson arg == xavier -->
-    <rosparam if="$(arg jetson)=='xavier'" param="ignore_topics">
-        "$(arg ignore_topics_xavier)"
+    <rosparam param="ignore_topics">
+        ig
     </rosparam>
 
     <node pkg="fkie_master_sync" type="master_sync" name="master_sync">
-        
+        <rosparam>
+            ignore_topics:
+                - '/tf*'
+                - '/zed*'
+                - '/xarm*'
+                - '/DASHGO*'
+                - '/move_group*'
+                - '/move_base*'
+                - '/tf*'
+        <rosparam>
     </node>
+        
 
     <!-- Start the master_discovery node -->
     <node pkg="fkie_master_discovery" type="master_discovery" name="master_discovery"/>
