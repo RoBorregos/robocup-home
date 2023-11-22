@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<launch>
+    <include file="$(find ydlidar)/launch/ydlidar1_up.launch"/>
+    <include file="$(find nav_main)/launch/pc2ls.launch"/>
+    
+  <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger">
+    <param name="destination_frame" value="Base"/>
+    <param name="scan_destination_topic" value="/merged_scan"/>
+    <param name="laserscan_topics" value ="/ylidar/scan /ZED2/scan" />
+  </node>
+
+</launch>

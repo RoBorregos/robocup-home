@@ -7,4 +7,6 @@
 [submodule "catkin_home/src/zed-ros-wrapper"]
 	path = catkin_home/src/zed-ros-wrapper
 	url = https://github.com/stereolabs/zed-ros-wrapper.git
-	
+[submodle "catkin_home/src/ira_laser_tools"]
+	path = catkin_home/src/ira_laser_tools
+	url = https://github.com/iralabdisco/ira_laser_tools.git
