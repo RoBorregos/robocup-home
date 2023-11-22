@@ -258,6 +258,7 @@ COMMAND_TOPIC = "/cm_topic"
 def hri_analysis():
     global user_input, user_input_prev
 
+
     rospy.init_node('hri_analysis', anonymous=True)
     rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, String, callback)
     publisher_commands = rospy.Publisher(COMMAND_TOPIC, list_of_commands, queue_size=10)
