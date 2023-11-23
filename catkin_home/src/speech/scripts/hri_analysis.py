@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import rospy
-#from hri_pkg.msg import human_sentence, options_list
 import openai
 from openai.embeddings_utils import get_embedding, cosine_similarity
 import pandas as pd
@@ -16,6 +15,12 @@ N_OPTIONS = 1
 MINIMAL_SIMILARITY = 0.84 # Minimum similarity percentage in which 2 words are considered the same
 user_input = ""
 user_input_prev = "" # Para comparar la entrada actual y la anterior
+activation_call = ""
+
+ACTIVATION_WORDS = ["teus", "robot"]
+
+RAW_TEXT_INPUT_TOPIC = "/tp1"
+COMMAND_TOPIC = "/cm_topic"
 
 # load embedding dataframes
 actions_df = pd.read_pickle("./src/speech/dataFrames/embeddings_actions.pkl")
@@ -257,16 +262,14 @@ def process_user_input(pub):
 
 # cada vez que se recibe un mensaje en el topic tp1, se ejecuta esta función
 def callback(data):
-    global user_input, user_input_prev
+    global activation_call
 
-    #rospy.loginfo("Recibo: %s" % (data.sentence))
-    user_input = str(data)
+    activation_call = str(data.data)
 
-RAW_TEXT_INPUT_TOPIC = "/tp1"
-COMMAND_TOPIC = "/cm_topic"
+    print("recibido: ", activation_call)
 
 def hri_analysis():
-    global user_input, user_input_prev
+    global activation_call, user_input, user_input_prev
 
     rospy.init_node('hri_analysis', anonymous=True)
     rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, String, callback)
@@ -275,9 +278,14 @@ def hri_analysis():
     rate = rospy.Rate(0.2)
 
     while not rospy.is_shutdown():
-        if user_input != "" and user_input != user_input_prev:
-            user_input_prev = user_input
-            process_user_input(publisher_commands)
+        if activation_call in ACTIVATION_WORDS:
+            # Request user input
+            user_input = input("What do you want me to do?: ")
+            activation_call = ""
+            
+            if user_input != "" and user_input != user_input_prev:
+                user_input_prev = user_input
+                process_user_input(publisher_commands)
 
         rate.sleep()
 
