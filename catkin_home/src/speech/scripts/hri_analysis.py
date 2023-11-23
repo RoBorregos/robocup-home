@@ -19,8 +19,8 @@ activation_call = ""
 
 ACTIVATION_WORDS = ["teus", "robot"]
 
-RAW_TEXT_INPUT_TOPIC = "/tp1"
-COMMAND_TOPIC = "/cm_topic"
+RAW_TEXT_INPUT_TOPIC = "RawInput"
+COMMAND_TOPIC = "/speech/processed_commands"
 
 # load embedding dataframes
 actions_df = pd.read_pickle("./src/speech/dataFrames/embeddings_actions.pkl")
@@ -259,21 +259,26 @@ def process_user_input(pub):
             print ("This action is not posible. Problem with the number of words")
             break
     pub.publish(comands)
+rospy.init_node('hri_analysis', anonymous=True)
 
+publisher_commands = rospy.Publisher(COMMAND_TOPIC, list_of_commands, queue_size=10)
 # cada vez que se recibe un mensaje en el topic tp1, se ejecuta esta función
 def callback(data):
     global activation_call
 
     activation_call = str(data.data)
+    print("recibido: ", activation_call)
+    if user_input != "":
+        process_user_input(publisher_commands)
 
     print("recibido: ", activation_call)
-
+rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, String, callback)
 def hri_analysis():
     global activation_call, user_input, user_input_prev
 
     rospy.init_node('hri_analysis', anonymous=True)
     rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, String, callback)
-    publisher_commands = rospy.Publisher(COMMAND_TOPIC, list_of_commands, queue_size=10)
+    # publisher_commands = rospy.Publisher(COMMAND_TOPIC, list_of_commands, queue_size=10)
 
     rate = rospy.Rate(0.2)
 
@@ -283,15 +288,17 @@ def hri_analysis():
             user_input = input("What do you want me to do?: ")
             activation_call = ""
             
-            if user_input != "" and user_input != user_input_prev:
+            # if user_input != "" and user_input != user_input_prev:
+            if user_input != "":
                 user_input_prev = user_input
                 process_user_input(publisher_commands)
 
         rate.sleep()
 
     rospy.spin()
-    
 if __name__ == '__main__':
-    hri_analysis()
+    # hri_analysis()
+    rospy.loginfo("HRI analysis started")
+    rospy.spin()
 
 
