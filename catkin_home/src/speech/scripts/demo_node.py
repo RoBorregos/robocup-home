@@ -13,7 +13,7 @@ import uuid
 
 COMMANDS_TOPIC = "/speech/processed_commands"
 MAN_SERV_TOPIC = "/manipulation_server"
-TRACKING_TOPIC = "/tracking_server"
+TRACKING_TOPIC = "/toggle_face_detection"
 
 
 class MainEngServer:
