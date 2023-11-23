@@ -6,8 +6,11 @@ from openai.embeddings_utils import get_embedding, cosine_similarity
 import pandas as pd
 from std_msgs.msg import String
 from speech.msg import command, list_of_commands
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 N_OPTIONS = 1
 MINIMAL_SIMILARITY = 0.84 # Minimum similarity percentage in which 2 words are considered the same
@@ -148,7 +151,7 @@ def count_words(input):
 
     return word_count
 
-def process_user_input(pub_mov, pub_grab, pub_put, pub_int, pub):
+def process_user_input(pub):
     global user_input
 
     list_action_taken = list()
@@ -175,8 +178,10 @@ def process_user_input(pub_mov, pub_grab, pub_put, pub_int, pub):
 
             print("It's an introduction action\n")
             # call the introduction function with no complements
-            # mensaje.options = list_complement_taken
-            # pub_int.publish(mensaje)
+            com = command()
+            com.action = "introduce"
+            com.complements = [""]
+            comands.append(com)
 
         elif count_words(item) == 2: # Other actions
             action, complement = item.split() 
@@ -217,29 +222,34 @@ def process_user_input(pub_mov, pub_grab, pub_put, pub_int, pub):
                     com.action = "go"
                     com.complements = list_complement_taken
                     comands.append(com)
-                    # mensaje.options = list_complement_taken
-                    # pub_mov.publish(mensaje)
 
                 elif(action_taken == "find") : 
                     print("It's a movement action")
                     print("La lista de opciones que buscar es: ", list_complement_taken, "\n")
                     # call the movement function with the complement (complement will be a person)
-                    mensaje.options = list_complement_taken
-                    pub_mov.publish(mensaje)
+                    com = command()
+                    com.action = "find"
+                    com.complements = list_complement_taken
+                    comands.append(com)
                     
                 elif(action_taken == "grab"): # manipulation actions
                     print("It's a manipulation action")
                     print("La lista de opciones que agarrar es: ", list_complement_taken, "\n")
                     # call the manipulation function with the complement (complement will be a thing)
-                    mensaje.options = list_complement_taken
-                    pub_grab.publish(mensaje)
+                    com = command()
+                    com.action = "grab"
+                    com.complements = list_complement_taken
+                    comands.append(com)
 
                 elif(action_taken == "put"):
                     print("It's a manipulation action (and movement action??)")
                     print("La lista de opciones a las que ir y dejar algo es: ", list_complement_taken, "\n")
                     # call the manipulation function with the complement (complement will be a thing)
-                    mensaje.options = list_complement_taken
-                    pub_put.publish(mensaje)
+                    com = command()
+                    com.action = "put"
+                    com.complements = list_complement_taken
+                    comands.append(com)
+
         else:
             print ("This action is not posible. Problem with the number of words")
             break
@@ -258,25 +268,16 @@ COMMAND_TOPIC = "/cm_topic"
 def hri_analysis():
     global user_input, user_input_prev
 
-
     rospy.init_node('hri_analysis', anonymous=True)
     rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, String, callback)
     publisher_commands = rospy.Publisher(COMMAND_TOPIC, list_of_commands, queue_size=10)
 
-    # pub_mov = rospy.Publisher("/tp_mov", options_list, queue_size=10)
-    pub_mov = None
-    # pub_grab= rospy.Publisher("/tp_grab", options_list, queue_size=10)
-    pub_grab = None
-    # pub_put = rospy.Publisher("/tp_put", options_list, queue_size=10)
-    pub_put = None
-    # pub_int = rospy.Publisher("/tp_int", options_list, queue_size=10)
-    pub_int = None
     rate = rospy.Rate(0.2)
 
     while not rospy.is_shutdown():
         if user_input != "" and user_input != user_input_prev:
             user_input_prev = user_input
-            process_user_input(pub_mov, pub_grab, pub_put, pub_int,publisher_commands)
+            process_user_input(publisher_commands)
 
         rate.sleep()
 
@@ -285,9 +286,4 @@ def hri_analysis():
 if __name__ == '__main__':
     hri_analysis()
 
-
-'''
-para subir:
-
-'''
 
