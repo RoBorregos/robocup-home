@@ -42,6 +42,8 @@ class MainEngServer:
         # self.nav_client.wait_for_server()
         self.manip_client = actionlib.SimpleActionClient(MAN_SERV_TOPIC, command) #CHANGE THIS
         self.manip_client.wait_for_server()
+        self.manipulation_pub = rospy.Publisher('manipulation/goal', String, queue_size=10)
+        self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
         rospy.loginfo("MainEngServer started")
         self.state = MainEngServer.STATE_ENUM["IDLE"]
         self.tracker_pub = rospy.Publisher(TRACKING_TOPIC, Int32, queue_size=10)
@@ -158,7 +160,17 @@ class MainEngServer:
         rospy.loginfo("Stopping")
 
     def grab(self, value):
+        self.manipulation_pub.publish(value)
+        status = self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
         rospy.loginfo("Grabbing " + value)
+        if status == "True":
+            rospy.loginfo("Grabbed " + value)
+            # self.say(promts["grasp_success"])
+            return True
+        elif status == "False":
+            rospy.loginfo("Failed to grab " + value)
+            # self.say(promts["grasp_fail"])
+            return False
 
     def put(self, value):
         rospy.loginfo("Putting ", value)
