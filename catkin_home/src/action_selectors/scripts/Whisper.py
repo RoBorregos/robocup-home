@@ -160,11 +160,12 @@ def on_audio_callback(data):
     rospy.loginfo("Published whisper result.")
 
 def main():
-    global DEBUG
-    DEBUG = rospy.get_param('~debug', False)
     
     rospy.init_node('Whisper')
     rospy.loginfo("*Starting Whisper Node*")
+
+    global DEBUG
+    DEBUG = rospy.get_param('~debug', False)
 
     global publisher
     publisher = rospy.Publisher('RawInput', RawInput, queue_size=10)
