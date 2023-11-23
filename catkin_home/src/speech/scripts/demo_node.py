@@ -87,6 +87,7 @@ class MainEngServer:
             rospy.logwarn("Unknown command")
 
     def main_eng_command_subscriber(self, commands_input):
+        rospy.loginfo("Received command ", commands_input)
         if not commands_input:
             return MainEngServer.STATE_ENUM["ERROR"]
 
@@ -129,6 +130,7 @@ class MainEngServer:
             # action, value = command.split(" ")
             action = command.action
             value = command.value[1]
+            rospy.loginfo("Action: " + action + " Value: " + value)
             if action == "go":
                 self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
                 self.go(value)
@@ -161,6 +163,7 @@ class MainEngServer:
 
     def grab(self, value):
         self.manipulation_pub.publish(value)
+        rospy.loginfo("Waiting for grab")
         status = self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
         rospy.loginfo("Grabbing " + value)
         if status == "True":

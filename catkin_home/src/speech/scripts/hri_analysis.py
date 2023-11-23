@@ -267,6 +267,7 @@ def callback(data):
     global activation_call
 
     activation_call = str(data.data)
+    print("recibido: ", activation_call)
     if user_input != "":
         process_user_input(publisher_commands)
 
