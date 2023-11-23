@@ -20,7 +20,7 @@ activation_call = ""
 ACTIVATION_WORDS = ["teus", "robot"]
 
 RAW_TEXT_INPUT_TOPIC = "/tp1"
-COMMAND_TOPIC = "/cm_topic"
+COMMAND_TOPIC = "/speech/processed_commands"
 
 # load embedding dataframes
 actions_df = pd.read_pickle("./src/speech/dataFrames/embeddings_actions.pkl")
