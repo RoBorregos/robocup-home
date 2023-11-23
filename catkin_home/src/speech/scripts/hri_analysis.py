@@ -19,7 +19,7 @@ activation_call = ""
 
 ACTIVATION_WORDS = ["teus", "robot"]
 
-RAW_TEXT_INPUT_TOPIC = "/tp1"
+RAW_TEXT_INPUT_TOPIC = "RawInput"
 COMMAND_TOPIC = "/speech/processed_commands"
 
 # load embedding dataframes
