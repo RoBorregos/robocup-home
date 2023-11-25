@@ -101,8 +101,8 @@ class FaceDetection():
             if self.image is not None:
                 center = [self.image.shape[1]/2, self.image.shape[0]/2]
                 frame = self.image
-                # frame = cv2.flip(frame, 0)
-                print('image')
+                frame = cv2.flip(frame, 0)
+                # print('image')
 
                 # Resize frame of video to 1/4 size for faster face recognition processing
                 small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
@@ -113,7 +113,7 @@ class FaceDetection():
 
                 xc = 0
                 yc = 0
-                
+
                 # Check each encoding found
                 face_names = []
                 for face_encoding, location in zip(face_encodings, face_locations):
@@ -215,15 +215,21 @@ class FaceDetection():
 
                 if xc != 0:
                     difx = xc - center[0] 
+                
+                else:
+                    difx = 0
 
                 if yc != 0:
                     dify = center[1] - yc
+                else:
+                    dify = 0
     
                 max_degree = 30
 
                 # print(area)
                 move_x = difx*max_degree/center[0]
                 move_y = dify*max_degree/center[1]
+                print(move_x, ", ",move_y)
 
                 moveMsg = move()
                 
