@@ -23,17 +23,20 @@ pipeline:
   constrain_similarities: true
 - name: FallbackClassifier
   threshold: 0.7
-  ambiguity_threshold: 0.7
+  # ambiguity_threshold: 0.7
 
 policies:
-- name: MemoizationPolicy
+- name: AugmentedMemoizationPolicy
+  # max_history: 3
+  # epochs: 300
 - name: TEDPolicy
+  epochs: 200
   model_confidence: linear_norm
   constrain_similarities: True
 - name: RulePolicy
   core_fallback_threshold: 0.4
   core_fallback_action_name: action_default_fallback
-  enable_fallback_prediction: True
+  enable_fallback_prediction: true
   nlu_threshold: 0.3
   core_threshold: 0.3
-  #fallback_action_name: action_default_fallback
+  fallback_action_name: action_default_fallback

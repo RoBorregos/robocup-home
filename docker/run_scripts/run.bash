@@ -22,7 +22,7 @@ DOCKER_COMMAND="docker run"
 ADDITIONAL_COMMANDS=""
 if [ $# -eq 1 ]; then
     if [ "$1" == "IS_NAVIGATION" ]; then
-        ADDITIONAL_COMMANDS="--device='/dev/ttyUSB0'"
+        ADDITIONAL_COMMANDS="--device='/dev/ttyUSB0'"s
     elif [ "$1" == "IS_OBJECT_DETECTION" ]; then
         ADDITIONAL_COMMANDS="--volume /dev/video0:/dev/video0
             --volume $PWD/object_detection:/object_detection"
@@ -48,8 +48,8 @@ $DOCKER_COMMAND -it -d\
     -v "$PWD/lib:/lib/" \
     -v "$PWD/catkin_home/typings:/catkin_home/typings" \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    --name=ros-home \
-    ros:home \
+    --name=ros-homesp \
+    ros:homesp \
     bash
 
 if [ $# -eq 1 ]; then

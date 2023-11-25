@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>manipulation_server</name>
+  <name>arm_server</name>
   <version>0.0.0</version>
   <description>The manipulation_server package</description>
 
@@ -49,18 +49,58 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>eigen</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>dynamic_reconfigure</build_depend>
   <build_depend>actionlib</build_depend>
-  <build_depend>roscpp</build_depend>
+  <build_depend>actionlib_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>moveit_msgs</build_depend>
   <build_depend>rospy</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>roslib</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_export_depend>actionlib</build_export_depend>
-  <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>rospy</build_export_depend>
-  <build_export_depend>std_msgs</build_export_depend>
+  <build_depend>std_srvs</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>moveit_ros_planning</build_depend>
+  <build_depend>moveit_ros_planning_interface</build_depend>
+  <build_depend>moveit_ros_perception</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf2_eigen</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>laser_geometry</build_depend>
+
+  <exec_depend>dynamic_reconfigure</exec_depend>
   <exec_depend>actionlib</exec_depend>
-  <exec_depend>roscpp</exec_depend>
+  <exec_depend>actionlib_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>moveit_msgs</exec_depend>
+  <exec_depend>moveit_commander</exec_depend>
   <exec_depend>rospy</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>roslib</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend>moveit_core</exec_depend>
+  <exec_depend>moveit_commander</exec_depend>
+  <exec_depend>moveit_fake_controller_manager</exec_depend>
+  <exec_depend>moveit_ros_planning_interface</exec_depend>
+  <exec_depend>moveit_ros_perception</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_eigen</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>laser_geometry</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

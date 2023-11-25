@@ -21,8 +21,8 @@
   
   <link name="apriltag" />
   <joint name="apriltag_joint" type="fixed">
-    <origin xyz="0.03 -0.035 0" rpy="1.57 3.14 1.57" />
-    <parent link="Base_Gripper" />
+    <origin xyz="0.06 0 0.06" rpy="3.14 -1.57 0" />
+    <parent link="BaseBrazo" />
     <child link="apriltag" />
   </joint>
   
@@ -36,7 +36,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://robot_description/meshes/Dashgo/Base.STL" />
+        <mesh filename="package://robot_description/meshes/Dashgo/BaseSinPalo.stl" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -45,7 +45,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://robot_description/meshes/Dashgo/Base_Collisions.STL" />
+        <mesh filename="package://robot_description/meshes/Dashgo/BaseCollisionsSinPalo.stl" />
       </geometry>
     </collision>
   </link>
@@ -316,6 +316,6 @@
   
    
   
-  <xacro:load_camera name="Cam1" attach_to="Base" x="-0.1489890924003532" y="0.012537554524483352" z="1.576021669791469" r_p="-0.023918715399906476" r_r="0.7386447939707235" r_y="-1.5125889208048597" />
+  <xacro:load_camera name="Cam1" attach_to="Base_Gripper" x="0.07" y="-0.05" z="0.0" r_p="-0.785398" r_r="1.5707" r_y="0.0" />
   <xacro:load_camera name="Cam2" attach_to="Base" x="-0.085" y="-0.24" z="0.48" r_r="0.538132" r_p="0" r_y="-1.5708" />
 </robot>

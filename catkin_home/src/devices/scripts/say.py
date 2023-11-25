@@ -18,7 +18,7 @@ class Say(object):
         self.engine.setProperty('voice', 'com.apple.speech.synthesis.voice.samantha')
         self.connected = self.is_connected()
         self.text_suscriber = rospy.Subscriber("robot_text", String, self.callback)
-        self.hear_publisher = rospy.Publisher("inputAudioActive", Bool, queue_size=20)
+        self.hear_publisher = rospy.Publisher("saying", Bool, queue_size=20)
     
     @staticmethod
     def is_connected():
@@ -57,12 +57,13 @@ class Say(object):
         tts = gTTS(text=text, lang='en')
         tts.save("play.mp3")
         self.debug("Saying...")
-        playsound('./play.mp3')
+        playsound('./play.mp3',block=True)
         size_string = len(text.split())
         self.debug("Stopped")
 
     def trySay(self, text):
-        self.hear_publisher.publish(Bool(False))
+        self.hear_publisher.publish(Bool(True))
+        rospy.logwarn("Published: False ")
         self.connectedVoice(text)
         try:
             pass
@@ -70,7 +71,9 @@ class Say(object):
             print(e)
             self.disconnectedVoice(text)
         sleep(1)
-        self.hear_publisher.publish(Bool(True))
+        self.hear_publisher.publish(Bool(False))
+        rospy.logwarn("Published: True ")
+
 
 def main():
     rospy.init_node('say', anonymous=True)

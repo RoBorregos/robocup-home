@@ -3,10 +3,17 @@
 # ----------------------------------------------------------------------
 SHELL := /bin/bash
 
+#: Create virtualenv 
+setup:
+	( \
+			virtualenv -p python3 venv \
+	)
+
+#: Install all in virtualenv
 install:
 	( \
 			source venv/bin/activate; \
-			pip install -r requirements.txt; \
+			pip3 install -r requirements.txt; \
 	)
 #: Train and Create model
 rasa.train:
@@ -26,5 +33,11 @@ rasa.run:
 	( \
 			source venv/bin/activate; \
 			rasa run actions & rasa run --enable-api; \
+	)
+
+rasa.debug:
+	( \
+			source venv/bin/activate; \
+			rasa run actions --debug  & rasa run --debug --enable-api; \
 	)
 	

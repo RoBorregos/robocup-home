@@ -1,0 +1,17 @@
+<launch>
+<!-- Conversation -->
+    <!-- <node name="AudioCapturer" pkg="devices" type="AudioCapturer.py" respawn="true" output="screen"/>
+    <node name="UsefulAudio" pkg="devices" type="UsefulAudio.py" respawn="true" output="screen"/> -->
+
+    <node name="say" pkg="devices" type="say.py" respawn="true" output="screen" />
+    
+    <!-- <arg name="FORCE_ENGINE" default="online"/>
+    <node name="hear" pkg="action_selectors" type="hear.py" respawn="true" output="screen">
+        <param name="FORCE_ENGINE" value="$(arg FORCE_ENGINE)" />
+    </node> -->
+    <!-- <node name="azureSpeechText" pkg="action_selectors" type="AzureSpeechToText" output="screen" if="$(eval arg('FORCE_ENGINE') != 'offline')"/> -->
+
+    <node name="recognizer" pkg="main_engine" type="GPSRRecognition2.py" respawn="true" output="screen"/>
+    <include file="$(find yolov5_ros)/launch/yolov5.launch" />
+
+</launch>

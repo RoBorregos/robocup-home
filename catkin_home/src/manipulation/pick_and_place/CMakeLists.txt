@@ -81,3 +81,7 @@ install(DIRECTORY launch
 add_executable(test_c scripts/test_c.cpp)
 target_link_libraries(test_c ${catkin_LIBRARIES})
 add_dependencies(test_c ${catkin_EXPORTED_TARGETS})
+
+#add_executable(test_place scripts/test_place.cpp)
+#target_link_libraries(test_place ${catkin_LIBRARIES})
+#add_dependencies(test_place ${catkin_EXPORTED_TARGETS})

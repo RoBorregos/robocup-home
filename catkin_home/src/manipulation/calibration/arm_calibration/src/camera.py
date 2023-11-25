@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import rospy
+import actionlib
 from tf import transformations
 from apriltag_ros.msg import AprilTagDetectionArray
 import tf2_ros
@@ -8,6 +9,7 @@ from geometry_msgs.msg import TransformStamped
 import tf2_geometry_msgs
 from geometry_msgs.msg import Point, Quaternion, Pose, PoseStamped
 from std_msgs.msg import Header
+from arm_server.msg import MoveArmAction, MoveArmGoal
 import numpy as np
 import tf
 import moveit_commander
@@ -29,20 +31,26 @@ camera_tag = root.find(".//xacro:load_camera[@name='Cam1']", namespaces={"xacro"
 class CameraPosePublisher:
 
     def __init__(self):
-        self.ARM_GROUP = "arm"
-        self.ARM_JOINTS = ["joint1", "joint2", "joint3", "joint4", "joint5", "joint6"]
         self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, 0, -3.1416 / 4, -2.356]
         self.ARM_HOME = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         rospy.init_node('camera_pose_publisher')
-        
-        self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
+
+        self.move_arm_client = actionlib.SimpleActionClient('/move_arm_as', MoveArmAction)
+        self.move_arm_client.wait_for_server()
 
         # Set up TF listener and broadcaster
         self.listener = tf.TransformListener()
         self.broadcaster = tf.TransformBroadcaster()
         self.publishRotationFixedTransform = True
         
-        self.move_arm(self.ARM_CALIBRATION)
+        self.arm_goal = MoveArmGoal()
+        self.arm_goal.joints_target = self.ARM_CALIBRATION
+        self.arm_goal.speed = 0.2
+
+        self.move_arm_client.send_goal(self.arm_goal)
+        self.move_arm_client.wait_for_result()
+        print( self.move_arm_client.get_result() )
+
         time.sleep(8.5) # Wait for an accurate detection.
         try:
             # Get the transforms between 'base_footprint', 'apriltag', and 'tag_5'
@@ -98,17 +106,12 @@ class CameraPosePublisher:
 
         except (tf.Exception, tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             rospy.logwarn("Failed to get transforms")
-        
-        self.move_arm(self.ARM_HOME)
 
-    def move_arm(self, joint_values):
-        joint_state = JointState()
-        joint_state.name = self.ARM_JOINTS
-        joint_state.position = joint_values
-        # set speed
-        self.arm_group.set_max_velocity_scaling_factor(0.1)
-        self.arm_group.go(joint_state, wait=True)
-        self.arm_group.stop()
+        self.arm_goal.joints_target = self.ARM_HOME 
+        self.move_arm_client.send_goal(self.arm_goal)
+        self.move_arm_client.wait_for_result()
+        print( self.move_arm_client.get_result() )
+
 
     def send_transform(self, trans, rot, detection_trans, detection_rot):
         start = time.time()
