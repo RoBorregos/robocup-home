@@ -26,9 +26,16 @@ class ArmServer:
         self.ARM_HOME = rospy.get_param("ARM_HOME", [0.0, 0.0, 0.0, -1.5708, 1.5708, 0.7854] )
         self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, 0, -3.1416 / 4, -2.356]
         self.ARM_NAV = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
-        self.ARM_HRI = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
         self.ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [-1.57, 0, -3.14, 0, 1.8326, 0.7854])
         self.ARM_HRI = [-1.7498087882995605, -0.3173207640647888, -1.4505505561828613, -0.07692580670118332, -0.3633679747581482, 0.8474539518356323]
+
+        self.defined_states = {
+            "home": self.ARM_HOME,
+            "calibration": self.ARM_CALIBRATION,
+            "nav": self.ARM_NAV,
+            "pregrasp": self.ARM_PREGRASP,
+            "hri": self.ARM_HRI
+        }
 
         rospy.init_node('arm_server')
         
@@ -89,14 +96,8 @@ class ArmServer:
         
         else:
             if goal.state != None:
-                if(goal.state == "home"):
-                    goal.joints_target = self.ARM_HOME
-                elif(goal.state == "calibration"):
-                    goal.joints_target = self.ARM_CALIBRATION
-                elif(goal.state == "nav"):
-                    goal.joints_target = self.ARM_NAV
-                elif(goal.state == "hri"):
-                    goal.joints_target = self.ARM_HRI
+                if goal.state in self.defined_states:
+                    goal.joints_target = self.defined_states[goal.state]
 
             result.success = self.move_joints(goal.joints_target)
 
