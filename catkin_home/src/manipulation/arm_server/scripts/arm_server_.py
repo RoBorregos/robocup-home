@@ -6,7 +6,7 @@ import actionlib
 import numpy as np
 import moveit_commander
 from sensor_msgs.msg import JointState
-from arm_server.msg import MoveArmAction, MoveArmResult, MoveArmFeedback, MoveArmGoal
+from arm_server.msg import MoveArmAction, MoveArmResult, MoveArmFeedback, MoveArmGoal, MoveHRI
 from arm_server.srv import Gripper, GripperResponse
 
 
@@ -22,7 +22,8 @@ class ArmServer:
         self.ARM_HOME = [0.0, 0.0, 0.0, -1.5708, 1.5708, 0.7854]
         self.ARM_CALIBRATION = [-1.57, 0.0, -3.1416 / 4, 0, -3.1416 / 4, -2.356]
         self.ARM_NAV = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
-        self.ARM_HRI = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
+        # self.ARM_HRI = [-1.5708, -1.0472, -1.0472, 1.5708, 0.0, -0.7854]
+        self.ARM_HRI = [-1.7498087882995605, -0.3173207640647888, -1.4505505561828613, -0.07692580670118332, -0.3633679747581482, 0.8474539518356323]
         rospy.init_node('arm_server')
         
         self.arm_group = moveit_commander.MoveGroupCommander(self.ARM_GROUP, wait_for_servers = 0)
@@ -33,8 +34,16 @@ class ArmServer:
             "/move_arm_as", MoveArmAction, execute_cb=self.move_arm_cb, auto_start=False
         )
         self.move_arm_as.start()
+
+        rospy.Subscriber("/move", MoveHRI, self.hri_move)
         self.gripper_server = rospy.Service("/gripper_service", Gripper, self.handle_gripper)
         rospy.spin()
+
+    def hri_move(self, goal):
+        current = self.arm_group.get_current_joint_values()
+        current[0] += goal.x*3.1416/180
+        current[4] += goal.y*3.1416/180
+        self.move_joints(current, 0.2)
 
     def move_arm_cb(self, goal):
         rospy.loginfo("Received goal: {}".format(goal))
