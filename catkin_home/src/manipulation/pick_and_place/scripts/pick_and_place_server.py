@@ -123,6 +123,8 @@ class PickAndPlaceServer(object):
             self.pick_groups[-1].set_goal_position_tolerance(0.01)
 
         self.picked_object_dimensions = [0, 0, 0]
+        self.place_height = 0
+        self.pick_height = 0
 
         rospy.loginfo("Action Server Pick & Place Up!")
 
@@ -269,7 +271,7 @@ class PickAndPlaceServer(object):
                             pose_st.header = grasp.grasp_pose.header
                             pose_st.pose = grasp.grasp_pose.pose
                             self.pose_p.publish(pose_st)
-                            grasp.grasp_pose.pose.position.z += 0.04
+                            grasp.grasp_pose.pose.position.z += 0.045
                             adjust = 0.00
                             if grasp.grasp_pose.pose.position.x > 0.0:
                                 grasp.grasp_pose.pose.position.x -= adjust
@@ -318,7 +320,10 @@ class PickAndPlaceServer(object):
                             else:
                                 grasp.grasp_pose.pose.position.y += adjust
 
-                            grasp.grasp_pose.pose.position.z -= 0.04
+                            grasp.grasp_pose.pose.position.z -= 0.065
+
+                            self.pick_height = grasp.grasp_pose.pose.position.z
+
                             pose_st = PoseStamped()
                             pose_st.header = grasp.grasp_pose.header
                             pose_st.pose = grasp.grasp_pose.pose
@@ -422,6 +427,12 @@ class PickAndPlaceServer(object):
                 height = maxPt.y - minPt.y
                 depth = maxPt.z - minPt.z
                 self.picked_object_dimensions = [width, height, depth]
+
+                # heigh for place
+                self.place_height = depth #option 1
+                self.place_height = self.pick_height #option 2
+
+                rospy.loginfo("Object dimensions: " + str(self.picked_object_dimensions))
                 collision_object = CollisionObject(
                     header = collision_mesh.header,
                     id = "current_box",
@@ -578,7 +589,8 @@ class PickAndPlaceServer(object):
                 pose_st.header = object_pose.header
                 pose_st.pose = object_pose.pose
                 #pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.07
-                pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.15
+                rospy.loginfo("Planning with object added height: " + str(self.place_height))
+                pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.04
                 #pose_st.pose.position.y -= 0.05
                 #face down
                 pose_st.pose.orientation = Quaternion(x=0.000001, y=0.707000, z=0.000001, w=0.707000)

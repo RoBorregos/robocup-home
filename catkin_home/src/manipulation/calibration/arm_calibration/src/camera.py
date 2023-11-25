@@ -35,7 +35,7 @@ class CameraPosePublisher:
         self.ARM_HOME = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         rospy.init_node('camera_pose_publisher')
 
-        self.move_arm_client = actionlib.SimpleActionClient('/move_arm_as', MoveArmAction)
+        self.move_arm_client = actionlib.SimpleActionClient('/arm_as', MoveArmAction)
         self.move_arm_client.wait_for_server()
 
         # Set up TF listener and broadcaster

@@ -88,7 +88,7 @@ add_action_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  std_msgs actionlib_msgs
+  std_msgs actionlib_msgs geometry_msgs moveit_msgs
 )
 
 ################################################

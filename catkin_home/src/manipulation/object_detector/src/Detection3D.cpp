@@ -957,7 +957,7 @@ public:
     //Set parameters for the clustering
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance(0.03); // 3cm
+    ec.setClusterTolerance(0.01); // 3cm
     ec.setMinClusterSize(25);
     ec.setMaxClusterSize(20000);
     ec.setSearchMethod(tree);

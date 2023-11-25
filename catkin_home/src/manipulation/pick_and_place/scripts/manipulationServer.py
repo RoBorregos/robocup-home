@@ -20,7 +20,9 @@ from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Twist 
-from pick_and_place.msg import manipulationServAction, manipulationServGoal, manipulationServResult
+from pick_and_place.msg import manipulationServAction, manipulationServGoal, manipulationServResult, manipulationServFeedback
+from arm_server.msg import MoveArmAction, MoveArmResult, MoveArmFeedback, MoveArmGoal
+from arm_server.srv import Gripper, GripperResponse
 from enum import Enum
 from gpd_ros.srv import detect_grasps_samples
 from gpd_ros.msg import GraspConfigList
@@ -185,6 +187,7 @@ class manipuationServer(object):
         
 
     def execute_cb(self, goal):
+        feedback = manipulationServFeedback()
         target = goal.object_id
 
         if HEAD_ENABLE:
@@ -194,6 +197,11 @@ class manipuationServer(object):
             self._as.set_succeeded(manipulationServResult(result = False))
             return
         
+        # Check if arm is in PREGRASP position, if not, move to it
+        if ARM_ENABLE:
+            current_joints = self.arm_group.get_current_joint_values()
+            if current_joints != self.ARM_PREGRASP:
+                self.moveARM(self.ARM_PREGRASP, 0.25)
 
         # Get Objects:
         rospy.loginfo("Getting objects/position")
