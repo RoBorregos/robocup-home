@@ -106,8 +106,9 @@ class UsefulAudio(object):
 
             if (len(self.audioCollection) < 3):
                 self.audioCollection.append(audio_float32)
+                # print("Collecting audio...")
                 return
-            
+            # rospy.loginfo("Audio collected, running VAD...")
             audio = np.concatenate(self.audioCollection)
             chunk = self.chunkCollection
             self.audioCollection = []
@@ -167,7 +168,7 @@ class UsefulAudio(object):
         if self.inputAudioActive == False:
             self.discardAudio()
             return
-        
+        # rospy.loginfo("UsefulAudio: Received audio data")
         self.vad_collector(data.data)
 
 

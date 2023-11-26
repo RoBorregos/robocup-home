@@ -12,6 +12,7 @@ import moveit_commander
 from std_msgs.msg import Bool
 from std_srvs.srv import SetBool
 from object_detector.msg import DetectObjects3DAction, DetectObjects3DGoal, objectDetectionArray, objectDetection
+from object_detector.msg import GetPlacePositionAction, GetPlacePositionGoal
 from pick_and_place.msg import PickAndPlaceAction, PickAndPlaceGoal
 from geometry_msgs.msg import PoseStamped, Vector3
 from sensor_msgs.msg import JointState
@@ -19,7 +20,9 @@ from actionlib_msgs.msg import *
 from geometry_msgs.msg import Pose, Point, Quaternion
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Twist 
-from pick_and_place.msg import manipulationServAction, manipulationServGoal, manipulationServResult
+from pick_and_place.msg import manipulationServAction, manipulationServGoal, manipulationServResult, manipulationServFeedback
+from arm_server.msg import MoveArmAction, MoveArmResult, MoveArmFeedback, MoveArmGoal
+from arm_server.srv import Gripper, GripperResponse
 from enum import Enum
 from gpd_ros.srv import detect_grasps_samples
 from gpd_ros.msg import GraspConfigList
@@ -96,6 +99,10 @@ class manipuationServer(object):
             self.vision3D_as = actionlib.SimpleActionClient("Detect3D", DetectObjects3DAction)
             self.vision3D_as.wait_for_server()
             rospy.loginfo("Loaded ComputerVision 3D AS...")
+            
+            self.place_vision_as = actionlib.SimpleActionClient("detect3d_place", GetPlacePositionAction)
+            self.place_vision_as.wait_for_server()
+            rospy.loginfo("Loaded Place ComputerVision 3D AS...")
 
         # # Manipulation
         if MANIPULATION_ENABLE:
@@ -110,18 +117,19 @@ class manipuationServer(object):
             self.grasp_config_list = rospy.Publisher("grasp_config_list", GraspConfigList, queue_size=5)
             rospy.wait_for_service('/detect_grasps_server_samples/detect_grasps_samples')
 
-        self.initARM()
+        
         rospy.loginfo("Loaded everything...")
         
         # Initialize Manipulation Action Server
         self._as = actionlib.SimpleActionServer(self._action_name, manipulationServAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
+        self.initARM()
 
         rospy.loginfo("Manipulation Server Initialized ...")
 
     
-    def moveARM(self, joints, speed):
-        if VISION_ENABLE:
+    def moveARM(self, joints, speed, enable_octomap = True):
+        if VISION_ENABLE and enable_octomap:
             self.toggle_octomap(False)
         ARM_JOINTS = rospy.get_param("ARM_JOINTS", ["arm_1_joint", "arm_2_joint", "arm_3_joint", "arm_4_joint", "arm_5_joint", "arm_6_joint", "arm_7_joint"])
         joint_state = JointState()
@@ -136,19 +144,19 @@ class manipuationServer(object):
         self.arm_group.set_num_planning_attempts(10)
         self.arm_group.go(joint_state, wait=True)
         self.arm_group.stop()
-        if VISION_ENABLE:
+        if VISION_ENABLE and enable_octomap:
             self.toggle_octomap(True)
 
     def initARM(self):
         ARM_INIT = rospy.get_param("ARM_INIT", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        self.ARM_PREGRASP = rospy.get_param("ARM_PREGRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
         ARM_HOME = rospy.get_param("ARM_HOME", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        # Move to an easier to plan from location (facing front)
-        self.moveARM(ARM_INIT, 0.1)
+        # Move to a position to look at the objects
+        self.moveARM(self.ARM_PREGRASP, 0.25)
     
     def graspARM(self):
         ARM_GRASP = rospy.get_param("ARM_GRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        self.moveARM(ARM_GRASP, 0.2)
+        self.moveARM(ARM_GRASP, 0.25)
 
     def initHEAD(self):
         HEAD_JOINTS = rospy.get_param("HEAD_JOINTS", ["head_1_joint", "head_2_joint"])
@@ -179,6 +187,7 @@ class manipuationServer(object):
         
 
     def execute_cb(self, goal):
+        feedback = manipulationServFeedback()
         target = goal.object_id
 
         if HEAD_ENABLE:
@@ -187,13 +196,42 @@ class manipuationServer(object):
         if not VISION_ENABLE:
             self._as.set_succeeded(manipulationServResult(result = False))
             return
+        
+        # Check if arm is in PREGRASP position, if not, move to it
+        if ARM_ENABLE:
+            current_joints = self.arm_group.get_current_joint_values()
+            if current_joints != self.ARM_PREGRASP:
+                self.moveARM(self.ARM_PREGRASP, 0.25)
 
         # Get Objects:
-        rospy.loginfo("Getting objects")
+        rospy.loginfo("Getting objects/position")
         self.target_label = ""
-        found = self.get_object(target)
+        found = False
+        if target == -5: #Place action
+            self.moveARM(self.ARM_PREGRASP, 0.25)
+            found = self.get_place_position()
+            if found:
+                self.toggle_octomap(False)
+                rospy.loginfo("Robot Placing " + self.target_label + " down")
+                result = self.place(self.target_pose, "current", allow_contact_with_ = [])
+                if result != 1:
+                    self.toggle_octomap(True)
+                    rospy.loginfo("Place Failed")
+                    self._as.set_succeeded(manipulationServResult(result = False))
+                    return
+                rospy.loginfo("Robot Placed " + self.target_label + " down")
+                self.toggle_octomap(True)
+                ## Move Up
+                self.graspARM()
+                self._as.set_succeeded(manipulationServResult(result = True))
+                return
+            else:
+                rospy.loginfo("Place Failed")
+                return
+        else:
+            found = self.get_object(target)
         if not found:
-            rospy.loginfo("Object Not Found")
+            rospy.loginfo("Not Found")
             self._as.set_succeeded(manipulationServResult(result = False))
             return
         rospy.loginfo("Object Extracted")
@@ -223,6 +261,14 @@ class manipuationServer(object):
             return
 
         # Move to Object
+        self.toggle_octomap(True)
+        octo_joints = self.ARM_PREGRASP.copy() 
+        octo_joints[5] = 1.57
+        self.moveARM(octo_joints, 0.2, False)
+        octo_joints[5] = -1.57
+        self.moveARM(octo_joints, 0.2, False)
+        self.moveARM(self.ARM_PREGRASP, 0.1, False)
+        rospy.sleep(1.5)
         self.toggle_octomap(False)
         self.grasp_config_list.publish(grasping_points)
         rospy.loginfo("Robot Picking " + self.target_label + " up")
@@ -417,6 +463,57 @@ class manipuationServer(object):
         self.object_cloud_indexed = GetObjectsScope.object_cloud_indexed
 
         return GetObjectsScope.success
+    
+    def get_place_position(self):
+        class GetPositionScope:
+            success = False
+            target_pose = []
+            x_plane = 0.0
+            y_plane = 0.0
+            z_plane = 0.0
+            width_plane = 0.0
+            height_plane = 0.0
+            result_received = False
+        
+        def get_position_feedback(feedback_msg):
+            GetPositionScope.objects_found_so_far = feedback_msg.status
+        
+        def get_result_callback(state, result):
+            if result is None:
+                GetPositionScope.success = False
+                GetPositionScope.result_received = True
+                return
+            GetPositionScope.success = result.success
+            GetPositionScope.target_pose = result.target_pose
+            GetPositionScope.x_plane = result.x_plane
+            GetPositionScope.y_plane = result.y_plane
+            GetPositionScope.z_plane = result.z_plane
+            GetPositionScope.width_plane = result.width_plane
+            GetPositionScope.height_plane = result.height_plane
+            GetPositionScope.result_received = True
+
+        goal = GetPlacePositionGoal(plane_min_height = 0.2, plane_max_height = 3.0) # Table
+
+        attempts = 0
+        while attempts < 3:
+            self.place_vision_as.send_goal(
+                goal,
+                feedback_cb=get_position_feedback,
+                done_cb=get_result_callback)
+        
+            start_time = time.time()
+            while not GetPositionScope.result_received:
+                pass
+        
+            if GetPositionScope.success:
+                break
+            attempts += 1
+
+        if not GetPositionScope.success:
+            return False
+
+        self.target_pose = GetPositionScope.target_pose
+        return GetPositionScope.success
 
 if __name__ == '__main__':
     rospy.init_node('manipulationServer')
