@@ -6,10 +6,12 @@ import pandas as pd
 from std_msgs.msg import String
 from speech.msg import command, list_of_commands
 from dotenv import load_dotenv
+from action_selectors.msg import RawInput
 import os
 load_dotenv()
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
+print(f"API: {openai.api_key}")
 
 N_OPTIONS = 1
 MINIMAL_SIMILARITY = 0.84 # Minimum similarity percentage in which 2 words are considered the same
@@ -19,7 +21,7 @@ activation_call = ""
 
 ACTIVATION_WORDS = ["teus", "robot"]
 
-RAW_TEXT_INPUT_TOPIC = "RawInput"
+RAW_TEXT_INPUT_TOPIC = "/RawInput"
 COMMAND_TOPIC = "/speech/processed_commands"
 
 # load embedding dataframes
@@ -49,11 +51,18 @@ def input_fineTuned(petition):
     messages = [context]
 
     # User es el usuario que hace preguntas
+    petition = petition.lower().strip().capitalize()
     messages.append({"role": "user", "content": petition})
-
-    response = openai.ChatCompletion.create(model="ft:gpt-3.5-turbo-0613:personal:teus-bot:8GuXDqp1", messages=messages)
-    response_content = response.choices[0].message.content
-
+    rospy.loginfo("User input: " + petition)
+    print(messages)
+    # response = openai.ChatCompletion.create(model="ft:gpt-3.5-turbo-0613:personal:teus-bot:8OuxCcJf", messages=messages)
+    response = openai.ChatCompletion.create(model="ft:gpt-3.5-turbo-0613:personal:teus-bot-bueno-2:8P5sfSyZ", messages=[
+        {"role": "system", "content": "Command System parser. Filter the command from the input and Parse different commands in the text, separate them in comma separated commands that contain a main verb (go, grab, find, introduce, put) followed by the object or place or person"},
+        {"role": "user", "content": petition}
+    ])
+    # print("Response: ", response, "\n")
+    response_content = response["choices"][0]["message"]["content"]
+    print("Response content: ", response_content, "\n")
     # Assistant es la IA que da la respuesta
     messages.append({"role": "assistant", "content": response_content})
 
@@ -166,9 +175,9 @@ def process_user_input(pub):
 
     #Publicar la lista como mensaje options_list
     # mensaje = options_list()
-
+    rospy.loginfo(f"User input: {user_input}")
     petition = input_fineTuned(user_input) # It uses our fine tuned model of ChatGPT
-
+    print("Petition: ", petition, "\n")
     # split the user_input into smaller sections
     items = petition.split(", ")
     comands = []
@@ -264,32 +273,34 @@ rospy.init_node('hri_analysis', anonymous=True)
 publisher_commands = rospy.Publisher(COMMAND_TOPIC, list_of_commands, queue_size=10)
 # cada vez que se recibe un mensaje en el topic tp1, se ejecuta esta función
 def callback(data):
-    global activation_call
+    global activation_call, user_input
 
-    activation_call = str(data.data)
-    print("recibido: ", activation_call)
+    activation_call = str(data.inputText)
+    user_input = str(data.inputText)
+    print("recibido: ", user_input)
     if user_input != "":
         process_user_input(publisher_commands)
 
-    print("recibido: ", activation_call)
-rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, String, callback)
+    print("recibido: ", user_input)
+rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, RawInput, callback)
+
 def hri_analysis():
     global activation_call, user_input, user_input_prev
 
     rospy.init_node('hri_analysis', anonymous=True)
-    rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, String, callback)
+    rospy.Subscriber(RAW_TEXT_INPUT_TOPIC, RawInput, callback)
     # publisher_commands = rospy.Publisher(COMMAND_TOPIC, list_of_commands, queue_size=10)
 
     rate = rospy.Rate(0.2)
 
     while not rospy.is_shutdown():
-        if activation_call in ACTIVATION_WORDS:
+        if activation_call in ACTIVATION_WORDS or True:
             # Request user input
-            user_input = input("What do you want me to do?: ")
+            #user_input = input("What do you want me to do?: ")
             activation_call = ""
             
-            # if user_input != "" and user_input != user_input_prev:
-            if user_input != "":
+            if user_input != "" and user_input != user_input_prev:
+            #if user_input != "":
                 user_input_prev = user_input
                 process_user_input(publisher_commands)
 

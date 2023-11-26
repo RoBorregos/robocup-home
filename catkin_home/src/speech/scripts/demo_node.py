@@ -5,7 +5,9 @@ from threading import current_thread
 import rospy
 import actionlib
 
-from std_msgs.msg import String, Int32
+from std_msgs.msg import String, Int32, Bool
+
+from arm_server.msg import MoveArmAction, MoveArmGoal
 
 # from main_eng.srv import MainEng, MainEngResponse
 from speech.msg import command, list_of_commands
@@ -14,6 +16,7 @@ import uuid
 COMMANDS_TOPIC = "/speech/processed_commands"
 MAN_SERV_TOPIC = "/manipulation_server"
 TRACKING_TOPIC = "/toggle_face_detection"
+MOVE_ARM_AS = '/move_arm_as'
 
 
 class MainEngServer:
@@ -40,19 +43,37 @@ class MainEngServer:
         rospy.loginfo("Connecting to nav_server")
         # self.nav_client = actionlib.SimpleActionClient('navServer', main_eng.msg.navServAction)
         # self.nav_client.wait_for_server()
-        self.manip_client = actionlib.SimpleActionClient(MAN_SERV_TOPIC, command) #CHANGE THIS
-        self.manip_client.wait_for_server()
+        # self.manip_client = actionlib.SimpleActionClient(MAN_SERV_TOPIC, command) #CHANGE THIS
+        # self.manip_client.wait_for_server()
         self.manipulation_pub = rospy.Publisher('manipulation/goal', String, queue_size=10)
+        
         self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
+        
+        self.move_arm_client = actionlib.SimpleActionClient(MOVE_ARM_AS, MoveArmAction)
+        self.move_arm_client.wait_for_server()
+
+        self.reset_arm()
+
         rospy.loginfo("MainEngServer started")
         self.state = MainEngServer.STATE_ENUM["IDLE"]
-        self.tracker_pub = rospy.Publisher(TRACKING_TOPIC, Int32, queue_size=10)
-        self.tracker_pub.publish(1)
+        self.tracker_pub = rospy.Publisher(TRACKING_TOPIC, Bool, queue_size=10)
+        self.tracker_pub.publish(True)
         self.current_command = None
         self.current_queue = []
         self.current_thread = None
 
         rospy.spin()
+
+    def reset_arm(self):
+        self.arm_goal = MoveArmGoal()
+        self.arm_goal.state = "hri"
+        self.arm_goal.speed = 0.3
+
+        self.move_arm_client.send_goal(self.arm_goal)
+        self.move_arm_client.wait_for_result()
+    
+    def manipulation_callback(self, data):
+        self.manipulation_status = data.data
 
     # def main_eng_server(self, req):
     #     message_input:str = req.message
@@ -87,7 +108,8 @@ class MainEngServer:
             rospy.logwarn("Unknown command")
 
     def main_eng_command_subscriber(self, commands_input):
-        rospy.loginfo("Received command ", commands_input)
+        rospy.loginfo("Received command")
+
         if not commands_input:
             return MainEngServer.STATE_ENUM["ERROR"]
 
@@ -103,7 +125,7 @@ class MainEngServer:
 
         current_thread = uuid.uuid1()
         self.current_thread = current_thread
-        self.tracker_pub.publish(0)
+        self.tracker_pub.publish(False)
         self.state = MainEngServer.STATE_ENUM["RECEIVE_COMMANDS"]
         # self.current_queue = commands_input.data.split(", ")
         self.current_queue = commands_input.commands
@@ -118,39 +140,47 @@ class MainEngServer:
                 self.current_queue = []
                 self.state = MainEngServer.STATE_ENUM["IDLE"]
                 break
-        self.tracker_pub.publish(1)
+        self.reset_arm()
+        self.tracker_pub.publish(True)
         # self.main_eng_command_manager()
 
 
-    def main_eng_command_manager(self, commands: list[command]): 
+    def main_eng_command_manager(self, command): 
         # commands = message_input.split(", ")
-        if not commands or len(commands) == 0:
-            return MainEngServer.STATE_ENUM["ERROR"]
-        for command in commands:
+        # if not commands or len(commands) == 0:
+        #     return MainEngServer.STATE_ENUM["ERROR"]
+        # for command in commands:
             # action, value = command.split(" ")
-            action = command.action
-            value = command.value[1]
-            rospy.loginfo("Action: " + action + " Value: " + value)
-            if action == "go":
-                self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
-                self.go(value)
-            elif action == "stop":
-                self.state = MainEngServer.STATE_ENUM["STOPPING_SERVICES"]
-                self.stop()
-            elif action == "grab":
-                self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
-                self.grab(value)
-            elif action == "put":
-                self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
-                self.go(value)
-                self.put(value)
-            elif action == "introduce":
-                self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
-                self.intro()
-            else:
-                return MainEngServer.STATE_ENUM["ERROR"]
-        
+        action = command.action
+        value = command.complements
+        rospy.loginfo("Action: " + action + " Value: ")
+        if(len(value) == 0):
+            value = None
+            self.state = MainEngServer.STATE_ENUM["ERROR"]
+            return MainEngServer.STATE_ENUM["ERROR"]
+        value = value[0]
+        rospy.loginfo("Action: " + action + " Value: " + value)
+        if action == "go":
+            self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
+            self.go(value)
+        elif action == "stop":
+            self.state = MainEngServer.STATE_ENUM["STOPPING_SERVICES"]
+            self.stop()
+        elif action == "grab":
+            self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
+            self.grab(value)
+        elif action == "put":
+            self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
+            self.go(value)
+            self.put(value)
+        elif action == "introduce":
+            self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
+            self.intro()
+        else:
+            return MainEngServer.STATE_ENUM["ERROR"]
+    
         self.state = MainEngServer.STATE_ENUM["IDLE"]
+
         return MainEngServer.STATE_ENUM["IDLE"]
 
     def go(self, value):
@@ -176,7 +206,11 @@ class MainEngServer:
             return False
 
     def put(self, value):
-        rospy.loginfo("Putting ", value)
+        rospy.loginfo("Putting " + value)
+        if(value == "user"):
+            self.cancel_current_command()
+            self.current_queue = []
+            self.state = MainEngServer.STATE_ENUM["IDLE"]
 
     def intro(self):
         rospy.loginfo("Introducing")

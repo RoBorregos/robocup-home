@@ -32,41 +32,21 @@ def create_actions():
 
 def create_locations():
     locations = [{
-        "location": "bench"
+        "location": "living_room_side_table"
     }, {
-        "location": "hallway_table"
+        "location": "living_room_table"
     }, {
-        "location": "bar"
+        "location": "living_room"
     }, {
-        "location": "sidetable"
+        "location": "kitchen"
     }, {
         "location": "kitchen_table"
     }, {
-        "location": "kitchen_counter"
-    }, {
-        "location": "stove"
-    }, {
-        "location": "bed"
-    }, {
-        "location": "dresser"
-    }, {
-        "location": "sideboard"
-    }, {
-        "location": "bookshelf"
-    }, {
-        "location": "pantry"
-    }, {
-        "location": "cabinet"
-    }, {
-        "location": "dinner_table"
-    }, {
-        "location": "couch_table"
+        "location": "kitchen_side_table"
     }, {
         "location": "outside"
     }, {
-        "location": "trash_bin"
-    }, {
-        "location": "person"
+        "location": "hallway"
     }, {
         "location": "user"
     }]
@@ -82,12 +62,8 @@ def create_locations():
 
 def create_categories_locations():
     categories_locations = [{
-        "category": "seating"
-    }, {
         "category": "table"
-    }, {
-        "category": "utensil"
-    }, {
+    },  {
         "category": "shelf"
     }, {
         "category": "appliance"
@@ -104,9 +80,13 @@ def create_categories_locations():
 
 def create_seatings():
     seatings = [{
-        "location": "bench"
+        "location": "living_room_side_table"
     }, {
-        "location": "bed"
+        "location": "living_room_table"
+    }, {
+        "location": "kitchen_table"
+    }, {
+        "location": "kitchen_side_table"
     }]
    
     seatings_df = pd.DataFrame(seatings)
@@ -122,13 +102,11 @@ def create_tables():
     tables = [{
         "location": "kitchen_table"
     }, {
-        "location": "couch_table"
+        "location": "kitchen_side_table"
     }, {
-        "location": "hallway_table"
+        "location": "living_room_table"
     }, {
-        "location": "dinner_table"
-    }, {
-        "location": "sidetable"
+        "location": "living_room_side_table"
     }]
    
     tables_df = pd.DataFrame(tables)
@@ -142,7 +120,7 @@ def create_tables():
 
 def create_utensils():
     utensils = [{
-        "location": "bar"
+        "location": "kitchen"
     }]
    
     utensils_df = pd.DataFrame(utensils)
@@ -156,17 +134,13 @@ def create_utensils():
 
 def create_shelves():
     shelves = [{
-        "location": "kitchen_counter",
+        "location": "kitchen_table"
     }, {
-        "location": "dresser",
+        "location": "kitchen_side_table"
     }, {
-        "location": "sideboard",
+        "location": "living_room_table"
     }, {
-        "location": "bookshelf",
-    }, {
-        "location": "pantry",
-    }, {
-        "location": "cabinet",
+        "location": "living_room_side_table"
     }]
    
     shelves_df = pd.DataFrame(shelves)
@@ -180,7 +154,7 @@ def create_shelves():
 
 def create_appliance():
     appliance = [{
-        "location": "stove"
+        "location": "kitchen"
     }]
    
     appliance_df = pd.DataFrame(appliance)
@@ -194,52 +168,19 @@ def create_appliance():
 
 def create_items():
     items = [{
-        "item": "deodorant"
+        "item": "apple"
     }, {
-        "item": "tooth_paste"
+        "item": "pringles"
     }, {
-        "item": "cleaner"
-    }, {
-        "item": "fresh_discs"
-    }, {
-        "item": "sponge"
-    }, {
-        "item": "fanta"
-    }, {
-        "item": "beer_can"
-    }, {
-        "item": "coke"
-    }, {
-        "item": "seven_up"
-    }, {
-        "item": "energy_drink"
-    }, {
-        "item": "milk"
-    }, {
-        "item": "apple_juice"
-    }, {
-        "item": "tomato_sauce"
-    }, {
-        "item": "peanut_butter"
-    }, {
-        "item": "chicken_noodles"
-    }, {
-        "item": "mermelade"
-    }, {
-        "item": "veggie_noodles"
-    }, {
-        "item": "garlic_sauce"
-    }, {
-        "item": "chocolate"
-    },  {
         "item": "cookies"
-    },{
-        "item": "orange_juice"
     }, {
-        "item": "drops"
+        "item": "Coke"
     }, {
-        "item": "crackers"
-    }]
+        "item": "Cereal"
+    }, {
+        "item": "Soap"
+    }
+    ]
    
     items_df = pd.DataFrame(items)
     items_df['text_embedding'] = items_df.item.apply(lambda x: get_embedding(x, engine='text-embedding-ada-002'))
@@ -257,8 +198,6 @@ def create_categories_items():
         "category": "drink"
     }, {
         "category": "food"
-    }, {
-        "category": "snack"
     }]
    
     categories_items_df = pd.DataFrame(categories_items)
@@ -272,13 +211,7 @@ def create_categories_items():
 
 def create_cleaning_stuff():
     cleaning_stuff = [{
-        "item": "deodorant",
-    }, {
-        "item": "tooth_paste"
-    }, {
-        "item": "cleaner"
-    }, {
-        "item": "fresh_discs"
+        "item": "soap",
     }]
    
     cleaning_stuff_df = pd.DataFrame(cleaning_stuff)
@@ -292,19 +225,7 @@ def create_cleaning_stuff():
 
 def create_drinks():
     drinks = [{ 
-        "item": "fanta"
-    }, {
-        "item": "beer_can"
-    }, {
         "item": "coke"
-    }, {
-        "item": "seven_up"
-    }, {
-        "item": "energy_drink"
-    }, {
-        "item": "milk"
-    }, {
-        "item": "apple_juice"
     }]
    
     drinks_df = pd.DataFrame(drinks)
@@ -318,17 +239,11 @@ def create_drinks():
 
 def create_foods():
     foods = [{
-        "item": "tomato_sauce"
+        "item": "cereal"
     }, {
-        "item": "peanut_butter"
+        "item": "cookies"
     }, {
-        "item": "chicken_noodles"
-    }, {
-        "item": "mermelade"
-    }, {
-        "item": "veggie_noodles"
-    }, {
-        "item": "garlic_sauce"
+        "item": "apple"
     }]
    
     foods_df = pd.DataFrame(foods)
@@ -342,15 +257,11 @@ def create_foods():
 
 def create_snacks():
     snacks = [{
-        "item": "chocolate"
+        "item": "cereal"
     }, {
         "item": "cookies"
     }, {
-        "item": "orange_juice"
-    }, {
-        "item": "drops"
-    }, {
-        "item": "crackers"
+        "item": "pringles"
     }]
    
     snacks_df = pd.DataFrame(snacks)
