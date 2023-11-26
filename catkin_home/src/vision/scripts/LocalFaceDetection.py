@@ -1,10 +1,5 @@
+
 #!/usr/bin/env python3
-import rospy
-from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
-from sensor_msgs.msg import JointState
-import actionlib
-from arm_server.msg import MoveArmAction, MoveArmGoal
-from vision.msg import img, img_list, move
 import time
 import tf
 
@@ -13,8 +8,6 @@ import numpy as np
 import os
 
 import face_recognition
-from cv_bridge import CvBridge
-from sensor_msgs.msg import Image
 
 CAMERA_TOPIC = '/zed2/zed_node/rgb/image_rect_color'
 
@@ -71,21 +64,12 @@ def process_img(filename):
 class FaceDetection():
 
     def __init__(self):
-        rospy.init_node('face_detection')
-        self.bridge = CvBridge()
         self.image = None
         self.result_img = None
-        self.image_sub = rospy.Subscriber(CAMERA_TOPIC, Image, self.image_callback)
-        self.detection_pub = rospy.Publisher("/detection_results", img_list, queue_size=10)
-        self.move_pub = rospy.Publisher("/hri_move", move, queue_size=1)
-        self.result_pub = rospy.Publisher("/face_detection_result", Image, queue_size=10)        
 
         process_imgs()
 
         self.run()
-
-    def image_callback(self, data):
-        self.image = self.bridge.imgmsg_to_cv2(data, desired_encoding="bgr8")
 
     def run(self):
         process_this_frame = True
@@ -94,21 +78,21 @@ class FaceDetection():
         xc = 0
         yc = 0
         center = [960/2,540/2] #[1920/2, 1080/2]
-        print("ready")
+        cap = cv2.VideoCapture(0)
 
-        while rospy.is_shutdown() == False :
+        while True:
 
             xc = 960/2
             yc = 540/2
 
-            img_arr = img_list()
-            img_arr
-            imgs = []
+            # print("loop")
+            detected_faces = []
 
-            if self.image is not None:
-                center = [self.image.shape[1]/2, self.image.shape[0]/2]
-                frame = self.image
-                frame = cv2.flip(frame, 0)
+            if True:
+                _, frame = cap.read()
+                center = [frame.shape[1]/2, frame.shape[0]/2]
+                cv2.imshow('frame', frame)
+                #frame = cv2.flip(frame, 0)
                 # print('image')
 
                 # Resize frame of video to 1/4 size for faster face recognition processing
@@ -167,15 +151,6 @@ class FaceDetection():
                     bottom *= 4
                     left *= 4
 
-                    imgbb = img()
-                    imgbb.x = int(top)
-                    imgbb.y = int(left)
-                    imgbb.w = int(right - left)
-                    imgbb.h = int(bottom - top)
-                    imgbb.name = str(name)
-     
-
-                    imgs.append(imgbb)
                     area = (right-left)*(bottom-top)
                 
                     if process_this_frame and name[0] == "Unknown" and area > AREA_THRESHOLD:
@@ -217,8 +192,7 @@ class FaceDetection():
                     font = cv2.FONT_HERSHEY_DUPLEX
 
                     cv2.putText(frame, name[0], (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-                    self.result_img = frame
-                    self.result_pub.publish(self.bridge.cv2_to_imgmsg(self.result_img, encoding="bgr8"))
+                    cv2.imshow('img', frame)
             
                 
 
@@ -239,10 +213,6 @@ class FaceDetection():
                 move_x = difx*max_degree/center[0]
                 move_y = dify*max_degree/center[1]
 
-                moveMsg = move()
-                
-                moveMsg.x = int(move_x)
-                moveMsg.y = int(move_y)
 
                 # img_arr = img_list()
 
@@ -260,9 +230,7 @@ class FaceDetection():
 
                 if move_x != 0 or move_y != 0:
                     print(move_x, ", ",move_y)
-                    self.move_pub.publish(moveMsg)
-                    rospy.sleep(3)
-                self.detection_pub.publish(imgs)
+                    #self.move_pub.publish(moveMsg)
 
                 # print(move_x, ", ",move_y)
         # state = self.pick_group.get_current_joint_values()
@@ -276,7 +244,5 @@ class FaceDetection():
 
 
 if __name__ == '__main__':
-    try:
-        FaceDetection()
-    except rospy.ROSInterruptException:
-        pass
+    FaceDetection()
+    cv2.destroyAllWindows()

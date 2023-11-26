@@ -57,10 +57,18 @@ class ArmServer:
         rospy.spin()
 
     def hri_move(self, goal):
+        print("Received goal: " + str(goal))
         current = self.arm_group.get_current_joint_values()
-        current[0] += goal.x*3.1416/180
-        current[4] += goal.y*3.1416/180
-        self.move_joints(current, 0.2)
+        current[0] += goal.x*3.1416/360
+        current[4] += goal.y*3.1416/360
+
+        joint_state = JointState()
+        joint_state.name = self.ARM_JOINTS
+        joint_state.position = current 
+        # set speed
+
+        self.arm_group.stop()
+        self.arm_group.go(joint_state, wait=False)
 
     def stop_arm_cb(self, msg):
         if msg.data == True:
@@ -119,6 +127,7 @@ class ArmServer:
 
         self.arm_as.publish_feedback( feedback )
         t = time.time()
+        self.arm_group.stop()
         self.arm_group.go(joint_state, wait=False)
         current_joints = self.arm_group.get_current_joint_values()
         distance = math.sqrt( (joint_values[0] - current_joints[0])**2 + (joint_values[1] - current_joints[1])**2 + (joint_values[2] - current_joints[2])**2 + (joint_values[3] - current_joints[3])**2 + (joint_values[4] - current_joints[4])**2 + (joint_values[5] - current_joints[5])**2 )
@@ -135,7 +144,10 @@ class ArmServer:
                 return False
             current_joints = self.arm_group.get_current_joint_values()
             distance = math.sqrt( (joint_values[0] - current_joints[0])**2 + (joint_values[1] - current_joints[1])**2 + (joint_values[2] - current_joints[2])**2 + (joint_values[3] - current_joints[3])**2 + (joint_values[4] - current_joints[4])**2 + (joint_values[5] - current_joints[5])**2 )
-            feedback.completion_percentage = 1 - distance / max_distance
+            try:
+                feedback.completion_percentage = 1 - distance / max_distance
+            except:
+                feedback.completion_percentage = 1
             self.arm_as.publish_feedback( feedback )
             rospy.sleep(0.1)
 
@@ -184,7 +196,10 @@ class ArmServer:
                 return False
             current_pose = self.arm_group.get_current_pose().pose
             pose_distance = math.sqrt( (pose.position.x - current_pose.position.x)**2 + (pose.position.y - current_pose.position.y)**2 + (pose.position.z - current_pose.position.z)**2 )
-            feedback.completion_percentage = 1 - pose_distance / max_distance
+            try:
+                feedback.completion_percentage = 1 - pose_distance / max_distance
+            except:
+                feedback.completion_percentage = 1
             self.arm_as.publish_feedback( feedback )
             rospy.sleep(0.1)
 
