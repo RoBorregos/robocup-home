@@ -18,7 +18,7 @@ from pick_and_place.msg import PickAndPlaceAction, PickAndPlaceGoal, PickAndPlac
 from moveit_msgs.srv import ApplyPlanningScene, GetPlanningScene, GetPlanningSceneRequest, GetPlanningSceneResponse
 from moveit_msgs.msg import PlanningScene, CollisionObject, AttachedCollisionObject
 from std_srvs.srv import Empty, EmptyRequest
-from std_msgs.msg import Header
+from std_msgs.msg import Header, Float64
 from gpd_ros.msg import GraspConfig, GraspConfigList
 from sensor_msgs.msg import JointState
 from visualization_msgs.msg import Marker
@@ -125,6 +125,8 @@ class PickAndPlaceServer(object):
         self.picked_object_dimensions = [.15, .15, .15]
         self.place_height = .15
         self.pick_height = 0
+
+        self.pub_pick_width = rospy.Publisher("/pick_width", Float64, queue_size=1)
 
         rospy.loginfo("Action Server Pick & Place Up!")
 
@@ -431,6 +433,7 @@ class PickAndPlaceServer(object):
                 # heigh for place
                 self.place_height = depth #option 1
                 self.place_height = self.pick_height #option 2
+                self.pub_pick_width.publish(width)
 
                 rospy.loginfo("Object dimensions: " + str(self.picked_object_dimensions))
                 collision_object = CollisionObject(
@@ -590,7 +593,7 @@ class PickAndPlaceServer(object):
                 pose_st.pose = object_pose.pose
                 #pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.07
                 rospy.loginfo("Planning with object added height: " + str(self.place_height))
-                pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.04
+                pose_st.pose.position.z += self.place_height + 0.07
                 #pose_st.pose.position.y -= 0.05
                 #face down
                 pose_st.pose.orientation = Quaternion(x=0.000001, y=0.707000, z=0.000001, w=0.707000)
