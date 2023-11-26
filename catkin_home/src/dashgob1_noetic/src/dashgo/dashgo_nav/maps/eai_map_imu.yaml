@@ -1,17 +1,17 @@
-image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/eai_map_imu.pgm
+image: /home/jetson/robocup-home/catkin_home/src/dashgob1_noetic/src/dashgo/dashgo_nav/maps/eai_map.pgm
 resolution: 0.050000
 origin: [-1.000000, -15.400000, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196
 
-image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/003.pgm
+image: /home/jetson/robocup-home/catkin_home/src/dashgob1_noetic/src/dashgo/dashgo_nav/maps/003.pgm
 resolution: 0.050000
 origin: [-8.8, -13.6, 0.000000]
 negate: 0
 occupied_thresh: 0.65
 free_thresh: 0.196
-image: /home/eaibot/dashgo_ws/src/dashgo/dashgo_nav/maps/003.pgm
+image: /home/jetson/robocup-home/catkin_home/src/dashgob1_noetic/src/dashgo/dashgo_nav/maps/003.pgm
 resolution: 0.050000
 origin: [-8.8, -13.6, 0.000000]
 negate: 0

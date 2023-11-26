@@ -10,6 +10,6 @@
       <arg name="base_local_planner" value="teb"/>
     </include> -->
     <!-- launches rviz and map server for map visulalization -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nav_main)/rviz/map_tagging.rviz"/>
-    <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find nav_main)/maps/HomeArea.pgm 0.050000" />
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find nav_main)/rviz/map_tagging.rviz"/> -->
+    <node name="map_server" pkg="map_server" type="map_server" output="screen" args="$(find nav_main)/maps/HOME_TDP.pgm 0.050000" />
 </launch>

@@ -29,22 +29,22 @@ class TestCoordinates:
         self.mydict={
             "InitialTest": {
                 "init test": [
-                    2.6299734115600586,
-                    -0.10960462689399719,
-                    -0.5,
-                    -8.254708028232471e-09,
-                    -2.1868577781969378e-10,
-                    -0.07377319037914276,
-                    0.9972749948501587
+                    2.5315836906433105,
+                    -0.24596719443798065,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.6757392883300781,
+                    0.7371407151222229
                 ],
                 "exit": [
-                    8.723433494567871,
-                    2.021120071411133,
-                    -0.5000004768371582,
-                    4.5378664714768036e-10,
-                    1.5775847295174117e-10,
-                    -0.012980472296476364,
-                    0.9999157190322876
+                    1.0586,
+                    1.35,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.71006,
+                    0.7041415162845805
                 ]
             }
         }
@@ -96,7 +96,8 @@ class DoorDetector:
 
         self.firstIteration = True
         # Subscribe to the LiDAR data topic
-        rospy.Subscriber('/scan', LaserScan, self.lidar_callback)
+        # rospy.Subscriber('/scan', LaserScan, self.lidar_callback)
+        rospy.Subscriber('/scan_filtered', LaserScan, self.lidar_callback)
 
         # Create a publisher for the movement command topic
         self.cmd_pub = rospy.Publisher('/move_command', String, queue_size=10)
@@ -135,7 +136,7 @@ if __name__ == '__main__':
     follow = TestCoordinates()
     detector = DoorDetector()
     try:
-        while not rospy.is_shutdown():
+        if not rospy.is_shutdown():
             if detector.run():
                 follow.move_goal()
                 rate.sleep()

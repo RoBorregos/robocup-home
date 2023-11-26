@@ -2,7 +2,7 @@
   <include file="$(find dashgo_driver)/launch/driver.launch"/>
   <include file="$(find ydlidar)/launch/ydlidar1_up.launch"/>
   <include file="$(find dashgo_description)/launch/dashgo_description.launch"/>
-  <arg name="map_file" default="$(find dashgo_nav)/maps/eai_map.yaml"/>
+  <arg name="map_file" default="/home/jetson/robocup-home/catkin_home/src/dashgob1_noetic/src/dashgo/dashgo_nav/maps/eai_map.yml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
   <arg name="initial_pose_x" default="0.0"/> 
   <arg name="initial_pose_y" default="0.0"/> 

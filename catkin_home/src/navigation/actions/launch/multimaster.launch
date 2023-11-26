@@ -1,0 +1,17 @@
+<launch>
+    <node pkg="fkie_master_sync" type="master_sync" name="master_sync">
+        <rosparam>
+            ignore_topics:
+                - '/tf*'
+                - '/zed*'
+                - '/xarm*'
+                - '/DASHGO*'
+                - '/move_group*'
+                - '/move_base*'
+                - '/tf*'
+        </rosparam>
+    </node>
+
+    <!-- Start the master_discovery node -->
+    <node pkg="fkie_master_discovery" type="master_discovery" name="master_discovery"/>
+</launch>

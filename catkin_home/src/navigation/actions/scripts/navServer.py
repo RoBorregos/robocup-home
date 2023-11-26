@@ -24,6 +24,7 @@ placesPoses = {
  "CLOSET": Pose(Point(x=-1.9308, y=2.7578, z=0.0), Quaternion(x=0.0, y=0.0, z=-0.6844, w=0.729)),
  "COUCH": Pose(Point(x=0.0496, y=0.1873, z=0.0), Quaternion(x=0.0, y=0.0, z=0.0299, w=0.999)),
  "KITCHEN": Pose(Point(x=-1.256, y=1.5809, z=0.0), Quaternion(x=0.0, y=0.0, z=-0.9992, w=0.0392)),
+ "HOME": Pose(Point(x=-4.344, y=0.579, z=0.0), Quaternion(x=0.0, y=0.0, z=0.679, w=0.733)),
 }
 
 class navigationServer(object):
