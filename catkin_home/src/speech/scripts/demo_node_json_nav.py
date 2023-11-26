@@ -79,10 +79,10 @@ class MainEngServer:
         
         self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
         
-        self.move_arm_client = actionlib.SimpleActionClient(MOVE_ARM_AS, MoveArmAction)
-        self.move_arm_client.wait_for_server()
+        #self.move_arm_client = actionlib.SimpleActionClient(MOVE_ARM_AS, MoveArmAction)
+        #self.move_arm_client.wait_for_server()
 
-        self.reset_arm()
+        #self.reset_arm()
 
         rospy.loginfo("MainEngServer started")
         self.state = MainEngServer.STATE_ENUM["IDLE"]
@@ -99,8 +99,8 @@ class MainEngServer:
         self.arm_goal.state = "hri"
         self.arm_goal.speed = 0.3
 
-        self.move_arm_client.send_goal(self.arm_goal)
-        self.move_arm_client.wait_for_result()
+        #self.move_arm_client.send_goal(self.arm_goal)
+        #self.move_arm_client.wait_for_result()
     
     def manipulation_callback(self, data):
         self.manipulation_status = data.data
@@ -148,7 +148,7 @@ class MainEngServer:
 
         if self.state != MainEngServer.STATE_ENUM["IDLE"]:
             rospy.logwarn("Received command while not in IDLE state, cancelling current commands")
-            return MainEngServer.STATE_ENUM["ERROR"]
+            #return MainEngServer.STATE_ENUM["ERROR"]
             self.current_queue = []
             self.cancel_current_command()
             self.state = MainEngServer.STATE_ENUM["IDLE"]
@@ -219,6 +219,16 @@ class MainEngServer:
         rospy.loginfo("Arrived at " + value)
 
     def go_to_location(self, location):
+        KEY_DICT = {
+            "outside" : "outside_safe",
+            "living_room": "living_room_safe",
+            "living_room_table": "living_room_table",
+            "living_room_side_table": "living_room_side_table",
+            "kitchen_table": "kitchen_table",
+            "kitchen_side_table": "kitchen_side_table",
+            "hallway": "hallway_safe_out"
+        }
+        location = KEY_DICT[location]
         for key in self.nav_json:
             if key.lower() == location.lower():
                 rospy.logwarn(f"Sending location: {location}")
@@ -272,6 +282,7 @@ class MainEngServer:
         if(value == "user"):
             self.cancel_current_command()
             self.current_queue = []
+            self.move_base_client.cancel_all_goals()
             self.state = MainEngServer.STATE_ENUM["IDLE"]
 
     def intro(self):
