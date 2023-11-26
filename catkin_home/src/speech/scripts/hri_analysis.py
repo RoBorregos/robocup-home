@@ -225,6 +225,7 @@ def process_user_input(pub):
             # If no similarity is found, it will mean that this statement cannot be done
             if not action_taken or not list_complement_taken:
                 print ("This action is not posible")
+                return
                 break
             else: # call the specific funtion
                 
@@ -266,6 +267,7 @@ def process_user_input(pub):
 
         else:
             print ("This action is not posible. Problem with the number of words")
+            return
             break
     pub.publish(comands)
 rospy.init_node('hri_analysis', anonymous=True)
@@ -278,7 +280,8 @@ def callback(data):
     activation_call = str(data.inputText)
     user_input = str(data.inputText)
     print("recibido: ", user_input)
-    if user_input != "":
+    if user_input != "" and ("assistant" in user_input or "Assistant" in user_input):
+        # user_input = user_input.split("assistant")[1]
         process_user_input(publisher_commands)
 
     print("recibido: ", user_input)

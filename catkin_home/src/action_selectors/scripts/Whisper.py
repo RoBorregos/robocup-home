@@ -17,6 +17,7 @@ import tempfile
 import torch
 import pyaudio
 import os
+import uuid
 
 from audio_common_msgs.msg import AudioData
 from action_selectors.msg import RawInput
@@ -40,6 +41,7 @@ class Timer():
 class Whisper():
     def __init__(self):
         # Discard parameters
+        self.state = None
         self.min_time = 2 # seconds
         self.max_time = 30 # seconds
 
@@ -57,11 +59,13 @@ class Whisper():
         # model = "tiny.en"
         model = "base.en"
         timer = Timer()
+        print(f"Cuda available: {torch.cuda.is_available()}")
         self.audio_model = whisper.load_model(model)
         timer.endTimer(f"Finished loading whisper model [{model}]")
     
     # Audio interpretation
     def interpret(self, data):
+        self.state = "running"
         timer = Timer()
         temp_file = WavUtils.generate_temp_wav(self.n_channels, self.sample_width, self.sample_rate, data)
         timer.endTimer("Finished generating temp wav file")
@@ -78,7 +82,8 @@ class Whisper():
 
         # Remove temporary file, after using
         WavUtils.discard_wav(temp_file)
-
+        self.state = None
+        rospy.loginfo("Ready to hear again")
         if not empty:
             return result["text"] 
     
@@ -142,7 +147,8 @@ class WavUtils:
 
 def on_audio_callback(data):
     rospy.loginfo("Whisper computing...")
-    
+    if not( whisperModel.state == None or whisperModel.state == "" ):
+        return
     text = whisperModel.interpret(data.data)
 
     if text is None or len(text) == 0 or text.isspace():

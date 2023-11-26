@@ -18,7 +18,7 @@ RATE = 16000
 CHUNK_DURATION = CHUNK_SIZE / RATE
 TIME_FOR_CHANGE = 0.25
 COUNT_FOR_CHANGE = TIME_FOR_CHANGE / CHUNK_DURATION
-MIN_AUDIO_LENGTH = 0.50
+MIN_AUDIO_LENGTH = 0.1
 MIN_CHUNKS_AUDIO_LENGTH = MIN_AUDIO_LENGTH / CHUNK_DURATION
 
 PADDING_DURATION = 0.50
@@ -57,8 +57,9 @@ class UsefulAudio(object):
 
         self.subscriber = rospy.Subscriber("rawAudioChunk", AudioData, self.callback)
         self.publisher = rospy.Publisher("UsefulAudio", AudioData, queue_size=20)
-        rospy.Subscriber("inputAudioActive", Bool, self.callbackActive)
         self.inputAudioActive = True
+        rospy.Subscriber("inputAudioActive", Bool, self.callbackActive)
+        
 
     def debug(self, text):
         if(DEBUG):
@@ -148,7 +149,7 @@ class UsefulAudio(object):
             # If more than 90% of the frames in the ring buffer are
             # unvoiced, then enter NOTTRIGGERED and publish whatever
             # audio we've collected.
-            if num_unvoiced > 0.75 * self.ring_buffer.maxlen:
+            if num_unvoiced > 0.5 * self.ring_buffer.maxlen:
                 print("Stop talking...")
                 self.triggered = False
                 self.publishAudio()
