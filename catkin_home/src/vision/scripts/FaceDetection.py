@@ -2,6 +2,8 @@
 import rospy
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from sensor_msgs.msg import JointState
+import actionlib
+from arm_server.msg import MoveArmAction, MoveArmGoal
 from vision.msg import img, img_list, move
 import time
 import tf
@@ -74,7 +76,13 @@ class FaceDetection():
         self.image = None
         self.image_sub = rospy.Subscriber(CAMERA_TOPIC, Image, self.image_callback)
         self.detection_pub = rospy.Publisher("/detection_results", img_list, queue_size=10)
-        self.move_pub = rospy.Publisher("/move", move, queue_size=1)
+        self.move_pub = rospy.Publisher("/hri_move", move, queue_size=1)
+        self.move_arm_client = actionlib.SimpleActionClient('/arm_as', MoveArmAction)
+        self.move_arm_client.wait_for_server()
+        
+        self.arm_goal = MoveArmGoal()
+        self.arm_goal.speed = 0.2
+
         process_imgs()
 
     def image_callback(self, data):

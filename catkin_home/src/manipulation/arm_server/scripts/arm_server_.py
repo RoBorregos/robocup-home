@@ -50,7 +50,7 @@ class ArmServer:
         )
         self.arm_as.start()
 
-        rospy.Subscriber("/move", MoveHRI, self.hri_move)
+        rospy.Subscriber("/hri_move", MoveHRI, self.hri_move)
         self.arm_as_feedback = MoveArmFeedback()
         self.arm_as_result = MoveArmResult()
         self.gripper_server = rospy.Service("/gripper_service", Gripper, self.handle_gripper)
