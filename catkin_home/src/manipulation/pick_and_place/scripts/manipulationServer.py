@@ -155,8 +155,11 @@ class manipuationServer(object):
         self.moveARM(self.ARM_PREGRASP, 0.25)
     
     def graspARM(self):
-        ARM_GRASP = rospy.get_param("ARM_GRASP", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-        self.moveARM(ARM_GRASP, 0.25)
+        move_attempts = 0
+        while (move_attempts < 10):
+            rospy.loginfo("Robot grasp ARM " + str(move_attempts) + " UP")
+            self.moveARM(self.ARM_PREGRASP, 0.25)
+            move_attempts += 1
 
     def initHEAD(self):
         HEAD_JOINTS = rospy.get_param("HEAD_JOINTS", ["head_1_joint", "head_2_joint"])

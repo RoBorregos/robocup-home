@@ -122,8 +122,8 @@ class PickAndPlaceServer(object):
             self.pick_groups[-1].set_goal_orientation_tolerance(0.11)
             self.pick_groups[-1].set_goal_position_tolerance(0.01)
 
-        self.picked_object_dimensions = [0, 0, 0]
-        self.place_height = 0
+        self.picked_object_dimensions = [.15, .15, .15]
+        self.place_height = .15
         self.pick_height = 0
 
         rospy.loginfo("Action Server Pick & Place Up!")
@@ -320,7 +320,7 @@ class PickAndPlaceServer(object):
                             else:
                                 grasp.grasp_pose.pose.position.y += adjust
 
-                            grasp.grasp_pose.pose.position.z -= 0.065
+                            grasp.grasp_pose.pose.position.z -= 0.04
 
                             self.pick_height = grasp.grasp_pose.pose.position.z
 

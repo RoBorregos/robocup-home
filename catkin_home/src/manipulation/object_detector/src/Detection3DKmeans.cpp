@@ -139,7 +139,7 @@ class Detect3DPlace
     int horizontal_prefix[50][50] = {0};
     int vertical_prefix[50][50] = {0};
     double selected_object_sz = 0.05; //meters
-    double kRobotRadiusLimit = 0.7; //meters
+    double kRobotRadiusLimit = 0.5; //meters
     double kMinRobotDistance = 0.2;
     double kXRobotRange = 0.3; //meters
     double kRobotXIndexLimit = kXRobotRange / selected_object_sz;

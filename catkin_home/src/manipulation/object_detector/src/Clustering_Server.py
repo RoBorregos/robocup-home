@@ -39,6 +39,7 @@ class Clustering_Service:
 
         # Run k-means clustering
         n_clusters = req.n_clusters * self.clusters_per_object
+        n_clusters = max(n_clusters, 1)
         rospy.loginfo("Running k-means clustering with %d clusters", n_clusters)
         kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(point_cloud_array)
         rospy.loginfo("Clustering complete, computing largest cluster")
@@ -69,7 +70,7 @@ class Clustering_Service:
 
             # save as file
             rospy.loginfo("Saving clusters as image")
-            plt.savefig('/home/rbrgs-pc/Desktop/Robocup-Home/clusters.png')
+            plt.savefig('clusters.png')
 
         rospy.loginfo("Returning centroid")
 
