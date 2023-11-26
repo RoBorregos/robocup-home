@@ -41,6 +41,7 @@
 
 #include <std_msgs/Int64.h>
 #include <std_msgs/Int64MultiArray.h>
+#include <std_msgs/Float64.h>
 
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/PoseArray.h>
@@ -130,6 +131,7 @@ class Detect3DPlace
     ros::Publisher pc_pub_1_;
     ros::Publisher pc_pub_2_;
     ros::ServiceClient clear_octomap;
+    ros::Subscriber width_sub_;
     bool biggest_object_;
     float plane_min_height_;
     float plane_max_height_;
@@ -178,6 +180,7 @@ public:
         listener_(buffer_),
         as_(nh_, "detect3d_place", boost::bind(&Detect3DPlace::handleActionServer, this, _1), false)
     {
+        width_sub_ = nh_.subscribe<std_msgs::Float64>("/pick_width", 1, &Detect3DPlace::pickWidthCb, this);
         planning_scene_interface_ = new moveit::planning_interface::PlanningSceneInterface();
         clear_octomap = nh_.serviceClient<std_srvs::Empty>("/clear_octomap");
         clear_octomap.waitForExistence();
@@ -196,6 +199,10 @@ public:
         ROS_INFO_STREAM("BASE_FRAME: " << BASE_FRAME);
         ROS_INFO_STREAM("CAMERA_FRAME: " << CAMERA_FRAME);
         ROS_INFO_STREAM("POINT_CLOUD_TOPIC: " << POINT_CLOUD_TOPIC);
+    }
+
+    void pickWidthCb(const std_msgs::Float64::ConstPtr &msg){
+        selected_object_sz = msg->data;
     }
 
     /** \brief Handle Action Server Goal Received. */
