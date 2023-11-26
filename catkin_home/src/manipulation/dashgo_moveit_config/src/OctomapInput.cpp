@@ -16,7 +16,7 @@ public:
   {
     tf_listener = new tf::TransformListener();
     state_ = true;
-    sub_ = nh_.subscribe("/zed2_up/zed_up_node/point_cloud/ds_cloud_registered", 1, &OctomapService::cloudCallback, this);
+    sub_ = nh_.subscribe("/zed2/zed_node/point_cloud/ds_cloud_registered", 1, &OctomapService::cloudCallback, this);
     pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/octomap/points", 10);
     service_ = nh_.advertiseService("/toggle_octomap", &OctomapService::toggleOctomap, this);
     state_pub_ = nh_.advertise<std_msgs::Bool>("/octomap/state", 10);
@@ -40,7 +40,7 @@ public:
     {
       sensor_msgs::PointCloud2 t_pc;
       try {
-        tf_listener->waitForTransform("base_link", "zed2_up_left_camera_frame", ros::Time(0), ros::Duration(5.0));
+        tf_listener->waitForTransform("base_link", "zed2_left_camera_frame", ros::Time(0), ros::Duration(5.0));
       } catch (tf::TransformException ex) {
         return;
       }

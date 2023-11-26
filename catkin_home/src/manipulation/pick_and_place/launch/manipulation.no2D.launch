@@ -9,23 +9,9 @@
   <!-- Pick & place server -->
   <node name="pick_and_place_server" pkg="pick_and_place" type="pick_and_place_server.py" output="screen" />
 
-  <!-- 2D Detector -->
-  <include file="$(find object_detector)/launch/object_2D.launch">
-    <arg name="SOURCE" value="/zed2/zed_node/left/image_rect_color" />
-    <arg name="DEPTH_INPUT" value="/zed2/zed_node/depth/depth_registered" />
-    <arg name="CAMERA_INFO" value="/zed2/zed_node/depth/camera_info" />
-    <arg name="ROS_INPUT" value="True" />
-    <arg name="USE_ACTIVE_FLAG" value="False" />
-    <arg name="VERBOSE" value="False" />
-    <arg name="DEPTH_ACTIVE" value="True" />
-    <arg name="MODELS_PATH" default="$(find object_detector)/models/gazebo/" />
-    <arg name="LABELS_PATH" default="$(find object_detector)/models/gazebo/label_map.pbtxt" />
-    <arg name="CAMERA_FRAME" value="zed2_left_camera_optical_frame" />
-    <arg name="USE_FAKE_DETECTOR" value="True" />
-  </include>
-
   <!-- 3D Detector -->
-  <include file="$(find object_detector)/launch/object_3D_BAG.launch">
+  
+  <include file="$(find object_detector)/launch/object_3D.tmr2023.launch">
     <arg name="MAP_FRAME" default="map" />
     <arg name="CAMERA_FRAME" default="zed2_left_camera_frame" />
     <arg name="BASE_FRAME" default="base_link" />
@@ -39,7 +25,7 @@
   
   <!-- GPD -->
 	<node name="detect_grasps_server_samples" pkg="gpd_ros" type="detect_grasps_server_samples" output="screen" respawn="true" args="">
-    <param name="config_file" value="$(find pick_and_place)/config/dashgo_eigen_params.cfg" />
+    <param name="config_file" value="$(find pick_and_place)/config/dashgo_eigen_params_SF.cfg" />
     <param name="rviz_topic" value="plot_grasps" />
   </node>
   
@@ -48,5 +34,7 @@
   <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)"
           args="-d $(find pick_and_place)/config/all.rviz"/>
 
+  <!-- Nav Bridge Server -->
+  <!-- <node name="NavBridgeServer" pkg="nav_bridge" type="NavBridgeServer.py" output="screen" /> -->
 
 </launch>

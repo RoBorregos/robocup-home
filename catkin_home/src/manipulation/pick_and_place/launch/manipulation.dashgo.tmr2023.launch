@@ -16,11 +16,11 @@
   
   <include file="$(find object_detector)/launch/object_3D.tmr2023.launch">
     <arg name="MAP_FRAME" default="map" />
-    <arg name="CAMERA_FRAME" default="zed2_up_left_camera_frame" />
+    <arg name="CAMERA_FRAME" default="zed2_left_camera_frame" />
     <arg name="BASE_FRAME" default="base_link" />
     <arg name="map_to_odom"  default="true"/>
     <arg name="odom_to_base_footprint"  default="true"/>
-    <arg name="POINT_CLOUD_TOPIC" default="/zed2_up/zed_up_node/point_cloud/ds_cloud_registered" />
+    <arg name="POINT_CLOUD_TOPIC" default="/zed2/zed_node/point_cloud/ds_cloud_registered" />
   </include>
 
   <!-- Manipulation Server -->
@@ -34,10 +34,9 @@
   
   <!-- Manipulation Client | Running in separate shell -->
   <node name="manipulation_client" pkg="pick_and_place" type="manipulationClient.py" output="screen" />
-  <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)"
-          args="-d $(find pick_and_place)/config/all.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)" args="-d $(find pick_and_place)/config/all.rviz"/>
 
   <!-- Nav Bridge Server -->
-  <node name="NavBridgeServer" pkg="nav_bridge" type="NavBridgeServer.py" output="screen" />
+  <!-- <node name="NavBridgeServer" pkg="nav_bridge" type="NavBridgeServer.py" output="screen" /> -->
 
 </launch>

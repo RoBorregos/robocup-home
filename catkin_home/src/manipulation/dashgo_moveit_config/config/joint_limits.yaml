@@ -33,8 +33,8 @@ joint_limits:
     max_velocity: 2.14
     has_acceleration_limits: false
     max_acceleration: 0
-    max_position: 0.785
-    min_position: -3.14
+    #max_position: 0.785
+    #min_position: -3.14
   joint2:
     has_velocity_limits: true
     max_velocity: 2.14
@@ -50,8 +50,8 @@ joint_limits:
     max_velocity: 2.14
     has_acceleration_limits: false
     max_acceleration: 0
-    max_position: 3.14
-    min_position: -3.14
+    #max_position: 3.14
+    #min_position: -3.14
   joint5:
     has_velocity_limits: true
     max_velocity: 2.14
@@ -62,8 +62,8 @@ joint_limits:
     max_velocity: 2.14
     has_acceleration_limits: false
     max_acceleration: 0
-    max_position: 3.14
-    min_position: -3.14
+    #max_position: 3.14
+    #min_position: -3.14
   odom_r:
     has_velocity_limits: true
     max_velocity: 0.18

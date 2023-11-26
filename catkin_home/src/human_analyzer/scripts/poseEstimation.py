@@ -31,13 +31,13 @@ class PoseDetector:
         rospy.init_node('PoseDetector')
 
         self.imageSub = rospy.Subscriber(
-            '/zed2_up/zed_up_node/rgb/image_rect_color/compressed', CompressedImage, self.image_callback, queue_size=10)
+            '/zed2/zed_node/rgb/image_rect_color/compressed', CompressedImage, self.image_callback, queue_size=10)
 
         self.imageInfo = CameraInfo()
-        self.subscriberInfo = rospy.Subscriber("/zed2_up/zed_up_node/depth/camera_info", CameraInfo, self.infoImageRosCallback)
+        self.subscriberInfo = rospy.Subscriber("/zed2/zed_node/depth/camera_info", CameraInfo, self.infoImageRosCallback)
 
         self.depth_image = []
-        self.subscriberDepth = rospy.Subscriber("/zed2_up/zed_up_node/depth/depth_registered", Image, self.depthImageRosCallback)
+        self.subscriberDepth = rospy.Subscriber("/zed2/zed_node/depth/depth_registered", Image, self.depthImageRosCallback)
 
         self.image_pose_pub = rospy.Publisher(
             '/mediapipe/output', Image, queue_size=10)

@@ -1,9 +1,18 @@
 #goal definition
+string state
 float32[] joints_target
+geometry_msgs/Pose pose_target
 float32 speed
+float32 acceleration
+float32 position_tolerance
+float32 orientation_tolerance
+int32 planning_time
+int32 num_planning_attempts
 ---
 #result definition
 int32 success
+float32 execution_time
 ---
 #feedback
+string execution_state
 float32 completion_percentage

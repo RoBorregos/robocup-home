@@ -5,3 +5,4 @@ int32 object_id
 bool result
 ---
 #feedback
+string status
