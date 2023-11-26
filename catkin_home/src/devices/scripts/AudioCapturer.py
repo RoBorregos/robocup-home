@@ -18,7 +18,10 @@ def main():
     publisher = rospy.Publisher("rawAudioChunk", AudioData, queue_size=20)
 
     p = pyaudio.PyAudio()
-    stream = p.open(input_device_index=None, # Default device
+    print("*Available devices*")
+    for i in range(p.get_device_count()):
+        print(p.get_device_info_by_index(i))
+    stream = p.open(input_device_index=0, # Default device
                     format=FORMAT,
                     channels=CHANNELS,
                     rate=RATE,

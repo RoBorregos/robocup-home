@@ -86,8 +86,8 @@ class MainEngServer:
 
         rospy.loginfo("MainEngServer started")
         self.state = MainEngServer.STATE_ENUM["IDLE"]
-        #self.tracker_pub = rospy.Publisher(TRACKING_TOPIC, Bool, queue_size=10)
-        #self.tracker_pub.publish(True)
+        self.tracker_pub = rospy.Publisher(TRACKING_TOPIC, Int32, queue_size=10)
+        self.tracker_pub.publish(1)
         self.current_command = None
         self.current_queue = []
         self.current_thread = None
@@ -155,11 +155,12 @@ class MainEngServer:
 
         current_thread = uuid.uuid1()
         self.current_thread = current_thread
-        #self.tracker_pub.publish(False)
+        self.tracker_pub.publish(0)
         self.state = MainEngServer.STATE_ENUM["RECEIVE_COMMANDS"]
         # self.current_queue = commands_input.data.split(", ")
         self.current_queue = commands_input.commands
         self.past_state = self.state
+        self.current_place = rospy.get
         while len(self.current_queue) > 0 and self.current_thread == current_thread:
             self.current_command = self.current_queue.pop(0)
             self.past_state = self.main_eng_command_manager(self.current_command)
@@ -171,7 +172,8 @@ class MainEngServer:
                 self.state = MainEngServer.STATE_ENUM["IDLE"]
                 break
         self.reset_arm()
-        #self.tracker_pub.publish(True)
+        self.move_base_client.cancel_all_goals()
+        self.tracker_pub.publish(1)
         # self.main_eng_command_manager()
 
 
@@ -201,7 +203,7 @@ class MainEngServer:
             self.grab(value)
         elif action == "put":
             self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
-            self.go(value)
+            self.go_to_location(value)
             self.put(value)
         elif action == "introduce":
             self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
@@ -273,6 +275,18 @@ class MainEngServer:
             self.cancel_current_command()
             self.current_queue = []
             self.state = MainEngServer.STATE_ENUM["IDLE"]
+            return
+        self.manipulation_pub.publish("Place")
+        status = self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
+        rospy.loginfo("Waiting for put")
+        if status == "True":
+            rospy.loginfo("Put " + value)
+            # self.say(promts["put_success"])
+            return True
+        elif status == "False":
+            rospy.loginfo("Failed to put " + value)
+            # self.say(promts["put_fail"])
+            return False
 
     def intro(self):
         rospy.loginfo("Introducing")

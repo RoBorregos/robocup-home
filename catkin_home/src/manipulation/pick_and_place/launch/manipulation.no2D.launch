@@ -9,9 +9,6 @@
   <!-- Pick & place server -->
   <node name="pick_and_place_server" pkg="pick_and_place" type="pick_and_place_server.py" output="screen" />
 
-  <!-- 2D Detector -->
-  <include file="$(find object_detector)/launch/object_2D.tmr2023.launch" />
-
   <!-- 3D Detector -->
   
   <include file="$(find object_detector)/launch/object_3D.tmr2023.launch">
@@ -34,7 +31,8 @@
   
   <!-- Manipulation Client | Running in separate shell -->
   <node name="manipulation_client" pkg="pick_and_place" type="manipulationClient.py" output="screen" />
-  <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)" args="-d $(find pick_and_place)/config/all.rviz"/>
+  <node name="rviz" pkg="rviz" type="rviz" if="$(arg rviz)"
+          args="-d $(find pick_and_place)/config/all.rviz"/>
 
   <!-- Nav Bridge Server -->
   <!-- <node name="NavBridgeServer" pkg="nav_bridge" type="NavBridgeServer.py" output="screen" /> -->

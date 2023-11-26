@@ -1,0 +1,6 @@
+sensor_msgs/PointCloud2 pointcloud
+int32 n_clusters
+---
+float64 x_center
+float64 y_center
+bool success

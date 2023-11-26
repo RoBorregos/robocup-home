@@ -18,9 +18,10 @@ from pick_and_place.msg import PickAndPlaceAction, PickAndPlaceGoal, PickAndPlac
 from moveit_msgs.srv import ApplyPlanningScene, GetPlanningScene, GetPlanningSceneRequest, GetPlanningSceneResponse
 from moveit_msgs.msg import PlanningScene, CollisionObject, AttachedCollisionObject
 from std_srvs.srv import Empty, EmptyRequest
-from std_msgs.msg import Header
+from std_msgs.msg import Header, Float64
 from gpd_ros.msg import GraspConfig, GraspConfigList
 from sensor_msgs.msg import JointState
+from visualization_msgs.msg import Marker
 import numpy
 import math
 import copy
@@ -33,7 +34,7 @@ for name in MoveItErrorCodes.__dict__.keys():
     if not name[:1] == '_':
         code = MoveItErrorCodes.__dict__[name]
         moveit_error_dict[code] = name
-img_obj
+
 class PickAndPlaceServer(object):
     ARM_GROUP = "whole_body"
     PICK_GROUPS = ["whole_body"]
@@ -90,7 +91,6 @@ class PickAndPlaceServer(object):
         #     entry.enabled.append(True)
         # self.curr_collision_matrix.entry_values.append(AllowedCollisionEntry(enabled=[True for i in range(len(self.curr_collision_matrix.entry_names))]))
         
-
         rospy.loginfo("Connecting to clear octomap service...")
         self.clear_octomap_srv = rospy.ServiceProxy(
             '/clear_octomap', Empty)
@@ -113,6 +113,7 @@ class PickAndPlaceServer(object):
         
         self.pose_array_p = rospy.Publisher("pose_array/object", PoseArray, queue_size=10)
         self.pose_p = rospy.Publisher("planning_pose", PoseStamped, queue_size=10)
+        self.pose_debug = rospy.Publisher("pose_debug", PoseStamped, queue_size=10)
 
         rospy.loginfo("Waiting for MoveGroupCommander...")
         self.pick_groups = []
@@ -120,6 +121,12 @@ class PickAndPlaceServer(object):
             self.pick_groups.append(moveit_commander.MoveGroupCommander(group, wait_for_servers = 0))
             self.pick_groups[-1].set_goal_orientation_tolerance(0.11)
             self.pick_groups[-1].set_goal_position_tolerance(0.01)
+
+        self.picked_object_dimensions = [0, 0, 0]
+        self.place_height = 0.3
+        self.pick_height = 0
+
+        self.pub_pick_width = rospy.Publisher("/pick_width", Float64, queue_size=1)
 
         rospy.loginfo("Action Server Pick & Place Up!")
 
@@ -262,49 +269,49 @@ class PickAndPlaceServer(object):
                         for planner in planners:
                             rospy.loginfo("Trying to pick object with group: " + PickAndPlaceServer.PICK_GROUPS[count])
                             
-                            # pose_st = PoseStamped()
-                            # pose_st.header = grasp.grasp_pose.header
-                            # pose_st.pose = grasp.grasp_pose.pose
-                            # self.pose_p.publish(pose_st)
-                            # grasp.grasp_pose.pose.position.z += 0.04
-                            # adjust = 0.02
-                            # if grasp.grasp_pose.pose.position.x > 0.0:
-                            #     grasp.grasp_pose.pose.position.x -= adjust
-                            # else:
-                            #     grasp.grasp_pose.pose.position.x += adjust
-                            # # same with y
-                            # if grasp.grasp_pose.pose.position.y > 0.0:
-                            #     grasp.grasp_pose.pose.position.y -= adjust
-                            # else:
-                            #     grasp.grasp_pose.pose.position.y += adjust
-                            # group.set_pose_target(grasp.grasp_pose.pose)
-                            # group.set_goal_orientation_tolerance(numpy.deg2rad(5))
-                            # group.set_goal_position_tolerance(0.012)
-                            # group.set_max_velocity_scaling_factor(0.1)
-                            # group.set_max_acceleration_scaling_factor(0.025)
-                            # group.set_planning_pipeline_id(planner)
-                            # # set planner to kpiece
-                            # group.set_planner_id("RRTConnect")
-                            # # set planning threads
-                            # group.set_planning_time(25)
-                            # group.set_num_planning_attempts(10)
+                            pose_st = PoseStamped()
+                            pose_st.header = grasp.grasp_pose.header
+                            pose_st.pose = grasp.grasp_pose.pose
+                            self.pose_p.publish(pose_st)
+                            grasp.grasp_pose.pose.position.z += 0.045
+                            adjust = 0.00
+                            if grasp.grasp_pose.pose.position.x > 0.0:
+                                grasp.grasp_pose.pose.position.x -= adjust
+                            else:
+                                grasp.grasp_pose.pose.position.x += adjust
+                            # same with y
+                            if grasp.grasp_pose.pose.position.y > 0.0:
+                                grasp.grasp_pose.pose.position.y -= adjust
+                            else:
+                                grasp.grasp_pose.pose.position.y += adjust
+                            group.set_pose_target(grasp.grasp_pose.pose)
+                            group.set_goal_orientation_tolerance(numpy.deg2rad(5))
+                            group.set_goal_position_tolerance(0.012)
+                            group.set_max_velocity_scaling_factor(0.25)
+                            group.set_max_acceleration_scaling_factor(0.025)
+                            group.set_planning_pipeline_id(planner)
+                            # set planner to kpiece
+                            group.set_planner_id("RRTConnect")
+                            # set planning threads
+                            group.set_planning_time(25)
+                            group.set_num_planning_attempts(10)
 
-                            # t = time.time()
-                            # res = group.plan()
-                            # rospy.loginfo("Planning time 1: " + str(time.time() - t))
-                            # if res[0] == False:
-                            #     rospy.loginfo("Planning failed")
-                            #     continue
-                            # t = time.time()
-                            # res = group.go(wait=True)
-                            # rospy.loginfo("Execution time 1: " + str(time.time() - t))
+                            t = time.time()
+                            res = group.plan()
+                            rospy.loginfo("Planning time 1: " + str(time.time() - t))
+                            if res[0] == False:
+                                rospy.loginfo("Planning failed")
+                                continue
+                            t = time.time()
+                            res = group.go(wait=True)
+                            rospy.loginfo("Execution time 1: " + str(time.time() - t))
                             
-                            # group.stop()
-                            # rospy.loginfo("Result: " + str(res))
-                            # if res != True:
-                            #     break
+                            group.stop()
+                            rospy.loginfo("Result: " + str(res))
+                            if res != True:
+                                break
                             
-                            adjust = 0.02
+                            adjust = 0
                             if grasp.grasp_pose.pose.position.x > 0.0:
                                 grasp.grasp_pose.pose.position.x -= adjust
                             else:
@@ -315,7 +322,10 @@ class PickAndPlaceServer(object):
                             else:
                                 grasp.grasp_pose.pose.position.y += adjust
 
-                            grasp.grasp_pose.pose.position.z -= 0.04
+                            grasp.grasp_pose.pose.position.z -= 0.065
+
+                            self.pick_height = grasp.grasp_pose.pose.position.z
+
                             pose_st = PoseStamped()
                             pose_st.header = grasp.grasp_pose.header
                             pose_st.pose = grasp.grasp_pose.pose
@@ -323,7 +333,7 @@ class PickAndPlaceServer(object):
                             group.set_pose_target(grasp.grasp_pose.pose)
                             group.set_goal_orientation_tolerance(numpy.deg2rad(5))
                             group.set_goal_position_tolerance(0.02)
-                            group.set_max_velocity_scaling_factor(0.12)
+                            group.set_max_velocity_scaling_factor(0.15)
                             group.set_max_acceleration_scaling_factor(0.025)
                             group.set_planning_pipeline_id(planner)
                             # disable path simplification
@@ -418,6 +428,14 @@ class PickAndPlaceServer(object):
                 width = maxPt.x - minPt.x
                 height = maxPt.y - minPt.y
                 depth = maxPt.z - minPt.z
+                self.picked_object_dimensions = [width, height, depth]
+
+                # heigh for place
+                self.place_height = depth #option 1
+                self.place_height = self.pick_height #option 2
+                self.pub_pick_width.publish(width)
+
+                rospy.loginfo("Object dimensions: " + str(self.picked_object_dimensions))
                 collision_object = CollisionObject(
                     header = collision_mesh.header,
                     id = "current_box",
@@ -457,7 +475,7 @@ class PickAndPlaceServer(object):
                 rospy.loginfo("Attached object to gripper")
 
 
-                pose_st = PoseStamped()
+                """pose_st = PoseStamped()
                 pose_st.header = grasp.grasp_pose.header
                 pose_st.pose = grasp.grasp_pose.pose
                 pose_st.pose.position.z += 0.08
@@ -466,13 +484,13 @@ class PickAndPlaceServer(object):
                 group.set_pose_target(grasp.grasp_pose.pose)
                 group.set_goal_orientation_tolerance(numpy.deg2rad(5))
                 group.set_goal_position_tolerance(0.012)
-                group.set_max_velocity_scaling_factor(0.12)
-                group.set_max_acceleration_scaling_factor(0.025)
+                group.set_max_velocity_scaling_factor(0.10)
+                group.set_max_acceleration_scaling_factor(0.001)
                 group.set_planning_pipeline_id("ompl")
                 group.set_planning_time(3)
                 res = group.plan()
                 res = group.go(wait=True)
-                group.stop()
+                group.stop()"""
 
                 # restore scene to detect collisions
                 rospy.loginfo("Restoring scene")
@@ -561,13 +579,111 @@ class PickAndPlaceServer(object):
         links_to_allow_contact = PickAndPlaceServer.ALLOW_CONTACT
         links_to_allow_contact.extend(allow_contact_with)
         
-        possible_placings = create_placings_from_object_pose(object_pose, links_to_allow_contact)
+        #possible_placings = create_placings_from_object_pose(object_pose, links_to_allow_contact)
 
         error_code = -1
         
-        rospy.loginfo("Trying to place with arm and torso")
+        for group in self.pick_groups:
+            planners = ["ompl"]
+            for planner in planners:
+                rospy.loginfo("Trying to place with arm and torso")
+                                    
+                pose_st = PoseStamped()
+                pose_st.header = object_pose.header
+                pose_st.pose = object_pose.pose
+                #pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.07
+                rospy.loginfo("Planning with object added height: " + str(self.place_height))
+                pose_st.pose.position.z += self.place_height + 0.07
+                #pose_st.pose.position.y -= 0.05
+                #face down
+                pose_st.pose.orientation = Quaternion(x=0.000001, y=0.707000, z=0.000001, w=0.707000)
+                self.pose_p.publish(pose_st)
+                group.set_pose_target(pose_st.pose)
+                group.set_goal_orientation_tolerance(numpy.deg2rad(5))
+                group.set_goal_position_tolerance(0.012)
+                group.set_max_velocity_scaling_factor(0.2)
+                group.set_max_acceleration_scaling_factor(0.025)
+                group.set_planning_pipeline_id(planner)
+                # set planner to kpiece
+                group.set_planner_id("RRTConnect")
+                # set planning threads
+                group.set_planning_time(25)
+                group.set_num_planning_attempts(10)
+
+                self.pose_debug.publish(pose_st)
+                print("Planning to pose: " + str(pose_st.pose))
+                
+                t = time.time()
+                res = group.plan()
+                rospy.loginfo("Planning time 1: " + str(time.time() - t))
+                if res[0] == False:
+                    rospy.loginfo("Planning failed")
+                    continue
+                t = time.time()
+                res = group.go(wait=True)
+                rospy.loginfo("Execution time 1: " + str(time.time() - t))
+                
+                group.stop()
+                rospy.loginfo("Result: " + str(res))
+                if res != True:
+                    break
+            
+                attempts = 0
+                success = False
+                while attempts < 5:
+                    rospy.loginfo("Opening gripper")
+                    self.gripper_group.set_named_target("open")
+                    res = self.gripper_group.go(wait=True)
+                    self.gripper_group.stop()
+                    attempts += 1
+                    if res == True:
+                        success = True
+                        break
+
+                # restore scene to detect collisions
+                rospy.loginfo("Restoring scene")
+                self.curr_scene = self.scene_srv(PlanningSceneComponents()).scene
+                # detach object box named current_box
+                self.curr_scene.robot_state.attached_collision_objects = []
+                # Remove Current
+                self.scene.remove_world_object("current")
+                self.scene.remove_world_object("current_box")
+
+                self.apply_scene_srv(scene=self.curr_scene)
+                
+
+                place_success = True 
+                
+                return 1
+    
+    # Function to publish the 3D point as a marker
+                """marker = Marker()
+                marker.header.frame_id = "world"  # Replace with your actual world frame
+                marker.header.stamp = rospy.Time.now()
+                marker.ns = "my_namespace"
+                marker.id = 0
+                # marker as arrow pointing down
+                marker.type = Marker.ARROW
+                marker.action = Marker.ADD
+                marker.pose.position.x = point_world.point.x
+                marker.pose.position.y = point_world.point.y
+                marker.pose.position.z = point_world.point.z + 0.1
+                marker.pose.orientation.x = 0.0
+                marker.pose.orientation.y = 0.707
+                marker.pose.orientation.z = 0.0
+                marker.pose.orientation.w = 0.707
+                marker.scale.x = 0.1
+                marker.scale.y = 0.01
+                marker.scale.z = 0.01
+                marker.color.a = 1.0
+                marker.color.r = 0.0
+                marker.color.g = 1.0
+                marker.color.b = 0.0
+
+                self._marker_pub.publish(marker)"""
+
         
-        goal = createPlaceGoal(
+        """goal = createPlaceGoal(
             possible_placings, place_group, object_name, links_to_allow_contact, "<octomap>", None)
 
         error_code = self.handle_place_as(goal)
@@ -577,9 +693,9 @@ class PickAndPlaceServer(object):
 
         rospy.logwarn(
             "Place Result: " +
-        str(moveit_error_dict[error_code]))
+        str(moveit_error_dict[error_code]))"""
 
-        return error_code
+        return 0
 
 
 # Function to create a PickupGoal with the provided data.
@@ -779,7 +895,7 @@ def createGripperTranslation(direction_vector, desired_distance, min_distance):
 def gpd_to_moveit_new(grasp_config_list, allow_contact_with):
     header = Header()
     header.frame_id = "Base"
-    kThresholdScore = 1.0
+    kThresholdScore = -1000.0
     res = []
     for grasp_config in grasp_config_list.grasps:
         if grasp_config.score.data < kThresholdScore:

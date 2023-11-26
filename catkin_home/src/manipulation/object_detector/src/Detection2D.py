@@ -24,6 +24,8 @@ sys.path.append(str(pathlib.Path(__file__).parent) + '/../include')
 from vision_utils import *
 import tf2_ros
 import tf2_geometry_msgs
+import imutils
+from ultralytics import YOLO
 
 SOURCES = {
     "VIDEO": str(pathlib.Path(__file__).parent) + "/../resources/test.mp4",
@@ -40,10 +42,10 @@ ARGS= {
     "CAMERA_INFO": "/camera/depth/camera_info",
     "MODELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/",
     "LABELS_PATH": str(pathlib.Path(__file__).parent) + "/../models/label_map.pbtxt",
-    "MIN_SCORE_THRESH": 0.6,
+    "MIN_SCORE_THRESH": 0.2,
     "VERBOSE": True,
     "CAMERA_FRAME": "xtion_rgb_optical_frame",
-    "USE_YOLO": False,
+    "USE_YOLO8": False,
     "YOLO_MODEL_PATH": str(pathlib.Path(__file__).parent) + "/../models/yolov5s.pt",
 }
 
@@ -62,6 +64,19 @@ class CamaraProcessing:
 
         def loadYoloModel():
             self.model = torch.hub.load('ultralytics/yolov5', 'custom', path=ARGS["YOLO_MODEL_PATH"], force_reload=False)
+
+        def yolov8_warmup(model, repetitions=1, verbose=False):
+            # Warmup model
+            startTime = time.time()
+            # create an empty frame to warmup the model
+            for i in range(repetitions):
+                warmupFrame = np.zeros((360, 640, 3), dtype=np.uint8)
+                model.predict(source=warmupFrame, verbose=verbose)
+            rospy.logdebug(f"Model warmed up in {time.time() - startTime} seconds")
+
+        def loadYolov8Model():
+            self.model = YOLO(ARGS["YOLO_MODEL_PATH"])
+            yolov8_warmup(self.model, repetitions=10, verbose=False)
         
         self.category_index = {
             1 : 'CocaCola',
@@ -73,14 +88,14 @@ class CamaraProcessing:
             7 : 'Harpic',
         }
         
-        if ARGS["USE_YOLO"]:
-            print("[INFO] Loading Yolo Model")
-            loadYoloModel()
-            print("[INFO] Yolo Model Loaded")
+        if ARGS["USE_YOLO8"]:
+            print("[INFO] Loading Yolov8 Model")
+            loadYolov8Model()
+            print("[INFO] Yolov8 Model Loaded")
         else:
-            print("[INFO] Loading TF Model")
-            loadTfModel()
-            print("[INFO] TF Model Loaded")
+            print("[INFO] Loading Yolov5 Model")
+            loadYoloModel()
+            print("[INFO] Yolov5 Model Loaded")
         
         self.activeFlag = not ARGS["USE_ACTIVE_FLAG"]
         self.runThread = None
@@ -175,6 +190,8 @@ class CamaraProcessing:
     # Process a frame only when the script finishes the process of the previous frame, rejecting frames to keep real-time idea.
     def imageCallback(self, img):
         self.rgb_image = img
+        # flip image
+        # img = imutils.rotate(img, 180)
         if not self.activeFlag:
             self.detections_frame = img
         elif self.runThread == None or not self.runThread.is_alive():
@@ -197,6 +214,7 @@ class CamaraProcessing:
 
     def yolo_run_inference_on_image(self, frame):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #cv2.imshow('frame', frame)
         results = self.model(frame)
         output = {
             'detection_boxes': [],  # Normalized ymin, xmin, ymax, xmax
@@ -226,6 +244,47 @@ class CamaraProcessing:
         output['detection_boxes'] = np.array(output['detection_boxes'])
         output['detection_classes'] = np.array(output['detection_classes'])
         output['detection_scores'] = np.array(output['detection_scores'])
+        return output
+    
+    def yolov8_run_inference_on_image(self, frame):
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        cv2.imshow('frame', frame)
+        results = self.model(frame)
+        output = {
+            'detection_boxes': [],  # Normalized ymin, xmin, ymax, xmax
+            'detection_classes': [], # ClassID 
+            'detection_scores': [] # Confidence
+        }
+        height = frame.shape[0]
+        width = frame.shape[1]
+
+        print(f"Height: {height} Width: {width}")
+        
+        boxes = []
+        confidences = []
+        classids = []
+
+        for out in results:
+                for box in out.boxes:
+                    x1, y1, x2, y2 = [round(x) for x in box.xyxy[0].tolist()]
+                    x1 = x1/width
+                    x2 = x2/width
+                    y1 = y1/height
+                    y2 = y2/height
+
+                    class_id = box.cls[0].item()
+                    prob = round(box.conf[0].item(), 2)
+
+                    boxes.append([x1, y1, x2, y2])
+                    confidences.append(float(prob))
+                    classids.append(class_id)
+                    print(f"Found {class_id} in {x1} {y1} {x2} {y2}")
+                    print("------------------------------")
+                    print()
+
+        output['detection_boxes'] = np.array(boxes)
+        output['detection_classes'] = np.array(classids)
+        output['detection_scores'] = np.array(confidences)
         return output
 
     # Function to run the detection model.
@@ -261,10 +320,10 @@ class CamaraProcessing:
 
     # Handle the detection model input/output.
     def compute_result(self, frame):
-        if ARGS["USE_YOLO"]:
-            detections = self.yolo_run_inference_on_image(frame)
+        if ARGS["USE_YOLO8"]:
+            detections = self.yolov8_run_inference_on_image(frame)
         else:
-            detections = self.run_inference_on_image(frame)
+            detections = self.yolo_run_inference_on_image(frame)
         return self.get_objects(detections["detection_boxes"],
                                 detections["detection_scores"],
                                 detections["detection_classes"],
@@ -292,9 +351,12 @@ class CamaraProcessing:
 
                 if ARGS["DEPTH_ACTIVE"] and len(self.depth_image) != 0:
                     point2D = get2DCentroid(boxes[index], self.depth_image)
-                    depth = get_depth(self.depth_image, point2D) ## in mm
-                    depth = depth / 1000 ## in m
+                    #rospy.loginfo("Point2D: " + str(point2D))
+                    depth = get_depth(self.depth_image, point2D) ## in m
+                    #rospy.loginfo("Depth: " + str(depth))
+                    #depth = depth / 1000 ## in mm
                     point3D_ = deproject_pixel_to_point(self.imageInfo, point2D, depth)
+                    #rospy.loginfo("Point3D: " + str(point3D_))
                     point3D.point.x = point3D_[0]
                     point3D.point.y = point3D_[1]
                     point3D.point.z = point3D_[2]
@@ -396,6 +458,7 @@ class CamaraProcessing:
 
         self.detections_frame = frame
 
+        #print("PUBLISHED DATA")
         self.publisher.publish(objectDetectionArray(detections=detected_objects))
         self.fps.update()
 

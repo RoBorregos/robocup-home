@@ -37,8 +37,8 @@ class ManipulationClient(object):
         self.client.wait_for_server()
         #self.listener = rospy.Subscriber("/manipulation_publish_goal", String, self.receivedObj)
         #self.talker = rospy.Publisher("/manipulation_publish_result", String, queue_size=20)
-        self.listener = rospy.Subscriber("navBridgeServer/listener", String, self.receivedObj)
-        self.talker = rospy.Publisher("navBridgeServer/talker", String, queue_size=20)
+        self.listener = rospy.Subscriber("manipulation/goal", String, self.receivedObj)
+        self.talker = rospy.Publisher("manipulation/response", String, queue_size=20)
         rospy.loginfo("Connected to Manipulation Server")
         
         rospy.sleep(7)
@@ -73,29 +73,33 @@ class ManipulationClient(object):
         result = False
         in_ = -1
         excepted = False
-        try: 
-            detections = rospy.wait_for_message("/detections", objectDetectionArray, timeout=10.0)
-        except rospy.exceptions.ROSException:
-            print("No objects detected")
-            excepted = True
+        if (msg.data == "Place"):
+            result = self.manipulation_goal(-5)
         
-        if not excepted:
-            print("Detected objects:")
-            for i, detection in enumerate(detections.detections):
-                print(f"({detection.label}) {detection.labelText}")
-                if msg.data == detection.labelText:
-                    in_ = detection.label
-            print("Selected object: ", in_, " ", msg.data)
-            if in_ == -1:
-                print("Object not found")
-                self.talker.publish(String("False"))
-                return
-            result = self.manipulation_goal(in_)
+        else:
+            try: 
+                detections = rospy.wait_for_message("/detections", objectDetectionArray, timeout=10.0)
+            except rospy.exceptions.ROSException:
+                print("No objects detected")
+                excepted = True
+            
+            if not excepted:
+                print("Detected objects:")
+                for i, detection in enumerate(detections.detections):
+                    print(f"({detection.label}) {detection.labelText}")
+                    if msg.data == detection.labelText:
+                        in_ = detection.label
+                print("Selected object: ", in_, " ", msg.data)
+                if in_ == -1:
+                    print("Object not found")
+                    self.talker.publish(String("False"))
+                    return
+                result = self.manipulation_goal(in_)
 
-            if result:
-                self.talker.publish(String("True"))
-            else:
-                self.talker.publish(String("False"))
+        if result:
+            self.talker.publish(String("True"))
+        else:
+            self.talker.publish(String("False"))
 
 
     def manipulation_goal(self, target = 1):
