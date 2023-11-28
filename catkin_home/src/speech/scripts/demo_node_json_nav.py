@@ -8,7 +8,7 @@ import actionlib
 import json
 
 from std_msgs.msg import String, Int32, Bool
-
+from arm_server.srv import Gripper
 from arm_server.msg import MoveArmAction, MoveArmGoal
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from geometry_msgs.msg import Pose
@@ -20,22 +20,22 @@ import uuid
 COMMANDS_TOPIC = "/speech/processed_commands"
 MAN_SERV_TOPIC = "/manipulation_server"
 TRACKING_TOPIC = "/toggle_face_detection"
-MOVE_ARM_AS = '/move_arm_as'
+MOVE_ARM_AS = '/arm_as'
 
 JSON_PATH = "maps/tdp_locations.json"
 
 NAV_ENABLED = True
-MANIP_ENABLED = False
-SAY_ENABLED = False
-TRACKING_ENABLED = False
+MANIP_ENABLED = True
+SAY_ENABLED = True
+TRACKING_ENABLED = True
 
 OBJECTS_NAME= {
     1 : 'COKE',
-    2 : 'APPLE',
-    3 : 'MUG',
-    4 : 'SOAP',
-    5 : 'BANANA',
-    6 : 'JAR'
+    2 : 'a',
+    3 : 'cUG',
+    4 : 'pOAP',
+    5 : 'cANANA',
+    6 : 'cAR'
 }
 
 OBJECTS_ID= {
@@ -83,42 +83,59 @@ class MainEngServer:
         rospy.loginfo(f"SAY_ENABLED: {SAY_ENABLED}")
         rospy.loginfo(f"TRACKING_ENABLED: {TRACKING_ENABLED}")
 
+        if SAY_ENABLED:
+            asd = self.say_pub = rospy.Publisher('/robot_text', String, queue_size=10)
+            # self.say("Starting")
+
         if NAV_ENABLED:
             rospy.loginfo("Connecting to nav_server")
             self.move_base_client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
             self.move_base_client.wait_for_server()
             rospy.loginfo("Connected to nav_server")
+            self.pose_client = rospy.Subscriber("/robot_pose", Pose, self.get_location_bc)
         if MANIP_ENABLED:
             self.manipulation_pub = rospy.Publisher('manipulation/goal', String, queue_size=10)
             self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
             rospy.loginfo("Connecting to manipulation_server")
             self.move_arm_client = actionlib.SimpleActionClient(MOVE_ARM_AS, MoveArmAction)
             self.move_arm_client.wait_for_server()
+            self.gripper_service = rospy.ServiceProxy('/gripper_service', Gripper)
             rospy.loginfo("Connected to manipulation_server")
+        
 
             # self.reset_arm()
 
+        self.say("Hello, I am the RoboTeus robot, I'm here to help you with your domestic tasks")
         rospy.loginfo("MainEngServer started")
         self.state = MainEngServer.STATE_ENUM["IDLE"]
         if TRACKING_ENABLED:
             self.tracker_pub = rospy.Publisher(TRACKING_TOPIC, Int32, queue_size=10)
             self.tracker_pub.publish(1)
+            self.tracker_pub.publish(1)
         self.current_command = None
         self.current_queue = []
         self.current_thread = None
+        self.current_location = None
+        self.past_location = None
+        self.grabbed_object = ""
+        
 
         rospy.spin()
 
+    def get_location_bc(self, data):
+        self.current_location = data
+
     def reset_arm(self):
         self.arm_goal = MoveArmGoal()
-        self.arm_goal.state = "hri"
+        self.arm_goal.state = "pregrasp"
         self.arm_goal.speed = 0.3
 
-        #self.move_arm_client.send_goal(self.arm_goal)
-        #self.move_arm_client.wait_for_result()
+        self.move_arm_client.send_goal(self.arm_goal)
+        # self.move_arm_client.wait_for_result()
     
     def manipulation_callback(self, data):
         self.manipulation_status = data.data
+        self.man_goal_status = data.data
 
     # def main_eng_server(self, req):
     #     message_input:str = req.message
@@ -131,6 +148,11 @@ class MainEngServer:
     #     else:
     #         self.state = MainEngServer.STATE_ENUM["RECEIVE_COMMANDS"]
     #         return self.main_eng_command_manager(message_input)
+    def say(self, text):
+        
+        if SAY_ENABLED:
+            print(f"will say {text}")
+            self.say_pub.publish(str(text))
 
     def cancel_current_command(self):
         rospy.loginfo("Cancelling current command")
@@ -167,6 +189,9 @@ class MainEngServer:
         # current_thread = uuid.uuid1()
         # self.current_thread = current_thread
 
+        if self.current_thread != None:
+            return
+
         if self.state != MainEngServer.STATE_ENUM["IDLE"]:
             rospy.logwarn("Received command while not in IDLE state, cancelling current commands")
             #return MainEngServer.STATE_ENUM["ERROR"]
@@ -182,7 +207,7 @@ class MainEngServer:
         # self.current_queue = commands_input.data.split(", ")
         self.current_queue = commands_input.commands
         self.past_state = self.state
-        self.current_place = rospy.Subscriber("/robot_pose", Pose)
+        self.past_location = self.current_location
         while len(self.current_queue) > 0 and self.current_thread == current_thread:
             self.current_command = self.current_queue.pop(0)
             self.past_state = self.main_eng_command_manager(self.current_command)
@@ -193,13 +218,17 @@ class MainEngServer:
                 self.current_queue = []
                 self.state = MainEngServer.STATE_ENUM["IDLE"]
                 break
-        # self.reset_arm()
         if TRACKING_ENABLED:
             self.tracker_pub.publish(1)
         if self.state == MainEngServer.STATE_ENUM["IDLE"]:
+            self.current_queue = []
             self.current_thread = None
         if  MANIP_ENABLED:
-            self.move_arm_client.cancel_all_goals()
+            #self.move_arm_client.cancel_all_goals()
+            self.reset_arm()
+        self.current_thread = None
+        self.current_queue = []
+        self.say("I 'have finished my tasks, I'm going to rest now")
         # self.move_base_client.cancel_all_goals()
         # self.tracker_pub.publish(1)
         # self.main_eng_command_manager()
@@ -223,11 +252,12 @@ class MainEngServer:
         if action == "go":
             self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
             if NAV_ENABLED:
-                self.go_to_past_location()
+                self.go_to_location(value)
         elif action == "stop":
             self.state = MainEngServer.STATE_ENUM["STOPPING_SERVICES"]
             self.stop()
         elif action == "grab":
+            print("grab " + action + " Value: " + value)
             self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
             if MANIP_ENABLED:
                 self.grab(value)
@@ -235,16 +265,29 @@ class MainEngServer:
             self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
             if value == "user":
                 if NAV_ENABLED:
+                    self.say("I'm going back")
                     self.go_to_past_location()
+                    self.say(f"I have brought you the object {self.grabbed_object}")
+                    
+                    #self.reset_arm()
+                    self.say("Please grab the object")
+                    rospy.sleep(2) 
+                    self.gripper_service("open")
+                    self.grabbed_object = ""
                 return
             if NAV_ENABLED:
                 self.go_to_location(value)
             if MANIP_ENABLED:
                 self.put(value)
+        elif action == "find":
+            self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
+            self.find()
         elif action == "introduce":
             self.state = MainEngServer.STATE_ENUM["EXECUTING_COMMANDS"]
             self.intro()
         else:
+            print("Unknown command")
+            print(f"Action: {action}")
             return MainEngServer.STATE_ENUM["ERROR"]
     
         self.state = MainEngServer.STATE_ENUM["IDLE"]
@@ -272,6 +315,7 @@ class MainEngServer:
             "living_room_side_table": "living_room_side_table",
             "kitchen_table": "kitchen_table",
             "kitchen_side_table": "kitchen_side_table",
+            "kitchen": "kitchen_safe",
             "hallway": "hallway_safe_out"
         }
         if location in KEY_DICT.values():
@@ -281,6 +325,7 @@ class MainEngServer:
         else:
             rospy.logwarn(f"Location not found: {location}")
             return False
+        self.say("I will go to " + location)
         for key in self.nav_json:
             if key.lower() == location.lower():
                 rospy.logwarn(f"Sending location: {location}")
@@ -298,6 +343,7 @@ class MainEngServer:
                 self.move_base_client.send_goal(goal)
                 self.move_base_client.wait_for_result()
                 rospy.logdebug(f"Result: {self.move_base_client.get_result()}")
+
                 return True
         rospy.logwarn(f"Location not found: {location}")
         return False
@@ -308,18 +354,36 @@ class MainEngServer:
 
     def grab(self, value):
         MODEL_DICT = {
-            "Apple": "manzanas",
-            "Cookies": "galletas",
-            "Pringles": "pringles",
-            "Coke": "cocacola",
-            "Cereal": "zucaritas",
+            "apple": "manzanas",
+            "cookies": "galletas",
+            "pringles": "pringles",
+            "coke": "cocacola",
+            "cereal": "zucaritas",
             "soap": "zote"
         }
+        print("Resetting arm")
+        self.arm_goal = MoveArmGoal()
+        self.arm_goal.state = "pregrasp"
+        self.arm_goal.speed = 0.3
+        self.move_arm_client.send_goal(self.arm_goal)
+        self.move_arm_client.wait_for_result()
+        rospy.loginfo("Waiting to send object")
+        rospy.sleep(7)
+        rospy.loginfo("Sending object")
         value = MODEL_DICT[value]
+        self.man_goal_status = ""
         self.manipulation_pub.publish(value)
+        self.grabbed_object = value
+        self.say("I will grab " + value)
         rospy.loginfo("Waiting for grab")
-        status = self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
+        # self.manipulation_pub.publish(value)
+        start = rospy.Time.now()
+        while self.man_goal_status == "":
+            rospy.sleep(1)
+            rospy.logdebug("Waiting for goal status")
+        # status = self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
         rospy.loginfo("Grabbing " + value)
+        status = self.man_goal_status
         if status == "True":
             rospy.loginfo("Grabbed " + value)
             # self.say(promts["grasp_success"])
@@ -328,6 +392,19 @@ class MainEngServer:
             rospy.loginfo("Failed to grab " + value)
             # self.say(promts["grasp_fail"])
             return False
+    def find(self):
+        self.arm_goal = MoveArmGoal()
+        self.arm_goal.state = "hri_front"
+        self.arm_goal.speed = 0.3
+
+        self.move_arm_client.send_goal(self.arm_goal)
+        self.move_arm_client.wait_for_result()
+        self.tracker_pub.publish(1)
+        self.say("I'm looking for someone")
+        rospy.sleep(7)
+        self.say("Hello! How Are you?")
+        self.tracker_pub.publish(0)
+
 
     def put(self, value):
         rospy.loginfo("Putting " + value)
@@ -337,9 +414,16 @@ class MainEngServer:
             self.move_base_client.cancel_all_goals()
             self.state = MainEngServer.STATE_ENUM["IDLE"]
             return
+        self.man_goal_status = ""
         self.manipulation_pub.publish("Place")
-        status = self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
+        self.say("I will put the object onto " + value)
+        start = rospy.Time.now()
+        while self.man_goal_status == "":
+            rospy.sleep(1)
+            rospy.logdebug("Waiting for goal status")
+        # status = self.manipulation_sub = rospy.Subscriber('manipulation/response', String, self.manipulation_callback)
         rospy.loginfo("Waiting for put")
+        status = self.man_goal_status
         if status == "True":
             rospy.loginfo("Put " + value)
             # self.say(promts["put_success"])
@@ -350,6 +434,7 @@ class MainEngServer:
             return False
 
     def intro(self):
+        self.say("Hello, I am the RoboTeus robot, I'm here to help you with your domestic tasks")
         rospy.loginfo("Introducing")
 
 if __name__ == "__main__":

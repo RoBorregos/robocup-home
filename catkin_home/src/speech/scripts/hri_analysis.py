@@ -280,7 +280,7 @@ def callback(data):
     activation_call = str(data.inputText)
     user_input = str(data.inputText)
     print("recibido: ", user_input)
-    if user_input != "" and ("assistant" in user_input or "Assistant" in user_input):
+    if user_input != "" and ("assistant" in user_input or "Assistant" in user_input or "go" in user_input.lower() or "grab" in user_input.lower()):
         # user_input = user_input.split("assistant")[1]
         process_user_input(publisher_commands)
 

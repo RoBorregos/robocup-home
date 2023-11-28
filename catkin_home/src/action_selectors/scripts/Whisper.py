@@ -42,7 +42,7 @@ class Whisper():
     def __init__(self):
         # Discard parameters
         self.state = None
-        self.min_time = 2 # seconds
+        self.min_time = 1 # seconds
         self.max_time = 30 # seconds
 
         # Set the parameters for the temporary WAV file
