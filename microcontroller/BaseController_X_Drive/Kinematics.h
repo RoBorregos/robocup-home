@@ -59,7 +59,7 @@ class Kinematics
   private:
     float linear_vel_x_mins_;
     float linear_vel_y_mins_;
-    float angular_vel_z_mins_;
+    float angular_vel_z_mins_; 
     float circumference_;
     float tangential_vel_;
     float x_rpm_;

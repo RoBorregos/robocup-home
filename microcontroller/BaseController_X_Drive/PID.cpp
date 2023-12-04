@@ -56,36 +56,6 @@ void PID::compute(const double setpoint, const double input, double &output) {
   
 }
 
-void PID::compute(const double error, double &output, const byte flag) {
-  if(millis()-time_ < sample_time_) {
-      return;
-  }
-
-  if(error_pre_ * error <= 0) {
-    error_pre_ = 0;
-    error_sum_ = 0;
-  }
-  if(flag == 0) {
-    if(abs(error) <= 2) {
-      error_pre_ = 0;
-      error_sum_ = 0;
-    }
-  }
-  
-  output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
-  error_pre_ = error;
-  error_sum_ += error;
-  
-  
-  error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
-  output = max(out_min_, min(out_max_, output));
-  
-  time_ = millis();
-
-}
-
-
-
 double PID::compute_dt(const double setpoint, const double input, const double sample_time_) {
 
 
@@ -94,12 +64,20 @@ double PID::compute_dt(const double setpoint, const double input, const double s
   }
 
   const double error = setpoint - input;
-  float output = error * kp_ + error_sum_ * ki_ + (error - error_pre_) * kd_;
+ 
+  float output = output1 + (kp_ + kd_ / sample_time_) * error +
+  ((kp_) * (-1) + ki_ * sample_time_ - 2 * kd_ / sample_time_) * error1 + (kd_ / sample_time_) * error2;
+
+  output1 = output;
+  error2 = error1;
+  error1 = error;
+
+  if(output > 350.0)
+    output = 350.0;
+  if(output < 30.0)
+    output = 30.0;
   
-  error_pre_ = error;
-  error_sum_ += error;
-  
-  error_sum_ = max(max_error_sum_ * -1, min(max_error_sum_, error_sum_));
+
   output = max(out_min_, min(out_max_, output));
   
   time_ = millis();

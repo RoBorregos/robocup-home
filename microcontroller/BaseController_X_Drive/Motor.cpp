@@ -6,8 +6,8 @@
 Motor::Motor() {}
 Motor::Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
 const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two) : 
-pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidMotorTimeSample) {
-
+pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidSampleTime) {
+  
   id_ = id;
   digital_one_ = digital_one;
   digital_two_ = digital_two;
@@ -97,28 +97,9 @@ void Motor::stop() {
 
 
 //////////////////////////////////Velocity//////////////////////////////////////
-double Motor::getTargetRps(const double velocity) {
-  return MsToRps(velocity);
-}
+void Motor::RpmToPwm(const uint16_t rpm){
+  pwm_ = rpm * (255 / kMaxRpm);
 
-double Motor::getTargetTicks(const double velocity) {
-  return RpsToTicks( MsToRps(velocity) );
-}
-
-double Motor::RpsToTicks(const double rps) {
-  return  (rps / kPidCountTimeSamplesInOneSecond) * kPulsesPerRevolution;
-}
-
-double Motor::TicksToRps(const double ticks) {
-  return  (ticks * kPidCountTimeSamplesInOneSecond) / kPulsesPerRevolution;
-}
-
-double Motor::RpsToMs(const double rps) {
-  return  rps * M_PI * kWheelDiameter;
-}
-
-double Motor::MsToRps(const double ms) {
-  return  (ms / ( M_PI * kWheelDiameter));
 }
 
 uint8_t Motor::getPWM(){
@@ -141,7 +122,13 @@ void Motor::changePwm(const uint8_t pwm) {
 }
 
 void Motor::constantRPM(double velocity) {
-  target_speed_ = RpsToMs(velocity / kSecondsInMinute);
+  currentMillis = millis();
+  if((currentMillis - prevMillis) >= kPidSampleTime){
+    prevMillis = currentMillis;
+    current_speed_ = 10 * pid_ticks_ * (60 / kPulsesPerRevolution);
+    setPidTicks(0);
+  }
+
   int speed_sign = fmin(1, fmax(-1, velocity));
   velocity = fabs(velocity);
   double tmp_pwm = pwm_;
@@ -157,11 +144,11 @@ void Motor::constantRPM(double velocity) {
       backward();
       break;
   }
-  pid_.compute(
-    velocity / kSecondsInMinute, current_speed_, tmp_pwm, pid_ticks_,
-    kPulsesPerRevolution, kPidCountTimeSamplesInOneSecond
-  );
- 
+
+  //Need to change velocity into RPM units
+  tmp_pwm = pid_.compute_dt(velocity, getCurrentSpeed(), kPidMotorSampleTime);
+  tmp_pwm = RpmToPwm(tmp_pwm);
+  
   changePwm(tmp_pwm);
 }
 
