@@ -7,7 +7,6 @@ Motor::Motor() {}
 Motor::Motor(const MotorId id, const uint8_t digital_one, const uint8_t digital_two, 
 const uint8_t analog_one, const uint8_t encoder_one, const uint8_t encoder_two) : 
 pid_(kP, kI, kD, kPidMinOutputLimit, kPidMaxOutputLimit, kPidMaxErrorSum, kPidSampleTime) {
-  
   id_ = id;
   digital_one_ = digital_one;
   digital_two_ = digital_two;
@@ -97,9 +96,10 @@ void Motor::stop() {
 
 
 //////////////////////////////////Velocity//////////////////////////////////////
-void Motor::RpmToPwm(const uint16_t rpm){
+double  Motor::RpmToPwm(const uint16_t rpm){
   pwm_ = rpm * (255 / kMaxRpm);
 
+  return pwm_;
 }
 
 uint8_t Motor::getPWM(){
@@ -123,6 +123,10 @@ void Motor::changePwm(const uint8_t pwm) {
 
 void Motor::constantRPM(double velocity) {
   currentMillis = millis();
+  target_speed_ = velocity;
+  Serial.println(getPidTicks());
+  Serial.println(getCurrentSpeed());
+  
   if((currentMillis - prevMillis) >= kPidSampleTime){
     prevMillis = currentMillis;
     current_speed_ = 10 * pid_ticks_ * (60 / kPulsesPerRevolution);
@@ -131,7 +135,6 @@ void Motor::constantRPM(double velocity) {
 
   int speed_sign = fmin(1, fmax(-1, velocity));
   velocity = fabs(velocity);
-  double tmp_pwm = pwm_;
   switch (speed_sign)
   {
     case 0:
@@ -146,9 +149,9 @@ void Motor::constantRPM(double velocity) {
   }
 
   //Need to change velocity into RPM units
-  tmp_pwm = pid_.compute_dt(velocity, getCurrentSpeed(), kPidMotorSampleTime);
+  tmp_pwm = pid_.compute_dt(target_speed_, getCurrentSpeed(), kPidMotorSampleTime);
+  Serial.print("Motor rpm: "); Serial.println(tmp_pwm);
   tmp_pwm = RpmToPwm(tmp_pwm);
-  
   changePwm(tmp_pwm);
 }
 

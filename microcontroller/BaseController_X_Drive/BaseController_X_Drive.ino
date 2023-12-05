@@ -5,9 +5,9 @@
 
 Movement *robot = nullptr;
 bool ROS_ENABLE = false;
-bool CHECK_PID = false;
+bool CHECK_PID = true;
 bool CHECK_MOTORS = false;
-bool CHECK_ENCODERS = true;
+bool CHECK_ENCODERS = false;
 
 void setup() {
     
@@ -22,12 +22,9 @@ void setup() {
         loop();
     }
     
-
-
     Plot plot(robot, ROS_ENABLE);
     // plot.startSequence();    
     RosBridge bridge(robot, &bnoInstance, &plot);
-    
     bridge.run();
 }
 
@@ -67,7 +64,8 @@ void loop() {
                 //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
                 //robot->cmdVelocity4Kinematics(xVelocities[i], 0, 0); 
                 ///CMDVEL FOR PID
-                robot->orientedMovement(xVelocities[i], 0, 0); 
+                robot->back_left_motor_.constantRPM(120);
+                //robot->orientedMovement(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
             }
         }

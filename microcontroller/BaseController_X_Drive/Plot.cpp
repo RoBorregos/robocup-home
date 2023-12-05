@@ -35,7 +35,7 @@ void Plot::plotTest()
 
 
 void Plot::plotTargetandCurrent()
-{
+{/*
     plotData(
         abs(moveAll_->back_right_motor_.getTargetRps(moveAll_->back_right_motor_.getTargetSpeed())),
         moveAll_->back_right_motor_.getCurrentSpeed(),
@@ -43,6 +43,7 @@ void Plot::plotTargetandCurrent()
         moveAll_->front_right_motor_.getCurrentSpeed(),
         0.0
     );
+    */
 }
 
 void Plot::plotPWM()
