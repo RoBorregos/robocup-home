@@ -1,4 +1,4 @@
-#include "Movement.h"
+ #include "Movement.h"
 #include "RosBridge.h"
 #include "BNO.h"
 #include "Plot.h"
@@ -61,15 +61,18 @@ void loop() {
                       sign = true;
                     }
                 }
+                
                 //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
                 //robot->cmdVelocity4Kinematics(xVelocities[i], 0, 0); 
                 ///CMDVEL FOR PID
-                robot->back_left_motor_.constantRPM(120);
+                robot->front_left_motor_.constantRPM(20);
                 //robot->orientedMovement(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
             }
+           
         }
     }
+    
     if (CHECK_ENCODERS) {
         Serial.begin(9600);
         bool direction = false;

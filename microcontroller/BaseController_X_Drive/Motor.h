@@ -46,7 +46,7 @@ class Motor {
 
     //////////////////////////////////Velocity//////////////////////////////////////
     // Calculate target Rps according to a velocity in meters per second.
-    double RpmToPwm(const uint16_t);
+    void RpmToPwm(const double rpm);
 
     // Change Pwm value of a motor.
     void changePwm(const uint8_t pwm);
@@ -114,32 +114,32 @@ class Motor {
 
     // Velocity.
     uint8_t pwm_ = 0;
-    double tmp_pwm;
+    double tmp_pwm = 0;
     int encoders_dir_ = 0;
     int pid_ticks_ = 0;
     int odom_ticks_ = 0;
     double last_ticks_ = 0;
     double current_speed_ = 0;
     double target_speed_ = 0;
-    double kMaxRpm = 200;
+    double kMaxRpm = 100.0;
     double prevMillis = 0;
     double currentMillis = 0;
     double interval = 100;
     
     // PID.
     PID pid_;
-    static constexpr uint8_t kPidMinOutputLimit = 51;
+    static constexpr uint8_t kPidMinOutputLimit = 50;
     static constexpr uint8_t kPidMaxOutputLimit = 255;
-    static constexpr uint16_t kPidMaxErrorSum = 100;
-    static constexpr uint8_t kPidSampleTime = 100;
+    static constexpr uint32_t kPidMaxErrorSum = 100;
+    static constexpr uint16_t kPidSampleTime = 100;
     static constexpr float kPidMotorSampleTime = 0.1;
     static constexpr double kOneSecondInMillis = 1000.0;
     static constexpr double kSecondsInMinute = 60;
     static constexpr double kPidCountTimeSamplesInOneSecond = kOneSecondInMillis/kPidMotorSampleTime;
     static constexpr double kPidCountTimeSamplesInOneMinute = kSecondsInMinute*kPidCountTimeSamplesInOneSecond;
-    static constexpr double kP = 10;
-    static constexpr double kI = 10;
-    static constexpr double kD = 10;
+    static constexpr double kP = 5.0;
+    static constexpr double kI = 1.5;
+    static constexpr double kD = 0;
     
 
 };

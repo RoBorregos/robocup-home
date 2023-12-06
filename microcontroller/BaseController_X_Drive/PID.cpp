@@ -59,21 +59,18 @@ void PID::compute(const double setpoint, const double input, double &output) {
 double PID::compute_dt(const double setpoint, const double input, const double sample_time_) {
 
   const double error = setpoint - input;
-   if (fabs(sample_time_) < 1e-6) {
-    return 0.0; // or another appropriate default value
-  }
   
-  float output = output1 + (kp_ + kd_ / sample_time_) * error +
+  double output = output1 + (kp_ + kd_ / sample_time_) * error +
   ((kp_) * (-1) + ki_ * sample_time_ - 2 * kd_ / sample_time_) * error1 + (kd_ / sample_time_) * error2;
 
   output1 = output;
   error2 = error1;
   error1 = error;
-
-  if(output > 250.0)
-    output = 250.0;
-  if(output < 30.0)
-    output = 30.0;
+  
+  if(output > 100.0)
+    output = 100.0;
+  if(output < 15.0)
+    output = 15.0;
   
 
   //output = max(out_min_, min(out_max_, output));

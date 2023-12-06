@@ -62,9 +62,9 @@ class PID{
     double ki_ = 0;
     double kd_ = 0;
 
-    double output1;
-    double error1;
-    double error2;
+    double output1 = 0;
+    double error1 = 0;
+    double error2 = 0;
     double error_sum_ = 0;
     double error_pre_ = 0;
    

@@ -8,7 +8,7 @@ void Encoder::handleEncoder(Motor &motor, int sign = 1) {
 }
 
 //////////////////////////////////Motor Functions//////////////////////////////////////
-void Encoder::backLeftEncoder() {
+void Encoder::frontLeftEncoder() {
   handleEncoder(robot->back_left_motor_, 1);
 }
 
@@ -16,7 +16,7 @@ void Encoder::backRightEncoder() {
   handleEncoder(robot->back_right_motor_, -1);
 }
 
-void Encoder::frontLeftEncoder() {
+void Encoder::backLeftEncoder() {
   handleEncoder(robot->front_left_motor_, 1);
 }
 
