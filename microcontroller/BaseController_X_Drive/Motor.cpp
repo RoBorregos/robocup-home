@@ -119,7 +119,7 @@ void Motor::changePwm(const uint8_t pwm) {
   }
 }
 
-void Motor::constantRPM(const double velocity) {
+void Motor::stableRPM(const double velocity) {
   currentMillis = millis();
   target_speed_ = velocity;
   if((currentMillis - prevMillis) >= kPidSampleTime){
@@ -128,7 +128,7 @@ void Motor::constantRPM(const double velocity) {
     setPidTicks(0);
   }
   
-  Serial.println(pid_ticks_);
+  //Serial.println(getCurrentSpeed());
 
   int speed_sign = fmin(1, fmax(-1, velocity));
   //velocity = fabs(velocity);
@@ -146,11 +146,11 @@ void Motor::constantRPM(const double velocity) {
   }
   //Need to change velocity into RPM units
 
-  tmp_pwm = pid_.compute_dt(target_speed_, getCurrentSpeed(), kPidMotorSampleTime);
-  Serial.print("Setpoint rpm: "); Serial.println(velocity);
+  tmp_pwm = pid_.compute_dt(abs(target_speed_)  , getCurrentSpeed(), kPidMotorSampleTime);
+  //Serial.print("Setpoint rpm: "); Serial.println(velocity);
   Serial.print("Current Motor rpm: "); Serial.println(getCurrentSpeed());
   RpmToPwm(tmp_pwm);
-  Serial.print("PWM value: "); Serial.println(pwm_);
+  //Serial.print("PWM value: "); Serial.println(pwm_);
 
   changePwm(pwm_);
 }

@@ -8,6 +8,10 @@ bool ROS_ENABLE = false;
 bool CHECK_PID = true;
 bool CHECK_MOTORS = false;
 bool CHECK_ENCODERS = false;
+double data = 0.0;
+double setpoint = 40.0;
+
+
 
 void setup() {
     
@@ -43,12 +47,18 @@ void loop() {
             delay(2000);
             plot.startSequence();
             // List of x Velocities
-            double xVelocities[] = {0.7};
+            double xVelocities[] = {0.1};
             long long time = 0.0;
             int i = 0;
             bool sign = false;
-            
+
+
             while(1) {
+               if(Serial.available() != 0){
+                  setpoint = Serial.parseFloat();
+    
+               }  
+                  
                 if (millis() - time > 6000) {
                     time = millis();
                     if (sign) {
@@ -61,15 +71,17 @@ void loop() {
                       sign = true;
                     }
                 }
-                
                 //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
-                //robot->cmdVelocity4Kinematics(xVelocities[i], 0, 0); 
+                
+                robot->cmdVelocity(0, 0, 0); 
                 ///CMDVEL FOR PID
-                robot->front_left_motor_.constantRPM(20);
                 //robot->orientedMovement(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
+                                
+                //robot->front_left_motor_.stableRPM(setpoint);
             }
-           
+             
+
         }
     }
     

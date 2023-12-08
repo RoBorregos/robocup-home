@@ -100,7 +100,7 @@ class Movement {
     static constexpr double kFrWheelsDist = 0.0;
     static constexpr double kLrWheelsDist = 0.24;
     static constexpr double kWheelDiameter = 0.10;
-    static constexpr double kRPM = 120;
+    static constexpr double kRPM = 400;
     static constexpr double kRPS = kRPM / 60;
     static constexpr double kMaxVelocity = kRPS * (M_PI * kWheelDiameter);
 

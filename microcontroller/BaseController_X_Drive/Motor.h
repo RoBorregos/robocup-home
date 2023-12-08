@@ -52,7 +52,7 @@ class Motor {
     void changePwm(const uint8_t pwm);
     
     // Compute Pid controller and update pwm. 
-    void constantRPM(const double velocity);
+    void stableRPM(const double velocity);
 
 
     //////////////////////////////////Set Methods//////////////////////////////////////

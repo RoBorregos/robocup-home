@@ -62,13 +62,15 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   tan_rpm_ = tangential_vel_ / circumference_;
 
   Kinematics::output rpm;
+
+  // Need to check motor order //
+  rpm.motor2 = (-1*sin(1*(PI/4))*linear_vel_x_mins_+cos(1*PI/4)*linear_vel_y_mins_+R*angular_vel_z_mins_);
+  rpm.motor1 = (-1*sin(3*(PI/4))*linear_vel_x_mins_+cos(3*PI/4)*linear_vel_y_mins_+R*angular_vel_z_mins_);
+  rpm.motor3 = (-1*sin(5*(PI/4))*linear_vel_x_mins_+cos(5*PI/4)*linear_vel_y_mins_+R*angular_vel_z_mins_);
+  rpm.motor4 = (-1*sin(7*(PI/4))*linear_vel_x_mins_+cos(7*PI/4)*linear_vel_y_mins_+R*angular_vel_z_mins_);
   
-  rpm.motor2 = (-1*sin(1*(PI/4))*x_rpm_+cos(1*PI/4)*y_rpm_+R*angular_vel_z_mins_)/(circumference_/(2*PI));
-  rpm.motor1 = (-1*sin(3*(PI/4))*x_rpm_+cos(3*PI/4)*y_rpm_+R*angular_vel_z_mins_)/(circumference_/(2*PI));
-  rpm.motor3 = (-1*sin(5*(PI/4))*x_rpm_+cos(5*PI/4)*y_rpm_+R*angular_vel_z_mins_)/(circumference_/(2*PI));
-  rpm.motor4 = (-1*sin(7*(PI/4))*x_rpm_+cos(7*PI/4)*y_rpm_+R*angular_vel_z_mins_)/(circumference_/(2*PI));
-      
   return rpm;
+  
 }
 
 Kinematics::output Kinematics::getPWM(float linear_x, float linear_y, float angular_z)

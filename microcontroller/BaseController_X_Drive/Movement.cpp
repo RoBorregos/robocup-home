@@ -110,6 +110,11 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
   Kinematics::output rpm = kinematics_.getRPM(x, y, z);
   updatePIDKinematics(rpm.motor1, rpm.motor2, rpm.motor3, rpm.motor4);
+  Serial.print("Back Left Motor RPM: "); Serial.println(rpm.motor1);
+  Serial.print("Back Right Motor RPM: "); Serial.println(rpm.motor2);
+  Serial.print("Front Left Motor RPM: "); Serial.println(rpm.motor3);
+  Serial.print("Front Right Motor RPM: "); Serial.println(rpm.motor4);  
+
 }
 
 //////////////////////////ADJUSTING CMD VELOCITY BASED ON BNO FEEDBACK//////////////////////////
@@ -133,6 +138,7 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
   Kinematics::output pwm = kinematics_.getPWM(x, y, z);
   updatePIDKinematics(pwm.motor1, pwm.motor2, pwm.motor3, pwm.motor4);
+  
   Serial.print("Back Left Motor PWM: "); Serial.println(back_left_motor_.getPWM());
   Serial.print("Back Right Motor PWM: "); Serial.println(back_right_motor_.getPWM());
   Serial.print("Front Left Motor PWM: "); Serial.println(front_left_motor_.getPWM());
@@ -141,8 +147,8 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
 }
 
 void Movement::updatePIDKinematics(double fr_speed, double fl_speed, double bl_speed, double br_speed) {
-  front_left_motor_.constantRPM(fr_speed);
-  front_right_motor_.constantRPM(fl_speed);
-  back_left_motor_.constantRPM(bl_speed);
-  back_right_motor_.constantRPM(br_speed);
+  front_left_motor_.stableRPM(fl_speed);
+  front_right_motor_.stableRPM(fr_speed);
+  back_left_motor_.stableRPM(bl_speed);
+  back_right_motor_.stableRPM(br_speed);
 }
