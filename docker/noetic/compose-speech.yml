@@ -1,0 +1,54 @@
+# Run this file (with robocup-home as working dir): 
+# $ docker compose -f docker/noetic/compose-speech.yml up -d
+# Stop this file (with robocup-home as working dir):
+# $ docker compose -f docker/noetic/compose-speech.yml down
+# Open terminal: $ docker exec -it speech_container bash
+
+# docker compose up ros -d
+# docker exec -it ros bash
+
+# docker run -it -d -p 11311:11311 --name ros -e DISPLAY=host.docker.internal:0.0 -e LIBGL_ALWAYS_INDIRECT=0 --net host -v ./ros:/app --name=ros-dk osrf/ros:noetic-desktop-full bash
+services:
+  speech:
+    build:
+      # The context specified is the context set to the Dockerfile. Dockerfile.speech working dir must have ./docker/noetic.
+      context: ../../
+      dockerfile: ./docker/noetic/Dockerfile.speech
+    container_name: speech_container
+    network_mode: host
+    ports:
+      - 5005:5005
+    tty: true
+    # ports:
+    # - 8080:8080
+    # - 11311:11311
+    # --bridge=host
+    # network_mode: bridge
+    privileged: true
+    volumes:
+      - ../../catkin_home/src:/catkin_home/src
+    environment:
+      - DISPLAY=host.docker.internal:0.0
+      - PULSE_SERVER=host.docker.internal:4713
+      - LIBGL_ALWAYS_INDIRECT=0
+    command: bash
+# docker network create -d bridge mybridge
+
+# networks:
+#   mynet:
+#     driver: bridge
+
+# docker pull osrf/ros:noetic-desktop-full
+# docker run -it -d -p 8080:8080 --name ros -e DISPLAY=host.docker.internal:0.0 -e LIBGL_ALWAYS_INDIRECT=0 --net host -v ./ros:/app --name=ros-dk osrf/ros:noetic-desktop-full bash
+# docker exec -it ros-dk bash
+# docker run -it -d -e DISPLAY=host.docker.internal:0.0 -e LIBGL_ALWAYS_INDIRECT=0 -v ./ros:/app --publish-all --name=ros-dk osrf/ros:noetic-desktop-full bash
+
+# docker network create -d macvlan —-subnet 10.0.0.0/24 --ip-range 10.0.0.128/25 —-gateway 10.0.0.1 -o parent=eth0 mynet
+
+# docker network create mynet --subnet 10.0.0.0/24 --ip-range 10.0.0.128/25 --gateway 10.0.0.1
+
+# Windows:
+# Start pulseaudio server:
+# ./docker/windows/pulseaudio-1.1/bin/pulseaudio.exe --use-pid-file=false -D
+
+# ffmpeg -ac 1 -f dshow -i audio="Microphone (Realtek Audio)" -ar 16000 -acodec pcm_s16le -f rtp rtp://127.0.0.1:5005

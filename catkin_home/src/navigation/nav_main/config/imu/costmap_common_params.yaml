@@ -1,72 +1,88 @@
-footprint: [[-0.085, -0.20], [-0.085, 0.2],[0.315, 0.2], [0.315, -0.2]]
+footprint: [[-0.185, -0.20], [-0.185, 0.2],[0.215, 0.2], [0.215, -0.2]]  # Defines the footprint of the robot.
 
 obstacle_layer:
-  enabled: true
-  max_obstacle_height: 1.6
-  min_obstacle_height: 0.0
-  obstacle_range: 2.0
-  raytrace_range: 2.0
-  inflation_radius: 0.10
-  combination_method: 1
-  observation_sources: laser_scan_sensor  camera_depth
-  track_unknown_space: true
- 
-  origin_z: 0.0
-  z_resolution: 0.1
-  z_voxels: 10
-  unknown_threshold: 15
-  mark_threshold: 0
-  publish_voxel_map: true
-  footprint_clearing_enabled: true
+  enabled: true  # Enables the obstacle layer.
+  max_obstacle_height: 1.6  # Maximum height of the obstacles.
+  min_obstacle_height: 0.0  # Minimum height of the obstacles.
+  obstacle_range: 3.0  # Maximum range at which obstacles are detected.
+  raytrace_range: 3.5  # Maximum range for raytracing to clear out space.
+  inflation_radius: 0.10  # Maximum distance from an obstacle at which costs are incurred for planning paths.
+  combination_method: 1  # Method used to combine costmap layers.
+  observation_sources:  laser_scan_zed laser_scan_sensor # camera_depth  #  Sources of observations for the obstacle layer.
+  track_unknown_space: true  # Determines whether to track unknown space in the costmap.
 
-  laser_scan_sensor_2:
-    data_type: LaserScan
-    topic: /scan_2
-    marking: true
-    clearing: true
-    expected_update_rate: 0
-    min_obstacle_height: 0.01
-    max_obstacle_height: 0.1
+  origin_z: 0.0  # Origin height of the obstacle layer.
+  z_resolution: 0.1  # Resolution of the obstacle layer in the z-axis.
+  z_voxels: 10  # Number of voxels in the z-axis. (Default: 10)
+  unknown_threshold: 15  # Threshold value for considering a cell as unknown.
+  mark_threshold: 0  # Threshold value for marking a cell as an obstacle.
+  publish_voxel_map: true  # Determines whether to publish the voxel map.
+  footprint_clearing_enabled: true  # Enables footprint clearing.
+
 
   sonar_scan_sensor:
     data_type: PointCloud2
     topic: /sonar_cloudpoint
-    marking: true
-    clearing: true
-    min_obstacle_height: 0.11
-    max_obstacle_height: 0.2
-    observation_persistence: 0.0
+    marking: true # Enables marking of costmap cells as obstacles based on sonar sensor observations.
+    clearing: true  # Enables clearing of costmap cells that are observed to be free from obstacles by the sonar sensor.
+    min_obstacle_height: 0.11  # Minimum height of obstacles detected by the sonar sensor.
+    max_obstacle_height: 0.2  # Maximum height of obstacles detected by the sonar sensor.
+    observation_persistence: 0.0  # Time persistence of the sonar observations.
 
   laser_scan_sensor:
     data_type: LaserScan
     topic: /scan
-    marking: true
-    clearing: true
-    expected_update_rate: 0
-    min_obstacle_height: 0.21
-    max_obstacle_height: 0.30
-
+    marking: true  # Enables marking of costmap cells as obstacles based on laser scan sensor observations.
+    clearing: true  # Enables clearing of costmap cells
+    expected_update_rate: 0  # Expected update rate of the laser scan sensor.
+    min_obstacle_height: 0.21  # Minimum height of obstacles detected by the laser scan sensor.
+    max_obstacle_height: 0.30  # Maximum height of obstacles detected by the laser scan sensor.
+  
+  laser_scan_zed:
+    data_type: LaserScan
+    topic: /pc2ls/scan
+    marking: true  # Enables marking of costmap cells as obstacles based on laser scan sensor observations.
+    clearing: true  # Enables clearing of costmap cells
+    expected_update_rate: 0  # Expected update rate of the laser scan sensor.
+    min_obstacle_height: 0 # 0.21  # Minimum height of obstacles detected by the laser scan sensor.
+    max_obstacle_height: 2 # 0.30  # Maximum height of obstacles detected by the laser scan sensor.
 
   other_sensor_data:
     data_type: PointCloud
-    topic: /other_sensor_data 
-    marking: true
-    clearing: true
-    min_obstacle_height: 0.31
-    max_obstacle_height: 0.4
+    topic: /other_sensor_data
+    marking: true # The costmap cells covered by the sensor's observations will be marked as obstacles. 
+    clearing: true  # The costmap cells that are observed to be free from obstacles by that sensor will be cleared. 
+    min_obstacle_height: 0.31  # Minimum height of obstacles detected by the other sensor data.
+    max_obstacle_height: 0.4  # Maximum height of obstacles detected by the other sensor data.
+
 
   camera_depth:
+    enabled: true
     data_type: PointCloud2
     topic: /zed2/zed_node/point_cloud/ds_no_plane_cloud_registered
-    marking: true
-    clearing: true
-    min_obstacle_height: 0.05
-    max_obstacle_height: 1.0
-
+    update_frequency: 10
+    publish_frequency: 10
+    marking: true   #If true, the costmap will be marked with the footprint of the robot at the origin of the point cloud
+    #clearing: true  #If true, the costmap will be cleared with the footprint of the robot at the origin of the point cloud
+    min_obstacle_height: 0.03
+    max_obstacle_height: 0.2
+    # track_unknown_space: true #If false, each pixel has one of 2 states: lethal obstacle or free. If true, each pixel has one of 3 states: lethal obstacle, free, or unknown
+    obstacle_range: 1.5 #default 2.5, max range to be used for marking obstacles
+    raytrace_range: 2   #default 3.0, max range to be used for raytracing to clear out space
+    expected_update_rate: 0.0    # default 0, if not updating at this rate at least, remove from buffer
+    observation_persistence: 0.0 #Leave in 0.0
+    # voxel_decay: 0.75     #seconds if linear, e^n if exponential
+    decay_model: 0      #0=linear, 1=exponential, -1=persistent
+    decay_acceleration: 1
+    inf_is_valid: true #default false, for laser scans
+    clear_after_reading: true
+    clearing: true  #If true, the costmap will be cleared with the footprint of the robot at the origin of the point cloud
+    
 inflation_layer:
   enabled:              true
-  cost_scaling_factor:  2.0 # exponential rate at which the obstacle cost drops off (default: 10)
-  inflation_radius:     0.05 # max. distance from an obstacle at which costs are incurred for planning paths.
+  #cost_scaling_factor:  2.0 # exponential rate at which the obstacle cost drops off (default: 10)
+  cost_scaling_factor:  1 # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius:     0.01 # max. distance from an obstacle at which costs are incurred for planning paths.
 
 static_layer:
   enabled:              true
@@ -77,9 +93,9 @@ virtualWall_layer:
   topic:  "/virtualWall_cloudPoint"
   map_topic:            "/map"
 
-sonar_layer:
-  enabled:            true
-  clear_threshold:    0.2
-  mark_threshold:     0.8
-  topics: ["/sonar0", "/sonar1", "/sonar2", "/sonar3", "/sonar4"]
-  clear_on_max_reading: true
+# sonar_layer:
+  # enabled:            true
+#   clear_threshold:    0.2
+#   mark_threshold:     0.8
+#   topics: ["/sonar0", "/sonar1", "/sonar2", "/sonar3", "/sonar4"]
+#   clear_on_max_reading: true
