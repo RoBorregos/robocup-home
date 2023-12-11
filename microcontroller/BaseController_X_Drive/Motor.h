@@ -17,7 +17,8 @@ class Motor {
   public:
     // Motor Characteristics.
     static constexpr double kPulsesPerRevolution = 4320.0;
-    static constexpr double kWheelDiameter = 0.1;
+    static constexpr double kWheelDiameter = 0.105;
+    static constexpr double kWheelCircumference = 0.33;
     
     //////////////////////////////////Constructor//////////////////////////////////////
     Motor();
@@ -128,6 +129,7 @@ class Motor {
     
     // PID.
     PID pid_;
+    //////No olvidar cambiar de nuevo la salida de PWM mínima cuando termine
     static constexpr uint8_t kPidMinOutputLimit = 50;
     static constexpr uint8_t kPidMaxOutputLimit = 255;
     static constexpr uint32_t kPidMaxErrorSum = 100;

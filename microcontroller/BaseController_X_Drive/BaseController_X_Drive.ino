@@ -9,9 +9,18 @@ bool CHECK_PID = true;
 bool CHECK_MOTORS = false;
 bool CHECK_ENCODERS = false;
 double data = 0.0;
-double setpoint = 40.0;
+double setpoint = 0.0;
 
 
+/////////////////////////////////////remove after testing///////////////////////////////////////////////////
+
+float velocity_vector = 0;
+float target_angle = 90;
+float curr_angle = 0;
+float max_rpm = 40;
+float max_lin_vel = 0.10; ///Maximum linear velocity of the robot is .2 m/s approximately
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void setup() {
     
@@ -43,6 +52,7 @@ void loop() {
            Serial2.begin(57600);
         // Check PID
         while(1) {
+            
             Plot plot(robot, !ROS_ENABLE);
             delay(2000);
             plot.startSequence();
@@ -72,8 +82,13 @@ void loop() {
                     }
                 }
                 //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
-                
-                robot->cmdVelocity(0, 0, 0); 
+                //Caso de prueba para movimiento traslacional rotativo sin BNO
+                //target_angle = target_angle + 1; Camia el angulo de la velocidad que persigue
+                //robot->cmdVelocity(max_lin_vel*cos(PI/180*(target_angle)), max_lin_vel*sin(PI/180*(target_angle)) , 0); Las cinematica transforma el angulo en la rpm para  que se mueva en todos los angulos
+                //delay(100); Espera para cambiar el angulo
+
+                robot->cmdVelocity(0*max_lin_vel*cos(PI/180*(target_angle)), 0*max_lin_vel*sin(PI/180*(target_angle)) , 0.05);
+                //robot->cmdVelocity(0.2,0, 0);
                 ///CMDVEL FOR PID
                 //robot->orientedMovement(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();

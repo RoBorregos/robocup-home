@@ -109,11 +109,15 @@ void Movement::cmdVelocity(const double linear_x, const double linear_y, const d
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
   Kinematics::output rpm = kinematics_.getRPM(x, y, z);
-  updatePIDKinematics(rpm.motor1, rpm.motor2, rpm.motor3, rpm.motor4);
+  updatePIDKinematics(rpm.motor2, rpm.motor1, rpm.motor3, rpm.motor4);
   Serial.print("Back Left Motor RPM: "); Serial.println(rpm.motor1);
   Serial.print("Back Right Motor RPM: "); Serial.println(rpm.motor2);
   Serial.print("Front Left Motor RPM: "); Serial.println(rpm.motor3);
   Serial.print("Front Right Motor RPM: "); Serial.println(rpm.motor4);  
+  Serial.print("Back Left Motor PWM: "); Serial.println(back_left_motor_.getPWM());
+  Serial.print("Back Right Motor PWM: "); Serial.println(back_right_motor_.getPWM());
+  Serial.print("Front Left Motor PWM: "); Serial.println(front_left_motor_.getPWM());
+  Serial.print("Front Right Motor PWM: "); Serial.println(front_right_motor_.getPWM());
 
 }
 
@@ -125,6 +129,7 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
   if(angular_z != 0){
       robotAngle = current_angle;
   }
+  
   else{
     float angle_error = fabs(current_angle - robotAngle);
     if(angle_error > kAngleTolerance){
@@ -137,7 +142,7 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
   Kinematics::output pwm = kinematics_.getPWM(x, y, z);
-  updatePIDKinematics(pwm.motor1, pwm.motor2, pwm.motor3, pwm.motor4);
+  updatePIDKinematics(pwm.motor2, pwm.motor1, pwm.motor3, pwm.motor4);
   
   Serial.print("Back Left Motor PWM: "); Serial.println(back_left_motor_.getPWM());
   Serial.print("Back Right Motor PWM: "); Serial.println(back_right_motor_.getPWM());

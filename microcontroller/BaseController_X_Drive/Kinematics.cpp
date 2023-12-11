@@ -44,8 +44,9 @@ Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_
 
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
+  
   //Distance from the center of the robot to the center of the wheels
-  float R = lr_wheels_dist_;
+  float R = 0.33;
 
   //convert m/s to m/min
   linear_vel_x_mins_ = linear_x * 60;
@@ -63,15 +64,16 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
 
   Kinematics::output rpm;
 
-  // Need to check motor order //
-  rpm.motor2 = (-1*sin(1*(PI/4))*linear_vel_x_mins_+cos(1*PI/4)*linear_vel_y_mins_+R*angular_vel_z_mins_);
-  rpm.motor1 = (-1*sin(3*(PI/4))*linear_vel_x_mins_+cos(3*PI/4)*linear_vel_y_mins_+R*angular_vel_z_mins_);
-  rpm.motor3 = (-1*sin(5*(PI/4))*linear_vel_x_mins_+cos(5*PI/4)*linear_vel_y_mins_+R*angular_vel_z_mins_);
-  rpm.motor4 = (-1*sin(7*(PI/4))*linear_vel_x_mins_+cos(7*PI/4)*linear_vel_y_mins_+R*angular_vel_z_mins_);
-  
+  // Need to check motor order //*(40/13.1947)
+  rpm.motor2 = (-1*sin(1*(PI/4))*linear_vel_x_mins_+cos(1*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
+  rpm.motor1 = (-1*sin(3*(PI/4))*linear_vel_x_mins_+cos(3*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
+  rpm.motor3 = (-1*sin(5*(PI/4))*linear_vel_x_mins_+cos(5*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
+  rpm.motor4 = (-1*sin(7*(PI/4))*linear_vel_x_mins_+cos(7*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
+
   return rpm;
   
 }
+
 
 Kinematics::output Kinematics::getPWM(float linear_x, float linear_y, float angular_z)
 {
@@ -129,8 +131,9 @@ Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2, int mot
   //convert revolutions per minute to revolutions per second
   float average_rps_a = average_rpm_a / 60;
   vel.angular_z =  (average_rps_a * circumference_) / ((fr_wheels_dist_ / 2) + (lr_wheels_dist_ / 2));
-
+  
   return vel;
+  
 }
 
 int Kinematics::rpmToPWM(int rpm)
