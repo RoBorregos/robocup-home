@@ -2,14 +2,12 @@
 // different systems of the robot. 
 #ifndef PID_h
 #define PID_h
-
 #include <math.h>
 #include <Arduino.h>
 
 class PID{
-
   public:
-  
+
     //////////////////////////////////Constructor//////////////////////////////////////
     PID();
     PID(const double kp, const double ki, const double kd, const double out_min, const double out_max, const double max_error_sum, const long sample_time);
@@ -57,7 +55,7 @@ class PID{
     double getPre();
   
   private:
-    
+
     double kp_ = 0;
     double ki_ = 0;
     double kd_ = 0;

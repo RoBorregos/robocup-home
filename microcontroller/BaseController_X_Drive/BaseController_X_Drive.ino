@@ -15,10 +15,10 @@ double setpoint = 0.0;
 /////////////////////////////////////remove after testing///////////////////////////////////////////////////
 
 float velocity_vector = 0;
-float target_angle = 90;
+float target_angle = 0;
 float curr_angle = 0;
 float max_rpm = 40;
-float max_lin_vel = 0.10; ///Maximum linear velocity of the robot is .2 m/s approximately
+float max_lin_vel = 0.20; ///Maximum linear velocity of the robot is .2 m/s approximately
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -62,13 +62,10 @@ void loop() {
             int i = 0;
             bool sign = false;
 
-
             while(1) {
                if(Serial.available() != 0){
                   setpoint = Serial.parseFloat();
-    
                }  
-                  
                 if (millis() - time > 6000) {
                     time = millis();
                     if (sign) {
@@ -83,16 +80,18 @@ void loop() {
                 }
                 //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
                 //Caso de prueba para movimiento traslacional rotativo sin BNO
-                //target_angle = target_angle + 1; Camia el angulo de la velocidad que persigue
-                //robot->cmdVelocity(max_lin_vel*cos(PI/180*(target_angle)), max_lin_vel*sin(PI/180*(target_angle)) , 0); Las cinematica transforma el angulo en la rpm para  que se mueva en todos los angulos
-                //delay(100); Espera para cambiar el angulo
-
-                robot->cmdVelocity(0*max_lin_vel*cos(PI/180*(target_angle)), 0*max_lin_vel*sin(PI/180*(target_angle)) , 0.05);
+                
+                target_angle = target_angle + 1; //Camia el angulo de la velocidad que persigue
+                robot->setRobotAngle(0);
+                //robot->cmdVelocity(max_lin_vel*cos(PI/180*(target_angle)), max_lin_vel*sin(PI/180*(target_angle)) , 0); //Las cinematica transforma el angulo en la rpm para  que se mueva en todos los angulos
+                robot->orientedMovement(max_lin_vel*cos(PI/180*(target_angle)), max_lin_vel*sin(PI/180*(target_angle)), 0);
+                
+                delay(60); //Espera para cambiar el angulo
+                  
                 //robot->cmdVelocity(0.2,0, 0);
                 ///CMDVEL FOR PID
                 //robot->orientedMovement(xVelocities[i], 0, 0); 
-                //plot.plotTargetandCurrent();
-                                
+                //plot.plotTargetandCurrent();       
                 //robot->front_left_motor_.stableRPM(setpoint);
             }
              

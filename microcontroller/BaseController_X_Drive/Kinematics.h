@@ -49,11 +49,11 @@ class Kinematics
       float linear_y;
       float angular_z;
     };
+    
     Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits, BNO *bno);
     velocities getVelocities(int motor1, int motor2);
     velocities getVelocities(int motor1, int motor2, int motor3, int motor4);
     output getRPM(float linear_x, float linear_y, float angular_z);
-    output getPWM(float linear_x, float linear_y, float angular_z);
     int rpmToPWM(int rpm);
 
   private:
