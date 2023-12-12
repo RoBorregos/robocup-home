@@ -24,10 +24,13 @@
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
 */
-
 //TEST
 #include "Arduino.h"
 #include "Kinematics.h"
+
+///remove after test///
+  float angle_change = 0;
+////////
 
 Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_dist, float lr_wheels_dist, int pwm_bits, BNO *bno)
 {
@@ -39,12 +42,9 @@ Kinematics::Kinematics(int motor_max_rpm, float wheel_diameter, float fr_wheels_
   pwm_res_ = pow(2, pwm_bits) - 1;
   this->bno = bno; //Pass BNO info by reference
 }
-
-
-
 Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angular_z)
 {
-  
+
   //Distance from the center of the robot to the center of the wheels
   float R = 0.33;
 
@@ -63,15 +63,27 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   tan_rpm_ = tangential_vel_ / circumference_;
 
   Kinematics::output rpm;
-
-  // Need to check motor order //*(40/13.1947)
-  rpm.motor2 = (-1*sin(1*(PI/4))*linear_vel_x_mins_+cos(1*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
-  rpm.motor1 = (-1*sin(3*(PI/4))*linear_vel_x_mins_+cos(3*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
-  rpm.motor3 = (-1*sin(5*(PI/4))*linear_vel_x_mins_+cos(5*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
-  rpm.motor4 = (-1*sin(7*(PI/4))*linear_vel_x_mins_+cos(7*PI/4)*linear_vel_y_mins_+angular_vel_z_mins_)*(40/11.9883);
-
-  return rpm;
   
+  ///////////////////////////////remove after testing
+  float curr_angle_x = bno->getYaw();
+  float ang_speed = 3;
+  float prop_speed = 2;
+  float max_lin_vel = 0.10*60;
+  angle_change = angle_change + 0.5;
+  //////////////////////////////////////////////
+  
+  rpm.motor2 = (-1 * sin(1 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(1 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + ang_speed * prop_speed) * (40 / 11.9883);
+  rpm.motor1 = (-1 * sin(3 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(3 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + ang_speed * prop_speed) * (40 / 11.9883);
+  rpm.motor3 = (-1 * sin(5 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(5 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + ang_speed * prop_speed) * (40 / 11.9883);
+  rpm.motor4 = (-1 * sin(7 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(7 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + ang_speed * prop_speed) * (40 / 11.9883);
+  Serial.print("Current angle");
+  Serial.println(curr_angle_x);
+  
+
+
+  bno->updateBNO();
+  return rpm;
+
 }
 
 
@@ -131,9 +143,9 @@ Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2, int mot
   //convert revolutions per minute to revolutions per second
   float average_rps_a = average_rpm_a / 60;
   vel.angular_z =  (average_rps_a * circumference_) / ((fr_wheels_dist_ / 2) + (lr_wheels_dist_ / 2));
-  
+
   return vel;
-  
+
 }
 
 int Kinematics::rpmToPWM(int rpm)

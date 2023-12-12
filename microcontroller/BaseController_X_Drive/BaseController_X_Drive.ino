@@ -15,10 +15,10 @@ double setpoint = 0.0;
 /////////////////////////////////////remove after testing///////////////////////////////////////////////////
 
 float velocity_vector = 0;
-float target_angle = 90;
+float target_angle = 0;
 float curr_angle = 0;
 float max_rpm = 40;
-float max_lin_vel = 0.10; ///Maximum linear velocity of the robot is .2 m/s approximately
+float max_lin_vel = 0.20; ///Maximum linear velocity of the robot is .2 m/s approximately
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -81,19 +81,36 @@ void loop() {
                       sign = true;
                     }
                 }
+                //target_angle = target_angle + 0.5;
+                robot->cmdVelocity(max_lin_vel*cos(PI/180*(target_angle)), max_lin_vel*sin(PI/180*(target_angle)), 0);
+                //Serial.println(target_angle);
                 //CMD4KINEMATICS///////////////////REMOVE AFTER TESTING TO ENABLE PID///////////////////////////////
                 //Caso de prueba para movimiento traslacional rotativo sin BNO
                 //target_angle = target_angle + 1; Camia el angulo de la velocidad que persigue
                 //robot->cmdVelocity(max_lin_vel*cos(PI/180*(target_angle)), max_lin_vel*sin(PI/180*(target_angle)) , 0); Las cinematica transforma el angulo en la rpm para  que se mueva en todos los angulos
                 //delay(100); Espera para cambiar el angulo
 
-                robot->cmdVelocity(0*max_lin_vel*cos(PI/180*(target_angle)), 0*max_lin_vel*sin(PI/180*(target_angle)) , 0.05);
+                /////////////////////////////////////////
+                 //target_angle = target_angle + 1;
+                //si el robot está en 0 a 358 grados
+                //si el angulo del bno está entre 358 y 180 grados
+                //if(curr_angle>2 && curr_angle<180){
+                //  robot->cmdVelocity(0*max_lin_vel*cos(PI/180*(target_angle)), 0*max_lin_vel*sin(PI/180*(target_angle)) , -0.05);
+                //}
+                //else if(curr_
+                //robot->cmdVelocity(0*max_lin_vel*cos(PI/180*(target_angle)), 0*max_lin_vel*sin(PI/180*(target_angle)) , -0.05);
+                //robot->cmdVelocity(0*max_lin_vel*cos(PI/180*(target_angle)), 0*max_lin_vel*sin(PI/180*(target_angle)) , 0);
+                //delay(100); Espera para cambiar el angulo
+                ///////////////////////////////////////////
+
+                
                 //robot->cmdVelocity(0.2,0, 0);
                 ///CMDVEL FOR PID
                 //robot->orientedMovement(xVelocities[i], 0, 0); 
                 //plot.plotTargetandCurrent();
                                 
                 //robot->front_left_motor_.stableRPM(setpoint);
+
             }
              
 
