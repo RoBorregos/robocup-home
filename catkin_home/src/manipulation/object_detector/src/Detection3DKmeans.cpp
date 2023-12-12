@@ -139,7 +139,7 @@ class Detect3DPlace
     int horizontal_prefix[50][50] = {0};
     int vertical_prefix[50][50] = {0};
     double selected_object_sz = 0.05; //meters
-    double kRobotRadiusLimit = 0.5; //meters
+    double kRobotRadiusLimit = 0.7; //meters
     double kMinRobotDistance = 0.2;
     double kXRobotRange = 0.3; //meters
     double kRobotXIndexLimit = kXRobotRange / selected_object_sz;
@@ -878,6 +878,12 @@ public:
 
     /** \brief PointCloud callback. */
     void cloudCB(const sensor_msgs::PointCloud2 &input){
+        ROS_INFO_STREAM("Clean octomap");
+        std_srvs::Empty clear_octomap_srv;
+        clear_octomap.call(clear_octomap_srv);
+        ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_);
+        ros::topic::waitForMessage<sensor_msgs::PointCloud2>(POINT_CLOUD_TOPIC, nh_);
+
         ROS_INFO_STREAM("Received PointCloud");
         if (!ignore_moveit_){
             // Reset Planning Scene Interface

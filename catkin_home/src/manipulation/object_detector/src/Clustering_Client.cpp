@@ -40,7 +40,7 @@ int main(int argc, char **argv)
   // read pcl from file ~/.ros/pcl_table.pcd
   ROS_INFO("Reading pcl from file ~/.ros/pcl_achievable_cloud.pcd");
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::io::loadPCDFile<pcl::PointXYZ>("/home/rbrgs-pc/.ros/pcl_achievable_cloud.pcd", *cloud);
+  pcl::io::loadPCDFile<pcl::PointXYZ>("/home/afr2903u/.ros/pcl_achievable_cloud.pcd", *cloud);
   // print one point from the cloud
   ROS_INFO("First point in the cloud: x=%f, y=%f, z=%f", cloud->points[0].x, cloud->points[0].y, cloud->points[0].z);
 

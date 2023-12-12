@@ -194,7 +194,7 @@ class Clustering_Service:
 
             # save as file
             rospy.loginfo("Saving clusters as image")
-            plt.savefig('/home/rbrgs-pc/Desktop/Robocup-Home/clusters.png')
+            plt.savefig('/home/afr2903u/ws/Robocup-Home/clusters.png')
 
         rospy.loginfo("Returning centroid")
 

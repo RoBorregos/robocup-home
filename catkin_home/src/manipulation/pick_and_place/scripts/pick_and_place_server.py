@@ -432,7 +432,7 @@ class PickAndPlaceServer(object):
 
                 # heigh for place
                 self.place_height = depth #option 1
-                self.place_height = self.pick_height #option 2
+                #self.place_height = self.pick_height   #option 2
                 self.pub_pick_width.publish(width)
 
                 rospy.loginfo("Object dimensions: " + str(self.picked_object_dimensions))
@@ -593,7 +593,7 @@ class PickAndPlaceServer(object):
                 pose_st.pose = object_pose.pose
                 #pose_st.pose.position.z += self.picked_object_dimensions[2] + 0.07
                 rospy.loginfo("Planning with object added height: " + str(self.place_height))
-                pose_st.pose.position.z += self.place_height + 0.07
+                pose_st.pose.position.z += 0.10 + 0.07
                 #pose_st.pose.position.y -= 0.05
                 #face down
                 pose_st.pose.orientation = Quaternion(x=0.000001, y=0.707000, z=0.000001, w=0.707000)

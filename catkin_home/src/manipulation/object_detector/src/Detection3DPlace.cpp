@@ -822,8 +822,8 @@ public:
         for(auto const placing : found_placings){
             if(placing.first > max_weight){
                 max_weight = placing.first;
-                x_closests_av = placing.second.x - (selected_object_sz/grid_size)/4;
-                y_closests_av = placing.second.y - (selected_object_sz/grid_size)/4;
+                x_closests_av = placing.second.x - 3*(selected_object_sz/grid_size)/4;
+                y_closests_av = placing.second.y - 3*(selected_object_sz/grid_size)/4;
             }
         }
         
