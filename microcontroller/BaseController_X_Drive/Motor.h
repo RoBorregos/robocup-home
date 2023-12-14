@@ -47,13 +47,13 @@ class Motor {
 
     //////////////////////////////////Velocity//////////////////////////////////////
     // Calculate target Rps according to a velocity in meters per second.
-    void RpmToPwm(const double rpm);
+    void RpmToPwm(const float rpm);
 
     // Change Pwm value of a motor.
     void changePwm(const uint8_t pwm);
     
     // Compute Pid controller and update pwm. 
-    void stableRPM(const double velocity);
+    void stableRPM(const float velocity);
 
 
     //////////////////////////////////Set Methods//////////////////////////////////////
@@ -80,10 +80,10 @@ class Motor {
     double getLastTicks();
     
     // Return the target Speed of the motor in meters per second.
-    double getTargetSpeed();
+    float getTargetSpeed();
 
     // Return the current speed of the motor in meteres per second.
-    double getCurrentSpeed();
+    float getCurrentSpeed();
     
     // Return the current state of the motor.
     MotorState getCurrentState();
@@ -120,8 +120,8 @@ class Motor {
     int pid_ticks_ = 0;
     int odom_ticks_ = 0;
     double last_ticks_ = 0;
-    double current_speed_ = 0;
-    double target_speed_ = 0;
+    float current_speed_ = 0;
+    float target_speed_ = 0;
     double kMaxRpm = 100.0;
     double prevMillis = 0;
     double currentMillis = 0;

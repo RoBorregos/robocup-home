@@ -96,7 +96,7 @@ void Motor::stop() {
 
 
 //////////////////////////////////Velocity//////////////////////////////////////
-void  Motor::RpmToPwm(const double rpm){
+void  Motor::RpmToPwm(const float rpm){
   pwm_ = rpm * (255.0 / kMaxRpm);
 }
 
@@ -119,7 +119,7 @@ void Motor::changePwm(const uint8_t pwm) {
   }
 }
 
-void Motor::stableRPM(const double velocity) {
+void Motor::stableRPM(const float velocity) {
   currentMillis = millis();
   target_speed_ = velocity;
   if((currentMillis - prevMillis) >= kPidSampleTime){
@@ -186,11 +186,11 @@ double Motor::getLastTicks() {
   return last_ticks_;
 }
 
-double Motor::getTargetSpeed() {
+float Motor::getTargetSpeed() {
   return target_speed_;
 }
 
-double Motor::getCurrentSpeed() {
+float Motor::getCurrentSpeed() {
   return current_speed_;
 }
 

@@ -46,8 +46,18 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
 {
 
   //Distance from the center of the robot to the center of the wheels
-  float R = 0.33;
-
+  float max_lin_vel = 0.2; //20 cms per second
+  float max_rpm = 40;
+  float robot_radius = 0.215;
+  float robot_diameter = robot_radius * 2;
+  float robot_circumference = robot_diameter * PI;
+  float wheel_diameter_2 = 0.32; //meters
+  float rev_to_complete_circle = robot_circumference/wheel_diameter_2;
+  float revs_to_RPMs_proportion = rev_to_complete_circle/max_rpm;
+  float linear_velocity_conversion = (max_lin_vel*revs_to_RPMs_proportion)/6; //it is divided by 6 since RPMs converted into a full circle per minute gives you 6 degrees per second
+  float degrees_per_second_into_RPM = linear_velocity_conversion*60;
+  float rotational_gain_factor = 1; //only use if the robot for some reason cannot reach desired rotational speed with PID
+  
   //convert m/s to m/min
   linear_vel_x_mins_ = linear_x * 60;
   linear_vel_y_mins_ = linear_y * 60;
@@ -55,6 +65,14 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   //convert rad/s to rad/min
   angular_vel_z_mins_ = angular_z * 60;
 
+  //convert rad/min to degree/min
+  float degrees_s = angular_z*(180/PI);
+
+  //Convert degrees to linear velocity
+  //(0.0221335/6) 1 degree per second with actual RPMs
+  float degree_to_RPM = (0.0221335/6)*degrees_s*1*60;
+  float degree_to_RPM_2 = degrees_per_second_into_RPM*degrees_s;
+ 
   // //Vt = ω * radius
   tangential_vel_ = angular_vel_z_mins_ * lr_wheels_dist_;
 
@@ -66,20 +84,23 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
   
   ///////////////////////////////remove after testing
   float curr_angle_x = bno->getYaw();
-  float ang_speed = 3;
-  float prop_speed = 2;
-  float max_lin_vel = 0.10*60;
+  //float ang_speed = 3;
+  //float prop_speed = 2;
+  //float max_lin_vel = 0.10*60;
   angle_change = angle_change + 0.5;
   //////////////////////////////////////////////
   
-  rpm.motor2 = (-1 * sin(1 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(1 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + ang_speed * prop_speed) * (40 / 11.9883);
-  rpm.motor1 = (-1 * sin(3 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(3 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + ang_speed * prop_speed) * (40 / 11.9883);
-  rpm.motor3 = (-1 * sin(5 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(5 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + ang_speed * prop_speed) * (40 / 11.9883);
-  rpm.motor4 = (-1 * sin(7 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(7 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + ang_speed * prop_speed) * (40 / 11.9883);
-  Serial.print("Current angle");
-  Serial.println(curr_angle_x);
+  //rpm.motor2 = (-1 * sin(1 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(1 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + degree_to_RPM_2) * (40 / 11.9883);
+  //rpm.motor1 = (-1 * sin(3 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(3 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + degree_to_RPM_2) * (40 / 11.9883);
+  //rpm.motor3 = (-1 * sin(5 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(5 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + degree_to_RPM_2) * (40 / 11.9883);
+  //rpm.motor4 = (-1 * sin(7 * (PI / 4)) * max_lin_vel*cos(PI/180*(curr_angle_x+angle_change)) + cos(7 * PI / 4) * max_lin_vel*sin(PI/180*(curr_angle_x+angle_change)) + degree_to_RPM_2) * (40 / 11.9883);
+  //Serial.print("Current angle");
+  //Serial.println(curr_angle_x);
   
-
+  rpm.motor2 = (-1.0 * sin(1 * (PI / 4)) * linear_vel_x_mins_ + cos(1 * PI / 4) * linear_vel_y_mins_ + degree_to_RPM_2) * (40 / 11.9883);
+  rpm.motor1 = (-1.0 * sin(3 * (PI / 4)) * linear_vel_x_mins_ + cos(3 * PI / 4) * linear_vel_y_mins_ + degree_to_RPM_2) * (40 / 11.9883);
+  rpm.motor3 = (-1.0 * sin(5 * (PI / 4)) * linear_vel_x_mins_ + cos(5 * PI / 4) * linear_vel_y_mins_ + degree_to_RPM_2) * (40 / 11.9883);
+  rpm.motor4 = (-1.0 * sin(7 * (PI / 4)) * linear_vel_x_mins_ + cos(7 * PI / 4) * linear_vel_y_mins_ + degree_to_RPM_2) * (40 / 11.9883);
 
   bno->updateBNO();
   return rpm;
@@ -108,7 +129,7 @@ Kinematics::output Kinematics::getPWM(float linear_x, float linear_y, float angu
   return pwm;
 }
 
-Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2)
+Kinematics::velocities Kinematics::getVelocities(float motor1,  float motor2)
 {
   Kinematics::velocities vel;
 
@@ -125,7 +146,7 @@ Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2)
   return vel;
 }
 
-Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2, int motor3, int motor4)
+Kinematics::velocities Kinematics::getVelocities(float motor1, float motor2, float motor3, float motor4)
 {
   Kinematics::velocities vel;
 
@@ -148,7 +169,7 @@ Kinematics::velocities Kinematics::getVelocities(int motor1, int motor2, int mot
 
 }
 
-int Kinematics::rpmToPWM(int rpm)
+float Kinematics::rpmToPWM(float rpm)
 {
   //remap scale of target RPM vs MAX_RPM to PWM
   return (((float) rpm / (float) max_rpm_) * 255);

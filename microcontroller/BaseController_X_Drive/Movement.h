@@ -63,12 +63,12 @@ class Movement {
     
     //////////////////////////////////PID//////////////////////////////////////
     // Robot linear velocity to rpm per motor. 
-    void cmdVelocity(const double linear_x, const double linear_y, const double angular_z);
+    void cmdVelocity(const float linear_x, const float linear_y, const float angular_z);
 
-    void cmdVelocityKinematics(const double linear_x, const double linear_y, const double angular_z);
+    void cmdVelocityKinematics(const float linear_x, const float linear_y, const float angular_z);
     
     // Set motors to velocity. 
-    void updatePIDKinematics(double fl_speed, double fr_speed, double bl_speed, double br_speed);
+    void updatePIDKinematics(float fl_speed, float fr_speed, float bl_speed, float br_speed);
 
     void orientedMovement(const double linear_x, const double linear_y, double angular_z);
 

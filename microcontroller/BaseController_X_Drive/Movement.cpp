@@ -93,7 +93,7 @@ double constrainDa(double x, double min_, double max_)
 
 
 ///////////////////////////Auxiliar function to test kinematics (Linear + Traslational) with PWM values///////////////////////
-void Movement::cmdVelocityKinematics(const double linear_x, const double linear_y, const double angular_z){
+void Movement::cmdVelocityKinematics(const float linear_x, const float linear_y, const float angular_z){
   double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
   double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
   double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
@@ -104,10 +104,10 @@ void Movement::cmdVelocityKinematics(const double linear_x, const double linear_
 }
 
 //////////////////////////////////PID//////////////////////////////////////
-void Movement::cmdVelocity(const double linear_x, const double linear_y, const double angular_z){
-  double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
-  double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
-  double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
+void Movement::cmdVelocity(const float linear_x, const float linear_y, const float angular_z){
+  float x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
+  float y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
+  float z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
   Kinematics::output rpm = kinematics_.getRPM(x, y, z);
   updatePIDKinematics(rpm.motor2, rpm.motor1, rpm.motor3, rpm.motor4);
   Serial.print("Back Left Motor RPM: "); Serial.println(rpm.motor1);
@@ -138,9 +138,9 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
     }
   }
 
-  double x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
-  double y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
-  double z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
+  float x = constrainDa(linear_x, -1.0 * kLinearXMaxVelocity, kLinearXMaxVelocity);
+  float y = constrainDa(linear_y, -1.0 * kLinearYMaxVelocity, kLinearYMaxVelocity);
+  float z = constrainDa(angular_z, -1.0 * kAngularZMaxVelocity, kAngularZMaxVelocity);
   Kinematics::output pwm = kinematics_.getPWM(x, y, z);
   updatePIDKinematics(pwm.motor2, pwm.motor1, pwm.motor3, pwm.motor4);
   
@@ -151,7 +151,7 @@ void Movement::orientedMovement(const double linear_x, const double linear_y, do
 
 }
 
-void Movement::updatePIDKinematics(double fr_speed, double fl_speed, double bl_speed, double br_speed) {
+void Movement::updatePIDKinematics(float fr_speed, float fl_speed, float bl_speed, float br_speed) {
   front_left_motor_.stableRPM(fl_speed);
   front_right_motor_.stableRPM(fr_speed);
   back_left_motor_.stableRPM(bl_speed);
