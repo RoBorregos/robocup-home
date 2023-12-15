@@ -4,8 +4,8 @@
 #include "Plot.h"
 
 Movement *robot = nullptr;
-bool ROS_ENABLE = false;
-bool CHECK_PID = true;
+bool ROS_ENABLE = true;
+bool CHECK_PID = false;
 bool CHECK_MOTORS = false;
 bool CHECK_ENCODERS = false;
 double data = 0.0;
@@ -91,7 +91,7 @@ void loop() {
                 //Caso de prueba para movimiento traslacional rotativo sin BNO
                 //target_angle = target_angle + 0.5; //Camia el angulo de la velocidad que persigue
                 
-                robot->cmdVelocity(max_lin_vel*cos(PI/180*(target_angle)), max_lin_vel*sin(PI/180*(target_angle)), 0); //Las cinematica transforma el angulo en la rpm para  que se mueva en todos los angulos
+                robot->cmdVelocity(255*cos(PI/180*(target_angle)), max_lin_vel*sin(PI/180*(target_angle)), 0); //Las cinematica transforma el angulo en la rpm para  que se mueva en todos los angulos
                 //delay(100); Espera para cambiar el angulo
 
                 /////////////////////////////////////////
