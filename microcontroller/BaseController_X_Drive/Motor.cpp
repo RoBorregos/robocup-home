@@ -144,9 +144,9 @@ void Motor::stableRPM(const float velocity) {
       backward();
       break;
   }
+  
   //Need to change velocity into RPM units
-
-  tmp_pwm = pid_.compute_dt(abs(target_speed_)  , getCurrentSpeed(), kPidMotorSampleTime);
+  tmp_pwm = pid_.compute_dt(abs(target_speed_), getCurrentSpeed(), kPidMotorSampleTime);
   //Serial.print("Setpoint rpm: "); Serial.println(velocity);
   Serial.print("Current Motor rpm: "); Serial.println(getCurrentSpeed());
   RpmToPwm(tmp_pwm);

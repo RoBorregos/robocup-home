@@ -107,28 +107,6 @@ Kinematics::output Kinematics::getRPM(float linear_x, float linear_y, float angu
 
 }
 
-
-Kinematics::output Kinematics::getPWM(float linear_x, float linear_y, float angular_z)
-{
-  Kinematics::output rpm;
-  Kinematics::output pwm;
-
-  rpm = getRPM(linear_x, linear_y, angular_z);
-
-  //convert from RPM to PWM
-  //front-left motor
-  pwm.motor1 = rpmToPWM(rpm.motor1);
-  //rear-left motor
-  pwm.motor2 = rpmToPWM(rpm.motor2);
-
-  //front-right motor
-  pwm.motor3 = rpmToPWM(rpm.motor3);
-  //rear-right motor
-  pwm.motor4 = rpmToPWM(rpm.motor4);
-
-  return pwm;
-}
-
 Kinematics::velocities Kinematics::getVelocities(float motor1,  float motor2)
 {
   Kinematics::velocities vel;

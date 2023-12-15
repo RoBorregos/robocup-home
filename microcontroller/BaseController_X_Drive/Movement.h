@@ -70,7 +70,7 @@ class Movement {
     // Set motors to velocity. 
     void updatePIDKinematics(float fl_speed, float fr_speed, float bl_speed, float br_speed);
 
-    void orientedMovement(const double linear_x, const double linear_y, double angular_z);
+    void orientedMovement(double linear_x, double linear_y, double angular_z);
 
     void setRobotAngle(const double angle);
 
@@ -100,7 +100,7 @@ class Movement {
     static constexpr double kFrWheelsDist = 0.24;
     static constexpr double kLrWheelsDist = 0.24;
     static constexpr double kWheelDiameter = 0.15;
-    static constexpr double kRPM = 40;
+    static constexpr double kRPM = 40.0;
     static constexpr double kRPS = kRPM / 60;
     static constexpr double kMaxVelocity = kRPS * (M_PI * kWheelDiameter);
 
@@ -108,11 +108,11 @@ class Movement {
     static constexpr double kLinearYMaxVelocity = kMaxVelocity;
     static constexpr double kAngularZMaxVelocity = kMaxVelocity / kLrWheelsDist;
     static constexpr uint8_t kPwmBits = 8;
-    static constexpr double kBnoKP = 0;
-    static constexpr double kBnoKI = 0;
-    static constexpr double kBnoKD = 0;
-    static constexpr int kPID_time = 4;
-    static constexpr double kMaxErrorSum = 1000;
+    static constexpr double kBnoKP = 4.0;
+    static constexpr double kBnoKI = 0.5;
+    static constexpr double kBnoKD = 0.0;
+    static constexpr double kBNO_time = 0.1;
+    static constexpr double kMaxErrorSum = 100;
     long long cycle = 0;
 
     // Kinematics.
@@ -124,7 +124,8 @@ class Movement {
     double delta_y_ = 0;
     double delta_angular_ = 0;
     //Angle
+    float angle_error;
     double robotAngle = 0;
-    static constexpr double kAngleTolerance = 0.5;
+    static constexpr double kAngleTolerance = 5;
 };
 #endif

@@ -518,7 +518,7 @@ class CarryMyLuggage(object):
         # Waits till pointing left or right.
         self.get_pointing()
         self.used_pointing = self.pointing
-        rospy.loginfo("Pointing: " + str(self.pointing)
+        rospy.loginfo("Pointing: " + str(self.pointing))
 
         # Analyze Pointing Side to find objects on the floor.
         attempts = 0
