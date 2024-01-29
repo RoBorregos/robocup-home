@@ -6,8 +6,14 @@
                 - '/zed*'
                 - '/xarm*'
                 - '/DASHGO*'
+                <!-- - '/move_base/GlobalPlanner*'
+                - '/move_base/TebLocalPlannerROS*'
+                - '/move_base/global_costmap*'
+                - '/move_base/local_costmap*'
+                - '/move_base/parameter_descriptions'
+                - '/move_base/cancel'
+                - '/move_base/parameter_updates' -->
                 - '/move_group*'
-                - '/move_base*'
                 - '/tf*'
         </rosparam>
     </node>

@@ -1,7 +1,7 @@
 TebLocalPlannerROS:
-
+ costmap_converter_plugin: "costmap_converter::CostmapToLinesDBSRANSAC"
  odom_topic: odom  # The topic name for odometry data.
-  map_frame: odom  # The frame ID of the map (referenced to it).
+ map_frame: odom  # The frame ID of the map (referenced to it).
 
  # Trajectory
  teb_autosize: True  # Flag indicating whether to automatically adjust the trajectory size.
